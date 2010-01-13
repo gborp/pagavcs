@@ -304,4 +304,20 @@ public class Other implements Cancelable {
 
 		return lstBlame;
 	}
+
+	public void doExport(String pathFrom, String pathExport) throws SVNException {
+
+		File filePathFrom = new File(pathFrom);
+		File filePathExport = new File(pathExport);
+
+		if (!pathExport.startsWith("/")) {
+			// relative path
+			filePathExport = new File(filePathFrom.getParent() + "/" + pathExport);
+		}
+
+		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNUpdateClient updateClient = clientMgr.getUpdateClient();
+
+		updateClient.doExport(filePathFrom, filePathExport, SVNRevision.WORKING, SVNRevision.WORKING, null, false, SVNDepth.INFINITY);
+	}
 }

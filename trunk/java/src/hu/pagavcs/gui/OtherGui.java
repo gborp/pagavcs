@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -57,6 +58,8 @@ public class OtherGui implements Working, Cancelable {
 	private ProgressBar prgBusy;
 	private EditField   sfBlameRevision;
 	private JButton     btnBlame;
+	private EditField   sfExportTo;
+	private JButton     btnExportTo;
 
 	public OtherGui(Other other) {
 		this.other = other;
@@ -64,7 +67,7 @@ public class OtherGui implements Working, Cancelable {
 
 	public void display() throws SVNException {
 		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p",
-		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
+		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -111,6 +114,9 @@ public class OtherGui implements Working, Cancelable {
 		sfBlameRevision.setToolTipText("Leave empty for HEAD revision");
 		btnBlame = new JButton(new BlameAction());
 
+		sfExportTo = new EditField();
+		btnExportTo = new JButton(new ExportAction());
+
 		lblStatus = new Label(" ");
 		prgBusy = new ProgressBar(this);
 
@@ -148,8 +154,13 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(btnBlame, cc.xywh(4, 27, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 28, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 29, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 29, 1, 1));
+		pnlMain.add(new JLabel("Export to:"), cc.xywh(1, 29, 1, 1));
+		pnlMain.add(sfExportTo, cc.xywh(3, 29, 2, 1));
+		pnlMain.add(btnExportTo, cc.xywh(4, 31, 1, 1));
+
+		pnlMain.add(new JSeparator(), cc.xywh(1, 32, 4, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 33, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 33, 1, 1));
 
 		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Other");
 	}
@@ -207,6 +218,20 @@ public class OtherGui implements Working, Cancelable {
 		}
 	}
 
+	private void doExport() throws Exception {
+		try {
+			if (sfExportTo.getText().trim().isEmpty()) {
+				JOptionPane.showMessageDialog(Manager.getRootFrame(), "Directory cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			prgBusy.startProgress();
+			other.doExport(sfWorkingCopy.getText(), sfExportTo.getText().trim());
+		} finally {
+			prgBusy.stopProgress();
+		}
+	}
+
 	public void setStatusStartWorking() {
 		setStatus(OtherStatus.WORKING);
 	}
@@ -247,6 +272,18 @@ public class OtherGui implements Working, Cancelable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			doBlame();
+		}
+
+	}
+
+	private class ExportAction extends ThreadAction {
+
+		public ExportAction() {
+			super("Export");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			doExport();
 		}
 
 	}
