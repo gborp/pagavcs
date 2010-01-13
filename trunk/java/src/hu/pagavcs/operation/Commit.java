@@ -23,7 +23,6 @@ import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNConflictChoice;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNEventAction;
-import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNPropertyData;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
@@ -72,11 +71,7 @@ public class Commit {
 	public void refresh() throws Exception {
 		gui.setStatus(CommitStatus.INIT, null);
 		gui.setUrlLabel(getRootUrl().toString());
-		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		if (mgrSvn == null) {
-			Manager.showFailedDialog();
-			return;
-		}
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNStatusClient statusClient = mgrSvn.getStatusClient();
 		statusClient.doStatus(new File(path), SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
 		gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED, null);
@@ -172,28 +167,10 @@ public class Commit {
 		return rootUrl;
 	}
 
-	private SVNURL getSvnUrl(String path) throws SVNException {
-		SVNURL url = getRootUrl();
-		return SVNURL.create(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), path, false);
-	}
-
 	public void showChanges(File wcFile) throws Exception {
 		gui.workStarted();
-		SVNURL svnUrl = null;
-		SVNRevision svnRevision = null;
-
 		try {
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(wcFile);
-			if (mgrSvn == null) {
-				Manager.showFailedDialog();
-				return;
-			}
-			SVNWCClient wcClient = mgrSvn.getWCClient();
-			SVNInfo info = wcClient.doInfo(wcFile, SVNRevision.WORKING);
-			svnUrl = getSvnUrl(info.getURL().getPath());
-			long revision = info.getRevision().getNumber();
-			svnRevision = SVNRevision.create(revision);
-			File fileOld = Manager.getFile(svnUrl, svnRevision);
+			File fileOld = Manager.getWorkingCopyFile(wcFile);
 
 			String wcFilePath = wcFile.getPath();
 			String fileName = wcFilePath.substring(wcFilePath.lastIndexOf('/') + 1);
@@ -202,9 +179,7 @@ public class Commit {
 			process.waitFor();
 
 		} finally {
-			if (svnRevision != null) {
-				Manager.releaseFile(svnUrl, svnRevision);
-			}
+			Manager.releaseWorkingCopyFile(wcFile);
 			gui.workEnded();
 		}
 	}

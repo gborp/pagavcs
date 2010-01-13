@@ -350,6 +350,14 @@ public class Manager {
 		FileRevisionCache.getInstance().releaseFile(svnUrl, revision);
 	}
 
+	public static File getWorkingCopyFile(File wcFile) throws Exception {
+		return FileRevisionCache.getInstance().getWorkingCopyFile(wcFile);
+	}
+
+	public static void releaseWorkingCopyFile(File wcFile) throws Exception {
+		FileRevisionCache.getInstance().releaseWorkingCopyFile(wcFile);
+	}
+
 	public static void showFailedDialog() {
 		JOptionPane.showMessageDialog(getRootFrame(), "Failed", "Failed", JOptionPane.ERROR_MESSAGE);
 	}

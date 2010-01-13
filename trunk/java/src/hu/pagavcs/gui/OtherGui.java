@@ -170,7 +170,7 @@ public class OtherGui implements Working, Cancelable {
 	private void copyMoveRename() throws Exception {
 		try {
 			prgBusy.startProgress();
-			other.copyMoveRename(sfWorkingCopy.getText(), sfNewPath.getText(), cbMove.isSelected());
+			other.copyMoveRename(sfWorkingCopy.getText(), sfNewPath.getText().trim(), cbMove.isSelected());
 		} finally {
 			prgBusy.stopProgress();
 		}
@@ -179,7 +179,8 @@ public class OtherGui implements Working, Cancelable {
 	private void doMerge() throws Exception {
 		try {
 			prgBusy.startProgress();
-			other.merge(sfRepo.getText(), sfWorkingCopy.getText(), sfUrlToMergeFrom.getText(), sfRevisionRange.getText(), cbReverseMerge.isSelected());
+			other.merge(sfRepo.getText(), sfWorkingCopy.getText(), sfUrlToMergeFrom.getText().trim(), sfRevisionRange.getText().trim(), cbReverseMerge
+			        .isSelected());
 		} finally {
 			prgBusy.stopProgress();
 		}
@@ -188,7 +189,7 @@ public class OtherGui implements Working, Cancelable {
 	private void doSwitch() throws Exception {
 		try {
 			prgBusy.startProgress();
-			other.doSwitch(sfWorkingCopy.getText(), sfSwitchToUrl.getText(), sfSwitchToRevision.getText());
+			other.doSwitch(sfWorkingCopy.getText(), sfSwitchToUrl.getText().trim(), sfSwitchToRevision.getText().trim());
 		} finally {
 			prgBusy.stopProgress();
 		}
@@ -197,7 +198,7 @@ public class OtherGui implements Working, Cancelable {
 	private void doBlame() throws Exception {
 		try {
 			prgBusy.startProgress();
-			List<BlameListItem> lstBlame = other.doBlame(sfWorkingCopy.getText(), sfBlameRevision.getText());
+			List<BlameListItem> lstBlame = other.doBlame(sfWorkingCopy.getText(), sfBlameRevision.getText().trim());
 			BlameGui blameGUi = new BlameGui(this, sfWorkingCopy.getText());
 			blameGUi.setBlamedFile(lstBlame);
 			blameGUi.display();
