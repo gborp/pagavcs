@@ -175,6 +175,9 @@ public class SettingsStore {
 			}
 		}
 		lstCommitMessages.add(message);
+		if (lstCommitMessages.size() > Manager.getMaxMessageHistoryItems()) {
+			lstCommitMessages.remove(0);
+		}
 	}
 
 	public void setLstCommitMessages(List<String> lstCommitMessages) {
