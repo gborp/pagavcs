@@ -5,6 +5,8 @@ import hu.pagavcs.gui.CommitGui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.JOptionPane;
@@ -70,11 +72,21 @@ public class Commit {
 
 	public void refresh() throws Exception {
 		gui.setStatus(CommitStatus.INIT, null);
+
+		gui.setRecentMessages(getRecentMessages());
+
 		gui.setUrlLabel(getRootUrl().toString());
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNStatusClient statusClient = mgrSvn.getStatusClient();
 		statusClient.doStatus(new File(path), SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
 		gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED, null);
+	}
+
+	private String[] getRecentMessages() {
+		List<String> result = new ArrayList<String>(Manager.getSettings().getLstCommitMessages());
+		result.add(null);
+		Collections.reverse(result);
+		return result.toArray(new String[0]);
 	}
 
 	public void setCancel(boolean cancel) {
@@ -176,11 +188,11 @@ public class Commit {
 			String fileName = wcFilePath.substring(wcFilePath.lastIndexOf('/') + 1);
 
 			Process process = Runtime.getRuntime().exec("meld -L " + fileOld.getName() + " " + fileOld.getPath() + " -L " + fileName + " " + wcFilePath);
+			gui.workEnded();
 			process.waitFor();
 
 		} finally {
 			Manager.releaseWorkingCopyFile(wcFile);
-			gui.workEnded();
 		}
 	}
 

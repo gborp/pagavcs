@@ -258,6 +258,11 @@ public class Manager {
 		return 20;
 	}
 
+	public static int getMaxMessageHistoryItems() {
+		// TODO set it from preferences
+		return 20;
+	}
+
 	public static void handle(Exception ex) {
 		exceptionHandler.handle(ex);
 	}
