@@ -9,19 +9,24 @@ import hu.pagavcs.operation.Commit.CommitStatus;
 import hu.pagavcs.operation.Commit.CommittedItemStatus;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.prefs.BackingStoreException;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -63,13 +68,14 @@ public class CommitGui implements Working {
 	private boolean                    preRealCommitProcess;
 	private JButton                    btnRefresh;
 	private JCheckBox                  cbSelectDeselectAll;
+	private JComboBox                  cboMessage;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
 	}
 
 	public void display() throws SVNException {
-
+		CellConstraints cc = new CellConstraints();
 		commitTableModel = new TableModel<CommitListItem>(new CommitListItem());
 		tblCommit = new Table(commitTableModel);
 		tblCommit.addMouseListener(new PopupupMouseListener());
@@ -83,8 +89,23 @@ public class CommitGui implements Working {
 		JSplitPane splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spCommitList);
 
 		lblUrl = new Label();
-		JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pnlTop.add(lblUrl);
+		cboMessage = new JComboBox();
+		cboMessage.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					if (e.getItem() != null) {
+						taMessage.setText(e.getItem().toString());
+					}
+				}
+			}
+		});
+
+		JPanel pnlTop = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu,p,4dlu"));
+		pnlTop.add(new JLabel("Commit to:"), cc.xy(1, 1));
+		pnlTop.add(lblUrl, cc.xy(3, 1));
+		pnlTop.add(new JLabel("Recent messages:"), cc.xy(1, 3));
+		pnlTop.add(cboMessage, cc.xy(3, 3));
 
 		cbSelectDeselectAll = new JCheckBox(new SelectDeselectAllAction());
 
@@ -129,9 +150,7 @@ public class CommitGui implements Working {
 			}
 		});
 
-		FormLayout layout = new FormLayout("p, 4dlu,p,4dlu, p:g, 4dlu,p, 4dlu,p", "p");
-		JPanel pnlBottom = new JPanel(layout);
-		CellConstraints cc = new CellConstraints();
+		JPanel pnlBottom = new JPanel(new FormLayout("p, 4dlu,p,4dlu, p:g, 4dlu,p, 4dlu,p", "p"));
 
 		pnlBottom.add(cbSelectDeselectAll, cc.xy(1, 1));
 		pnlBottom.add(btnRefresh, cc.xy(3, 1));
@@ -161,6 +180,11 @@ public class CommitGui implements Working {
 
 	public void setUrlLabel(String urlLabel) {
 		lblUrl.setText(urlLabel);
+	}
+
+	public void setRecentMessages(String[] recentMessages) {
+		ComboBoxModel modelUrl = new DefaultComboBoxModel(recentMessages);
+		cboMessage.setModel(modelUrl);
 	}
 
 	public void setStatus(CommitStatus status, String message) throws Exception {
@@ -227,6 +251,8 @@ public class CommitGui implements Working {
 			JOptionPane.showMessageDialog(Manager.getRootFrame(), "Message should not be empty!", "Cannot commit", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
+
+		Manager.getSettings().addCommitMessageForHistory(taMessage.getText().trim());
 
 		noCommit = 0;
 		ArrayList<File> lstCommit = new ArrayList<File>();
@@ -520,40 +546,62 @@ public class CommitGui implements Working {
 			}
 		}
 
-		public void mousePressed(MouseEvent e) {
+		private void showPopup(MouseEvent e) {
 			hidePopup();
-			if (e.getButton() == MouseEvent.BUTTON3) {
+			Point p = new Point(e.getX(), e.getY());
+			int row = tblCommit.convertRowIndexToModel(tblCommit.rowAtPoint(p));
+			selected = commitTableModel.getRow(row);
+			ContentStatus status = selected.getStatus();
+			ContentStatus propertyStatus = selected.getPropertyStatus();
+			if (status.equals(ContentStatus.MODIFIED)) {
+				ppVisible = ppModified;
+			} else if (status.equals(ContentStatus.UNVERSIONED)) {
+				ppVisible = ppUnversioned;
+			} else if (status.equals(ContentStatus.OBSTRUCTED)) {
+				ppVisible = ppObstructed;
+			} else if (status.equals(ContentStatus.INCOMPLETE)) {
+				ppVisible = ppIncomplete;
+			} else if (status.equals(ContentStatus.MISSING)) {
+				ppVisible = ppMissing;
+			} else if (status.equals(ContentStatus.DELETED)) {
+				ppVisible = ppDeleted;
+			}
+			if (propertyStatus.equals(ContentStatus.MODIFIED)) {
+				ppVisible = ppPropertyModified;
+			}
 
+			if (ppVisible != null) {
+				ppVisible.setInvoker(tblCommit);
+				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				ppVisible.setVisible(true);
+				e.consume();
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				hidePopup();
 				Point p = new Point(e.getX(), e.getY());
 				int row = tblCommit.convertRowIndexToModel(tblCommit.rowAtPoint(p));
 				selected = commitTableModel.getRow(row);
 				ContentStatus status = selected.getStatus();
 				ContentStatus propertyStatus = selected.getPropertyStatus();
 				if (status.equals(ContentStatus.MODIFIED)) {
-					ppVisible = ppModified;
-				} else if (status.equals(ContentStatus.UNVERSIONED)) {
-					ppVisible = ppUnversioned;
-				} else if (status.equals(ContentStatus.OBSTRUCTED)) {
-					ppVisible = ppObstructed;
-				} else if (status.equals(ContentStatus.INCOMPLETE)) {
-					ppVisible = ppIncomplete;
-				} else if (status.equals(ContentStatus.MISSING)) {
-					ppVisible = ppMissing;
-				} else if (status.equals(ContentStatus.DELETED)) {
-					ppVisible = ppDeleted;
-				}
-				if (propertyStatus.equals(ContentStatus.MODIFIED)) {
-					ppVisible = ppPropertyModified;
-				}
-
-				if (ppVisible != null) {
-					ppVisible.setInvoker(tblCommit);
-					ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
-					ppVisible.setVisible(true);
-					e.consume();
+					new ShowChangesAction(this).actionPerformed(null);
 				}
 			}
-			super.mousePressed(e);
 		}
 	}
 

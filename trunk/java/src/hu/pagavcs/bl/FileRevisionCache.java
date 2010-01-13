@@ -132,8 +132,7 @@ public class FileRevisionCache {
 				counter++;
 			}
 
-			SVNClientManager svnMgr = Manager.getSVNClientManager(wcFile);
-
+			SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 			SVNWCClient wcClient = svnMgr.getWCClient();
 
 			FileOutputStream outOldRevision = new FileOutputStream(file.getPath());
