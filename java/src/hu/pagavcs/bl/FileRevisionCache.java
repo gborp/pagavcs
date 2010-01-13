@@ -25,12 +25,13 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class FileRevisionCache {
 
-	private static final int                                MAX_CACHED_FILE = 50;
+	private static final int                                MAX_CACHED_FILE     = 50;
 
 	private static FileRevisionCache                        singleton;
 
-	private static HashMap<Pair<SVNURL, SVNRevision>, File> mapFiles        = new HashMap<Pair<SVNURL, SVNRevision>, File>();
-	private static HashSet<Pair<SVNURL, SVNRevision>>       lstUsedFiles    = new HashSet<Pair<SVNURL, SVNRevision>>();
+	private static HashMap<Pair<SVNURL, SVNRevision>, File> mapFiles            = new HashMap<Pair<SVNURL, SVNRevision>, File>();
+	private static HashSet<Pair<SVNURL, SVNRevision>>       lstUsedFiles        = new HashSet<Pair<SVNURL, SVNRevision>>();
+	private static HashMap<File, File>                      lstWorkingCopyFiles = new HashMap<File, File>();
 
 	public static synchronized FileRevisionCache getInstance() {
 		if (singleton == null) {
@@ -41,16 +42,27 @@ public class FileRevisionCache {
 	}
 
 	public synchronized void init() {
-		String tempPrefix = Manager.getTempDir() + "r/";
-		File tempDir = new File(tempPrefix);
-		File[] lstFiles = tempDir.listFiles();
-		if (lstFiles != null) {
-			for (File f : lstFiles) {
+		String tempPrefixR = Manager.getTempDir() + "r/";
+		File tempDirR = new File(tempPrefixR);
+		File[] lstFilesR = tempDirR.listFiles();
+		if (lstFilesR != null) {
+			for (File f : lstFilesR) {
 				f.setWritable(true);
 				f.delete();
 			}
 		}
-		tempDir.mkdirs();
+		tempDirR.mkdirs();
+
+		String tempPrefixW = Manager.getTempDir() + "w/";
+		File tempDirW = new File(tempPrefixW);
+		File[] lstFilesW = tempDirW.listFiles();
+		if (lstFilesW != null) {
+			for (File f : lstFilesW) {
+				f.setWritable(true);
+				f.delete();
+			}
+		}
+		tempDirW.mkdirs();
 	}
 
 	public synchronized File getFile(SVNURL svnUrl, SVNRevision revision) throws Exception {
@@ -105,5 +117,40 @@ public class FileRevisionCache {
 	public synchronized void releaseFile(SVNURL svnUrl, SVNRevision revision) throws Exception {
 		Pair<SVNURL, SVNRevision> key = new Pair<SVNURL, SVNRevision>(svnUrl, revision);
 		lstUsedFiles.remove(key);
+	}
+
+	public File getWorkingCopyFile(File wcFile) throws Exception {
+		File result = lstWorkingCopyFiles.get(wcFile);
+
+		if (result == null) {
+			String tempPrefix = Manager.getTempDir() + "w/";
+			String fileNameRoot = tempPrefix + wcFile.getName();
+			File file = new File(fileNameRoot);
+			int counter = 0;
+			while (file.exists()) {
+				file = new File(fileNameRoot + "-" + counter);
+				counter++;
+			}
+
+			SVNClientManager svnMgr = Manager.getSVNClientManager(wcFile);
+
+			SVNWCClient wcClient = svnMgr.getWCClient();
+
+			FileOutputStream outOldRevision = new FileOutputStream(file.getPath());
+			wcClient.doGetFileContents(wcFile, SVNRevision.BASE, SVNRevision.BASE, false, outOldRevision);
+			outOldRevision.close();
+
+			lstWorkingCopyFiles.put(wcFile, file);
+			result = file;
+		}
+		return result;
+	}
+
+	public void releaseWorkingCopyFile(File wcFile) {
+		File cacheFile = lstWorkingCopyFiles.get(wcFile);
+		if (cacheFile != null) {
+			lstWorkingCopyFiles.remove(wcFile);
+			cacheFile.delete();
+		}
 	}
 }
