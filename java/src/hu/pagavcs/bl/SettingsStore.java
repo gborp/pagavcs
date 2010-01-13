@@ -168,6 +168,15 @@ public class SettingsStore {
 		mapPassword.put(repoid, password);
 	}
 
+	public void addCommitMessageForHistory(String message) {
+		for (String li : lstCommitMessages) {
+			if (message.equals(li)) {
+				return;
+			}
+		}
+		lstCommitMessages.add(message);
+	}
+
 	public void setLstCommitMessages(List<String> lstCommitMessages) {
 		this.lstCommitMessages = lstCommitMessages;
 	}
