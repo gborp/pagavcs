@@ -467,6 +467,7 @@ public class CommitGui implements Working {
 		private JPopupMenu     ppUnversioned;
 		private JPopupMenu     ppMissing;
 		private JPopupMenu     ppObstructed;
+		private JPopupMenu     ppDeleted;
 		private JPopupMenu     ppIncomplete;
 		private JPopupMenu     ppPropertyModified;
 		private CommitListItem selected;
@@ -486,17 +487,22 @@ public class CommitGui implements Working {
 
 			ppMissing = new JPopupMenu();
 			ppMissing.add(new ShowLog(this));
+			ppMissing.add(new RevertChangesAction(this));
 			ppMissing.add(new IgnoreAction(this));
 			ppMissing.add(new DeleteAction(this));
 
 			ppObstructed = new JPopupMenu();
+			ppObstructed.add(new RevertChangesAction(this));
 			ppObstructed.add(new IgnoreAction(this));
 			ppObstructed.add(new DeleteAction(this));
 
+			ppDeleted = new JPopupMenu();
+			ppDeleted.add(new RevertChangesAction(this));
+
 			ppIncomplete = new JPopupMenu();
+			ppIncomplete.add(new ResolvedAction(this));
 			ppIncomplete.add(new IgnoreAction(this));
 			ppIncomplete.add(new DeleteAction(this));
-			ppIncomplete.add(new ResolvedAction(this));
 
 			ppPropertyModified = new JPopupMenu();
 			ppPropertyModified.add(new ShowLog(this));
@@ -533,6 +539,8 @@ public class CommitGui implements Working {
 					ppVisible = ppIncomplete;
 				} else if (status.equals(ContentStatus.MISSING)) {
 					ppVisible = ppMissing;
+				} else if (status.equals(ContentStatus.DELETED)) {
+					ppVisible = ppDeleted;
 				}
 				if (propertyStatus.equals(ContentStatus.MODIFIED)) {
 					ppVisible = ppPropertyModified;
