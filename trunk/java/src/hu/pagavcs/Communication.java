@@ -45,8 +45,6 @@ public class Communication {
 
 	public Communication() throws Exception {
 
-		Manager.init();
-
 		String tempDir = Manager.getTempDir();
 		running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
 		running.createNewFile();
@@ -56,6 +54,8 @@ public class Communication {
 		} catch (IOException ex) {
 			System.exit(-5);
 		}
+
+		Manager.init();
 
 		while (!shutdown) {
 			try {
