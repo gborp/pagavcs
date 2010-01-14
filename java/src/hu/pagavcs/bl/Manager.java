@@ -59,7 +59,6 @@ public class Manager {
 
 	private static String           tempDir;
 	private static boolean          inited           = false;
-	private static JFrame           rootFrame        = null;
 	private static ExceptionHandler exceptionHandler;
 
 	public static void init() throws BackingStoreException {
@@ -209,45 +208,19 @@ public class Manager {
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosed(WindowEvent e) {
-				// FIXME the rootframe should be the next open frame
-				rootFrame = null;
+				try {
+					getSettings().save();
+				} catch (Exception ex) {
+					Manager.handle(ex);
+				}
 			}
 		});
 
-		if (rootFrame == null) {
-			rootFrame = frame;
-		}
 		return frame;
-		// } else {
-		// JDialog dialog = new JDialog(rootFrame);
-		// // dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// dialog.getContentPane().add(main);
-		// dialog.setTitle(applicationName + " [" +
-		// Manager.getApplicationRootName() + "]");
-		// dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
-		// dialog.addWindowListener(new
-		// WindowPreferencesSaverOnClose(applicationName));
-		// dialog.pack();
-		//
-		// Rectangle bounds = getSettings().getWindowBounds(applicationName);
-		// if (bounds != null) {
-		// dialog.setBounds(bounds);
-		// } else {
-		// centerScreen(dialog);
-		// }
-		//
-		// dialog.setVisible(true);
-		// return dialog;
-		// }
-
 	}
 
 	public static JFrame getRootFrame() {
-		return Manager.rootFrame;
-	}
-
-	public static void rootFrameIsClosed() {
-		Manager.rootFrame = null;
+		return null;
 	}
 
 	public static SettingsStore getSettings() {
