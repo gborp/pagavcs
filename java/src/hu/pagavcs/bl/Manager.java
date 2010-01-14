@@ -1,5 +1,6 @@
 package hu.pagavcs.bl;
 
+import hu.pagavcs.Communication;
 import hu.pagavcs.gui.LoginGui;
 import hu.pagavcs.operation.ContentStatus;
 
@@ -267,8 +268,9 @@ public class Manager {
 		exceptionHandler.handle(ex);
 	}
 
-	public static void shutdown() throws SVNException, BackingStoreException {
+	public static void shutdown() throws Exception {
 		getSettings().save();
+		Communication.getInstance().shutdown();
 	}
 
 	private static class ShutDownRunnable implements Runnable {

@@ -13,6 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
+# don't allow to be run as root
+whoami=`whoami`
+if [ "${whoami}" == "root" ];
+then
+	exit
+fi
+
 if [ ! -f /tmp/pagavcs/server-running-indicator ]
 then
     java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar &
@@ -27,7 +34,7 @@ echo $@ > /dev/tcp/localhost/12905
 RETVAL=$?
 if [ $RETVAL != 0 ]
 then
-    rm /tmp/pagavcs/server-running-indicator
+    rm -f /tmp/pagavcs/server-running-indicator
     java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar &
 
     # waiting server to boot up    

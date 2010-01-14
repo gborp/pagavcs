@@ -15,6 +15,7 @@ import hu.pagavcs.operation.Update;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -36,20 +37,25 @@ import javax.net.ServerSocketFactory;
  */
 public class Communication {
 
-	private static final int    PORT                          = 12905;
-	private static final String SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
-	private boolean             shutdown;
+	private static final int     PORT                          = 12905;
+	private static final String  SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
+	private static Communication singleton;
+	private boolean              shutdown;
+	private File                 running;
 
 	public Communication() throws Exception {
 
 		Manager.init();
 
 		String tempDir = Manager.getTempDir();
-		File running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
+		running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
 		running.createNewFile();
-		running.deleteOnExit();
-
-		ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(PORT);
+		ServerSocket serverSocket = null;
+		try {
+			serverSocket = ServerSocketFactory.getDefault().createServerSocket(PORT);
+		} catch (IOException ex) {
+			System.exit(-5);
+		}
 
 		while (!shutdown) {
 			try {
@@ -64,6 +70,21 @@ public class Communication {
 				Manager.handle(ex);
 			}
 		}
+		running.delete();
+	}
+
+	public void shutdown() {
+		if (running != null) {
+			running.delete();
+		}
+		shutdown = true;
+	}
+
+	public static Communication getInstance() throws Exception {
+		if (singleton == null) {
+			singleton = new Communication();
+		}
+		return singleton;
 	}
 
 	private static class ProcessInput implements Runnable {
