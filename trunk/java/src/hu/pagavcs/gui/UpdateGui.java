@@ -65,6 +65,8 @@ public class UpdateGui {
 	private Timer                                 tmrTableRevalidate;
 	private boolean                               revalidateIsTimed;
 	private boolean                               shuttingDown;
+	private Label                                 lblWorkingCopy;
+	private Label                                 lblRepo;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -77,9 +79,12 @@ public class UpdateGui {
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("1dlu:g, p,4dlu, p", "fill:10dlu:g,4dlu,p");
+		FormLayout layout = new FormLayout("p,1dlu:g, p,4dlu, p", "p,4dlu,p,4dlu,fill:10dlu:g,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
+
+		lblWorkingCopy = new Label();
+		lblRepo = new Label();
 
 		tableModel = new TableModel<UpdateListItem>(new UpdateListItem());
 
@@ -102,9 +107,11 @@ public class UpdateGui {
 		});
 		prgWorking = new JProgressBar();
 
-		pnlMain.add(scrollPane, cc.xywh(1, 1, 4, 1));
-		pnlMain.add(prgWorking, cc.xywh(2, 3, 1, 1));
-		pnlMain.add(btnStop, cc.xywh(4, 3, 1, 1));
+		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
+		pnlMain.add(lblRepo, cc.xywh(1, 3, 1, 1));
+		pnlMain.add(scrollPane, cc.xywh(1, 5, 5, 1));
+		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
+		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
 		Window window = Manager.createAndShowFrame(new JScrollPane(pnlMain), title);
 		window.addWindowListener(new WindowAdapter() {
@@ -119,6 +126,14 @@ public class UpdateGui {
 			}
 		});
 		started = false;
+	}
+
+	public void setWorkingCopy(String workingCopy) {
+		lblWorkingCopy.setText(workingCopy);
+	}
+
+	public void setRepo(String repo) {
+		lblRepo.setText(repo);
 	}
 
 	public void setStatus(ContentStatus status) throws Exception {
@@ -281,13 +296,9 @@ public class UpdateGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			try {
-				popupupMouseListener.hidePopup();
-				UpdateListItem li = popupupMouseListener.getSelected();
-				new Log(li.getPath()).execute();
-			} catch (Exception ex) {
-				Manager.handle(ex);
-			}
+			popupupMouseListener.hidePopup();
+			UpdateListItem li = popupupMouseListener.getSelected();
+			new Log(li.getPath()).execute();
 		}
 	}
 

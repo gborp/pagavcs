@@ -26,7 +26,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -64,7 +63,7 @@ public class LogGui implements Working {
 	private TableModel<LogDetailListItem>      logDetailTableModel;
 	private Table                              tblDetailLog;
 	private TextArea                           taMessage;
-	private ProgressBar                           prgWorkInProgress;
+	private ProgressBar                        prgWorkInProgress;
 	private Label                              lblUrl;
 	private JSplitPane                         splDetail;
 	private JSplitPane                         splMain;
@@ -315,7 +314,7 @@ public class LogGui implements Working {
 		}
 	}
 
-	private class DetailShowChangesAction extends AbstractAction {
+	private class DetailShowChangesAction extends ThreadAction {
 
 		private final PopupupMouseListener popupupMouseListener;
 
@@ -324,7 +323,7 @@ public class LogGui implements Working {
 			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionPerformed(ActionEvent e) {
+		public void actionProcess(ActionEvent e) throws Exception {
 			LogDetailListItem liDetail = popupupMouseListener.getSelected();
 			LogListItem liLog = logTableModel.getRow(tblLog.getSelectedRow());
 			log.showChanges(liDetail.getPath(), liLog.getRevision());
