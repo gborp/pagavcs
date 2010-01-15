@@ -42,13 +42,16 @@ public class Communication {
 	private static Communication singleton;
 	private boolean              shutdown;
 	private File                 running;
+	private ServerSocket         serverSocket;
 
-	public Communication() throws Exception {
+	private Communication() {
 
+	}
+
+	public void execute() throws Exception {
 		String tempDir = Manager.getTempDir();
 		running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
 		running.createNewFile();
-		ServerSocket serverSocket = null;
 		try {
 			serverSocket = ServerSocketFactory.getDefault().createServerSocket(PORT);
 		} catch (IOException ex) {
@@ -74,10 +77,15 @@ public class Communication {
 	}
 
 	public void shutdown() {
+		shutdown = true;
 		if (running != null) {
 			running.delete();
 		}
-		shutdown = true;
+		if (serverSocket != null) {
+			try {
+				serverSocket.close();
+			} catch (IOException e) {}
+		}
 	}
 
 	public static Communication getInstance() throws Exception {
