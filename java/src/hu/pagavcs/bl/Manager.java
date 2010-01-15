@@ -3,7 +3,7 @@ package hu.pagavcs.bl;
 import hu.pagavcs.Communication;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.LoginGui;
-import hu.pagavcs.gui.Message;
+import hu.pagavcs.gui.MessagePane;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Color;
@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -56,6 +58,12 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 public class Manager {
 
 	public static final long        REVALIDATE_DELAY = 500;
+
+	public static Icon              ICON_ERROR       = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
+	public static Icon              ICON_INFORMATION = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
+	public static Icon              ICON_PASSWORD    = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
+	public static Icon              ICON_QUESTION    = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
+	public static Icon              ICON_WARNING     = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
 
 	private static final Color      COLOR_PURPLE     = new Color(100, 0, 100);
 
@@ -190,6 +198,10 @@ public class Manager {
 		Dimension dim = window.getToolkit().getScreenSize();
 		Rectangle bounds = window.getBounds();
 		window.setLocation((dim.width - bounds.width) / 2, (dim.height - bounds.height) / 2);
+	}
+
+	public static Icon loadIcon(String path) {
+		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource(path)));
 	}
 
 	public static Window createAndShowFrame(JComponent main, String applicationName) {
@@ -361,7 +373,7 @@ public class Manager {
 	}
 
 	public static void showFailedDialog() {
-		Message.showError(null, "Failed", "Failed");
+		MessagePane.showError(null, "Failed", "Failed");
 	}
 
 }

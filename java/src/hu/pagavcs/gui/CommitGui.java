@@ -194,7 +194,7 @@ public class CommitGui implements Working {
 			btnCommit.setEnabled(true);
 			btnRefresh.setEnabled(true);
 			if (commitTableModel.getAllData().isEmpty()) {
-				Message.showWarning(frame, "Nothing to commit", "There's nothing to commit!");
+				MessagePane.showWarning(frame, "Nothing to commit", "There's nothing to commit!");
 				frame.setVisible(false);
 				frame.dispose();
 			}
@@ -202,12 +202,12 @@ public class CommitGui implements Working {
 		if (CommitStatus.INIT.equals(status)) {
 			workStarted();
 		} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
-			Message.showInfo(frame, "Completed", message);
+			MessagePane.showInfo(frame, "Completed", message);
 			frame.setVisible(false);
 			frame.dispose();
 
 		} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
-			Message.showError(frame, "Failed!", "Commit failed!");
+			MessagePane.showError(frame, "Failed!", "Commit failed!");
 			frame.setVisible(false);
 			frame.dispose();
 		}
@@ -247,7 +247,7 @@ public class CommitGui implements Working {
 
 	public void commitSelected() throws Exception {
 		if (taMessage.getText().trim().isEmpty()) {
-			Message.showError(frame, "Cannot commit", "Message should not be empty!");
+			MessagePane.showError(frame, "Cannot commit", "Message should not be empty!");
 			return;
 		}
 
@@ -261,7 +261,7 @@ public class CommitGui implements Working {
 				noCommit++;
 
 				if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
-					Message.showWarning(frame, "Cannot commit", "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
+					MessagePane.showWarning(frame, "Cannot commit", "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
 					return;
 				}
 			}
