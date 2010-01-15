@@ -53,6 +53,10 @@ public class Update implements Cancelable {
 				Manager.showFailedDialog();
 				return;
 			}
+
+			gui.setWorkingCopy(path);
+			gui.setRepo(Manager.getInfo(path).getURL().toString());
+
 			SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
 			updateClient.setEventHandler(new UpdateEventHandler(this, gui, new File(path)));
 			gui.setStatus(ContentStatus.STARTED);

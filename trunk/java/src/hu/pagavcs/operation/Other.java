@@ -2,6 +2,7 @@ package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.gui.BlameListItem;
 import hu.pagavcs.gui.OtherGui;
 import hu.pagavcs.gui.UpdateGui;
@@ -59,7 +60,7 @@ public class Other implements Cancelable {
 		this.path = path;
 	}
 
-	public void execute() throws SVNException, BackingStoreException {
+	public void execute() throws SVNException, BackingStoreException, PagaException {
 		gui = new OtherGui(this);
 		gui.display();
 		gui.setStatus(OtherStatus.INIT);
@@ -257,7 +258,7 @@ public class Other implements Cancelable {
 		}
 	}
 
-	public List<BlameListItem> doBlame(String path, String revision) throws SVNException {
+	public List<BlameListItem> doBlame(String path, String revision) throws SVNException, PagaException {
 		revision = revision.trim();
 		SVNRevision blameRevision;
 		if (revision.isEmpty()) {

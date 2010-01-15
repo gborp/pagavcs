@@ -25,12 +25,8 @@ public class PreviousRevisionFetcher {
 
 	private long previousRevision = Long.MAX_VALUE;
 
-	public void execute(SVNURL svnUrl, long revision) throws SVNException {
+	public void execute(SVNURL svnUrl, long revision) throws SVNException, PagaException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl);
-		if (mgrSvn == null) {
-			Manager.showFailedDialog();
-			return;
-		}
 		SVNLogClient logClient = mgrSvn.getLogClient();
 		SVNRevision startRevision = SVNRevision.create(revision);
 		SVNRevision endRevision = SVNRevision.create(0);

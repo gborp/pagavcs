@@ -1,7 +1,9 @@
 package hu.pagavcs.bl;
 
 import hu.pagavcs.Communication;
+import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.LoginGui;
+import hu.pagavcs.gui.Message;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Color;
@@ -20,8 +22,8 @@ import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -93,11 +95,11 @@ public class Manager {
 		return SVNClientManager.newInstance();
 	}
 
-	public static SVNClientManager getSVNClientManager(File path) throws SVNException {
+	public static SVNClientManager getSVNClientManager(File path) throws SVNException, PagaException {
 		return getSVNClientManager(getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL());
 	}
 
-	public static SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException {
+	public static SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
 
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 
@@ -142,6 +144,9 @@ public class Manager {
 				reTryLogin = true;
 			}
 		}
+		if (result == null) {
+			throw new PagaException(PagaExceptionType.LOGIN_FAILED);
+		}
 		return result;
 	}
 
@@ -169,7 +174,7 @@ public class Manager {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
 	}
 
-	public static long getPreviousRevisionNumber(SVNURL path, long revision) throws SVNException {
+	public static Long getPreviousRevisionNumber(SVNURL path, long revision) throws SVNException, PagaException {
 		PreviousRevisionFetcher fetcher = new PreviousRevisionFetcher();
 		fetcher.execute(path, revision);
 		return fetcher.getPreviousRevision();
@@ -217,6 +222,23 @@ public class Manager {
 		});
 
 		return frame;
+	}
+
+	public static JDialog createDialog(Window parent, JComponent main, String title) {
+		JDialog dialog = new JDialog(parent);
+		dialog.getContentPane().add(main);
+		dialog.setTitle(title);
+		dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
+		dialog.pack();
+
+		Rectangle bounds = getSettings().getWindowBounds(title);
+		if (bounds != null) {
+			dialog.setBounds(bounds);
+		} else {
+			centerScreen(dialog);
+		}
+
+		return dialog;
 	}
 
 	public static JFrame getRootFrame() {
@@ -339,7 +361,7 @@ public class Manager {
 	}
 
 	public static void showFailedDialog() {
-		JOptionPane.showMessageDialog(getRootFrame(), "Failed", "Failed", JOptionPane.ERROR_MESSAGE);
+		Message.showError(null, "Failed", "Failed");
 	}
 
 }
