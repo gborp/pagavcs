@@ -1,6 +1,7 @@
 package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.gui.LogGui;
 
 import java.io.File;
@@ -122,96 +123,83 @@ public class Log {
 		return SVNURL.create(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), path, false);
 	}
 
-	public void showChanges(String path, long revision) {
-		new Thread(new ShowChangesThread(path, revision)).start();
-	}
+	public void showChanges(String showChangesPath, long revision) throws Exception {
 
-	private class ShowChangesThread implements Runnable {
+		FileOutputStream outNewRevision = null;
+		FileOutputStream outOldRevision = null;
+		File fileNew = null;
+		File fileOld = null;
+		try {
+			gui.workStarted();
+			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+			if (mgrSvn == null) {
+				Manager.showFailedDialog();
+				return;
+			}
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+			SVNURL svnUrl = getSvnUrl(showChangesPath);
+			Long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
+			if (previousRevision == null) {
 
-		private final String showChangesPath;
-		private final long   revision;
+			}
 
-		public ShowChangesThread(String path, long revision) {
-			this.showChangesPath = path;
-			this.revision = revision;
-		}
+			String fileName = showChangesPath.substring(showChangesPath.lastIndexOf('/') + 1);
 
-		public void run() {
+			String fileNameNew = "r" + revision + "-" + fileName;
+			String fileNameOld = "r" + previousRevision + "-" + fileName;
+			String tempPrefix = Manager.getTempDir();
 
-			FileOutputStream outNewRevision = null;
-			FileOutputStream outOldRevision = null;
-			File fileNew = null;
-			File fileOld = null;
+			fileNew = new File(tempPrefix + fileNameNew);
+			fileOld = new File(tempPrefix + fileNameOld);
+			fileNew.delete();
+			fileOld.delete();
+			outNewRevision = new FileOutputStream(tempPrefix + fileNameNew);
+			outOldRevision = new FileOutputStream(tempPrefix + fileNameOld);
+
+			wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, SVNRevision.create(revision), false, outNewRevision);
+
+			wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, SVNRevision.create(previousRevision), false, outOldRevision);
+
+			outNewRevision.close();
+			outOldRevision.close();
+
+			fileNew.setReadOnly();
+			fileNew.deleteOnExit();
+			fileOld.setReadOnly();
+			fileOld.deleteOnExit();
+
+			Process process = Runtime.getRuntime().exec(
+			        "meld -L " + fileNameOld + " " + tempPrefix + fileNameOld + " -L " + fileNameNew + " " + tempPrefix + fileNameNew);
+			gui.workEnded();
+			process.waitFor();
+		} catch (Exception e) {
 			try {
-				gui.workStarted();
-				SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-				if (mgrSvn == null) {
-					Manager.showFailedDialog();
-					return;
-				}
-				SVNWCClient wcClient = mgrSvn.getWCClient();
-				SVNURL svnUrl = getSvnUrl(showChangesPath);
-				long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
-
-				String fileName = showChangesPath.substring(showChangesPath.lastIndexOf('/') + 1);
-
-				String fileNameNew = "r" + revision + "-" + fileName;
-				String fileNameOld = "r" + previousRevision + "-" + fileName;
-				String tempPrefix = Manager.getTempDir();
-
-				fileNew = new File(tempPrefix + fileNameNew);
-				fileOld = new File(tempPrefix + fileNameOld);
-				fileNew.delete();
-				fileOld.delete();
-				outNewRevision = new FileOutputStream(tempPrefix + fileNameNew);
-				outOldRevision = new FileOutputStream(tempPrefix + fileNameOld);
-
-				wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, SVNRevision.create(revision), false, outNewRevision);
-
-				wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, SVNRevision.create(previousRevision), false, outOldRevision);
-
-				outNewRevision.close();
-				outOldRevision.close();
-
-				fileNew.setReadOnly();
-				fileNew.deleteOnExit();
-				fileOld.setReadOnly();
-				fileOld.deleteOnExit();
-
-				Process process = Runtime.getRuntime().exec(
-				        "meld -L " + fileNameOld + " " + tempPrefix + fileNameOld + " -L " + fileNameNew + " " + tempPrefix + fileNameNew);
 				gui.workEnded();
-				process.waitFor();
-			} catch (Exception e) {
-				Manager.handle(e);
-				try {
-					gui.workEnded();
-				} catch (Exception e1) {
-					Manager.handle(e1);
+			} catch (Exception e1) {
+				Manager.handle(e1);
+			}
+			throw e;
+		} finally {
+			try {
+				if (outNewRevision != null) {
+					outNewRevision.close();
 				}
-			} finally {
-				try {
-					if (outNewRevision != null) {
-						outNewRevision.close();
-					}
-					if (outOldRevision != null) {
-						outOldRevision.close();
-					}
-					if (fileNew != null) {
-						fileNew.delete();
-					}
-					if (fileOld != null) {
-						fileOld.delete();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
+				if (outOldRevision != null) {
+					outOldRevision.close();
 				}
+				if (fileNew != null) {
+					fileNew.delete();
+				}
+				if (fileOld != null) {
+					fileOld.delete();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
-
 	}
 
-	public void revertChanges(String path, long revision) throws SVNException {
+	public void revertChanges(String path, long revision) throws SVNException, PagaException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
 		SVNDiffClient diffClient = mgrSvn.getDiffClient();
 		// TODO revertChanges

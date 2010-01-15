@@ -27,7 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -195,7 +194,7 @@ public class CommitGui implements Working {
 			btnCommit.setEnabled(true);
 			btnRefresh.setEnabled(true);
 			if (commitTableModel.getAllData().isEmpty()) {
-				JOptionPane.showMessageDialog(Manager.getRootFrame(), "There's nothing to commit!", "Nothing to commit", JOptionPane.INFORMATION_MESSAGE);
+				Message.showWarning(frame, "Nothing to commit", "There's nothing to commit!");
 				frame.setVisible(false);
 				frame.dispose();
 			}
@@ -203,12 +202,12 @@ public class CommitGui implements Working {
 		if (CommitStatus.INIT.equals(status)) {
 			workStarted();
 		} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
-			JOptionPane.showMessageDialog(Manager.getRootFrame(), message, "Completed", JOptionPane.INFORMATION_MESSAGE);
+			Message.showInfo(frame, "Completed", message);
 			frame.setVisible(false);
 			frame.dispose();
 
 		} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
-			JOptionPane.showMessageDialog(Manager.getRootFrame(), "Commit failed!", "Failed!", JOptionPane.ERROR_MESSAGE);
+			Message.showError(frame, "Failed!", "Commit failed!");
 			frame.setVisible(false);
 			frame.dispose();
 		}
@@ -248,7 +247,7 @@ public class CommitGui implements Working {
 
 	public void commitSelected() throws Exception {
 		if (taMessage.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(Manager.getRootFrame(), "Message should not be empty!", "Cannot commit", JOptionPane.WARNING_MESSAGE);
+			Message.showError(frame, "Cannot commit", "Message should not be empty!");
 			return;
 		}
 
@@ -262,8 +261,7 @@ public class CommitGui implements Working {
 				noCommit++;
 
 				if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
-					JOptionPane.showMessageDialog(Manager.getRootFrame(), "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).",
-					        "Cannot commit", JOptionPane.ERROR_MESSAGE);
+					Message.showWarning(frame, "Cannot commit", "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
 					return;
 				}
 			}
