@@ -2,6 +2,8 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.operation.ContentStatus;
 
+import org.tmatesoft.svn.core.SVNNodeKind;
+
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -21,6 +23,7 @@ public class LogDetailListItem implements ListItem {
 	private ContentStatus action;
 	private String        copyFromPath;
 	private Long          revision;
+	private SVNNodeKind   kind;
 
 	public String[] getColumnNames() {
 		return new String[] { "Path", "Action", "Copy from path", "Revision" };
@@ -75,6 +78,14 @@ public class LogDetailListItem implements ListItem {
 
 	public void setCopyFromPath(String copyFromPath) {
 		this.copyFromPath = copyFromPath;
+	}
+
+	public void setKind(SVNNodeKind kind) {
+		this.kind = kind;
+	}
+
+	public SVNNodeKind getKind() {
+		return kind;
 	}
 
 }

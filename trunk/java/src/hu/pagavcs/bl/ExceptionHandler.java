@@ -1,6 +1,7 @@
 package hu.pagavcs.bl;
 
 import hu.pagavcs.gui.EditField;
+import hu.pagavcs.gui.MessagePane;
 import hu.pagavcs.gui.TextArea;
 
 import java.awt.BorderLayout;
@@ -44,6 +45,15 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			}
 			System.out.println("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"
 			        + errorCode.getDescription() + "\n");
+		}
+
+		if (ex instanceof PagaException) {
+			PagaException pex = (PagaException) ex;
+			switch (pex.getType()) {
+				case LOGIN_FAILED:
+					MessagePane.showError(null, "Login", "Login failed");
+					return;
+			}
 		}
 
 		ex.printStackTrace();
