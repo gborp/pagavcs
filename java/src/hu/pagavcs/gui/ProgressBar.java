@@ -43,10 +43,12 @@ public class ProgressBar extends JProgressBar {
 		new OnSwing() {
 
 			protected void process() throws Exception {
-				busyCount--;
-				if (busyCount == 0) {
-					setIndeterminate(false);
-					working.setStatusStopWorking();
+				if (busyCount > 0) {
+					busyCount--;
+					if (busyCount == 0) {
+						setIndeterminate(false);
+						working.setStatusStopWorking();
+					}
 				}
 			}
 		}.run();

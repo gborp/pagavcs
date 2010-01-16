@@ -9,6 +9,7 @@ public class PagaException extends Exception {
 	}
 
 	public PagaException(PagaExceptionType type) {
+		super(type.toString());
 		this.type = type;
 
 	}

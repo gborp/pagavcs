@@ -30,16 +30,15 @@ public class PreviousRevisionFetcher {
 		SVNLogClient logClient = mgrSvn.getLogClient();
 		SVNRevision startRevision = SVNRevision.create(revision);
 		SVNRevision endRevision = SVNRevision.create(0);
-		SVNRevision pegRevision = SVNRevision.HEAD;
+		SVNRevision pegRevision = SVNRevision.UNDEFINED;
 		boolean stopOnCopy = false;
 		boolean discoverChangedPaths = true;
 		boolean includeMergedRevisions = false;
 		long limit = 2;
 		String[] revisionProperties = null;
 		ISVNLogEntryHandler handler = new LogEntryHandler();
-
-		logClient.doLog(svnUrl, new String[] { svnUrl.getPath() }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths,
-		        includeMergedRevisions, limit, revisionProperties, handler);
+		logClient.doLog(svnUrl, new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions, limit,
+		        revisionProperties, handler);
 	}
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {

@@ -118,11 +118,6 @@ public class Log {
 		return rootUrl;
 	}
 
-	private SVNURL getSvnUrl(String path) throws SVNException {
-		SVNURL url = getRootUrl();
-		return SVNURL.create(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), path, false);
-	}
-
 	public void showChanges(String showChangesPath, long revision) throws Exception {
 
 		FileOutputStream outNewRevision = null;
@@ -131,17 +126,12 @@ public class Log {
 		File fileOld = null;
 		try {
 			gui.workStarted();
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-			if (mgrSvn == null) {
-				Manager.showFailedDialog();
-				return;
-			}
+			SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
+			        + showChangesPath, true);
+			SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
 			SVNWCClient wcClient = mgrSvn.getWCClient();
-			SVNURL svnUrl = getSvnUrl(showChangesPath);
-			Long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
-			if (previousRevision == null) {
-
-			}
+			long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
 
 			String fileName = showChangesPath.substring(showChangesPath.lastIndexOf('/') + 1);
 
