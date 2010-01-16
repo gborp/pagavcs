@@ -310,6 +310,7 @@ public class LogGui implements Working {
 			liDetail.setAction(getContentStatusByTypeChar(liEntryPath.getType()));
 			liDetail.setCopyFromPath(liEntryPath.getCopyPath());
 			liDetail.setRevision(liEntryPath.getCopyRevision() != -1 ? liEntryPath.getCopyRevision() : null);
+			liDetail.setKind(liEntryPath.getKind());
 			logDetailTableModel.addLine(liDetail);
 		}
 	}

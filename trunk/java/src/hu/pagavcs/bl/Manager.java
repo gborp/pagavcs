@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.Icon;
@@ -57,19 +58,22 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
  */
 public class Manager {
 
-	public static final long        REVALIDATE_DELAY = 500;
+	public static final long                         REVALIDATE_DELAY    = 500;
 
-	public static Icon              ICON_ERROR       = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
-	public static Icon              ICON_INFORMATION = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
-	public static Icon              ICON_PASSWORD    = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
-	public static Icon              ICON_QUESTION    = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
-	public static Icon              ICON_WARNING     = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
+	public static Icon                               ICON_ERROR          = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
+	public static Icon                               ICON_INFORMATION    = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
+	public static Icon                               ICON_PASSWORD       = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
+	public static Icon                               ICON_QUESTION       = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
+	public static Icon                               ICON_WARNING        = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
 
-	private static final Color      COLOR_PURPLE     = new Color(100, 0, 100);
+	private static final Color                       COLOR_PURPLE        = new Color(100, 0, 100);
 
-	private static String           tempDir;
-	private static boolean          inited           = false;
-	private static ExceptionHandler exceptionHandler;
+	private static String                            tempDir;
+	private static boolean                           inited              = false;
+	private static ExceptionHandler                  exceptionHandler;
+
+	/** key: repoid (as in getSVNClientManager(SVNURL repositoryUrl)) */
+	private static HashMap<String, SVNClientManager> mapSvnClientManager = new HashMap<String, SVNClientManager>();
 
 	public static void init() throws BackingStoreException {
 		if (!inited) {
@@ -103,15 +107,23 @@ public class Manager {
 		return SVNClientManager.newInstance();
 	}
 
-	public static SVNClientManager getSVNClientManager(File path) throws SVNException, PagaException {
-		return getSVNClientManager(getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL());
+	public static SVNURL getSvnRootUrlByFile(File path) throws SVNException {
+		return getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL();
 	}
 
-	public static SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
+	public static SVNClientManager getSVNClientManager(File path) throws SVNException, PagaException {
+		return getSVNClientManager(getSvnRootUrlByFile(path));
+	}
+
+	public static synchronized SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
 
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 
-		SVNClientManager result = null;
+		SVNClientManager result = mapSvnClientManager.get(repoid);
+		if (result != null) {
+			return result;
+		}
+
 		boolean reTryLogin = false;
 		while (result == null) {
 
@@ -129,7 +141,7 @@ public class Manager {
 
 				boolean doLogin = loginGui.waitForLoginButton();
 				if (!doLogin) {
-					return null;
+					throw new PagaException(PagaExceptionType.LOGIN_FAILED);
 				}
 				username = loginGui.getPredefinedUsername();
 				password = loginGui.getPredefinedPassword();
@@ -138,16 +150,12 @@ public class Manager {
 			}
 
 			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
-			// ISVNOptions options = SVNWCUtil.createDefaultOptions(true);
 			result = SVNClientManager.newInstance(null, authManager);
 			reTryLogin = false;
 			try {
-				result.getRepositoryPool().createRepository(repositoryUrl, false).testConnection();
+				result.getRepositoryPool().createRepository(repositoryUrl, true).testConnection();
 			} catch (SVNException ex) {
 				ex.printStackTrace();
-				// if (ex.getErrorMessage().getType()== 0) {
-				//				 
-				// }
 				result = null;
 				reTryLogin = true;
 			}
@@ -155,6 +163,9 @@ public class Manager {
 		if (result == null) {
 			throw new PagaException(PagaExceptionType.LOGIN_FAILED);
 		}
+
+		mapSvnClientManager.put(repoid, result);
+
 		return result;
 	}
 
@@ -182,9 +193,9 @@ public class Manager {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
 	}
 
-	public static Long getPreviousRevisionNumber(SVNURL path, long revision) throws SVNException, PagaException {
+	public static long getPreviousRevisionNumber(SVNURL svnUrl, long revision) throws SVNException, PagaException {
 		PreviousRevisionFetcher fetcher = new PreviousRevisionFetcher();
-		fetcher.execute(path, revision);
+		fetcher.execute(svnUrl, revision);
 		return fetcher.getPreviousRevision();
 	}
 
