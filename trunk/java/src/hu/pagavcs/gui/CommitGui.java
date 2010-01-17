@@ -335,6 +335,7 @@ public class CommitGui implements Working {
 		public void actionProcess(ActionEvent e) throws SVNException {
 			CommitListItem li = popupupMouseListener.getSelected();
 			commit.add(li.getPath());
+			refresh();
 		}
 	}
 
@@ -354,6 +355,7 @@ public class CommitGui implements Working {
 			// the
 			// parent dir
 			changeToIgnore(li.getPath());
+			refresh();
 		}
 	}
 
@@ -370,6 +372,7 @@ public class CommitGui implements Working {
 			CommitListItem li = popupupMouseListener.getSelected();
 			commit.delete(li.getPath());
 			changeToDeleted(li.getPath());
+			refresh();
 		}
 	}
 

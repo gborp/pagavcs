@@ -31,6 +31,7 @@ public class Delete {
 
 	private String    path;
 	private DeleteGui gui;
+	private boolean   autoClose;
 
 	public Delete(String path) throws BackingStoreException, SVNException {
 		this.path = path;
@@ -47,13 +48,25 @@ public class Delete {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			wcClient.doDelete(wcFile, true, true, false);
 			gui.setStatus(DeleteStatus.COMPLETED);
+			if (autoClose) {
+				gui.close();
+			}
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(DeleteStatus.FAILED);
 		}
+
 	}
 
 	public String getPath() {
 		return path;
+	}
+
+	public void setAutoClose(boolean autoClose) {
+		this.autoClose = autoClose;
+	}
+
+	public boolean isAutoClose() {
+		return autoClose;
 	}
 }

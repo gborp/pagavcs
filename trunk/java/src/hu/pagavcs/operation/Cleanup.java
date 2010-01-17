@@ -48,12 +48,12 @@ public class Cleanup {
 		try {
 			wcClient.doCleanup(wcFile);
 			gui.setStatus(CleanupStatus.COMPLETED);
+			if (autoClose) {
+				gui.close();
+			}
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(CleanupStatus.FAILED);
-		}
-		if (autoClose) {
-			gui.close();
 		}
 	}
 
