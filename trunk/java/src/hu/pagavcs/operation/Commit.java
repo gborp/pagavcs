@@ -327,6 +327,7 @@ public class Commit {
 
 	public void delete(File file) throws SVNException, BackingStoreException {
 		Delete delete = new Delete(file.getPath());
+		delete.setAutoClose(true);
 		delete.execute();
 	}
 
