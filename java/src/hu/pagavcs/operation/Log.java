@@ -63,7 +63,7 @@ public class Log {
 		gui = new LogGui(this);
 		gui.display();
 		gui.setStatus(ShowLogStatus.INIT);
-		gui.setUrlLabel(getRootUrl().toString());
+		gui.setUrlLabel(getRootUrl().toDecodedString());
 
 		doShowLog(SVNRevision.HEAD, LIMIT);
 	}
