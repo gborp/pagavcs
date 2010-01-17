@@ -75,7 +75,7 @@ public class Commit {
 
 		gui.setRecentMessages(getRecentMessages());
 
-		gui.setUrlLabel(getRootUrl().toString());
+		gui.setUrlLabel(getRootUrl().toDecodedString());
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNStatusClient statusClient = mgrSvn.getStatusClient();
 		statusClient.doStatus(new File(path), SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
