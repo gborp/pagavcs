@@ -60,6 +60,7 @@ public class OtherGui implements Working, Cancelable {
 	private JButton     btnBlame;
 	private EditField   sfExportTo;
 	private JButton     btnExportTo;
+	private JButton     btnRepoBrowser;
 
 	public OtherGui(Other other) {
 		this.other = other;
@@ -67,7 +68,7 @@ public class OtherGui implements Working, Cancelable {
 
 	public void display() throws SVNException {
 		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p",
-		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
+		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,10dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -117,6 +118,8 @@ public class OtherGui implements Working, Cancelable {
 		sfExportTo = new EditField();
 		btnExportTo = new JButton(new ExportAction());
 
+		btnRepoBrowser = new JButton(new RepoBrowserAction());
+
 		lblStatus = new Label(" ");
 		prgBusy = new ProgressBar(this);
 
@@ -159,8 +162,11 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(btnExportTo, cc.xywh(4, 31, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 32, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 33, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 33, 1, 1));
+		pnlMain.add(btnRepoBrowser, cc.xywh(4, 33, 1, 1));
+
+		pnlMain.add(new JSeparator(), cc.xywh(1, 34, 4, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 35, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 35, 1, 1));
 
 		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Other");
 	}
@@ -232,6 +238,10 @@ public class OtherGui implements Working, Cancelable {
 		}
 	}
 
+	private void doRepoBrowser() throws Exception {
+		other.doRepoBrowser(sfWorkingCopy.getText());
+	}
+
 	public void setStatusStartWorking() {
 		setStatus(OtherStatus.WORKING);
 	}
@@ -284,6 +294,18 @@ public class OtherGui implements Working, Cancelable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			doExport();
+		}
+
+	}
+
+	private class RepoBrowserAction extends ThreadAction {
+
+		public RepoBrowserAction() {
+			super("Repo Browser");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			doRepoBrowser();
 		}
 
 	}

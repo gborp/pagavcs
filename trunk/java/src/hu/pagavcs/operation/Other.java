@@ -87,7 +87,7 @@ public class Other implements Cancelable {
 			// }
 			// });
 
-			gui.setURL(svnInfo.getURL().toString());
+			gui.setURL(svnInfo.getURL().toDecodedString());
 
 			gui.setStatus(OtherStatus.COMPLETED);
 		} catch (SVNException ex) {
@@ -320,5 +320,9 @@ public class Other implements Cancelable {
 		SVNUpdateClient updateClient = clientMgr.getUpdateClient();
 
 		updateClient.doExport(filePathFrom, filePathExport, SVNRevision.WORKING, SVNRevision.WORKING, null, false, SVNDepth.INFINITY);
+	}
+
+	public void doRepoBrowser(String wcFile) throws Exception {
+		new RepoBrowser(wcFile).execute();
 	}
 }
