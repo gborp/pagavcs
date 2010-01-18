@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.tmatesoft.svn.core.SVNDepth;
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
@@ -149,13 +150,19 @@ public class Manager {
 				getSettings().setPassword(repoid, password);
 			}
 
-			ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
+			int readTimeout = 60 * 1000;
+			int connectionTimeout = 20 * 1000;
+			ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(username, password),
+			        readTimeout, connectionTimeout);
 			result = SVNClientManager.newInstance(null, authManager);
 			reTryLogin = false;
 			try {
 				result.getRepositoryPool().createRepository(repositoryUrl, true).testConnection();
 			} catch (SVNException ex) {
 				ex.printStackTrace();
+				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(ex.getErrorMessage().getErrorCode())) {
+					throw new PagaException(PagaExceptionType.CONNECTION_ERROR);
+				}
 				result = null;
 				reTryLogin = true;
 			}
