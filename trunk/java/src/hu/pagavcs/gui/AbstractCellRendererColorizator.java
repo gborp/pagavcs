@@ -33,6 +33,8 @@ public abstract class AbstractCellRendererColorizator<L extends ListItem> implem
 		Component delegeteComponent = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
 		if (!isSelected) {
 			delegeteComponent.setForeground(getForegroundColor((L) ((TableModel) (table.getModel())).getRow(table.convertRowIndexToModel(rowIndex))));
+		} else {
+			delegeteComponent.setForeground(null);
 		}
 
 		return delegeteComponent;

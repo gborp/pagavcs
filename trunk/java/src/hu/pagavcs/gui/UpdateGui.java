@@ -117,6 +117,11 @@ public class UpdateGui {
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
+				try {
+					update.setCancel(true);
+				} catch (Exception ex) {
+					Manager.handle(ex);
+				}
 				shuttingDown = true;
 				tmrTableRevalidate.purge();
 				tmrTableRevalidate.cancel();
@@ -124,6 +129,8 @@ public class UpdateGui {
 
 			public void windowClosed(WindowEvent e) {}
 		});
+
+		tmrTableRevalidate = new Timer("Revalidate table");
 		started = false;
 	}
 
@@ -214,9 +221,11 @@ public class UpdateGui {
 
 		// info.getConflictOldFile();
 		File newFile = info.getConflictNewFile();
+		File oldFile = info.getConflictOldFile();
 		File wrkFile = info.getConflictWrkFile();
 
-		Process process = Runtime.getRuntime().exec("meld -L new " + newFile.getPath() + " -L working-copy " + wrkFile.getPath());
+		Process process = Runtime.getRuntime().exec(
+		        "meld -L old " + oldFile.getPath() + " -L working-copy " + wrkFile.getPath() + " -L new " + newFile.getPath());
 		process.waitFor();
 
 		int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
@@ -232,7 +241,6 @@ public class UpdateGui {
 		synchronized (quNewItems) {
 			if (!revalidateIsTimed && !shuttingDown) {
 				revalidateIsTimed = true;
-				tmrTableRevalidate = new Timer("Revalidate table");
 				tmrTableRevalidate.schedule(new DoRevalidateTask(), Manager.REVALIDATE_DELAY);
 			}
 		}
