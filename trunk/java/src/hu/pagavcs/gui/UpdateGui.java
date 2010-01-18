@@ -118,12 +118,11 @@ public class UpdateGui {
 
 			public void windowClosing(WindowEvent e) {
 				shuttingDown = true;
+				tmrTableRevalidate.purge();
+				tmrTableRevalidate.cancel();
 			}
 
-			public void windowClosed(WindowEvent e) {
-				tmrTableRevalidate.cancel();
-				tmrTableRevalidate.purge();
-			}
+			public void windowClosed(WindowEvent e) {}
 		});
 		started = false;
 	}
@@ -154,6 +153,19 @@ public class UpdateGui {
 				if (ContentStatus.NONE.equals(status)) {
 					return;
 				}
+
+				if (ContentStatus.CANCEL.equals(status)) {
+					prgWorking.setIndeterminate(false);
+					btnStop.setEnabled(false);
+					btnStop.setText("Cancelled");
+				}
+
+				if (ContentStatus.FAILED.equals(status)) {
+					prgWorking.setIndeterminate(false);
+					btnStop.setEnabled(false);
+					btnStop.setText("Failed");
+				}
+
 				if (ContentStatus.COMPLETED.equals(status)) {
 					prgWorking.setIndeterminate(false);
 					btnStop.setEnabled(false);

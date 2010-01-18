@@ -53,6 +53,9 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 				case LOGIN_FAILED:
 					MessagePane.showError(null, "Login", "Login failed");
 					return;
+				case CONNECTION_ERROR:
+					MessagePane.showError(null, "Connection Error", "Error in Communication");
+					return;
 			}
 		}
 

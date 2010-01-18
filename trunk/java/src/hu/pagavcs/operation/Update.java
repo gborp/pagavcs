@@ -49,10 +49,6 @@ public class Update implements Cancelable {
 		try {
 			gui.setStatus(ContentStatus.INIT);
 			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-			if (mgrSvn == null) {
-				Manager.showFailedDialog();
-				return;
-			}
 
 			gui.setWorkingCopy(path);
 			gui.setRepo(Manager.getInfo(path).getURL().toDecodedString());
