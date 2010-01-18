@@ -6,6 +6,7 @@ import hu.pagavcs.gui.DeleteGui;
 import java.io.File;
 import java.util.prefs.BackingStoreException;
 
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
@@ -32,6 +33,7 @@ public class Delete {
 	private String    path;
 	private DeleteGui gui;
 	private boolean   autoClose;
+	private boolean   ignoreIfFileError;
 
 	public Delete(String path) throws BackingStoreException, SVNException {
 		this.path = path;
@@ -46,7 +48,17 @@ public class Delete {
 			File wcFile = new File(path);
 			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 			SVNWCClient wcClient = mgrSvn.getWCClient();
-			wcClient.doDelete(wcFile, true, true, false);
+
+			try {
+				wcClient.doDelete(wcFile, true, true, false);
+			} catch (SVNException ex) {
+				if (ignoreIfFileError && SVNErrorCode.BAD_FILENAME.equals(ex.getErrorMessage().getErrorCode())) {
+					// ignore exception
+				} else {
+					throw ex;
+				}
+			}
+
 			gui.setStatus(DeleteStatus.COMPLETED);
 			if (autoClose) {
 				gui.close();
@@ -68,5 +80,10 @@ public class Delete {
 
 	public boolean isAutoClose() {
 		return autoClose;
+	}
+
+	public void setIgnoreIfFileError(boolean ignoreIfFileError) {
+		this.ignoreIfFileError = ignoreIfFileError;
+
 	}
 }

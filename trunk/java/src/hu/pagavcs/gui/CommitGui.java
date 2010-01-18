@@ -431,7 +431,8 @@ public class CommitGui implements Working {
 			CommitListItem li = popupupMouseListener.getSelected();
 			commit.revertChanges(li.getPath());
 			li.setStatus(ContentStatus.NORMAL);
-			removeListItemIfNormal(li);
+			// removeListItemIfNormal(li);
+			refresh();
 		}
 	}
 
@@ -448,7 +449,8 @@ public class CommitGui implements Working {
 			CommitListItem li = popupupMouseListener.getSelected();
 			commit.revertPropertyChanges(li.getPath());
 			li.setPropertyStatus(ContentStatus.NORMAL);
-			removeListItemIfNormal(li);
+			// removeListItemIfNormal(li);
+			refresh();
 		}
 	}
 
@@ -464,6 +466,7 @@ public class CommitGui implements Working {
 		public void actionProcess(ActionEvent e) throws SVNException {
 			CommitListItem li = popupupMouseListener.getSelected();
 			commit.resolved(li.getPath());
+			tblCommit.repaint();
 		}
 	}
 
@@ -492,6 +495,7 @@ public class CommitGui implements Working {
 		private JPopupMenu     ppVisible;
 		private JPopupMenu     ppModified;
 		private JPopupMenu     ppUnversioned;
+		private JPopupMenu     ppAdded;
 		private JPopupMenu     ppMissing;
 		private JPopupMenu     ppObstructed;
 		private JPopupMenu     ppDeleted;
@@ -511,6 +515,10 @@ public class CommitGui implements Working {
 			ppUnversioned.add(new AddAction(this));
 			ppUnversioned.add(new IgnoreAction(this));
 			ppUnversioned.add(new DeleteAction(this));
+
+			ppAdded = new JPopupMenu();
+			ppAdded.add(new RevertChangesAction(this));
+			ppAdded.add(new DeleteAction(this));
 
 			ppMissing = new JPopupMenu();
 			ppMissing.add(new ShowLog(this));
@@ -564,6 +572,8 @@ public class CommitGui implements Working {
 				ppVisible = ppIncomplete;
 			} else if (status.equals(ContentStatus.MISSING)) {
 				ppVisible = ppMissing;
+			} else if (status.equals(ContentStatus.ADDED)) {
+				ppVisible = ppAdded;
 			} else if (status.equals(ContentStatus.DELETED)) {
 				ppVisible = ppDeleted;
 			}
