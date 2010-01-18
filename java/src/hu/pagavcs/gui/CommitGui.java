@@ -17,16 +17,21 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.prefs.BackingStoreException;
 
+import javax.swing.AbstractAction;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -34,6 +39,7 @@ import javax.swing.JSplitPane;
 import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -68,12 +74,14 @@ public class CommitGui implements Working {
 	private JButton                    btnRefresh;
 	private JCheckBox                  cbSelectDeselectAll;
 	private JComboBox                  cboMessage;
+	private int                        logMinSize;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
 	}
 
 	public void display() throws SVNException {
+		logMinSize = 0;
 		CellConstraints cc = new CellConstraints();
 		commitTableModel = new TableModel<CommitListItem>(new CommitListItem());
 		tblCommit = new Table(commitTableModel);
@@ -163,6 +171,20 @@ public class CommitGui implements Working {
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
 		frame = Manager.createAndShowFrame(pnlMain, "Commit");
+		frame.addWindowListener(new WindowAdapter() {
+
+			public void windowClosing(WindowEvent e) {
+				commit.setCancel(true);
+			}
+		});
+	}
+
+	public void setLogTemplate(String strLogTemplate) {
+		taMessage.setText(strLogTemplate);
+	}
+
+	public void setLogMinSize(int logMinSize) {
+		this.logMinSize = logMinSize;
 	}
 
 	public void setStatusStartWorking() {}
@@ -246,8 +268,8 @@ public class CommitGui implements Working {
 	}
 
 	public void commitSelected() throws Exception {
-		if (taMessage.getText().trim().isEmpty()) {
-			MessagePane.showError(frame, "Cannot commit", "Message should not be empty!");
+		if (taMessage.getText().trim().length() < logMinSize) {
+			MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
 			return;
 		}
 
@@ -399,6 +421,31 @@ public class CommitGui implements Working {
 		}
 	}
 
+	public void resolveConflict(CommitListItem li) throws SVNException, IOException, InterruptedException {
+
+		File file = li.getPath();
+		if (file.isDirectory()) {
+			return;
+		}
+		SVNInfo info = Manager.getInfo(file.getPath());
+
+		// info.getConflictOldFile();
+		File newFile = info.getConflictNewFile();
+		File oldFile = info.getConflictOldFile();
+		File wrkFile = info.getConflictWrkFile();
+
+		Process process = Runtime.getRuntime().exec(
+		        "meld -L old " + oldFile.getPath() + " -L working-copy " + wrkFile.getPath() + " -L new " + newFile.getPath());
+		process.waitFor();
+
+		int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
+		        JOptionPane.QUESTION_MESSAGE);
+		if (choosed == JOptionPane.YES_OPTION) {
+			Manager.resolveConflictUsingMine(file.getPath());
+			refresh();
+		}
+	}
+
 	private class SelectDeselectAllAction extends ThreadAction {
 
 		public SelectDeselectAllAction() {
@@ -490,6 +537,71 @@ public class CommitGui implements Working {
 		}
 	}
 
+	private class ResolveConflictUsingTheirs extends AbstractAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public ResolveConflictUsingTheirs(PopupupMouseListener popupupMouseListener) {
+			super("Resolve conflict using theirs");
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				popupupMouseListener.hidePopup();
+				CommitListItem li = popupupMouseListener.getSelected();
+				Manager.resolveConflictUsingTheirs(li.getPath().getPath());
+				refresh();
+			} catch (SVNException e1) {
+				Manager.handle(e1);
+			}
+
+		}
+	}
+
+	private class ResolveConflictUsingMine extends AbstractAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public ResolveConflictUsingMine(PopupupMouseListener popupupMouseListener) {
+			super("Resolve conflict using mine");
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				popupupMouseListener.hidePopup();
+				CommitListItem li = popupupMouseListener.getSelected();
+				Manager.resolveConflictUsingMine(li.getPath().getPath());
+				refresh();
+			} catch (SVNException e1) {
+				Manager.handle(e1);
+			}
+
+		}
+	}
+
+	private class ResolveConflict extends AbstractAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public ResolveConflict(PopupupMouseListener popupupMouseListener) {
+			super("Resolve conflict");
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				popupupMouseListener.hidePopup();
+				CommitListItem li = popupupMouseListener.getSelected();
+				resolveConflict(li);
+			} catch (Exception e1) {
+				Manager.handle(e1);
+			}
+
+		}
+	}
+
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu     ppVisible;
@@ -501,6 +613,7 @@ public class CommitGui implements Working {
 		private JPopupMenu     ppDeleted;
 		private JPopupMenu     ppIncomplete;
 		private JPopupMenu     ppPropertyModified;
+		private JPopupMenu     ppConflicted;
 		private CommitListItem selected;
 
 		public PopupupMouseListener() {
@@ -542,6 +655,11 @@ public class CommitGui implements Working {
 			ppPropertyModified = new JPopupMenu();
 			ppPropertyModified.add(new ShowLog(this));
 			ppPropertyModified.add(new RevertPropertyChangesAction(this));
+
+			ppConflicted = new JPopupMenu();
+			ppConflicted.add(new ResolveConflictUsingTheirs(this));
+			ppConflicted.add(new ResolveConflictUsingMine(this));
+			ppConflicted.add(new ResolveConflict(this));
 		}
 
 		public CommitListItem getSelected() {
@@ -576,6 +694,8 @@ public class CommitGui implements Working {
 				ppVisible = ppAdded;
 			} else if (status.equals(ContentStatus.DELETED)) {
 				ppVisible = ppDeleted;
+			} else if (status.equals(ContentStatus.CONFLICTED)) {
+				ppVisible = ppConflicted;
 			}
 			if (propertyStatus.equals(ContentStatus.MODIFIED)) {
 				ppVisible = ppPropertyModified;

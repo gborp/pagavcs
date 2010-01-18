@@ -15,11 +15,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.Icon;
@@ -59,22 +56,19 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
  */
 public class Manager {
 
-	public static final long                         REVALIDATE_DELAY    = 500;
+	public static final long        REVALIDATE_DELAY = 500;
 
-	public static Icon                               ICON_ERROR          = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
-	public static Icon                               ICON_INFORMATION    = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
-	public static Icon                               ICON_PASSWORD       = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
-	public static Icon                               ICON_QUESTION       = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
-	public static Icon                               ICON_WARNING        = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
+	public static Icon              ICON_ERROR       = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
+	public static Icon              ICON_INFORMATION = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
+	public static Icon              ICON_PASSWORD    = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
+	public static Icon              ICON_QUESTION    = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
+	public static Icon              ICON_WARNING     = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
 
-	private static final Color                       COLOR_PURPLE        = new Color(100, 0, 100);
+	private static final Color      COLOR_PURPLE     = new Color(100, 0, 100);
 
-	private static String                            tempDir;
-	private static boolean                           inited              = false;
-	private static ExceptionHandler                  exceptionHandler;
-
-	/** key: repoid (as in getSVNClientManager(SVNURL repositoryUrl)) */
-	private static HashMap<String, SVNClientManager> mapSvnClientManager = new HashMap<String, SVNClientManager>();
+	private static String           tempDir;
+	private static boolean          inited           = false;
+	private static ExceptionHandler exceptionHandler;
 
 	public static void init() throws BackingStoreException {
 		if (!inited) {
@@ -119,12 +113,7 @@ public class Manager {
 	public static synchronized SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
 
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
-
-		SVNClientManager result = mapSvnClientManager.get(repoid);
-		if (result != null) {
-			return result;
-		}
-
+		SVNClientManager result = null;
 		boolean reTryLogin = false;
 		while (result == null) {
 
@@ -170,8 +159,6 @@ public class Manager {
 		if (result == null) {
 			throw new PagaException(PagaExceptionType.LOGIN_FAILED);
 		}
-
-		mapSvnClientManager.put(repoid, result);
 
 		return result;
 	}
@@ -238,18 +225,8 @@ public class Manager {
 			centerScreen(frame);
 		}
 
-		frame.setVisible(true);
 		frame.addWindowListener(new WindowPreferencesSaverOnClose(applicationName));
-		frame.addWindowListener(new WindowAdapter() {
-
-			public void windowClosed(WindowEvent e) {
-				try {
-					getSettings().save();
-				} catch (Exception ex) {
-					Manager.handle(ex);
-				}
-			}
-		});
+		frame.setVisible(true);
 
 		return frame;
 	}

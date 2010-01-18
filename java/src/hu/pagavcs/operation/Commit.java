@@ -67,6 +67,25 @@ public class Commit {
 	public void execute() throws Exception {
 		gui = new CommitGui(this);
 		gui.display();
+		File wcFile = new File(path);
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNWCClient wcClient = mgrSvn.getWCClient();
+		SVNPropertyData logTemplate = wcClient.doGetProperty(wcFile, "tsvn:logtemplate", SVNRevision.WORKING, SVNRevision.WORKING);
+		SVNPropertyData logMinSize = wcClient.doGetProperty(wcFile, "tsvn:logminsize", SVNRevision.WORKING, SVNRevision.WORKING);
+
+		String strLogTemplate = null;
+		if (logTemplate != null) {
+			strLogTemplate = SVNPropertyValue.getPropertyAsString(logTemplate.getValue());
+			gui.setLogTemplate(strLogTemplate);
+		}
+		if (logMinSize != null) {
+			String strlogMinSize = SVNPropertyValue.getPropertyAsString(logMinSize.getValue());
+			try {
+				int intLogMinSize = Integer.valueOf(strlogMinSize);
+				gui.setLogMinSize(intLogMinSize);
+			} catch (Exception ex) {}
+		}
+
 		refresh();
 	}
 
@@ -74,11 +93,13 @@ public class Commit {
 		gui.setStatus(CommitStatus.INIT, null);
 
 		gui.setRecentMessages(getRecentMessages());
-
 		gui.setUrlLabel(getRootUrl().toDecodedString());
+
+		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNStatusClient statusClient = mgrSvn.getStatusClient();
-		statusClient.doStatus(new File(path), SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
+
+		statusClient.doStatus(wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
 		gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED, null);
 	}
 

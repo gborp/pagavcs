@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -40,7 +39,12 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 		if (ex instanceof SVNException) {
 			SVNErrorCode errorCode = ((SVNException) ex).getErrorMessage().getErrorCode();
 			if (SVNErrorCode.UNVERSIONED_RESOURCE.equals(errorCode)) {
-				JOptionPane.showMessageDialog(Manager.getRootFrame(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				MessagePane.showError(null, ex.getMessage(), "Error");
+				return;
+			}
+
+			if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
+				MessagePane.showError(null, "Working Copy Locked", ((SVNException) ex).getErrorMessage().getMessage());
 				return;
 			}
 			System.out.println("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"

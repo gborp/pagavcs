@@ -29,4 +29,12 @@ public class WindowPreferencesSaverOnClose extends WindowAdapter {
 		Window window = e.getWindow();
 		Manager.getSettings().setWindowBounds(windowName, window.getBounds());
 	}
+
+	public void windowClosed(WindowEvent e) {
+		try {
+			Manager.getSettings().save();
+		} catch (Exception ex) {
+			Manager.handle(ex);
+		}
+	}
 }

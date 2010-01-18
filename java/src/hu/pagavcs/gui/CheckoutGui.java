@@ -80,7 +80,7 @@ public class CheckoutGui {
 		pnlInner.add(btnCheckout);
 
 		pnlMain.add(pnlInner, BorderLayout.CENTER);
-		Manager.createAndShowFrame(pnlMain, "Checkout");
+		Manager.createAndShowFrame(pnlMain, "Checkout Settings");
 	}
 
 	public void setUrlHistory(String[] urlHistory) {
