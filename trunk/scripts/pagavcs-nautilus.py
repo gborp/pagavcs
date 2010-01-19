@@ -22,9 +22,12 @@ import gobject
 import gnomevfs
 import os
 import sys
+import socket
 
 EXECUTABLE = '/usr/bin/pagavcs'
 SEPARATOR = unicode(u'\u2015'*10)
+
+
 
 class EmblemExtensionSignature(nautilus.InfoProvider):
     def __init__(self):
@@ -38,7 +41,22 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
             svnpath = filepath+'/.svn';
             
         if (os.path.exists(svnpath)) and (os.path.isdir(svnpath)):
-            file.add_emblem ('pagavcs-svn')
+            clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            clientsocket.settimeout(1) 
+            clientsocket.connect(("localhost", 12905))
+            try:
+                clientsocket.sendall("getfileinfo "+filename+"\n")
+            except socket.timeout:
+                return
+
+            data = ""
+            try:
+                data = clientsocket.recv(512)
+            except socket.timeout:
+                return  
+            clientsocket.close()
+            if (data == "svned"):
+                file.add_emblem ('pagavcs-svn')
 
 class PagaVCS(nautilus.MenuProvider):
     def __init__(self):
