@@ -1,5 +1,6 @@
 package hu.pagavcs;
 
+import hu.pagavcs.bl.FileStatusCache;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
@@ -37,6 +38,7 @@ import javax.net.ServerSocketFactory;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
+
 public class Communication {
 
 	private static final int     PORT                          = 12905;
@@ -61,6 +63,7 @@ public class Communication {
 		}
 
 		Manager.init();
+		FileStatusCache fileStatusCache = FileStatusCache.getInstance();
 
 		while (!shutdown) {
 			try {
@@ -74,6 +77,10 @@ public class Communication {
 				}
 
 				int commandEndIndex = line.indexOf(' ');
+				if (commandEndIndex == -1) {
+					// startup server
+					continue;
+				}
 				String command = line.substring(0, commandEndIndex > -1 ? commandEndIndex : line.length());
 
 				String arg = null;
@@ -84,16 +91,7 @@ public class Communication {
 				if (command.equals("getfileinfo")) {
 
 					BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-					File file = new File(arg);
-					File parent = file.getParentFile();
-					File svnDir = new File(parent, ".svn");
-					String result = "none";
-					if (svnDir.exists()) {
-						result = "svned";
-					}
-
-					outToClient.write(result);
+					outToClient.write(fileStatusCache.getStatus(new File(arg)).toString());
 					outToClient.flush();
 					outToClient.close();
 				} else {
