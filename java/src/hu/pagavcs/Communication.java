@@ -14,9 +14,11 @@ import hu.pagavcs.operation.Unignore;
 import hu.pagavcs.operation.Update;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -67,7 +69,36 @@ public class Communication {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 				String line = br.readLine();
-				new Thread(new ProcessInput(line), line).start();
+				if (line == null) {
+					continue;
+				}
+
+				int commandEndIndex = line.indexOf(' ');
+				String command = line.substring(0, commandEndIndex > -1 ? commandEndIndex : line.length());
+
+				String arg = null;
+				if (commandEndIndex > -1) {
+					arg = line.substring(commandEndIndex + 1);
+				}
+
+				if (command.equals("getfileinfo")) {
+
+					BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+					File file = new File(arg);
+					File parent = file.getParentFile();
+					File svnDir = new File(parent, ".svn");
+					String result = "none";
+					if (svnDir.exists()) {
+						result = "svned";
+					}
+
+					outToClient.write(result);
+					outToClient.flush();
+					outToClient.close();
+				} else {
+					new Thread(new ProcessInput(command, arg), line).start();
+				}
 
 			} catch (Exception ex) {
 				Manager.handle(ex);
@@ -97,21 +128,16 @@ public class Communication {
 
 	private static class ProcessInput implements Runnable {
 
-		private String line;
+		private final String command;
+		private final String arg;
 
-		public ProcessInput(String line) {
-			this.line = line;
+		public ProcessInput(String command, String arg) {
+			this.command = command;
+			this.arg = arg;
 		}
 
 		public void run() {
 			try {
-				int commandEndIndex = line.indexOf(' ');
-				String command = line.substring(0, commandEndIndex > -1 ? commandEndIndex : line.length());
-
-				String arg = null;
-				if (commandEndIndex > -1) {
-					arg = line.substring(commandEndIndex + 1);
-				}
 
 				if ("update".equals(command)) {
 					Update update = new Update(arg);
