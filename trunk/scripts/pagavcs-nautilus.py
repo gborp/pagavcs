@@ -34,6 +34,7 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
         pass
     def update_file_info (self, file):
         filename = urllib.unquote(file.get_uri()[7:])
+        filenameForParam = filename
         if os.path.isdir(filename):
             svnpath = filename+'/.svn';
         else:
@@ -42,20 +43,22 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
             
         if (os.path.exists(svnpath)) and (os.path.isdir(svnpath)):
             clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            clientsocket.settimeout(1) 
-            clientsocket.connect(("localhost", 12905))
+            clientsocket.settimeout(1)
             try:
-                clientsocket.sendall("getfileinfo "+filename+"\n")
-            except socket.timeout:
+                clientsocket.connect(("localhost", 12905))
+                clientsocket.sendall("getfileinfo "+filenameForParam+"\n")
+            except (socket.timeout, socket.error):
+	        executeCommand = EXECUTABLE+' &'    
+        	os.system(executeCommand)
                 return
 
             data = ""
             try:
                 data = clientsocket.recv(512)
-            except socket.timeout:
+            except (socket.timeout, socket.error):
                 return  
             clientsocket.close()
-            if (data == "svned"):
+            if (data == "SVNED"):
                 file.add_emblem ('pagavcs-svn')
 
 class PagaVCS(nautilus.MenuProvider):
