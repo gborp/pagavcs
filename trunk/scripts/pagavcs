@@ -13,11 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
+START_SERVER="java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar"
+
 # don't wakeup server for stop command
 if [ "$1" == "stop" ];
 then
 	echo stop PagaVCS-server
-	echo "stop" > /dev/tcp/localhost/12905
+	echo "stop" > /dev/tcp/localhost/12905 2> /dev/null
 	exit
 fi
 
@@ -31,7 +33,7 @@ fi
 if [ ! -f /tmp/pagavcs/server-running-indicator ];
 then
     echo server not running, start a new PagaVCS server
-    java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar &
+    ${START_SERVER} &
 
     # waiting server to boot up    
     while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
@@ -40,20 +42,20 @@ then
 fi
 
 echo "send command to PagaVCS-server: $@"
-echo "$@" > /dev/tcp/localhost/12905
+echo "$@" > /dev/tcp/localhost/12905 2> /dev/null
 RETVAL=$?
 if [ $RETVAL != 0 ];
 then
 	echo "failed, (re)starting PagaVCS-server"
     rm -f /tmp/pagavcs/server-running-indicator
-    java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar &
+    ${START_SERVER} &
 
     # waiting server to boot up    
     while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
        sleep 0.5s
     done
     echo "resend command to PagaVCS-server: $@"
-    echo $@ > /dev/tcp/localhost/12905
+    echo $@ > /dev/tcp/localhost/12905 2> /dev/null
 else
 	echo successfull
 fi
