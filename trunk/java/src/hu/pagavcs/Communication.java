@@ -77,10 +77,6 @@ public class Communication {
 				}
 
 				int commandEndIndex = line.indexOf(' ');
-				if (commandEndIndex == -1) {
-					// startup server
-					continue;
-				}
 				String command = line.substring(0, commandEndIndex > -1 ? commandEndIndex : line.length());
 
 				String arg = null;
@@ -172,6 +168,8 @@ public class Communication {
 					settings.execute();
 				} else if ("stop".equals(command)) {
 					System.exit(0);
+				} else if ("ping".equals(command)) {
+					// do nothing
 				} else {
 					throw new RuntimeException("unimplemented command");
 				}

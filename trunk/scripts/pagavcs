@@ -16,7 +16,7 @@
 # don't wakeup server for stop command
 if [ "$1" == "stop" ];
 then
-	echo stop server
+	echo stop PagaVCS-server
 	echo "stop" > /dev/tcp/localhost/12905
 	exit
 fi
@@ -39,12 +39,12 @@ then
     done
 fi
 
-echo "send command to server: $@"
+echo "send command to PagaVCS-server: $@"
 echo "$@" > /dev/tcp/localhost/12905
 RETVAL=$?
 if [ $RETVAL != 0 ];
 then
-	echo "failed, (re)starting server"
+	echo "failed, (re)starting PagaVCS-server"
     rm -f /tmp/pagavcs/server-running-indicator
     java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar &
 
@@ -52,7 +52,7 @@ then
     while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
        sleep 0.5s
     done
-    echo "resend command to server: $@"
+    echo "resend command to PagaVCS-server: $@"
     echo $@ > /dev/tcp/localhost/12905
 else
 	echo successfull

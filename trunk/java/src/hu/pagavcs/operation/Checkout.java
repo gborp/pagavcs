@@ -50,20 +50,8 @@ public class Checkout implements Cancelable {
 		gui.display();
 		// gui.setStatus(CleanupStatus.INIT);
 		gui.setUrlHistory(getRepoUrlHistory());
-		// File wcFile = new File(path);
-		// SVNClientManager mgrSvn = Manager.getSVNClientManager();
-		// SVNWCClient wcClient = mgrSvn.getWCClient();
 
 		// TODO check if directory is under version control
-
-		// gui.setStatus(CleanupStatus.START);
-		// try {
-		// wcClient.doCleanup(wcFile);
-		// gui.setStatus(CleanupStatus.COMPLETED);
-		// } catch (SVNException ex) {
-		// ex.printStackTrace();
-		// gui.setStatus(CleanupStatus.FAILED);
-		// }
 	}
 
 	public String getPath() {

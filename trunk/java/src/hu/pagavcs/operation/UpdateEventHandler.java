@@ -47,6 +47,7 @@ class UpdateEventHandler implements ISVNEventHandler {
 
 	public void handleEvent(SVNEvent event, double progress) throws SVNException {
 		try {
+			Manager.invalidate(event.getFile());
 			SVNEventAction action = event.getAction();
 			SVNStatusType contentStatus = event.getContentsStatus();
 			UpdateContentStatus updateContentStatus = null;

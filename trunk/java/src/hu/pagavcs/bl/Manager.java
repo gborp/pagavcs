@@ -371,4 +371,12 @@ public class Manager {
 		MessagePane.showError(null, "Failed", "Failed");
 	}
 
+	public static void invalidate(File file) {
+		FileStatusCache.getInstance().invalidate(file);
+	}
+
+	public static void invalidateAllFiles() {
+		FileStatusCache.getInstance().invalidateAll();
+	}
+
 }
