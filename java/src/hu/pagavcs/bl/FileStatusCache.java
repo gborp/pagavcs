@@ -79,6 +79,9 @@ public class FileStatusCache {
 		STATUS result = STATUS.NONE;
 		if (svnDir.exists()) {
 			SVNStatus status = statusClient.doStatus(file, false);
+			if (status == null) {
+				return STATUS.NONE;
+			}
 			SVNStatusType contentStatus = status.getContentsStatus();
 			if (contentStatus.equals(SVNStatusType.STATUS_ADDED)) {
 				result = STATUS.IGNORED;
