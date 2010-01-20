@@ -95,6 +95,7 @@ public class SettingsStore {
 		int index = 0;
 		for (String li : data) {
 			node.put(String.format("%05d", index), li);
+			index++;
 		}
 	}
 
