@@ -94,6 +94,7 @@ public class Commit {
 
 		gui.setRecentMessages(getRecentMessages());
 		gui.setUrlLabel(getRootUrl().toDecodedString());
+		gui.setPath(path);
 
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
@@ -335,7 +336,13 @@ public class Commit {
 				throw new RuntimeException("not implemented: " + svnContentStatus);
 			}
 
-			gui.addItem(status.getFile(), contentStatus, propertyStatus);
+			try {
+				gui.addItem(status.getFile(), contentStatus, propertyStatus);
+			} catch (SVNException e) {
+				throw e;
+			} catch (Exception e) {
+				Manager.handle(e);
+			}
 		}
 
 	}

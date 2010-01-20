@@ -1,6 +1,7 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.ContentStatus;
@@ -20,17 +21,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.prefs.BackingStoreException;
 
-import javax.swing.AbstractAction;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
@@ -74,9 +72,17 @@ public class CommitGui implements Working {
 	private int                        noCommit;
 	private boolean                    preRealCommitProcess;
 	private JButton                    btnRefresh;
-	private JCheckBox                  cbSelectDeselectAll;
 	private JComboBox                  cboMessage;
 	private int                        logMinSize;
+	private Label                      lblWorkingCopy;
+	private JButton                    btnSelectAll;
+	private JButton                    btnSelectNone;
+	private JButton                    btnSelectNonVersioned;
+	private JButton                    btnSelectAdded;
+	private JButton                    btnSelectDeleted;
+	private JButton                    btnSelectModified;
+	private JButton                    btnSelectFiles;
+	private JButton                    btnSelectDirectories;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
@@ -89,6 +95,7 @@ public class CommitGui implements Working {
 		tblCommit = new Table(commitTableModel);
 		tblCommit.addMouseListener(new PopupupMouseListener());
 		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(commitTableModel));
+		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		new StatusCellRendererForCommitListItem(tblCommit);
 		JScrollPane spCommitList = new JScrollPane(tblCommit);
 
@@ -98,6 +105,7 @@ public class CommitGui implements Working {
 		JSplitPane splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spCommitList);
 
 		lblUrl = new Label();
+		lblWorkingCopy = new Label();
 		cboMessage = new JComboBox();
 		cboMessage.addItemListener(new ItemListener() {
 
@@ -110,13 +118,13 @@ public class CommitGui implements Working {
 			}
 		});
 
-		JPanel pnlTop = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu,p,4dlu"));
+		JPanel pnlTop = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu,p,4dlu,p,4dlu"));
 		pnlTop.add(new JLabel("Commit to:"), cc.xy(1, 1));
 		pnlTop.add(lblUrl, cc.xy(3, 1));
-		pnlTop.add(new JLabel("Recent messages:"), cc.xy(1, 3));
-		pnlTop.add(cboMessage, cc.xy(3, 3));
-
-		cbSelectDeselectAll = new JCheckBox(new SelectDeselectAllAction());
+		pnlTop.add(new JLabel("Working copy:"), cc.xy(1, 3));
+		pnlTop.add(lblWorkingCopy, cc.xy(3, 3));
+		pnlTop.add(new JLabel("Recent messages:"), cc.xy(1, 5));
+		pnlTop.add(cboMessage, cc.xy(3, 5));
 
 		btnStop = new JButton("Stop");
 		btnStop.addActionListener(new ActionListener() {
@@ -150,22 +158,41 @@ public class CommitGui implements Working {
 		btnRefresh.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-
-					public void run() {
-						refresh();
-					}
-				}).start();
+				try {
+					refresh();
+				} catch (Exception e1) {
+					Manager.handle(e1);
+				}
 			}
 		});
 
-		JPanel pnlBottom = new JPanel(new FormLayout("p, 4dlu,p,4dlu, p:g, 4dlu,p, 4dlu,p", "p"));
+		btnSelectAll = new JButton(new SelectAllAction());
+		btnSelectNone = new JButton(new SelectNoneAction());
+		btnSelectNonVersioned = new JButton(new SelectNonVersionedAction());
+		btnSelectAdded = new JButton(new SelectAddedAction());
+		btnSelectDeleted = new JButton(new SelectDeletedAction());
+		btnSelectModified = new JButton(new SelectModifiedAction());
+		btnSelectFiles = new JButton(new SelectFilesAction());
+		btnSelectDirectories = new JButton(new SelectDirectoriesAction());
 
-		pnlBottom.add(cbSelectDeselectAll, cc.xy(1, 1));
-		pnlBottom.add(btnRefresh, cc.xy(3, 1));
-		pnlBottom.add(prgWorkinProgress, cc.xy(5, 1));
-		pnlBottom.add(btnStop, cc.xy(7, 1));
-		pnlBottom.add(btnCommit, cc.xy(9, 1));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p"));
+		pnlCheck.add(new JLabel("Check:"), cc.xy(1, 1));
+		pnlCheck.add(btnSelectAll, cc.xy(3, 1));
+		pnlCheck.add(btnSelectNone, cc.xy(5, 1));
+		pnlCheck.add(btnSelectNonVersioned, cc.xy(7, 1));
+		pnlCheck.add(btnSelectAdded, cc.xy(9, 1));
+		pnlCheck.add(btnSelectDeleted, cc.xy(11, 1));
+		pnlCheck.add(btnSelectModified, cc.xy(13, 1));
+		pnlCheck.add(btnSelectFiles, cc.xy(15, 1));
+		pnlCheck.add(btnSelectDirectories, cc.xy(17, 1));
+
+		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p", "p,4dlu,p"));
+
+		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 7, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+		pnlBottom.add(btnRefresh, cc.xy(1, 3));
+		pnlBottom.add(prgWorkinProgress, cc.xy(3, 3));
+		pnlBottom.add(btnStop, cc.xy(5, 3));
+		pnlBottom.add(btnCommit, cc.xy(7, 3));
 
 		JPanel pnlMain = new JPanel(new BorderLayout());
 		pnlMain.add(pnlTop, BorderLayout.NORTH);
@@ -205,68 +232,161 @@ public class CommitGui implements Working {
 		lblUrl.setText(urlLabel);
 	}
 
+	public void setPath(String path) {
+		lblWorkingCopy.setText(path);
+	}
+
 	public void setRecentMessages(String[] recentMessages) {
 		ComboBoxModel modelUrl = new DefaultComboBoxModel(recentMessages);
 		cboMessage.setModel(modelUrl);
 	}
 
-	public void setStatus(CommitStatus status, String message) throws Exception {
-		if (CommitStatus.FILE_LIST_GATHERING_COMPLETED.equals(status)) {
-			workEnded();
-			prgWorkinProgress.setIndeterminate(false);
-			btnStop.setEnabled(false);
-			btnCommit.setEnabled(true);
-			btnRefresh.setEnabled(true);
-			if (commitTableModel.getAllData().isEmpty()) {
-				MessagePane.showWarning(frame, "Nothing to commit", "There's nothing to commit!");
-				frame.setVisible(false);
-				frame.dispose();
+	public void setStatus(final CommitStatus status, final String message) throws Exception {
+		new OnSwing() {
+
+			protected void process() throws Exception {
+
+				if (CommitStatus.FILE_LIST_GATHERING_COMPLETED.equals(status)) {
+					workEnded();
+					refreshSelectButtons();
+
+					prgWorkinProgress.setIndeterminate(false);
+					btnStop.setEnabled(false);
+					btnCommit.setEnabled(true);
+					btnRefresh.setEnabled(true);
+					if (commitTableModel.getAllData().isEmpty()) {
+						tblCommit.showMessage("There is nothing to commit", Manager.ICON_WARNING);
+
+						// MessagePane.showWarning(frame, "Nothing to commit",
+						// "There's nothing to commit!");
+						// frame.setVisible(false);
+						// frame.dispose();
+					}
+				}
+				if (CommitStatus.INIT.equals(status)) {
+					workStarted();
+					tblCommit.showMessage("Working...", Manager.ICON_INFORMATION);
+
+					btnSelectAll.setEnabled(false);
+					btnSelectNone.setEnabled(false);
+					btnSelectNonVersioned.setEnabled(false);
+					btnSelectAdded.setEnabled(false);
+					btnSelectDeleted.setEnabled(false);
+					btnSelectModified.setEnabled(false);
+					btnSelectFiles.setEnabled(false);
+					btnSelectDirectories.setEnabled(false);
+
+				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
+
+					MessagePane.showInfo(frame, "Completed", message);
+					frame.setVisible(false);
+					frame.dispose();
+				} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
+					MessagePane.showError(frame, "Failed!", "Commit failed!");
+					frame.setVisible(false);
+					frame.dispose();
+				}
 			}
-		}
-		if (CommitStatus.INIT.equals(status)) {
-			workStarted();
-		} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
-			MessagePane.showInfo(frame, "Completed", message);
-			frame.setVisible(false);
-			frame.dispose();
 
-		} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
-			MessagePane.showError(frame, "Failed!", "Commit failed!");
-			frame.setVisible(false);
-			frame.dispose();
-		}
+		}.run();
 	}
 
-	public void refresh() {
-		try {
-			commitTableModel.clear();
-			btnStop.setEnabled(true);
-			btnCommit.setEnabled(false);
-			btnRefresh.setEnabled(false);
-			commit.refresh();
-		} catch (Exception ex) {
-			Manager.handle(ex);
-		}
+	public void refresh() throws Exception {
+		new OnSwing<Object>() {
+
+			protected void process() throws Exception {
+				workStarted();
+				commitTableModel.clear();
+				btnStop.setEnabled(true);
+				btnCommit.setEnabled(false);
+				btnRefresh.setEnabled(false);
+				new Thread(new Runnable() {
+
+					public void run() {
+						try {
+							commit.refresh();
+							workEnded();
+						} catch (Exception e) {
+							Manager.handle(e);
+						}
+					}
+				}).start();
+			}
+
+		}.run();
+
 	}
 
-	public void addItem(File file, ContentStatus contentStatus, ContentStatus propertyStatus) {
+	private void refreshSelectButtons() {
+
+		List<CommitListItem> list = commitTableModel.getAllData();
+
+		boolean hasNonVersioned = false;
+		boolean hasAdded = false;
+		boolean hasDeleted = false;
+		boolean hasModified = false;
+		boolean hasFiles = false;
+		boolean hasDirectories = false;
+
+		for (CommitListItem li : list) {
+			ContentStatus contentStatus = li.getStatus();
+			File file = li.getPath();
+
+			if (contentStatus.equals(ContentStatus.UNVERSIONED)) {
+				hasNonVersioned = true;
+			} else if (contentStatus.equals(ContentStatus.ADDED)) {
+				hasAdded = true;
+			} else if (contentStatus.equals(ContentStatus.DELETED)) {
+				hasDeleted = true;
+			} else if (contentStatus.equals(ContentStatus.MODIFIED)) {
+				hasModified = true;
+			}
+
+			if (file.isFile()) {
+				hasFiles = true;
+			} else if (file.isDirectory()) {
+				hasDirectories = true;
+			}
+
+		}
+
+		btnSelectAll.setEnabled(!list.isEmpty());
+		btnSelectNone.setEnabled(!list.isEmpty());
+		btnSelectNonVersioned.setEnabled(hasNonVersioned);
+		btnSelectAdded.setEnabled(hasAdded);
+		btnSelectDeleted.setEnabled(hasDeleted);
+		btnSelectModified.setEnabled(hasModified);
+		btnSelectFiles.setEnabled(hasFiles);
+		btnSelectDirectories.setEnabled(hasDirectories);
+
+	}
+
+	public void addItem(final File file, final ContentStatus contentStatus, final ContentStatus propertyStatus) throws Exception {
 		if ((contentStatus.equals(ContentStatus.NORMAL) || contentStatus.equals(ContentStatus.NONE))
 		        && (propertyStatus.equals(ContentStatus.NORMAL) || propertyStatus.equals(ContentStatus.NONE))) {
 			return;
 		}
-		CommitListItem li = new CommitListItem();
-		if (contentStatus.equals(ContentStatus.MODIFIED) || contentStatus.equals(ContentStatus.ADDED) || contentStatus.equals(ContentStatus.DELETED)
-		        || propertyStatus.equals(ContentStatus.MODIFIED) || propertyStatus.equals(ContentStatus.ADDED)) {
-			li.setSelected(true);
-		} else {
-			li.setSelected(false);
-		}
-		li.setPath(file);
-		li.setStatus(contentStatus);
-		li.setPropertyStatus(propertyStatus);
+		new OnSwing() {
 
-		commitTableModel.addLine(li);
-		tblCommit.followScrollToNewItems();
+			protected void process() throws Exception {
+				tblCommit.hideMessage();
+				CommitListItem li = new CommitListItem();
+
+				if (contentStatus.equals(ContentStatus.MODIFIED) || contentStatus.equals(ContentStatus.ADDED) || contentStatus.equals(ContentStatus.DELETED)
+				        || propertyStatus.equals(ContentStatus.MODIFIED) || propertyStatus.equals(ContentStatus.ADDED)) {
+					li.setSelected(true);
+				} else {
+					li.setSelected(false);
+				}
+				li.setPath(file);
+				li.setStatus(contentStatus);
+				li.setPropertyStatus(propertyStatus);
+
+				commitTableModel.addLine(li);
+				tblCommit.followScrollToNewItems();
+			}
+
+		}.run();
 	}
 
 	public void commitSelected() throws Exception {
@@ -285,10 +405,17 @@ public class CommitGui implements Working {
 				noCommit++;
 
 				if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
-					MessagePane.showWarning(frame, "Cannot commit", "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
-					return;
+					// auto-add unversioned items
+					commit.add(li.getPath());
+					// MessagePane.showWarning(frame, "Cannot commit",
+					// "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
+					// return;
 				}
 			}
+		}
+		if (noCommit == 0) {
+			MessagePane.showError(frame, "Nothing to commit", "Nothing is selected to commit");
+			return;
 		}
 
 		tblCommit.setEnabled(false);
@@ -347,82 +474,6 @@ public class CommitGui implements Working {
 		tblCommit.repaint();
 	}
 
-	private List<CommitListItem> getSelectedItems() {
-		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
-		for (int row : tblCommit.getSelectedRows()) {
-			lstResult.add(commitTableModel.getRow(row));
-		}
-		return lstResult;
-	}
-
-	private class AddAction extends ThreadAction {
-
-		private final PopupupMouseListener popupupMouseListener;
-
-		public AddAction(PopupupMouseListener popupupMouseListener) {
-			super("Add");
-			this.popupupMouseListener = popupupMouseListener;
-		}
-
-		public void actionProcess(ActionEvent e) throws SVNException {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.add(li.getPath());
-			refresh();
-		}
-	}
-
-	private class IgnoreAction extends ThreadAction {
-
-		private final PopupupMouseListener popupupMouseListener;
-
-		public IgnoreAction(PopupupMouseListener popupupMouseListener) {
-			super("Ignore");
-			this.popupupMouseListener = popupupMouseListener;
-		}
-
-		public void actionProcess(ActionEvent e) throws SVNException {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.ignore(li.getPath());
-			// the callback from Commit doesn't work, because it knows only
-			// the
-			// parent dir
-			changeToIgnore(li.getPath());
-			refresh();
-		}
-	}
-
-	private class DeleteAction extends ThreadAction {
-
-		private final PopupupMouseListener popupupMouseListener;
-
-		public DeleteAction(PopupupMouseListener popupupMouseListener) {
-			super("Delete");
-			this.popupupMouseListener = popupupMouseListener;
-		}
-
-		public void actionProcess(ActionEvent e) throws SVNException, BackingStoreException {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.delete(li.getPath());
-			changeToDeleted(li.getPath());
-			refresh();
-		}
-	}
-
-	private class ShowChangesAction extends ThreadAction {
-
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ShowChangesAction(PopupupMouseListener popupupMouseListener) {
-			super("Show changes");
-			this.popupupMouseListener = popupupMouseListener;
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.showChanges(li.getPath());
-		}
-	}
-
 	private void removeListItemIfNormal(CommitListItem li) {
 		if (li.getStatus().equals(ContentStatus.NORMAL) && li.getPropertyStatus().equals(ContentStatus.NONE)
 		        && li.getPropertyStatus().equals(ContentStatus.NORMAL)) {
@@ -431,7 +482,7 @@ public class CommitGui implements Working {
 		}
 	}
 
-	public void resolveConflict(CommitListItem li) throws SVNException, IOException, InterruptedException {
+	public void resolveConflict(CommitListItem li) throws Exception {
 
 		File file = li.getPath();
 		if (file.isDirectory()) {
@@ -456,38 +507,85 @@ public class CommitGui implements Working {
 		}
 	}
 
-	private class SelectDeselectAllAction extends ThreadAction {
+	private List<CommitListItem> getSelectedItems() {
+		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
+		for (int row : tblCommit.getSelectedRows()) {
+			lstResult.add(commitTableModel.getRow(row));
+		}
+		return lstResult;
+	}
 
-		public SelectDeselectAllAction() {
-			super("Select/Deselect All");
+	private class AddAction extends ThreadAction {
+
+		public AddAction(PopupupMouseListener popupupMouseListener) {
+			super("Add");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			try {
-				boolean selected = cbSelectDeselectAll.isSelected();
-				for (CommitListItem li : commitTableModel.getAllData()) {
-					li.setSelected(selected);
-				}
-				tblCommit.repaint();
-			} catch (Exception ex) {
-				Manager.handle(ex);
+			for (CommitListItem li : getSelectedItems()) {
+				commit.add(li.getPath());
+			}
+			refresh();
+		}
+	}
+
+	private class IgnoreAction extends ThreadAction {
+
+		public IgnoreAction(PopupupMouseListener popupupMouseListener) {
+			super("Ignore");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.ignore(li.getPath());
+				// the callback from Commit doesn't work, because it knows only
+				// the
+				// parent dir
+				// changeToIgnore(li.getPath());
+			}
+			refresh();
+		}
+	}
+
+	private class DeleteAction extends ThreadAction {
+
+		public DeleteAction(PopupupMouseListener popupupMouseListener) {
+			super("Delete");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.delete(li.getPath());
+				// changeToDeleted(li.getPath());
+			}
+			refresh();
+		}
+	}
+
+	private class ShowChangesAction extends ThreadAction {
+
+		public ShowChangesAction(PopupupMouseListener popupupMouseListener) {
+			super("Show changes");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.showChanges(li.getPath());
 			}
 		}
 	}
 
 	private class RevertChangesAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
 		public RevertChangesAction(PopupupMouseListener popupupMouseListener) {
 			super("Revert changes");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionProcess(ActionEvent e) throws SVNException {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.revertChanges(li.getPath());
-			li.setStatus(ContentStatus.NORMAL);
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.revertChanges(li.getPath());
+				// li.setStatus(ContentStatus.NORMAL);
+			}
 			// removeListItemIfNormal(li);
 			refresh();
 		}
@@ -495,17 +593,15 @@ public class CommitGui implements Working {
 
 	private class RevertPropertyChangesAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
 		public RevertPropertyChangesAction(PopupupMouseListener popupupMouseListener) {
 			super("Revert property changes");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionProcess(ActionEvent e) throws SVNException {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.revertPropertyChanges(li.getPath());
-			li.setPropertyStatus(ContentStatus.NORMAL);
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.revertPropertyChanges(li.getPath());
+				// li.setPropertyStatus(ContentStatus.NORMAL);
+			}
 			// removeListItemIfNormal(li);
 			refresh();
 		}
@@ -513,168 +609,81 @@ public class CommitGui implements Working {
 
 	private class ResolvedAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
 		public ResolvedAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolved");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionProcess(ActionEvent e) throws SVNException {
-			CommitListItem li = popupupMouseListener.getSelected();
-			commit.resolved(li.getPath());
-			tblCommit.repaint();
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.resolved(li.getPath());
+			}
+			refresh();
 		}
 	}
 
 	private class ShowLog extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
 		public ShowLog(PopupupMouseListener popupupMouseListener) {
 			super("Show log");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			try {
-				popupupMouseListener.hidePopup();
-				CommitListItem li = popupupMouseListener.getSelected();
-				new Log(li.getPath().getPath()).execute();
+				for (CommitListItem li : getSelectedItems()) {
+					new Log(li.getPath().getPath()).execute();
+				}
 			} catch (Exception ex) {
 				Manager.handle(ex);
 			}
 		}
 	}
 
-	private class ResolveConflictUsingTheirs extends AbstractAction {
+	private class ResolveConflictUsingTheirsAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ResolveConflictUsingTheirs(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingTheirsAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolve conflict using theirs");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			try {
-				popupupMouseListener.hidePopup();
-				CommitListItem li = popupupMouseListener.getSelected();
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
 				Manager.resolveConflictUsingTheirs(li.getPath().getPath());
-				refresh();
-			} catch (SVNException e1) {
-				Manager.handle(e1);
 			}
-
+			refresh();
 		}
 	}
 
-	private class ResolveConflictUsingMine extends AbstractAction {
+	private class ResolveConflictUsingMineAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ResolveConflictUsingMine(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingMineAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolve conflict using mine");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			try {
-				popupupMouseListener.hidePopup();
-				CommitListItem li = popupupMouseListener.getSelected();
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
 				Manager.resolveConflictUsingMine(li.getPath().getPath());
-				refresh();
-			} catch (SVNException e1) {
-				Manager.handle(e1);
 			}
-
+			refresh();
 		}
 	}
 
-	private class ResolveConflict extends AbstractAction {
+	private class ResolveConflictAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ResolveConflict(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolve conflict");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			try {
-				popupupMouseListener.hidePopup();
-				CommitListItem li = popupupMouseListener.getSelected();
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
 				resolveConflict(li);
-			} catch (Exception e1) {
-				Manager.handle(e1);
 			}
-
 		}
 	}
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu     ppVisible;
-		private JPopupMenu     ppModified;
-		private JPopupMenu     ppUnversioned;
-		private JPopupMenu     ppAdded;
-		private JPopupMenu     ppMissing;
-		private JPopupMenu     ppObstructed;
-		private JPopupMenu     ppDeleted;
-		private JPopupMenu     ppIncomplete;
-		private JPopupMenu     ppPropertyModified;
-		private JPopupMenu     ppConflicted;
-		private CommitListItem selected;
+		private JPopupMenu ppVisible;
 
-		public PopupupMouseListener() {
-			ppModified = new JPopupMenu();
-			ppModified.add(new ShowChangesAction(this));
-			ppModified.add(new ShowLog(this));
-			ppModified.add(new RevertChangesAction(this));
-			ppModified.add(new IgnoreAction(this));
-			ppModified.add(new DeleteAction(this));
-
-			ppUnversioned = new JPopupMenu();
-			ppUnversioned.add(new AddAction(this));
-			ppUnversioned.add(new IgnoreAction(this));
-			ppUnversioned.add(new DeleteAction(this));
-
-			ppAdded = new JPopupMenu();
-			ppAdded.add(new RevertChangesAction(this));
-			ppAdded.add(new DeleteAction(this));
-
-			ppMissing = new JPopupMenu();
-			ppMissing.add(new ShowLog(this));
-			ppMissing.add(new RevertChangesAction(this));
-			ppMissing.add(new IgnoreAction(this));
-			ppMissing.add(new DeleteAction(this));
-
-			ppObstructed = new JPopupMenu();
-			ppObstructed.add(new RevertChangesAction(this));
-			ppObstructed.add(new IgnoreAction(this));
-			ppObstructed.add(new DeleteAction(this));
-
-			ppDeleted = new JPopupMenu();
-			ppDeleted.add(new RevertChangesAction(this));
-
-			ppIncomplete = new JPopupMenu();
-			ppIncomplete.add(new ResolvedAction(this));
-			ppIncomplete.add(new IgnoreAction(this));
-			ppIncomplete.add(new DeleteAction(this));
-
-			ppPropertyModified = new JPopupMenu();
-			ppPropertyModified.add(new ShowLog(this));
-			ppPropertyModified.add(new RevertPropertyChangesAction(this));
-
-			ppConflicted = new JPopupMenu();
-			ppConflicted.add(new ResolveConflictUsingTheirs(this));
-			ppConflicted.add(new ResolveConflictUsingMine(this));
-			ppConflicted.add(new ResolveConflict(this));
-		}
-
-		public CommitListItem getSelected() {
-			return selected;
-		}
+		public PopupupMouseListener() {}
 
 		private void hidePopup() {
 			if (ppVisible != null) {
@@ -686,7 +695,11 @@ public class CommitGui implements Working {
 		private void showPopup(MouseEvent e) {
 			hidePopup();
 			Point p = new Point(e.getX(), e.getY());
-			int row = tblCommit.convertRowIndexToModel(tblCommit.rowAtPoint(p));
+			int rowAtPoint = tblCommit.rowAtPoint(p);
+			if (rowAtPoint == -1) {
+				return;
+			}
+			int row = tblCommit.convertRowIndexToModel(rowAtPoint);
 
 			boolean isSelected = false;
 			for (int rowLi : tblCommit.getSelectedRows()) {
@@ -708,50 +721,45 @@ public class CommitGui implements Working {
 				setUsedPropertyStatus.add(li.getPropertyStatus());
 			}
 
-			// TODO
-			// JPopupMenu ppMixed = new JPopupMenu();
-			// boolean onlyOneKind = setUsedStatus.size()==1;
-			//			
-			// if (onlyOneKind &&
-			// setUsedStatus.contains(ContentStatus.MODIFIED)) {
-			//				
-			// }
-			//			
-			// if (onlyOneKind &&
-			// setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
-			// ppMixed.add(new AddAction(this));
-			// }
+			JPopupMenu ppMixed = new JPopupMenu();
+			boolean onlyOneKind = setUsedStatus.size() == 1;
 
-			selected = commitTableModel.getRow(row);
-			ContentStatus status = selected.getStatus();
-			ContentStatus propertyStatus = selected.getPropertyStatus();
-			if (status.equals(ContentStatus.MODIFIED)) {
-				ppVisible = ppModified;
-			} else if (status.equals(ContentStatus.UNVERSIONED)) {
-				ppVisible = ppUnversioned;
-			} else if (status.equals(ContentStatus.OBSTRUCTED)) {
-				ppVisible = ppObstructed;
-			} else if (status.equals(ContentStatus.INCOMPLETE)) {
-				ppVisible = ppIncomplete;
-			} else if (status.equals(ContentStatus.MISSING)) {
-				ppVisible = ppMissing;
-			} else if (status.equals(ContentStatus.ADDED)) {
-				ppVisible = ppAdded;
-			} else if (status.equals(ContentStatus.DELETED)) {
-				ppVisible = ppDeleted;
-			} else if (status.equals(ContentStatus.CONFLICTED)) {
-				ppVisible = ppConflicted;
-			}
-			if (propertyStatus.equals(ContentStatus.MODIFIED)) {
-				ppVisible = ppPropertyModified;
+			if (setUsedStatus.contains(ContentStatus.MODIFIED)) {
+				ppMixed.add(new ShowChangesAction(this));
 			}
 
-			if (ppVisible != null) {
-				ppVisible.setInvoker(tblCommit);
-				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
-				ppVisible.setVisible(true);
-				e.consume();
+			if (setUsedStatus.contains(ContentStatus.MODIFIED) && !setUsedStatus.contains(ContentStatus.UNVERSIONED)
+			        && !setUsedStatus.contains(ContentStatus.ADDED)) {
+				ppMixed.add(new ShowLog(this));
 			}
+
+			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED))
+			        && !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
+				ppMixed.add(new RevertChangesAction(this));
+			}
+
+			ppMixed.add(new IgnoreAction(this));
+			if (onlyOneKind && setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
+				ppMixed.add(new AddAction(this));
+			}
+			ppMixed.add(new DeleteAction(this));
+
+			if (setUsedPropertyStatus.contains(ContentStatus.MODIFIED)) {
+				ppMixed.add(new RevertPropertyChangesAction(this));
+			}
+
+			if (onlyOneKind && setUsedStatus.contains(ContentStatus.CONFLICTED)) {
+				ppMixed.add(new ResolvedAction(this));
+				ppMixed.add(new ResolveConflictUsingTheirsAction(this));
+				ppMixed.add(new ResolveConflictUsingMineAction(this));
+				ppMixed.add(new ResolveConflictAction(this));
+			}
+
+			ppVisible = ppMixed;
+			ppVisible.setInvoker(tblCommit);
+			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+			ppVisible.setVisible(true);
+			e.consume();
 		}
 
 		public void mousePressed(MouseEvent e) {
@@ -770,8 +778,12 @@ public class CommitGui implements Working {
 			if (e.getClickCount() == 2) {
 				hidePopup();
 				Point p = new Point(e.getX(), e.getY());
-				int row = tblCommit.convertRowIndexToModel(tblCommit.rowAtPoint(p));
-				selected = commitTableModel.getRow(row);
+				int rowAtPoint = tblCommit.rowAtPoint(p);
+				if (rowAtPoint == -1) {
+					return;
+				}
+				int row = tblCommit.convertRowIndexToModel(rowAtPoint);
+				CommitListItem selected = commitTableModel.getRow(row);
 				ContentStatus status = selected.getStatus();
 				ContentStatus propertyStatus = selected.getPropertyStatus();
 				if (status.equals(ContentStatus.MODIFIED)) {
@@ -781,4 +793,153 @@ public class CommitGui implements Working {
 		}
 	}
 
+	private abstract class AbstractSelectAction extends ThreadAction {
+
+		public AbstractSelectAction(String string) {
+			super(string);
+		}
+
+		public abstract boolean doSelect(CommitListItem li);
+
+		public abstract boolean doUnSelect(CommitListItem li);
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : commitTableModel.getAllData()) {
+				if (doSelect(li)) {
+					li.setSelected(true);
+				} else if (doUnSelect(li)) {
+					li.setSelected(false);
+				}
+			}
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					tblCommit.repaint();
+				}
+
+			}.run();
+
+		}
+	}
+
+	private class SelectAllAction extends AbstractSelectAction {
+
+		public SelectAllAction() {
+			super("All");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return true;
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+
+	}
+
+	private class SelectNoneAction extends AbstractSelectAction {
+
+		public SelectNoneAction() {
+			super("None");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return false;
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return true;
+		}
+	}
+
+	private class SelectNonVersionedAction extends AbstractSelectAction {
+
+		public SelectNonVersionedAction() {
+			super("Non-versioned");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return li.getStatus().equals(ContentStatus.UNVERSIONED);
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+	}
+
+	private class SelectAddedAction extends AbstractSelectAction {
+
+		public SelectAddedAction() {
+			super("Added");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return li.getStatus().equals(ContentStatus.ADDED);
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+	}
+
+	private class SelectDeletedAction extends AbstractSelectAction {
+
+		public SelectDeletedAction() {
+			super("Deleted");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return li.getStatus().equals(ContentStatus.DELETED);
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+	}
+
+	private class SelectModifiedAction extends AbstractSelectAction {
+
+		public SelectModifiedAction() {
+			super("Modified");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return li.getStatus().equals(ContentStatus.MODIFIED);
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+	}
+
+	private class SelectFilesAction extends AbstractSelectAction {
+
+		public SelectFilesAction() {
+			super("Files");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return li.getPath().isFile();
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+	}
+
+	private class SelectDirectoriesAction extends AbstractSelectAction {
+
+		public SelectDirectoriesAction() {
+			super("Directories");
+		}
+
+		public boolean doSelect(CommitListItem li) {
+			return li.getPath().isDirectory();
+		}
+
+		public boolean doUnSelect(CommitListItem li) {
+			return false;
+		}
+	}
 }

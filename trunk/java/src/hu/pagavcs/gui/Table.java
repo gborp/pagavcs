@@ -1,10 +1,12 @@
 package hu.pagavcs.gui;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
 import java.awt.Component;
 
+import javax.swing.Icon;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
@@ -26,8 +28,8 @@ import javax.swing.table.TableColumn;
  */
 public class Table extends JTable {
 
-	private static final long serialVersionUID = -4582720512439012384L;
-	private Color             alternateColor;
+	private static final long serialVersionUID = -1;
+	private Label             lblMessage;
 
 	public Table(TableModel<?> tableModel) {
 		super(tableModel);
@@ -45,6 +47,29 @@ public class Table extends JTable {
 		});
 	}
 
+	public void showMessage(String message, Icon icon) {
+		hideMessage();
+		lblMessage = new Label(message);
+		lblMessage.setIcon(icon);
+		lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMessage.setVerticalAlignment(SwingConstants.CENTER);
+
+		setLayout(new BorderLayout());
+		add(lblMessage, BorderLayout.CENTER);
+		revalidate();
+		repaint();
+	}
+
+	public void hideMessage() {
+		if (lblMessage != null) {
+			remove(lblMessage);
+			setLayout(null);
+			lblMessage = null;
+			revalidate();
+			repaint();
+		}
+	}
+
 	public void resizeColumns() {
 		for (int i = 0; i < getColumnCount(); i++) {
 			DefaultTableColumnModel colModel = (DefaultTableColumnModel) getColumnModel();
@@ -59,24 +84,6 @@ public class Table extends JTable {
 			}
 			col.setPreferredWidth(width + 8);
 		}
-	}
-
-	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-
-		Component prep = super.prepareRenderer(renderer, row, column);
-
-		int selectedRow = -1;
-		if (getSelectedRow() != -1) {
-			selectedRow = convertRowIndexToModel(getSelectedRow());
-		}
-		if (selectedRow != row) {
-			if (alternateColor == null) {
-				alternateColor = new Color(240, 240, 240);
-			}
-			Color result = row % 2 == 0 ? alternateColor : super.getBackground();
-			prep.setBackground(result);
-		}
-		return prep;
 	}
 
 	public void followScrollToNewItems() {
