@@ -37,29 +37,56 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
         filenameForParam = filename
         if os.path.isdir(filename):
             svnpath = filename+'/.svn';
+            (filepath, filename) = os.path.split(filename)
+            svnparentpath = filepath+'/.svn';
+            dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
+            if (not dosvn and (os.path.exists(svnpath) and os.path.isdir(svnpath))):
+                file.add_emblem ('pagavcs-svn')
+                return
         else:
             (filepath, filename) = os.path.split(filename)
-            svnpath = filepath+'/.svn';
+            svnparentpath = filepath+'/.svn';
+            dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
             
-        if (os.path.exists(svnpath)) and (os.path.isdir(svnpath)):
+        if (dosvn):
             clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             clientsocket.settimeout(1)
             try:
                 clientsocket.connect(("localhost", 12905))
                 clientsocket.sendall("getfileinfo "+filenameForParam+"\n")
             except (socket.timeout, socket.error):
-	        executeCommand = EXECUTABLE+' &'    
+	        executeCommand = EXECUTABLE+' ping &'    
         	os.system(executeCommand)
+        	file.add_emblem ('pagavcs-svn')
                 return
 
             data = ""
             try:
                 data = clientsocket.recv(512)
             except (socket.timeout, socket.error):
+	        file.add_emblem ('pagavcs-svn')
                 return  
             clientsocket.close()
             if (data == "SVNED"):
                 file.add_emblem ('pagavcs-svn')
+            elif (data == "ADDED"):
+                file.add_emblem ('pagavcs-added')                
+            elif (data == "CONFLICTS"):
+                file.add_emblem ('pagavcs-conflicts')             
+            elif (data == "DELETED"):
+                file.add_emblem ('pagavcs-deleted')
+            elif (data == "IGNORED"):
+                file.add_emblem ('pagavcs-ignored')
+            elif (data == "LOCKED"):
+                file.add_emblem ('pagavcs-locked')
+            elif (data == "MODIFIED"):
+                file.add_emblem ('pagavcs-modified')
+            elif (data == "NORMAL"):
+                file.add_emblem ('pagavcs-normal')      
+            elif (data == "OBSTRUCTED"):
+                file.add_emblem ('pagavcs-obstructed')
+            elif (data == "READONLY"):
+                file.add_emblem ('pagavcs-readonly')            
 
 class PagaVCS(nautilus.MenuProvider):
     def __init__(self):

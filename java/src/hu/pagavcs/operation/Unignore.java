@@ -63,7 +63,7 @@ public class Unignore {
 
 				wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(newIgnoredItems.toString()), false, SVNDepth.EMPTY, null, null);
 			}
-
+			Manager.invalidate(wcFile);
 			gui.setStatus(DeleteStatus.COMPLETED);
 		} catch (SVNException ex) {
 			Manager.handle(ex);

@@ -222,6 +222,7 @@ public class Commit {
 		SVNWCClient wcClient = mgrSvn.getWCClient();
 		wcClient.setEventHandler(new AddIgnoreEventHandler());
 		wcClient.doAdd(wcFile, false, false, true, SVNDepth.INFINITY, false, false, true);
+		Manager.invalidate(wcFile);
 	}
 
 	public void ignore(File wcFile) throws SVNException {
@@ -236,6 +237,7 @@ public class Commit {
 		}
 		wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY, null,
 		        null);
+		Manager.invalidate(wcFile);
 	}
 
 	private class AddIgnoreEventHandler implements ISVNEventHandler {
@@ -338,12 +340,14 @@ public class Commit {
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient client = svnMgr.getWCClient();
 		client.doRevert(new File[] { file }, SVNDepth.INFINITY, null);
+		Manager.invalidate(file);
 	}
 
 	public void revertPropertyChanges(File file) throws SVNException {
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient client = svnMgr.getWCClient();
 		client.doRevert(new File[] { file }, SVNDepth.EMPTY, null);
+		Manager.invalidate(file);
 	}
 
 	public void delete(File file) throws SVNException, BackingStoreException {
@@ -351,12 +355,14 @@ public class Commit {
 		delete.setAutoClose(true);
 		delete.setIgnoreIfFileError(true);
 		delete.execute();
+		Manager.invalidate(file);
 	}
 
 	public void resolved(File file) throws SVNException {
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient client = svnMgr.getWCClient();
 		client.doResolve(file, SVNDepth.INFINITY, true, true, true, SVNConflictChoice.MERGED);
+		Manager.invalidate(file);
 	}
 
 }

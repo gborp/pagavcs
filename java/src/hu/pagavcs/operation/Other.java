@@ -75,18 +75,6 @@ public class Other implements Cancelable {
 		try {
 			SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
 
-			// maxRevision = -1;
-			// wcClient.doInfo(wcFile, SVNRevision.UNDEFINED,
-			// SVNRevision.WORKING, SVNDepth.EMPTY, null, new ISVNInfoHandler()
-			// {
-			//
-			// public void handleInfo(SVNInfo info) {
-			// if (maxRevision < info.getRevision().getNumber()) {
-			// maxRevision = info.getRevision().getNumber();
-			// }
-			// }
-			// });
-
 			gui.setURL(svnInfo.getURL().toDecodedString());
 
 			gui.setStatus(OtherStatus.COMPLETED);
