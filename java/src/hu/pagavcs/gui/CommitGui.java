@@ -22,6 +22,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
@@ -343,6 +345,14 @@ public class CommitGui implements Working {
 		li.setStatus(ContentStatus.DELETED);
 		li.setSelected(true);
 		tblCommit.repaint();
+	}
+
+	private List<CommitListItem> getSelectedItems() {
+		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
+		for (int row : tblCommit.getSelectedRows()) {
+			lstResult.add(commitTableModel.getRow(row));
+		}
+		return lstResult;
 	}
 
 	private class AddAction extends ThreadAction {
@@ -677,6 +687,41 @@ public class CommitGui implements Working {
 			hidePopup();
 			Point p = new Point(e.getX(), e.getY());
 			int row = tblCommit.convertRowIndexToModel(tblCommit.rowAtPoint(p));
+
+			boolean isSelected = false;
+			for (int rowLi : tblCommit.getSelectedRows()) {
+				if (rowLi == row) {
+					isSelected = true;
+					break;
+				}
+			}
+			if (!isSelected) {
+				tblCommit.getSelectionModel().setSelectionInterval(row, row);
+			}
+
+			HashSet<ContentStatus> setUsedStatus = new HashSet<ContentStatus>();
+			HashSet<ContentStatus> setUsedPropertyStatus = new HashSet<ContentStatus>();
+			int[] selectedRows = tblCommit.getSelectedRows();
+			for (int rowLi : selectedRows) {
+				CommitListItem li = commitTableModel.getRow(rowLi);
+				setUsedStatus.add(li.getStatus());
+				setUsedPropertyStatus.add(li.getPropertyStatus());
+			}
+
+			// TODO
+			// JPopupMenu ppMixed = new JPopupMenu();
+			// boolean onlyOneKind = setUsedStatus.size()==1;
+			//			
+			// if (onlyOneKind &&
+			// setUsedStatus.contains(ContentStatus.MODIFIED)) {
+			//				
+			// }
+			//			
+			// if (onlyOneKind &&
+			// setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
+			// ppMixed.add(new AddAction(this));
+			// }
+
 			selected = commitTableModel.getRow(row);
 			ContentStatus status = selected.getStatus();
 			ContentStatus propertyStatus = selected.getPropertyStatus();
