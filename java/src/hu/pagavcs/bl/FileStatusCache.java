@@ -102,7 +102,7 @@ public class FileStatusCache {
 			} else {
 				result = STATUS.SVNED;
 			}
-			if (file.isDirectory()) {
+			if (file.isDirectory() && !result.equals(STATUS.IGNORED)) {
 				result = STATUS.SVNED;
 			}
 			if (status.isLocked()) {

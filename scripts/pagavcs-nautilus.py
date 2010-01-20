@@ -40,7 +40,7 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
             (filepath, filename) = os.path.split(filename)
             svnparentpath = filepath+'/.svn';
             dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
-            if (not dosvn and (os.path.exists(svnpath) and os.path.isdir(svnpath))):
+            if ((not dosvn) and (os.path.exists(svnpath) and os.path.isdir(svnpath))):
                 file.add_emblem ('pagavcs-svn')
                 return
         else:
