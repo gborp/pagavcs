@@ -169,8 +169,12 @@ public class Commit {
 		public void handleEvent(SVNEvent event, double progress) throws SVNException {
 			try {
 				SVNEventAction action = event.getAction();
+				String fileName = null;
+				if (event.getFile() != null) {
+					Manager.invalidate(event.getFile());
+					fileName = event.getFile().getAbsolutePath();
+				}
 
-				String fileName = event.getFile() != null ? event.getFile().getAbsolutePath() : null;
 				if (SVNEventAction.COMMIT_ADDED.equals(action)) {
 					gui.addCommittedItem(fileName, CommittedItemStatus.ADDED);
 				} else if (SVNEventAction.COMMIT_DELETED.equals(action)) {
