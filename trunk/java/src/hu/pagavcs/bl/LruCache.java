@@ -57,6 +57,10 @@ public class LruCache<K, V> {
 		return map.get(key);
 	}
 
+	public synchronized V remove(K key) {
+		return map.remove(key);
+	}
+
 	/**
 	 * Adds an entry to this cache. If the cache is full, the LRU (least
 	 * recently used) entry is dropped.

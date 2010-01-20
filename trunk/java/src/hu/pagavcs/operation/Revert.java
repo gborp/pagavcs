@@ -45,6 +45,7 @@ public class Revert {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			gui.setStatus(RevertStatus.START);
 			wcClient.doRevert(new File[] { wcFile }, SVNDepth.INFINITY, null);
+			Manager.invalidate(wcFile);
 			gui.setStatus(RevertStatus.REVERTED);
 			if (autoClose) {
 				gui.close();

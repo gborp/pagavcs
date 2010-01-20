@@ -3,11 +3,10 @@ package hu.pagavcs.bl;
 import java.io.File;
 
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNPropertyData;
-import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
+import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
+import org.tmatesoft.svn.core.wc.SVNStatusType;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -26,33 +25,45 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 public class FileStatusCache {
 
 	public enum STATUS {
-		NONE, SVNED
+		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE,
 	}
 
-	private static final int                 CACHE_SIZE    = 5000;
+	private static final int                 CACHE_SIZE    = 303;
 	/** in ms */
 	private static final long                CACHE_TOO_OLD = 5 * 60 * 1000;
 
 	private static FileStatusCache           singleton;
 
-	private final SVNWCClient                wcClient;
 	private final LruCache<File, StatusSlot> mapCache;
+	private SVNStatusClient                  statusClient;
 
 	private FileStatusCache() {
 		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		wcClient = clientMgr.getWCClient();
+		statusClient = clientMgr.getStatusClient();
 		mapCache = new LruCache<File, StatusSlot>(CACHE_SIZE);
 	}
 
-	public synchronized static FileStatusCache getInstance() {
+	public static FileStatusCache getInstance() {
 		if (singleton == null) {
-			singleton = new FileStatusCache();
+			synchronized (FileStatusCache.class) {
+				if (singleton == null) {
+					singleton = new FileStatusCache();
+				}
+			}
 		}
 
 		return singleton;
 	}
 
-	public STATUS getStatus(File file) throws SVNException {
+	public synchronized void invalidate(File file) {
+		mapCache.remove(file);
+	}
+
+	public synchronized void invalidateAll() {
+		mapCache.clear();
+	}
+
+	public synchronized STATUS getStatus(File file) throws SVNException {
 
 		StatusSlot slot = mapCache.get(file);
 
@@ -67,21 +78,32 @@ public class FileStatusCache {
 		File svnDir = new File(parent, ".svn");
 		STATUS result = STATUS.NONE;
 		if (svnDir.exists()) {
-			SVNPropertyData ignoreProp = wcClient.doGetProperty(parent, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
-			if (ignoreProp != null) {
-				boolean ignored = false;
-				String path = file.getAbsolutePath();
-				for (String li : ignoreProp.getValue().getString().split("\n")) {
-					if (li.equals(path)) {
-						ignored = true;
-						break;
-					}
-				}
-				if (!ignored) {
-					result = STATUS.SVNED;
-				}
+			SVNStatus status = statusClient.doStatus(file, false);
+			SVNStatusType contentStatus = status.getContentsStatus();
+			if (contentStatus.equals(SVNStatusType.STATUS_ADDED)) {
+				result = STATUS.IGNORED;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_CONFLICTED)) {
+				result = STATUS.CONFLICTS;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_DELETED)) {
+				result = STATUS.DELETED;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_IGNORED)) {
+				result = STATUS.IGNORED;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_MODIFIED)) {
+				result = STATUS.MODIFIED;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_NORMAL)) {
+				result = STATUS.NORMAL;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_OBSTRUCTED)) {
+				result = STATUS.OBSTRUCTED;
+			} else if (contentStatus.equals(SVNStatusType.STATUS_UNVERSIONED)) {
+				result = STATUS.NONE;
 			} else {
 				result = STATUS.SVNED;
+			}
+			if (file.isDirectory()) {
+				result = STATUS.SVNED;
+			}
+			if (status.isLocked()) {
+				result = STATUS.LOCKED;
 			}
 		}
 
@@ -96,4 +118,5 @@ public class FileStatusCache {
 		STATUS status;
 		long   timeInMs;
 	}
+
 }

@@ -56,7 +56,7 @@ public class Ignore {
 
 			wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY,
 			        null, null);
-
+			Manager.invalidate(wcFile);
 			gui.setStatus(DeleteStatus.COMPLETED);
 		} catch (SVNException ex) {
 			Manager.handle(ex);

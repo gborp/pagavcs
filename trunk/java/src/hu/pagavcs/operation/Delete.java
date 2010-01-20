@@ -58,7 +58,7 @@ public class Delete {
 					throw ex;
 				}
 			}
-
+			Manager.invalidate(wcFile);
 			gui.setStatus(DeleteStatus.COMPLETED);
 			if (autoClose) {
 				gui.close();
