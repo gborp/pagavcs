@@ -22,6 +22,7 @@ import javax.swing.table.TableCellRenderer;
 public abstract class AbstractCellRendererColorizator<L extends ListItem> implements TableCellRenderer {
 
 	private final TableCellRenderer delegate;
+	private static final Color      alternateColor = new Color(240, 240, 240);
 
 	public AbstractCellRendererColorizator(Table table) {
 		delegate = table.getDefaultRenderer(Object.class);
@@ -33,6 +34,7 @@ public abstract class AbstractCellRendererColorizator<L extends ListItem> implem
 		Component delegeteComponent = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
 		if (!isSelected) {
 			delegeteComponent.setForeground(getForegroundColor((L) ((TableModel) (table.getModel())).getRow(table.convertRowIndexToModel(rowIndex))));
+			delegeteComponent.setBackground(rowIndex % 2 == 0 ? alternateColor : null);
 		} else {
 			delegeteComponent.setForeground(null);
 		}
