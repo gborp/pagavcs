@@ -300,8 +300,9 @@ public class LogGui implements Working {
 		if (selectedRow == -1) {
 			return;
 		}
+
 		tblDetailLog.getSelectionModel().clearSelection();
-		LogListItem liLog = logTableModel.getRow(selectedRow);
+		LogListItem liLog = logTableModel.getRow(tblDetailLog.convertRowIndexToModel(selectedRow));
 		taMessage.setText(liLog.getMessage());
 		logDetailTableModel.clear();
 		for (SVNLogEntryPath liEntryPath : liLog.getChanges().values()) {

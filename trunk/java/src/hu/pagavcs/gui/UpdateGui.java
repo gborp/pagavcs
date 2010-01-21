@@ -434,7 +434,10 @@ public class UpdateGui {
 
 				Point p = new Point(e.getX(), e.getY());
 				int row = tblUpdate.rowAtPoint(p);
-				selected = tableModel.getRow(row);
+				if (row == -1) {
+					return;
+				}
+				selected = tableModel.getRow(tblUpdate.convertRowIndexToModel(row));
 				ContentStatus status = selected.getStatus();
 
 				if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
