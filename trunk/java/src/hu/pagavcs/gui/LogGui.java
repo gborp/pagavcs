@@ -88,6 +88,7 @@ public class LogGui implements Working {
 		logTableModel = new TableModel<LogListItem>(new LogListItem());
 		tblLog = new Table(logTableModel);
 		tblLog.setRowSorter(new TableRowSorter<TableModel<LogListItem>>(logTableModel));
+		new NullCellRenderer(tblLog);
 		tblLog.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			public void valueChanged(ListSelectionEvent e) {
@@ -302,7 +303,7 @@ public class LogGui implements Working {
 		}
 
 		tblDetailLog.getSelectionModel().clearSelection();
-		LogListItem liLog = logTableModel.getRow(tblDetailLog.convertRowIndexToModel(selectedRow));
+		LogListItem liLog = logTableModel.getRow(tblLog.convertRowIndexToModel(selectedRow));
 		taMessage.setText(liLog.getMessage());
 		logDetailTableModel.clear();
 		for (SVNLogEntryPath liEntryPath : liLog.getChanges().values()) {
