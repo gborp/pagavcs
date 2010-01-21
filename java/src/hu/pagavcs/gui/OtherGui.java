@@ -61,6 +61,8 @@ public class OtherGui implements Working, Cancelable {
 	private EditField   sfExportTo;
 	private JButton     btnExportTo;
 	private JButton     btnRepoBrowser;
+	private JButton     btnCreatePatch;
+	private JButton     btnApplyPatch;
 
 	public OtherGui(Other other) {
 		this.other = other;
@@ -68,7 +70,7 @@ public class OtherGui implements Working, Cancelable {
 
 	public void display() throws SVNException {
 		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p",
-		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,10dlu,p");
+		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -120,6 +122,12 @@ public class OtherGui implements Working, Cancelable {
 
 		btnRepoBrowser = new JButton(new RepoBrowserAction());
 
+		JPanel pnlButtons = new JPanel(new FormLayout("p,4dlu,p", "p"));
+		btnCreatePatch = new JButton(new CreatePatchAction());
+		btnApplyPatch = new JButton(new ApplyPatchAction());
+		pnlButtons.add(btnCreatePatch, cc.xy(1, 1));
+		pnlButtons.add(btnApplyPatch, cc.xy(3, 1));
+
 		lblStatus = new Label(" ");
 		prgBusy = new ProgressBar(this);
 
@@ -163,10 +171,11 @@ public class OtherGui implements Working, Cancelable {
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 32, 4, 1));
 		pnlMain.add(btnRepoBrowser, cc.xywh(4, 33, 1, 1));
+		pnlMain.add(pnlButtons, cc.xywh(1, 35, 4, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 
-		pnlMain.add(new JSeparator(), cc.xywh(1, 34, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 35, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 35, 1, 1));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 36, 4, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 37, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 37, 1, 1));
 
 		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Other");
 	}
@@ -242,6 +251,16 @@ public class OtherGui implements Working, Cancelable {
 		other.doRepoBrowser(sfWorkingCopy.getText());
 	}
 
+	private void doApplyPatch() {
+	// TODO Auto-generated method stub
+
+	}
+
+	private void doCreatePatch() {
+	// TODO Auto-generated method stub
+
+	}
+
 	public void setStatusStartWorking() {
 		setStatus(OtherStatus.WORKING);
 	}
@@ -306,6 +325,31 @@ public class OtherGui implements Working, Cancelable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			doRepoBrowser();
+		}
+	}
+
+	private class CreatePatchAction extends ThreadAction {
+
+		public CreatePatchAction() {
+			super("Create Patch");
+			setEnabled(false);
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			doCreatePatch();
+		}
+
+	}
+
+	private class ApplyPatchAction extends ThreadAction {
+
+		public ApplyPatchAction() {
+			super("Apply Patch");
+			setEnabled(false);
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			doApplyPatch();
 		}
 
 	}
