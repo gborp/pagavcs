@@ -2,8 +2,11 @@ package hu.pagavcs.bl;
 
 import java.io.File;
 
+import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
@@ -28,7 +31,7 @@ public class FileStatusCache {
 		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE,
 	}
 
-	private static final int                 CACHE_SIZE    = 303;
+	private static final int                 CACHE_SIZE    = 1000;
 	/** in ms */
 	private static final long                CACHE_TOO_OLD = 5 * 60 * 1000;
 
@@ -36,11 +39,13 @@ public class FileStatusCache {
 
 	private final LruCache<File, StatusSlot> mapCache;
 	private SVNStatusClient                  statusClient;
+	private SvnStatusHandler                 svnStatusHandler;
 
 	private FileStatusCache() {
 		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		statusClient = clientMgr.getStatusClient();
 		mapCache = new LruCache<File, StatusSlot>(CACHE_SIZE);
+		svnStatusHandler = new SvnStatusHandler();
 	}
 
 	public static FileStatusCache getInstance() {
@@ -63,6 +68,53 @@ public class FileStatusCache {
 		mapCache.clear();
 	}
 
+	private STATUS getStatus(File file, SVNStatus status) {
+		STATUS result;
+		if (status == null) {
+			return STATUS.NONE;
+		}
+		SVNStatusType contentStatus = status.getContentsStatus();
+		if (contentStatus.equals(SVNStatusType.STATUS_ADDED)) {
+			result = STATUS.IGNORED;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_CONFLICTED)) {
+			result = STATUS.CONFLICTS;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_DELETED)) {
+			result = STATUS.DELETED;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_IGNORED)) {
+			result = STATUS.IGNORED;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_MODIFIED)) {
+			result = STATUS.MODIFIED;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_NORMAL)) {
+			result = STATUS.NORMAL;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_OBSTRUCTED)) {
+			result = STATUS.OBSTRUCTED;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_UNVERSIONED)) {
+			result = STATUS.NONE;
+		} else {
+			result = STATUS.SVNED;
+		}
+		if (!result.equals(STATUS.IGNORED) && file.isDirectory()) {
+			result = STATUS.SVNED;
+		}
+		if (status.isLocked()) {
+			result = STATUS.LOCKED;
+		}
+		return result;
+	}
+
+	private class SvnStatusHandler implements ISVNStatusHandler {
+
+		public void handleStatus(SVNStatus status) {
+
+			File file = status.getFile();
+
+			StatusSlot slot = new StatusSlot();
+			slot.timeInMs = System.currentTimeMillis();
+			slot.status = getStatus(file, status);
+			mapCache.put(file, slot);
+		}
+	}
+
 	public synchronized STATUS getStatus(File file) throws SVNException {
 
 		StatusSlot slot = mapCache.get(file);
@@ -71,49 +123,18 @@ public class FileStatusCache {
 			return slot.status;
 		}
 
-		slot = new StatusSlot();
-		slot.timeInMs = System.currentTimeMillis();
-
 		File parent = file.getParentFile();
 		File svnDir = new File(parent, ".svn");
-		STATUS result = STATUS.NONE;
 		if (svnDir.exists()) {
-			SVNStatus status = statusClient.doStatus(file, false);
-			if (status == null) {
-				return STATUS.NONE;
-			}
-			SVNStatusType contentStatus = status.getContentsStatus();
-			if (contentStatus.equals(SVNStatusType.STATUS_ADDED)) {
-				result = STATUS.IGNORED;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_CONFLICTED)) {
-				result = STATUS.CONFLICTS;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_DELETED)) {
-				result = STATUS.DELETED;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_IGNORED)) {
-				result = STATUS.IGNORED;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_MODIFIED)) {
-				result = STATUS.MODIFIED;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_NORMAL)) {
-				result = STATUS.NORMAL;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_OBSTRUCTED)) {
-				result = STATUS.OBSTRUCTED;
-			} else if (contentStatus.equals(SVNStatusType.STATUS_UNVERSIONED)) {
-				result = STATUS.NONE;
-			} else {
-				result = STATUS.SVNED;
-			}
-			if (file.isDirectory() && !result.equals(STATUS.IGNORED)) {
-				result = STATUS.SVNED;
-			}
-			if (status.isLocked()) {
-				result = STATUS.LOCKED;
-			}
+			statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY, false, true, true, false, svnStatusHandler, null);
+			return mapCache.get(file).status;
+		} else {
+			slot = new StatusSlot();
+			slot.timeInMs = System.currentTimeMillis();
+			slot.status = STATUS.NONE;
+			mapCache.put(file, slot);
+			return slot.status;
 		}
-
-		slot.status = result;
-		mapCache.put(file, slot);
-
-		return result;
 	}
 
 	private static class StatusSlot {
