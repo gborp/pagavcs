@@ -111,25 +111,39 @@ public class FileStatusCache {
 			StatusSlot slot = new StatusSlot();
 			slot.timeInMs = System.currentTimeMillis();
 			slot.status = getStatus(file, status);
-			mapCache.put(file, slot);
+			synchronized (mapCache) {
+				mapCache.put(file, slot);
+			}
 		}
 	}
 
-	public synchronized STATUS getStatus(File file) throws SVNException {
+	public STATUS getStatus(File file) throws SVNException {
 
-		StatusSlot slot = mapCache.get(file);
-
-		if (slot != null && ((System.currentTimeMillis() - slot.timeInMs) < CACHE_TOO_OLD)) {
-			return slot.status;
+		synchronized (mapCache) {
+			StatusSlot slot = mapCache.get(file);
+			if (slot != null && ((System.currentTimeMillis() - slot.timeInMs) < CACHE_TOO_OLD)) {
+				return slot.status;
+			}
 		}
 
 		File parent = file.getParentFile();
 		File svnDir = new File(parent, ".svn");
 		if (svnDir.exists()) {
-			statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY, false, true, true, false, svnStatusHandler, null);
-			return mapCache.get(file).status;
+			synchronized (mapCache) {
+				StatusSlot slot = mapCache.get(file);
+				if (slot != null) {
+					return slot.status;
+				}
+			}
+			synchronized (svnStatusHandler) {
+				statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY, false, true, true, false, svnStatusHandler, null);
+			}
+			synchronized (mapCache) {
+				return mapCache.get(file).status;
+
+			}
 		} else {
-			slot = new StatusSlot();
+			StatusSlot slot = new StatusSlot();
 			slot.timeInMs = System.currentTimeMillis();
 			slot.status = STATUS.NONE;
 			mapCache.put(file, slot);
