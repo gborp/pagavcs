@@ -16,23 +16,42 @@ import urllib
 
 import gtk
 import nautilus
-import gconf
+#import gconf
 
 import gobject
 import gnomevfs
 import os
 import sys
 import socket
+import threading
 
 EXECUTABLE = '/usr/bin/pagavcs'
 SEPARATOR = unicode(u'\u2015'*10)
 
 
+server_creating = False
+
+class StartPagaVCSServerThread (threading.Thread):
+
+   def __init__(self):
+        threading.Thread.__init__(self)
+        pass
+
+   def run ( self ):
+       global server_creating
+       executeCommand = EXECUTABLE+' ping'    
+       os.system(executeCommand)
+       server_creating = False
+
 
 class EmblemExtensionSignature(nautilus.InfoProvider):
     def __init__(self):
+        server_creating = True
+        StartPagaVCSServerThread().start()       
         pass
+        
     def update_file_info (self, file):
+        global server_creating
         filename = urllib.unquote(file.get_uri()[7:])
         filenameForParam = filename
         if os.path.isdir(filename):
@@ -49,20 +68,23 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
             dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
             
         if (dosvn):
-            clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            clientsocket.settimeout(1)
+            if (server_creating):
+                file.add_emblem ('pagavcs-svn')
+                return
             try:
-                clientsocket.connect(("localhost", 12905))
+                clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                clientsocket.settimeout(1)
+                clientsocket.connect(("localhost", 12905))                     
                 clientsocket.sendall("getfileinfo "+filenameForParam+"\n")
             except (socket.timeout, socket.error):
-	        executeCommand = EXECUTABLE+' ping &'    
-        	os.system(executeCommand)
+                server_creating = True
+	        StartPagaVCSServerThread().start()
         	file.add_emblem ('pagavcs-svn')
                 return
 
             data = ""
             try:
-                data = clientsocket.recv(512)
+                data = clientsocket.recv(16)
             except (socket.timeout, socket.error):
 	        file.add_emblem ('pagavcs-svn')
                 return  
@@ -90,7 +112,8 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
 
 class PagaVCS(nautilus.MenuProvider):
     def __init__(self):
-        self.client = gconf.client_get_default()
+        #self.client = gconf.client_get_default()
+        pass
         
     def _is_versioned(self, file):
         filename = urllib.unquote(file.get_uri()[7:])
