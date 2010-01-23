@@ -510,7 +510,7 @@ public class CommitGui implements Working {
 	private List<CommitListItem> getSelectedItems() {
 		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
 		for (int row : tblCommit.getSelectedRows()) {
-			lstResult.add(commitTableModel.getRow(row));
+			lstResult.add(commitTableModel.getRow(tblCommit.convertRowIndexToModel(row)));
 		}
 		return lstResult;
 	}
@@ -685,15 +685,7 @@ public class CommitGui implements Working {
 
 		public PopupupMouseListener() {}
 
-		private void hidePopup() {
-			if (ppVisible != null) {
-				ppVisible.setVisible(false);
-				ppVisible = null;
-			}
-		}
-
 		private void showPopup(MouseEvent e) {
-			hidePopup();
 			Point p = new Point(e.getX(), e.getY());
 			int rowAtPoint = tblCommit.rowAtPoint(p);
 			if (rowAtPoint == -1) {
@@ -716,7 +708,7 @@ public class CommitGui implements Working {
 			HashSet<ContentStatus> setUsedPropertyStatus = new HashSet<ContentStatus>();
 			int[] selectedRows = tblCommit.getSelectedRows();
 			for (int rowLi : selectedRows) {
-				CommitListItem li = commitTableModel.getRow(rowLi);
+				CommitListItem li = commitTableModel.getRow(tblCommit.convertRowIndexToModel(rowLi));
 				setUsedStatus.add(li.getStatus());
 				setUsedPropertyStatus.add(li.getPropertyStatus());
 			}
@@ -776,7 +768,6 @@ public class CommitGui implements Working {
 
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
-				hidePopup();
 				Point p = new Point(e.getX(), e.getY());
 				int rowAtPoint = tblCommit.rowAtPoint(p);
 				if (rowAtPoint == -1) {

@@ -66,10 +66,6 @@ public class Other implements Cancelable {
 		gui.setStatus(OtherStatus.INIT);
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		if (mgrSvn == null) {
-			Manager.showFailedDialog();
-			return;
-		}
 		SVNWCClient wcClient = mgrSvn.getWCClient();
 		gui.setStatus(OtherStatus.START);
 		try {
@@ -128,15 +124,12 @@ public class Other implements Cancelable {
 
 	public void merge(String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge) throws Exception {
 
+		setCancel(false);
 		UpdateGui updateGui = new UpdateGui(this, "Merge");
 		updateGui.display();
 		try {
 			updateGui.setStatus(ContentStatus.INIT);
 			SVNClientManager clientMgr = Manager.getSVNClientManager(new File(path));
-			if (clientMgr == null) {
-				Manager.showFailedDialog();
-				return;
-			}
 			SVNDiffClient diffClient = clientMgr.getDiffClient();
 			SVNDepth depth = SVNDepth.INFINITY;
 			boolean useAncestry = true;
@@ -155,7 +148,11 @@ public class Other implements Cancelable {
 				} else {
 					endRevision = SVNRevision.create(startRevision.getNumber());
 				}
-				rangesToMerge.add(new SVNRevisionRange(SVNRevision.create(startRevision.getNumber() - 1), endRevision));
+				if (reverseMerge) {
+					rangesToMerge.add(new SVNRevisionRange(endRevision, SVNRevision.create(startRevision.getNumber() - 1)));
+				} else {
+					rangesToMerge.add(new SVNRevisionRange(SVNRevision.create(startRevision.getNumber() - 1), endRevision));
+				}
 			}
 
 			diffClient.setEventHandler(new UpdateEventHandler(this, updateGui, new File(path)));
@@ -164,7 +161,6 @@ public class Other implements Cancelable {
 			boolean successOrExit = false;
 			while (!successOrExit) {
 				try {
-
 					diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, dryRun,
 					        recordOnly);
 					successOrExit = true;
@@ -193,16 +189,13 @@ public class Other implements Cancelable {
 	}
 
 	public void doSwitch(String wc, String toUrl, String toRevision) throws Exception {
+		setCancel(false);
 		UpdateGui updateGui = new UpdateGui(this, "Switch");
 		updateGui.display();
 		try {
 			updateGui.setStatus(ContentStatus.INIT);
 
 			SVNClientManager clientMgr = Manager.getSVNClientManager(new File(path));
-			if (clientMgr == null) {
-				Manager.showFailedDialog();
-				return;
-			}
 			SVNUpdateClient updateClient = clientMgr.getUpdateClient();
 			updateClient.setIgnoreExternals(false);
 			SVNRevision revision = null;
@@ -256,10 +249,6 @@ public class Other implements Cancelable {
 		}
 
 		SVNClientManager clientMgr = Manager.getSVNClientManager(new File(path));
-		if (clientMgr == null) {
-			Manager.showFailedDialog();
-			return null;
-		}
 		SVNLogClient logClient = clientMgr.getLogClient();
 		final ArrayList<BlameListItem> lstBlame = new ArrayList<BlameListItem>();
 		logClient.doAnnotate(new File(path), SVNRevision.HEAD, SVNRevision.create(1), blameRevision, new ISVNAnnotateHandler() {
