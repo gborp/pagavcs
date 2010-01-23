@@ -31,6 +31,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
@@ -56,26 +59,27 @@ import com.toedter.calendar.JDateChooser;
  */
 public class LogGui implements Working {
 
-	private Table                              tblLog;
-	private TableModel<LogListItem>            logTableModel;
-	private final Log                          log;
-	private JButton                            btnStop;
-	private TableModel<LogDetailListItem>      logDetailTableModel;
-	private Table                              tblDetailLog;
-	private TextArea                           taMessage;
-	private ProgressBar                        prgWorkInProgress;
-	private Label                              lblUrl;
-	private JSplitPane                         splDetail;
-	private JSplitPane                         splMain;
-	private Timer                              tmrTableRevalidate;
-	private boolean                            revalidateIsTimed;
-	private JButton                            btnShowMore;
-	private JButton                            btnShowAll;
-	private ConcurrentLinkedQueue<LogListItem> quNewItems = new ConcurrentLinkedQueue<LogListItem>();
-	private JDateChooser                       calFrom;
-	private JDateChooser                       calTo;
-	private EditField                          sfFilter;
-	private boolean                            shuttingDown;
+	private Table                                   tblLog;
+	private TableModel<LogListItem>                 logTableModel;
+	private final Log                               log;
+	private JButton                                 btnStop;
+	private TableModel<LogDetailListItem>           logDetailTableModel;
+	private Table                                   tblDetailLog;
+	private TextArea                                taMessage;
+	private ProgressBar                             prgWorkInProgress;
+	private Label                                   lblUrl;
+	private JSplitPane                              splDetail;
+	private JSplitPane                              splMain;
+	private Timer                                   tmrTableRevalidate;
+	private boolean                                 revalidateIsTimed;
+	private JButton                                 btnShowMore;
+	private JButton                                 btnShowAll;
+	private ConcurrentLinkedQueue<LogListItem>      quNewItems = new ConcurrentLinkedQueue<LogListItem>();
+	private JDateChooser                            calFrom;
+	private JDateChooser                            calTo;
+	private EditField                               sfFilter;
+	private boolean                                 shuttingDown;
+	private TableRowSorter<TableModel<LogListItem>> sorterLog;
 
 	public LogGui(Log log) {
 		this.log = log;
@@ -87,7 +91,29 @@ public class LogGui implements Working {
 		SettingsStore settingsStore = Manager.getSettings();
 		logTableModel = new TableModel<LogListItem>(new LogListItem());
 		tblLog = new Table(logTableModel);
-		tblLog.setRowSorter(new TableRowSorter<TableModel<LogListItem>>(logTableModel));
+		sorterLog = new TableRowSorter<TableModel<LogListItem>>(logTableModel);
+		sorterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
+
+			private boolean nullSafeContains(String where, String what) {
+				if (where == null) {
+					return false;
+				}
+				return where.contains(what);
+			}
+
+			public boolean include(javax.swing.RowFilter.Entry<? extends TableModel<LogListItem>, ? extends Integer> entry) {
+				String filter = sfFilter.getText();
+				if (filter.isEmpty()) {
+					return true;
+				}
+				LogListItem row = entry.getModel().getRow(entry.getIdentifier());
+
+				return nullSafeContains(row.getMessage(), filter) || nullSafeContains(row.getAuthor(), filter)
+				        || nullSafeContains(Long.toString(row.getRevision()), filter);
+			}
+
+		});
+		tblLog.setRowSorter(sorterLog);
 		new NullCellRenderer(tblLog);
 		tblLog.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -105,6 +131,7 @@ public class LogGui implements Working {
 		JScrollPane spDetailLog = new JScrollPane(tblDetailLog);
 
 		taMessage = new TextArea();
+		taMessage.setEditable(false);
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		splDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spDetailLog);
@@ -116,14 +143,26 @@ public class LogGui implements Working {
 			splMain.setDividerLocation(settingsStore.getGuiLogSeparatorMain());
 		}
 
-		// table.addMouseListener(new PopupupMouseListener());
-
 		calFrom = new JDateChooser();
 		calFrom.setEnabled(false);
 		calTo = new JDateChooser();
 		calTo.setEnabled(false);
 		sfFilter = new EditField(20);
-		sfFilter.setEnabled(false);
+		sfFilter.setToolTipText("Type your filter text here");
+		sfFilter.getDocument().addDocumentListener(new DocumentListener() {
+
+			public void changedUpdate(DocumentEvent e) {
+				sorterLog.modelStructureChanged();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				sorterLog.modelStructureChanged();
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				sorterLog.modelStructureChanged();
+			}
+		});
 		lblUrl = new Label();
 
 		JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -344,10 +383,10 @@ public class LogGui implements Working {
 		}
 	}
 
-	private class DetailRevertChangesAction extends ThreadAction {
+	private class DetailRevertChangesFromThisRevisionAction extends ThreadAction {
 
-		public DetailRevertChangesAction() {
-			super("Revert changes");
+		public DetailRevertChangesFromThisRevisionAction() {
+			super("Revert changes from this revision");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
@@ -417,7 +456,7 @@ public class LogGui implements Working {
 		public DetailPopupupMouseListener() {
 			ppModified = new JPopupMenu();
 			ppModified.add(new DetailShowChangesAction());
-			ppModified.add(new DetailRevertChangesAction());
+			ppModified.add(new DetailRevertChangesFromThisRevisionAction());
 		}
 
 		private void showPopup(MouseEvent e) {
