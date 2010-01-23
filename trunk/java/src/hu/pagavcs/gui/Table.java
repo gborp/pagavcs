@@ -46,17 +46,24 @@ public class Table<L extends ListItem> extends JTable {
 
 			public void tableChanged(TableModelEvent e) {
 				if (e.getType() == TableModelEvent.INSERT) {
-					try {
-						new OnSwing(true) {
+					new Thread(new Runnable() {
 
-							protected void process() throws Exception {
-								resizeColumns();
+						public void run() {
+							try {
+								Thread.currentThread().sleep(500);
+								new OnSwing(true) {
+
+									protected void process() throws Exception {
+										resizeColumns();
+									}
+
+								}.run();
+							} catch (Exception e1) {
+								Manager.handle(e1);
 							}
+						}
 
-						}.run();
-					} catch (Exception e1) {
-						Manager.handle(e1);
-					}
+					}).start();
 
 				}
 			}
