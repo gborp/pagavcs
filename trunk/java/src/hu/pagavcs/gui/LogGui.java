@@ -99,7 +99,7 @@ public class LogGui implements Working {
 
 		logDetailTableModel = new TableModel<LogDetailListItem>(new LogDetailListItem());
 		tblDetailLog = new Table(logDetailTableModel);
-		tblDetailLog.addMouseListener(new PopupupMouseListener());
+		tblDetailLog.addMouseListener(new DetailPopupupMouseListener());
 		tblDetailLog.setRowSorter(new TableRowSorter<TableModel<LogDetailListItem>>(logDetailTableModel));
 		new StatusCellRendererForLogDetailListItem(tblDetailLog);
 		JScrollPane spDetailLog = new JScrollPane(tblDetailLog);
@@ -317,35 +317,44 @@ public class LogGui implements Working {
 		}
 	}
 
+	private LogListItem getSelectedLogItem() {
+		return logTableModel.getRow(tblLog.convertRowIndexToModel(tblLog.getSelectedRow()));
+	}
+
+	private List<LogDetailListItem> getSelectedDetailLogItems() {
+		ArrayList<LogDetailListItem> lstResult = new ArrayList<LogDetailListItem>();
+		for (int row : tblDetailLog.getSelectedRows()) {
+
+			lstResult.add(logDetailTableModel.getRow(tblDetailLog.convertRowIndexToModel(row)));
+		}
+		return lstResult;
+	}
+
 	private class DetailShowChangesAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public DetailShowChangesAction(PopupupMouseListener popupupMouseListener) {
+		public DetailShowChangesAction() {
 			super("Show changes");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogDetailListItem liDetail = popupupMouseListener.getSelected();
-			LogListItem liLog = logTableModel.getRow(tblLog.getSelectedRow());
-			log.showChanges(liDetail.getPath(), liLog.getRevision());
+			LogListItem liLog = getSelectedLogItem();
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				log.showChanges(liDetail.getPath(), liLog.getRevision());
+			}
 		}
 	}
 
 	private class DetailRevertChangesAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public DetailRevertChangesAction(PopupupMouseListener popupupMouseListener) {
+		public DetailRevertChangesAction() {
 			super("Revert changes");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogDetailListItem liDetail = popupupMouseListener.getSelected();
-			LogListItem liLog = logTableModel.getRow(tblLog.getSelectedRow());
-			log.revertChanges(liDetail.getPath(), liLog.getRevision());
+			LogListItem liLog = getSelectedLogItem();
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				log.revertChanges(liDetail.getPath(), liLog.getRevision());
+			}
 		}
 	}
 
@@ -401,46 +410,51 @@ public class LogGui implements Working {
 
 	}
 
-	private class PopupupMouseListener extends MouseAdapter {
+	private class DetailPopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu        ppVisible;
-		private JPopupMenu        ppModified;
-		private LogDetailListItem selected;
+		private JPopupMenu ppModified;
 
-		public PopupupMouseListener() {
+		public DetailPopupupMouseListener() {
 			ppModified = new JPopupMenu();
-			ppModified.add(new DetailShowChangesAction(this));
-			ppModified.add(new DetailRevertChangesAction(this));
+			ppModified.add(new DetailShowChangesAction());
+			ppModified.add(new DetailRevertChangesAction());
 		}
 
-		public LogDetailListItem getSelected() {
-			return selected;
-		}
+		private void showPopup(MouseEvent e) {
+			Point p = new Point(e.getX(), e.getY());
+			int row = tblDetailLog.rowAtPoint(p);
+			if (row == -1) {
+				return;
+			}
 
-		private void hidePopup() {
-			if (ppVisible != null) {
-				ppVisible.setVisible(false);
-				ppVisible = null;
+			tblDetailLog.getSelectionModel().setSelectionInterval(row, row);
+			LogDetailListItem selected = logDetailTableModel.getRow(tblDetailLog.convertRowIndexToModel(row));
+
+			if (selected.getAction().equals(ContentStatus.MODIFIED)) {
+				JPopupMenu ppVisible = ppModified;
+				ppVisible.setInvoker(tblDetailLog);
+				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				ppVisible.setVisible(true);
+				e.consume();
 			}
 		}
 
 		public void mousePressed(MouseEvent e) {
-			hidePopup();
-			if (e.getButton() == MouseEvent.BUTTON3) {
-
-				Point p = new Point(e.getX(), e.getY());
-				int row = tblDetailLog.rowAtPoint(p);
-				selected = logDetailTableModel.getRow(row);
-
-				if (selected.getAction().equals(ContentStatus.MODIFIED)) {
-					ppVisible = ppModified;
-					ppVisible.setInvoker(tblDetailLog);
-					ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
-					ppVisible.setVisible(true);
-					e.consume();
-				}
+			if (e.isPopupTrigger()) {
+				showPopup(e);
 			}
-			super.mousePressed(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+
+			}
 		}
 	}
 

@@ -281,7 +281,6 @@ public class UpdateGui {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			popupupMouseListener.hidePopup();
 			StringBuilder result = new StringBuilder();
 			for (UpdateListItem li : tableModel.getAllData()) {
 				result.append(li.getStatus() + " " + li.getPath() + "\n");
@@ -300,7 +299,6 @@ public class UpdateGui {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			popupupMouseListener.hidePopup();
 			UpdateListItem li = popupupMouseListener.getSelected();
 			Manager.setClipboard(li.getStatus() + " " + li.getPath());
 		}
@@ -316,7 +314,6 @@ public class UpdateGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			popupupMouseListener.hidePopup();
 			UpdateListItem li = popupupMouseListener.getSelected();
 			new Log(li.getPath()).execute();
 		}
@@ -333,7 +330,6 @@ public class UpdateGui {
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				popupupMouseListener.hidePopup();
 				UpdateListItem li = popupupMouseListener.getSelected();
 				Manager.resolveConflictUsingTheirs(li.getPath());
 				li.setContentStatus(null);
@@ -356,7 +352,6 @@ public class UpdateGui {
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				popupupMouseListener.hidePopup();
 				UpdateListItem li = popupupMouseListener.getSelected();
 				Manager.resolveConflictUsingMine(li.getPath());
 				li.setContentStatus(null);
@@ -379,7 +374,6 @@ public class UpdateGui {
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				popupupMouseListener.hidePopup();
 				UpdateListItem li = popupupMouseListener.getSelected();
 				resolveConflict(li);
 
@@ -421,40 +415,40 @@ public class UpdateGui {
 			return selected;
 		}
 
-		private void hidePopup() {
-			if (ppVisible != null) {
-				ppVisible.setVisible(false);
-				ppVisible = null;
+		public void showPopup(MouseEvent e) {
+			Point p = new Point(e.getX(), e.getY());
+			int row = tblUpdate.rowAtPoint(p);
+			if (row == -1) {
+				return;
 			}
+			selected = tableModel.getRow(tblUpdate.convertRowIndexToModel(row));
+			ContentStatus status = selected.getStatus();
+
+			if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
+				ppVisible = ppConflicted;
+			} else if (ContentStatus.ADDED.equals(status) || ContentStatus.DELETED.equals(status) || ContentStatus.EXISTS.equals(status)
+			        || ContentStatus.EXTERNAL.equals(status) || ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status)
+			        || ContentStatus.UPDATE.equals(status)) {
+				ppVisible = ppUpdated;
+			} else {
+				ppVisible = ppCompleted;
+			}
+			ppVisible.setInvoker(tblUpdate);
+			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+			ppVisible.setVisible(true);
+			e.consume();
 		}
 
 		public void mousePressed(MouseEvent e) {
-			hidePopup();
-			if (e.getButton() == MouseEvent.BUTTON3) {
-
-				Point p = new Point(e.getX(), e.getY());
-				int row = tblUpdate.rowAtPoint(p);
-				if (row == -1) {
-					return;
-				}
-				selected = tableModel.getRow(tblUpdate.convertRowIndexToModel(row));
-				ContentStatus status = selected.getStatus();
-
-				if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
-					ppVisible = ppConflicted;
-				} else if (ContentStatus.ADDED.equals(status) || ContentStatus.DELETED.equals(status) || ContentStatus.EXISTS.equals(status)
-				        || ContentStatus.EXTERNAL.equals(status) || ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status)
-				        || ContentStatus.UPDATE.equals(status)) {
-					ppVisible = ppUpdated;
-				} else {
-					ppVisible = ppCompleted;
-				}
-				ppVisible.setInvoker(tblUpdate);
-				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
-				ppVisible.setVisible(true);
-				e.consume();
+			if (e.isPopupTrigger()) {
+				showPopup(e);
 			}
-			super.mousePressed(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
 		}
 	}
 }

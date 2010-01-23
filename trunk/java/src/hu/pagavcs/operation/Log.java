@@ -157,9 +157,9 @@ public class Log {
 			fileNew.deleteOnExit();
 			fileOld.setReadOnly();
 			fileOld.deleteOnExit();
-
-			Process process = Runtime.getRuntime().exec(
-			        "meld -L " + fileNameOld + " " + tempPrefix + fileNameOld + " -L " + fileNameNew + " " + tempPrefix + fileNameNew);
+			ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileNameOld, tempPrefix + fileNameOld, "-L " + fileNameNew, tempPrefix
+			        + fileNameNew);
+			Process process = processBuilder.start();
 			gui.workEnded();
 			process.waitFor();
 		} catch (Exception e) {

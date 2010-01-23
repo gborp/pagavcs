@@ -213,7 +213,8 @@ public class Commit {
 			String wcFilePath = wcFile.getPath();
 			String fileName = wcFilePath.substring(wcFilePath.lastIndexOf('/') + 1);
 
-			Process process = Runtime.getRuntime().exec("meld -L " + fileOld.getName() + " " + fileOld.getPath() + " -L " + fileName + " " + wcFilePath);
+			ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileOld.getName(), fileOld.getPath(), "-L " + fileName, wcFilePath);
+			Process process = processBuilder.start();
 			gui.workEnded();
 			process.waitFor();
 
