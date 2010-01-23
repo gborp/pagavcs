@@ -50,7 +50,7 @@ public class Table<L extends ListItem> extends JTable {
 
 						public void run() {
 							try {
-								Thread.currentThread().sleep(500);
+								Thread.sleep(500);
 								new OnSwing(true) {
 
 									protected void process() throws Exception {
