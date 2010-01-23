@@ -136,7 +136,11 @@ public class FileStatusCache {
 				}
 			}
 			synchronized (svnStatusHandler) {
-				statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY, false, true, true, false, svnStatusHandler, null);
+				try {
+					statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY, false, true, true, false, svnStatusHandler, null);
+				} catch (Exception ex) {
+					return STATUS.NONE;
+				}
 			}
 			synchronized (mapCache) {
 				return mapCache.get(file).status;
