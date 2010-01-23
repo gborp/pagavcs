@@ -60,10 +60,10 @@ import com.toedter.calendar.JDateChooser;
 public class LogGui implements Working {
 
 	private Table                                   tblLog;
-	private TableModel<LogListItem>                 logTableModel;
+	private TableModel<LogListItem>                 tmdlLog;
 	private final Log                               log;
 	private JButton                                 btnStop;
-	private TableModel<LogDetailListItem>           logDetailTableModel;
+	private TableModel<LogDetailListItem>           tmdlLogDetail;
 	private Table                                   tblDetailLog;
 	private TextArea                                taMessage;
 	private ProgressBar                             prgWorkInProgress;
@@ -89,9 +89,9 @@ public class LogGui implements Working {
 
 		tmrTableRevalidate = new Timer("Revalidate table");
 		SettingsStore settingsStore = Manager.getSettings();
-		logTableModel = new TableModel<LogListItem>(new LogListItem());
-		tblLog = new Table(logTableModel);
-		sorterLog = new TableRowSorter<TableModel<LogListItem>>(logTableModel);
+		tmdlLog = new TableModel<LogListItem>(new LogListItem());
+		tblLog = new Table<LogListItem>(tmdlLog);
+		sorterLog = new TableRowSorter<TableModel<LogListItem>>(tmdlLog);
 		sorterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
 
 			private boolean nullSafeContains(String where, String what) {
@@ -123,15 +123,17 @@ public class LogGui implements Working {
 		});
 		JScrollPane spLog = new JScrollPane(tblLog);
 
-		logDetailTableModel = new TableModel<LogDetailListItem>(new LogDetailListItem());
-		tblDetailLog = new Table(logDetailTableModel);
+		tmdlLogDetail = new TableModel<LogDetailListItem>(new LogDetailListItem());
+		tblDetailLog = new Table<LogDetailListItem>(tmdlLogDetail);
 		tblDetailLog.addMouseListener(new DetailPopupupMouseListener());
-		tblDetailLog.setRowSorter(new TableRowSorter<TableModel<LogDetailListItem>>(logDetailTableModel));
+		tblDetailLog.setRowSorter(new TableRowSorter<TableModel<LogDetailListItem>>(tmdlLogDetail));
 		new StatusCellRendererForLogDetailListItem(tblDetailLog);
 		JScrollPane spDetailLog = new JScrollPane(tblDetailLog);
 
 		taMessage = new TextArea();
 		taMessage.setEditable(false);
+		taMessage.setWrapStyleWord(true);
+		taMessage.setLineWrap(true);
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		splDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spDetailLog);
@@ -313,7 +315,7 @@ public class LogGui implements Working {
 								lstLi.add(li);
 							}
 						}
-						logTableModel.addLines(lstLi);
+						tmdlLog.addLines(lstLi);
 					}
 				}.run();
 			} catch (Exception e) {
@@ -342,9 +344,9 @@ public class LogGui implements Working {
 		}
 
 		tblDetailLog.getSelectionModel().clearSelection();
-		LogListItem liLog = logTableModel.getRow(tblLog.convertRowIndexToModel(selectedRow));
+		LogListItem liLog = tmdlLog.getRow(tblLog.convertRowIndexToModel(selectedRow));
 		taMessage.setText(liLog.getMessage());
-		logDetailTableModel.clear();
+		tmdlLogDetail.clear();
 		for (SVNLogEntryPath liEntryPath : liLog.getChanges().values()) {
 			LogDetailListItem liDetail = new LogDetailListItem();
 			liDetail.setPath(liEntryPath.getPath());
@@ -352,19 +354,19 @@ public class LogGui implements Working {
 			liDetail.setCopyFromPath(liEntryPath.getCopyPath());
 			liDetail.setRevision(liEntryPath.getCopyRevision() != -1 ? liEntryPath.getCopyRevision() : null);
 			liDetail.setKind(liEntryPath.getKind());
-			logDetailTableModel.addLine(liDetail);
+			tmdlLogDetail.addLine(liDetail);
 		}
 	}
 
 	private LogListItem getSelectedLogItem() {
-		return logTableModel.getRow(tblLog.convertRowIndexToModel(tblLog.getSelectedRow()));
+		return tmdlLog.getRow(tblLog.convertRowIndexToModel(tblLog.getSelectedRow()));
 	}
 
 	private List<LogDetailListItem> getSelectedDetailLogItems() {
 		ArrayList<LogDetailListItem> lstResult = new ArrayList<LogDetailListItem>();
 		for (int row : tblDetailLog.getSelectedRows()) {
 
-			lstResult.add(logDetailTableModel.getRow(tblDetailLog.convertRowIndexToModel(row)));
+			lstResult.add(tmdlLogDetail.getRow(tblDetailLog.convertRowIndexToModel(row)));
 		}
 		return lstResult;
 	}
@@ -406,7 +408,7 @@ public class LogGui implements Working {
 		public void actionProcess(ActionEvent e) throws Exception {
 			workStarted();
 			try {
-				List<LogListItem> allRetrivedLogs = logTableModel.getAllData();
+				List<LogListItem> allRetrivedLogs = tmdlLog.getAllData();
 				if (!allRetrivedLogs.isEmpty()) {
 					LogListItem lastLi = allRetrivedLogs.get(allRetrivedLogs.size() - 1);
 					if (lastLi.getRevision() > 1) {
@@ -431,7 +433,7 @@ public class LogGui implements Working {
 		public void actionProcess(ActionEvent e) throws Exception {
 			workStarted();
 			try {
-				List<LogListItem> allRetrivedLogs = logTableModel.getAllData();
+				List<LogListItem> allRetrivedLogs = tmdlLog.getAllData();
 				if (!allRetrivedLogs.isEmpty()) {
 					LogListItem lastLi = allRetrivedLogs.get(allRetrivedLogs.size() - 1);
 					if (lastLi.getRevision() > 1) {
@@ -467,7 +469,7 @@ public class LogGui implements Working {
 			}
 
 			tblDetailLog.getSelectionModel().setSelectionInterval(row, row);
-			LogDetailListItem selected = logDetailTableModel.getRow(tblDetailLog.convertRowIndexToModel(row));
+			LogDetailListItem selected = tmdlLogDetail.getRow(tblDetailLog.convertRowIndexToModel(row));
 
 			if (selected.getAction().equals(ContentStatus.MODIFIED)) {
 				JPopupMenu ppVisible = ppModified;
