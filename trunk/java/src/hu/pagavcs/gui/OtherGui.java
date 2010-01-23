@@ -205,7 +205,7 @@ public class OtherGui implements Working, Cancelable {
 	private void doMerge() throws Exception {
 		try {
 			prgBusy.startProgress();
-			other.merge(sfRepo.getText(), sfWorkingCopy.getText(), sfUrlToMergeFrom.getText().trim(), sfRevisionRange.getText().trim(), cbReverseMerge
+			other.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), sfUrlToMergeFrom.getText().trim(), sfRevisionRange.getText().trim(), cbReverseMerge
 			        .isSelected());
 		} finally {
 			prgBusy.stopProgress();

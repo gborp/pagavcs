@@ -8,16 +8,11 @@ import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.UpdateGui;
 import hu.pagavcs.operation.Update.UpdateContentStatus;
 
-import java.io.File;
-
 import org.tmatesoft.svn.core.SVNCancelException;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.ISVNEventHandler;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNEventAction;
-import org.tmatesoft.svn.core.wc.SVNStatus;
-import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 
 /**
@@ -33,16 +28,14 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-class UpdateEventHandler implements ISVNEventHandler {
+public class UpdateEventHandler implements ISVNEventHandler {
 
 	private UpdateGui        gui;
 	private final Cancelable cancelable;
-	private final File       path;
 
-	public UpdateEventHandler(Cancelable cancelable, UpdateGui gui, File path) {
+	public UpdateEventHandler(Cancelable cancelable, UpdateGui gui) {
 		this.cancelable = cancelable;
 		this.gui = gui;
-		this.path = path;
 	}
 
 	public void handleEvent(SVNEvent event, double progress) throws SVNException {
@@ -75,12 +68,7 @@ class UpdateEventHandler implements ISVNEventHandler {
 			} else if (SVNEventAction.UPDATE_UPDATE.equals(action)) {
 				gui.addItem(fileName, updateContentStatus, ContentStatus.UPDATE);
 			} else if (SVNEventAction.UPDATE_COMPLETED.equals(action)) {
-
-				SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-				SVNStatusClient statusClient = mgrSvn.getStatusClient();
-				SVNStatus svnStatus = statusClient.doStatus(path, false);
-
-				gui.addItem("Revision number: " + svnStatus.getRevision().getNumber(), updateContentStatus, ContentStatus.COMPLETED);
+				gui.addItem("Revision number: " + event.getRevision(), updateContentStatus, ContentStatus.COMPLETED);
 			}
 
 			// TODO SVNEventAction.MERGE_COMPLETE
