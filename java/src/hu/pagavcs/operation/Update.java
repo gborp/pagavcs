@@ -54,7 +54,7 @@ public class Update implements Cancelable {
 			gui.setRepo(Manager.getInfo(path).getURL().toDecodedString());
 
 			SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
-			updateClient.setEventHandler(new UpdateEventHandler(this, gui, new File(path)));
+			updateClient.setEventHandler(new UpdateEventHandler(this, gui));
 			gui.setStatus(ContentStatus.STARTED);
 			boolean successOrExit = false;
 			while (!successOrExit) {

@@ -3,13 +3,13 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.BlameListItem;
 import hu.pagavcs.gui.OtherGui;
 import hu.pagavcs.gui.UpdateGui;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -24,11 +24,9 @@ import org.tmatesoft.svn.core.wc.ISVNAnnotateHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNCopyClient;
 import org.tmatesoft.svn.core.wc.SVNCopySource;
-import org.tmatesoft.svn.core.wc.SVNDiffClient;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNRevisionRange;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 
@@ -95,11 +93,13 @@ public class Other implements Cancelable {
 		return autoClose;
 	}
 
-	public void setCancel(boolean cancel) {
-		// if (cancel) {
-		// gui.addItem("", UpdateStatus.CANCEL);
-		// }
-		this.cancel = cancel;
+	public void setCancel(boolean cancel) throws Exception {
+		if (this.cancel != cancel) {
+			this.cancel = cancel;
+			if (cancel) {
+				gui.setCancel(true);
+			}
+		}
 	}
 
 	public boolean isCancel() {
@@ -114,78 +114,9 @@ public class Other implements Cancelable {
 		copyClient.doCopy(source, dest, !copy, true, true);
 	}
 
-	private SVNRevision decodeSVNRevision(String str) {
-		str = str.trim();
-		if (str.equalsIgnoreCase("head")) {
-			return SVNRevision.HEAD;
-		}
-		return SVNRevision.create(Long.valueOf(str));
-	}
+	public void doMerge(String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge) throws Exception {
 
-	public void merge(String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge) throws Exception {
-
-		setCancel(false);
-		UpdateGui updateGui = new UpdateGui(this, "Merge");
-		updateGui.display();
-		try {
-			updateGui.setStatus(ContentStatus.INIT);
-			SVNClientManager clientMgr = Manager.getSVNClientManager(new File(path));
-			SVNDiffClient diffClient = clientMgr.getDiffClient();
-			SVNDepth depth = SVNDepth.INFINITY;
-			boolean useAncestry = true;
-			boolean force = false;
-			boolean dryRun = false;
-			boolean recordOnly = false;
-			Collection<SVNRevisionRange> rangesToMerge = new ArrayList<SVNRevisionRange>();
-			String[] ranges = revisionRange.split(",");
-			for (String range : ranges) {
-				range = range.trim();
-				String[] rangeSplitted = range.split("-");
-				SVNRevision startRevision = decodeSVNRevision(rangeSplitted[0]);
-				SVNRevision endRevision;
-				if (rangeSplitted.length > 1) {
-					endRevision = decodeSVNRevision(rangeSplitted[0]);
-				} else {
-					endRevision = SVNRevision.create(startRevision.getNumber());
-				}
-				if (reverseMerge) {
-					rangesToMerge.add(new SVNRevisionRange(endRevision, SVNRevision.create(startRevision.getNumber() - 1)));
-				} else {
-					rangesToMerge.add(new SVNRevisionRange(SVNRevision.create(startRevision.getNumber() - 1), endRevision));
-				}
-			}
-
-			diffClient.setEventHandler(new UpdateEventHandler(this, updateGui, new File(path)));
-			updateGui.setStatus(ContentStatus.STARTED);
-
-			boolean successOrExit = false;
-			while (!successOrExit) {
-				try {
-					diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, dryRun,
-					        recordOnly);
-					successOrExit = true;
-				} catch (SVNException ex) {
-					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
-						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
-						        JOptionPane.YES_NO_OPTION);
-						if (choosed == JOptionPane.YES_OPTION) {
-							Cleanup cleanup = new Cleanup(path);
-							cleanup.setAutoClose(true);
-							cleanup.execute();
-						} else {
-							gui.setStatus(OtherStatus.CANCEL);
-							successOrExit = true;
-						}
-					} else {
-						throw ex;
-					}
-				}
-			}
-			updateGui.setStatus(ContentStatus.COMPLETED);
-		} catch (Exception ex) {
-			updateGui.setStatus(ContentStatus.FAILED);
-			throw ex;
-		}
+		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, revisionRange, reverseMerge);
 	}
 
 	public void doSwitch(String wc, String toUrl, String toRevision) throws Exception {
@@ -207,7 +138,7 @@ public class Other implements Cancelable {
 				revision = SVNRevision.create(Long.valueOf(toRevision));
 			}
 
-			updateClient.setEventHandler(new UpdateEventHandler(this, updateGui, new File(path)));
+			updateClient.setEventHandler(new UpdateEventHandler(this, updateGui));
 			updateGui.setStatus(ContentStatus.STARTED);
 
 			boolean successOrExit = false;
