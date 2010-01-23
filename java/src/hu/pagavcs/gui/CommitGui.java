@@ -75,8 +75,7 @@ public class CommitGui implements Working {
 	private JComboBox                  cboMessage;
 	private int                        logMinSize;
 	private Label                      lblWorkingCopy;
-	private JButton                    btnSelectAll;
-	private JButton                    btnSelectNone;
+	private JButton                    btnSelectAllNone;
 	private JButton                    btnSelectNonVersioned;
 	private JButton                    btnSelectAdded;
 	private JButton                    btnSelectDeleted;
@@ -166,8 +165,7 @@ public class CommitGui implements Working {
 			}
 		});
 
-		btnSelectAll = new JButton(new SelectAllAction());
-		btnSelectNone = new JButton(new SelectNoneAction());
+		btnSelectAllNone = new JButton(new SelectAllNoneAction());
 		btnSelectNonVersioned = new JButton(new SelectNonVersionedAction());
 		btnSelectAdded = new JButton(new SelectAddedAction());
 		btnSelectDeleted = new JButton(new SelectDeletedAction());
@@ -175,16 +173,15 @@ public class CommitGui implements Working {
 		btnSelectFiles = new JButton(new SelectFilesAction());
 		btnSelectDirectories = new JButton(new SelectDirectoriesAction());
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p"));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p"));
 		pnlCheck.add(new JLabel("Check:"), cc.xy(1, 1));
-		pnlCheck.add(btnSelectAll, cc.xy(3, 1));
-		pnlCheck.add(btnSelectNone, cc.xy(5, 1));
-		pnlCheck.add(btnSelectNonVersioned, cc.xy(7, 1));
-		pnlCheck.add(btnSelectAdded, cc.xy(9, 1));
-		pnlCheck.add(btnSelectDeleted, cc.xy(11, 1));
-		pnlCheck.add(btnSelectModified, cc.xy(13, 1));
-		pnlCheck.add(btnSelectFiles, cc.xy(15, 1));
-		pnlCheck.add(btnSelectDirectories, cc.xy(17, 1));
+		pnlCheck.add(btnSelectAllNone, cc.xy(3, 1));
+		pnlCheck.add(btnSelectNonVersioned, cc.xy(5, 1));
+		pnlCheck.add(btnSelectAdded, cc.xy(7, 1));
+		pnlCheck.add(btnSelectDeleted, cc.xy(9, 1));
+		pnlCheck.add(btnSelectModified, cc.xy(11, 1));
+		pnlCheck.add(btnSelectFiles, cc.xy(13, 1));
+		pnlCheck.add(btnSelectDirectories, cc.xy(15, 1));
 
 		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
@@ -267,8 +264,7 @@ public class CommitGui implements Working {
 					workStarted();
 					tblCommit.showMessage("Working...", Manager.ICON_INFORMATION);
 
-					btnSelectAll.setEnabled(false);
-					btnSelectNone.setEnabled(false);
+					btnSelectAllNone.setEnabled(false);
 					btnSelectNonVersioned.setEnabled(false);
 					btnSelectAdded.setEnabled(false);
 					btnSelectDeleted.setEnabled(false);
@@ -350,8 +346,7 @@ public class CommitGui implements Working {
 
 		}
 
-		btnSelectAll.setEnabled(!list.isEmpty());
-		btnSelectNone.setEnabled(!list.isEmpty());
+		btnSelectAllNone.setEnabled(true);
 		btnSelectNonVersioned.setEnabled(hasNonVersioned);
 		btnSelectAdded.setEnabled(hasAdded);
 		btnSelectDeleted.setEnabled(hasDeleted);
@@ -786,8 +781,14 @@ public class CommitGui implements Working {
 
 	private abstract class AbstractSelectAction extends ThreadAction {
 
+		private boolean hasSelected;
+
 		public AbstractSelectAction(String string) {
 			super(string);
+		}
+
+		public boolean hasSelected() {
+			return hasSelected;
 		}
 
 		public abstract boolean doSelect(CommitListItem li);
@@ -795,6 +796,14 @@ public class CommitGui implements Working {
 		public abstract boolean doUnSelect(CommitListItem li);
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			hasSelected = false;
+			for (CommitListItem li : commitTableModel.getAllData()) {
+				if (li.isSelected()) {
+					hasSelected = true;
+					break;
+				}
+			}
+
 			for (CommitListItem li : commitTableModel.getAllData()) {
 				if (doSelect(li)) {
 					li.setSelected(true);
@@ -813,41 +822,33 @@ public class CommitGui implements Working {
 		}
 	}
 
-	private class SelectAllAction extends AbstractSelectAction {
+	private class SelectAllNoneAction extends AbstractSelectAction {
 
-		public SelectAllAction() {
-			super("All");
+		public SelectAllNoneAction() {
+			super("-+All");
 		}
 
 		public boolean doSelect(CommitListItem li) {
-			return true;
+			if (!hasSelected()) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-
-	}
-
-	private class SelectNoneAction extends AbstractSelectAction {
-
-		public SelectNoneAction() {
-			super("None");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return false;
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return true;
+			if (hasSelected()) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
 	private class SelectNonVersionedAction extends AbstractSelectAction {
 
 		public SelectNonVersionedAction() {
-			super("Non-versioned");
+			super("+Non-versioned");
 		}
 
 		public boolean doSelect(CommitListItem li) {
@@ -862,7 +863,7 @@ public class CommitGui implements Working {
 	private class SelectAddedAction extends AbstractSelectAction {
 
 		public SelectAddedAction() {
-			super("Added");
+			super("+Added");
 		}
 
 		public boolean doSelect(CommitListItem li) {
@@ -877,7 +878,7 @@ public class CommitGui implements Working {
 	private class SelectDeletedAction extends AbstractSelectAction {
 
 		public SelectDeletedAction() {
-			super("Deleted");
+			super("+Deleted");
 		}
 
 		public boolean doSelect(CommitListItem li) {
@@ -892,7 +893,7 @@ public class CommitGui implements Working {
 	private class SelectModifiedAction extends AbstractSelectAction {
 
 		public SelectModifiedAction() {
-			super("Modified");
+			super("+Modified");
 		}
 
 		public boolean doSelect(CommitListItem li) {
@@ -907,7 +908,7 @@ public class CommitGui implements Working {
 	private class SelectFilesAction extends AbstractSelectAction {
 
 		public SelectFilesAction() {
-			super("Files");
+			super("+Files");
 		}
 
 		public boolean doSelect(CommitListItem li) {
@@ -922,7 +923,7 @@ public class CommitGui implements Working {
 	private class SelectDirectoriesAction extends AbstractSelectAction {
 
 		public SelectDirectoriesAction() {
-			super("Directories");
+			super("+Directories");
 		}
 
 		public boolean doSelect(CommitListItem li) {
