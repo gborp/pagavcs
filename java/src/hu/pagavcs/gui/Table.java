@@ -1,5 +1,8 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.OnSwing;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -26,14 +29,16 @@ import javax.swing.table.TableColumn;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Table extends JTable {
+public class Table<L extends ListItem> extends JTable {
 
-	private static final long serialVersionUID = -1;
-	private Label             lblMessage;
+	private static final long   serialVersionUID = -1;
+	private Label               lblMessage;
+	private final TableModel<L> tableModel;
 
-	public Table(TableModel<?> tableModel) {
+	public Table(TableModel<L> tableModel) {
 		super(tableModel);
-		setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		this.tableModel = tableModel;
+		setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setFillsViewportHeight(true);
 		setShowGrid(false);
@@ -41,7 +46,18 @@ public class Table extends JTable {
 
 			public void tableChanged(TableModelEvent e) {
 				if (e.getType() == TableModelEvent.INSERT) {
-					resizeColumns();
+					try {
+						new OnSwing(true) {
+
+							protected void process() throws Exception {
+								resizeColumns();
+							}
+
+						}.run();
+					} catch (Exception e1) {
+						Manager.handle(e1);
+					}
+
 				}
 			}
 		});
@@ -71,18 +87,23 @@ public class Table extends JTable {
 	}
 
 	public void resizeColumns() {
-		for (int i = 0; i < getColumnCount(); i++) {
+		int columnCount = getColumnCount();
+		for (int i = 0; i < columnCount; i++) {
 			DefaultTableColumnModel colModel = (DefaultTableColumnModel) getColumnModel();
 			TableColumn col = colModel.getColumn(i);
 			int width = 0;
 
-			TableCellRenderer renderer = col.getHeaderRenderer();
-			for (int r = 0; r < getRowCount(); r++) {
-				renderer = getCellRenderer(r, i);
-				Component comp = renderer.getTableCellRendererComponent(this, getValueAt(r, i), false, false, r, i);
+			TableCellRenderer renderer = null;// col.getHeaderRenderer();
+			renderer = getCellRenderer(0, i);
+			for (L li : tableModel.getAllData()) {
+				Component comp = renderer.getTableCellRendererComponent(this, li.getValue(i), false, false, 0, i);
 				width = Math.max(width, comp.getPreferredSize().width);
 			}
-			col.setPreferredWidth(width + 8);
+			col.setMinWidth(width + 12);
+			col.setPreferredWidth(width + 12);
+			if (i != columnCount - 1) {
+				col.setMaxWidth(width + 12);
+			}
 		}
 	}
 
