@@ -1,7 +1,8 @@
 package hu.pagavcs.operation;
 
+import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
-import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.LogGui;
 
 import java.io.File;
@@ -19,7 +20,6 @@ import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNEventHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNDiffClient;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -38,7 +38,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Log {
+public class Log implements Cancelable {
 
 	public enum ShowLogStatus {
 		INIT, STARTED, CANCEL, COMPLETED
@@ -189,11 +189,17 @@ public class Log {
 		}
 	}
 
-	public void revertChanges(String path, long revision) throws SVNException, PagaException {
-		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		SVNDiffClient diffClient = mgrSvn.getDiffClient();
-		// TODO revertChanges
-		throw new RuntimeException("not implemented");
+	public void revertChanges(String revertPath, long revision) throws Exception {
+
+		SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+		SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath() + revertPath,
+		        true);
+
+		String pathRevert = svnUrl.getPath();
+		String pathWc = getRootUrl().getPath();
+		String pathRevertWc = path + pathRevert.substring(pathWc.length());
+
+		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), Long.toString(revision), true);
 	}
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {

@@ -74,7 +74,7 @@ public class Checkout implements Cancelable {
 
 			SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl);
 			SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
-			updateClient.setEventHandler(new UpdateEventHandler(this, updateGui, new File(path)));
+			updateClient.setEventHandler(new UpdateEventHandler(this, updateGui));
 			updateGui.setStatus(ContentStatus.STARTED);
 			updateClient.doCheckout(svnUrl, new File(dir), SVNRevision.UNDEFINED, svnRevision, SVNDepth.INFINITY, true);
 		} catch (Exception ex) {
