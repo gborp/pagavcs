@@ -1,3 +1,17 @@
+pagavcs (1.3.20ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * add "revert changes from this revision" to LogGui
+  * fix reverse-merge in OtherGui
+  * fix Meld running with file/path name with space
+  * fix table sorting and which row is selected issues
+  * speedup file status cache's server and client side
+  * preload PagaVCS server in the background
+  * don't start multiply PagaVCS servers at once
+  * 
+
+ -- papaigabor <gabor.papai@gmail.com>  Sat, 23 Jan 2010 17:00:00 +0500
+
 pagavcs (1.3.19ubuntu) karmic; urgency=low
 
   [ papaigabor ]
