@@ -94,7 +94,7 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
             elif (data == "ADDED"):
                 file.add_emblem ('pagavcs-added')                
             elif (data == "CONFLICTS"):
-                file.add_emblem ('pagavcs-conflicts')             
+                file.add_emblem ('pagavcs-conflicted')             
             elif (data == "DELETED"):
                 file.add_emblem ('pagavcs-deleted')
             elif (data == "IGNORED"):
@@ -167,6 +167,9 @@ class PagaVCS(nautilus.MenuProvider):
     
     def cleanup_menu_activate_cb(self, menu, file):
         self._do_command(file, 'cleanup')
+        
+    def resolve_menu_activate_cb(self, menu, file):
+        self._do_command(file, 'resolve')        
     
     def other_menu_activate_cb(self, menu, file):
         self._do_command(file, 'other')
@@ -241,6 +244,14 @@ class PagaVCS(nautilus.MenuProvider):
                                  'Cleanup %s' % file.get_name())
         item.set_property('icon', 'pagavcs-cleanup')
         item.connect('activate', self.cleanup_menu_activate_cb, file)        
+        submenu.append_item(item)
+        
+        # TODO only for conflicted items. also include use theirs and use mine option
+        item = nautilus.MenuItem('NautilusPython::resolve_file_item',
+                                 'Resolve conflict' ,
+                                 'Resolve conflict %s' % file.get_name())
+        item.set_property('icon', 'pagavcs-resolve')
+        item.connect('activate', self.resolve_menu_activate_cb, file)        
         submenu.append_item(item)
 
         item = nautilus.MenuItem('NautilusPython::other_file_item',

@@ -22,7 +22,6 @@ import org.tmatesoft.svn.core.wc.ISVNEventHandler;
 import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
-import org.tmatesoft.svn.core.wc.SVNConflictChoice;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNEventAction;
 import org.tmatesoft.svn.core.wc.SVNPropertyData;
@@ -370,11 +369,13 @@ public class Commit {
 		Manager.invalidate(file);
 	}
 
-	public void resolved(File file) throws SVNException {
-		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient client = svnMgr.getWCClient();
-		client.doResolve(file, SVNDepth.INFINITY, true, true, true, SVNConflictChoice.MERGED);
-		Manager.invalidate(file);
-	}
+	// public void resolved(File file) throws SVNException {
+	// SVNClientManager svnMgr =
+	// Manager.getSVNClientManagerForWorkingCopyOnly();
+	// SVNWCClient client = svnMgr.getWCClient();
+	// client.doResolve(file, SVNDepth.INFINITY, true, true, true,
+	// SVNConflictChoice.MERGED);
+	// Manager.invalidate(file);
+	// }
 
 }
