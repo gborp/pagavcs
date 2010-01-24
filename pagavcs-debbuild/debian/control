@@ -2,12 +2,13 @@ Source: pagavcs
 Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Build-Depends: debhelper (>= 5), sun-java6-jdk
+Build-Depends: debhelper (>= 5), sun-java6-jdk | default-jdk
 Standards-Version: 3.8.3
-Homepage: none
+Homepage: http://pagavcs.googlecode.com
 
 Package: pagavcs
 Architecture: all
-Depends: sun-java6-jre, meld, python-nautilus, hicolor-icon-theme
-Description: Desktop integrated subversion client
- Nautilus integrated subversion GUI client, similar to TortoiseSVN. It's written in Java and Python (Nautilus-integration).
+Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
+ It's written in Java and Python (Nautilus-integration).
