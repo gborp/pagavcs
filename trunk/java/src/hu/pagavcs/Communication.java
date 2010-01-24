@@ -9,6 +9,7 @@ import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.Other;
+import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Settings;
 import hu.pagavcs.operation.Unignore;
@@ -166,6 +167,9 @@ public class Communication {
 				} else if ("settings".equals(command)) {
 					Settings settings = new Settings();
 					settings.execute();
+				} else if ("resolve".equals(command)) {
+					ResolveConflict resolve = new ResolveConflict(null, arg);
+					resolve.execute();
 				} else if ("stop".equals(command)) {
 					System.exit(0);
 				} else if ("ping".equals(command)) {
