@@ -6,6 +6,7 @@ import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
+import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Commit.CommitStatus;
 import hu.pagavcs.operation.Commit.CommittedItemStatus;
 
@@ -30,7 +31,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -57,11 +57,11 @@ import com.jgoodies.forms.layout.FormLayout;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class CommitGui implements Working {
+public class CommitGui implements Working, Refreshable {
 
 	private Window                     frame;
 	private Table                      tblCommit;
-	private TableModel<CommitListItem> commitTableModel;
+	private TableModel<CommitListItem> tmdlCommit;
 	private Commit                     commit;
 	private JButton                    btnStop;
 	private TextArea                   taMessage;
@@ -90,10 +90,10 @@ public class CommitGui implements Working {
 	public void display() throws SVNException {
 		logMinSize = 0;
 		CellConstraints cc = new CellConstraints();
-		commitTableModel = new TableModel<CommitListItem>(new CommitListItem());
-		tblCommit = new Table(commitTableModel);
+		tmdlCommit = new TableModel<CommitListItem>(new CommitListItem());
+		tblCommit = new Table(tmdlCommit);
 		tblCommit.addMouseListener(new PopupupMouseListener());
-		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(commitTableModel));
+		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(tmdlCommit));
 		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		new StatusCellRendererForCommitListItem(tblCommit);
 		JScrollPane spCommitList = new JScrollPane(tblCommit);
@@ -244,6 +244,27 @@ public class CommitGui implements Working {
 			protected void process() throws Exception {
 
 				if (CommitStatus.FILE_LIST_GATHERING_COMPLETED.equals(status)) {
+
+					// remove unversioned files of conflicted items
+					HashSet<File> setRemoveUnversioned = new HashSet<File>();
+					List<CommitListItem> lstData = tmdlCommit.getAllData();
+					for (CommitListItem li : lstData) {
+						if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
+							SVNInfo info = Manager.getInfo(li.getPath());
+							setRemoveUnversioned.add(info.getConflictNewFile());
+							setRemoveUnversioned.add(info.getConflictOldFile());
+							setRemoveUnversioned.add(info.getConflictWrkFile());
+						}
+					}
+
+					if (!setRemoveUnversioned.isEmpty()) {
+						for (CommitListItem li : new ArrayList<CommitListItem>(lstData)) {
+							if (li.getStatus().equals(ContentStatus.UNVERSIONED) && setRemoveUnversioned.contains(li.getPath())) {
+								tmdlCommit.removeLine(li);
+							}
+						}
+					}
+
 					workEnded();
 					refreshSelectButtons();
 
@@ -251,13 +272,8 @@ public class CommitGui implements Working {
 					btnStop.setEnabled(false);
 					btnCommit.setEnabled(true);
 					btnRefresh.setEnabled(true);
-					if (commitTableModel.getAllData().isEmpty()) {
+					if (tmdlCommit.getAllData().isEmpty()) {
 						tblCommit.showMessage("There is nothing to commit", Manager.ICON_WARNING);
-
-						// MessagePane.showWarning(frame, "Nothing to commit",
-						// "There's nothing to commit!");
-						// frame.setVisible(false);
-						// frame.dispose();
 					}
 				}
 				if (CommitStatus.INIT.equals(status)) {
@@ -292,7 +308,7 @@ public class CommitGui implements Working {
 
 			protected void process() throws Exception {
 				workStarted();
-				commitTableModel.clear();
+				tmdlCommit.clear();
 				btnStop.setEnabled(true);
 				btnCommit.setEnabled(false);
 				btnRefresh.setEnabled(false);
@@ -315,7 +331,7 @@ public class CommitGui implements Working {
 
 	private void refreshSelectButtons() {
 
-		List<CommitListItem> list = commitTableModel.getAllData();
+		List<CommitListItem> list = tmdlCommit.getAllData();
 
 		boolean hasNonVersioned = false;
 		boolean hasAdded = false;
@@ -377,7 +393,7 @@ public class CommitGui implements Working {
 				li.setStatus(contentStatus);
 				li.setPropertyStatus(propertyStatus);
 
-				commitTableModel.addLine(li);
+				tmdlCommit.addLine(li);
 				tblCommit.followScrollToNewItems();
 			}
 
@@ -394,7 +410,7 @@ public class CommitGui implements Working {
 
 		noCommit = 0;
 		ArrayList<File> lstCommit = new ArrayList<File>();
-		for (CommitListItem li : commitTableModel.getAllData()) {
+		for (CommitListItem li : tmdlCommit.getAllData()) {
 			if (li.isSelected()) {
 				lstCommit.add(li.getPath());
 				noCommit++;
@@ -405,6 +421,11 @@ public class CommitGui implements Working {
 					// MessagePane.showWarning(frame, "Cannot commit",
 					// "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
 					// return;
+				} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
+					int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
+					tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
+					MessagePane.showError(frame, "Cannot commit", "Cannot commit conflicted file! Please resolve the conflict first.");
+					return;
 				}
 			}
 		}
@@ -438,7 +459,7 @@ public class CommitGui implements Working {
 	}
 
 	private CommitListItem getCommitListItem(File file) {
-		for (CommitListItem li : commitTableModel.getAllData()) {
+		for (CommitListItem li : tmdlCommit.getAllData()) {
 			if (li.getPath().equals(file)) {
 				return li;
 			}
@@ -472,7 +493,7 @@ public class CommitGui implements Working {
 	private void removeListItemIfNormal(CommitListItem li) {
 		if (li.getStatus().equals(ContentStatus.NORMAL) && li.getPropertyStatus().equals(ContentStatus.NONE)
 		        && li.getPropertyStatus().equals(ContentStatus.NORMAL)) {
-			commitTableModel.removeLine(li);
+			tmdlCommit.removeLine(li);
 			tblCommit.getSelectionModel().clearSelection();
 		}
 	}
@@ -481,31 +502,36 @@ public class CommitGui implements Working {
 
 		File file = li.getPath();
 		if (file.isDirectory()) {
+			MessagePane.showError(frame, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 			return;
 		}
-		SVNInfo info = Manager.getInfo(file.getPath());
+		new ResolveConflict(this, file.getPath()).execute();
 
-		// info.getConflictOldFile();
-		File newFile = info.getConflictNewFile();
-		File oldFile = info.getConflictOldFile();
-		File wrkFile = info.getConflictWrkFile();
-
-		Process process = Runtime.getRuntime().exec(
-		        "meld -L old " + oldFile.getPath() + " -L working-copy " + wrkFile.getPath() + " -L new " + newFile.getPath());
-		process.waitFor();
-
-		int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
-		        JOptionPane.QUESTION_MESSAGE);
-		if (choosed == JOptionPane.YES_OPTION) {
-			Manager.resolveConflictUsingMine(file.getPath());
-			refresh();
-		}
+		// SVNInfo info = Manager.getInfo(file.getPath());
+		//
+		// // info.getConflictOldFile();
+		// File newFile = info.getConflictNewFile();
+		// File oldFile = info.getConflictOldFile();
+		// File wrkFile = info.getConflictWrkFile();
+		//
+		// Process process = Runtime.getRuntime().exec(
+		// "meld -L old " + oldFile.getPath() + " -L working-copy " +
+		// wrkFile.getPath() + " -L new " + newFile.getPath());
+		// process.waitFor();
+		//
+		// int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(),
+		// "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
+		// JOptionPane.QUESTION_MESSAGE);
+		// if (choosed == JOptionPane.YES_OPTION) {
+		// Manager.resolveConflictUsingMine(file.getPath());
+		// refresh();
+		// }
 	}
 
 	private List<CommitListItem> getSelectedItems() {
 		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
 		for (int row : tblCommit.getSelectedRows()) {
-			lstResult.add(commitTableModel.getRow(tblCommit.convertRowIndexToModel(row)));
+			lstResult.add(tmdlCommit.getRow(tblCommit.convertRowIndexToModel(row)));
 		}
 		return lstResult;
 	}
@@ -602,19 +628,19 @@ public class CommitGui implements Working {
 		}
 	}
 
-	private class ResolvedAction extends ThreadAction {
-
-		public ResolvedAction(PopupupMouseListener popupupMouseListener) {
-			super("Resolved");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			for (CommitListItem li : getSelectedItems()) {
-				commit.resolved(li.getPath());
-			}
-			refresh();
-		}
-	}
+	// private class ResolvedAction extends ThreadAction {
+	//
+	// public ResolvedAction(PopupupMouseListener popupupMouseListener) {
+	// super("Resolved");
+	// }
+	//
+	// public void actionProcess(ActionEvent e) throws Exception {
+	// for (CommitListItem li : getSelectedItems()) {
+	// commit.resolved(li.getPath());
+	// }
+	// refresh();
+	// }
+	// }
 
 	private class ShowLog extends ThreadAction {
 
@@ -703,7 +729,7 @@ public class CommitGui implements Working {
 			HashSet<ContentStatus> setUsedPropertyStatus = new HashSet<ContentStatus>();
 			int[] selectedRows = tblCommit.getSelectedRows();
 			for (int rowLi : selectedRows) {
-				CommitListItem li = commitTableModel.getRow(tblCommit.convertRowIndexToModel(rowLi));
+				CommitListItem li = tmdlCommit.getRow(tblCommit.convertRowIndexToModel(rowLi));
 				setUsedStatus.add(li.getStatus());
 				setUsedPropertyStatus.add(li.getPropertyStatus());
 			}
@@ -736,7 +762,7 @@ public class CommitGui implements Working {
 			}
 
 			if (onlyOneKind && setUsedStatus.contains(ContentStatus.CONFLICTED)) {
-				ppMixed.add(new ResolvedAction(this));
+				// ppMixed.add(new ResolvedAction(this));
 				ppMixed.add(new ResolveConflictUsingTheirsAction(this));
 				ppMixed.add(new ResolveConflictUsingMineAction(this));
 				ppMixed.add(new ResolveConflictAction(this));
@@ -769,7 +795,7 @@ public class CommitGui implements Working {
 					return;
 				}
 				int row = tblCommit.convertRowIndexToModel(rowAtPoint);
-				CommitListItem selected = commitTableModel.getRow(row);
+				CommitListItem selected = tmdlCommit.getRow(row);
 				ContentStatus status = selected.getStatus();
 				ContentStatus propertyStatus = selected.getPropertyStatus();
 				if (status.equals(ContentStatus.MODIFIED)) {
@@ -797,14 +823,14 @@ public class CommitGui implements Working {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			hasSelected = false;
-			for (CommitListItem li : commitTableModel.getAllData()) {
+			for (CommitListItem li : tmdlCommit.getAllData()) {
 				if (li.isSelected()) {
 					hasSelected = true;
 					break;
 				}
 			}
 
-			for (CommitListItem li : commitTableModel.getAllData()) {
+			for (CommitListItem li : tmdlCommit.getAllData()) {
 				if (doSelect(li)) {
 					li.setSelected(true);
 				} else if (doUnSelect(li)) {
