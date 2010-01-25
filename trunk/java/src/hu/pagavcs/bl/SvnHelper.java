@@ -6,6 +6,7 @@ import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.UpdateEventHandler;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -95,4 +96,13 @@ public class SvnHelper {
 			throw ex;
 		}
 	}
+
+	public static void createPatch(File[] wcFiles, OutputStream out) throws SVNException {
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNDiffClient diffClient = mgrSvn.getDiffClient();
+		for (File wcFile : wcFiles) {
+			diffClient.doDiff(wcFile, SVNRevision.BASE, wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, true, out, null);
+		}
+	}
+
 }

@@ -61,8 +61,8 @@ public class OtherGui implements Working, Cancelable {
 	private EditField   sfExportTo;
 	private JButton     btnExportTo;
 	private JButton     btnRepoBrowser;
-	private JButton     btnCreatePatch;
-	private JButton     btnApplyPatch;
+	private JButton     btnUpdateToRevision;
+	private EditField   sfUpdateTo;
 
 	public OtherGui(Other other) {
 		this.other = other;
@@ -70,7 +70,7 @@ public class OtherGui implements Working, Cancelable {
 
 	public void display() throws SVNException {
 		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p",
-		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
+		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,10dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -120,13 +120,10 @@ public class OtherGui implements Working, Cancelable {
 		sfExportTo = new EditField();
 		btnExportTo = new JButton(new ExportAction());
 
-		btnRepoBrowser = new JButton(new RepoBrowserAction());
+		sfUpdateTo = new EditField();
+		btnUpdateToRevision = new JButton(new UpdateToRevision());
 
-		JPanel pnlButtons = new JPanel(new FormLayout("p,4dlu,p", "p"));
-		btnCreatePatch = new JButton(new CreatePatchAction());
-		btnApplyPatch = new JButton(new ApplyPatchAction());
-		pnlButtons.add(btnCreatePatch, cc.xy(1, 1));
-		pnlButtons.add(btnApplyPatch, cc.xy(3, 1));
+		btnRepoBrowser = new JButton(new RepoBrowserAction());
 
 		lblStatus = new Label(" ");
 		prgBusy = new ProgressBar(this);
@@ -170,12 +167,16 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(btnExportTo, cc.xywh(4, 31, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 32, 4, 1));
-		pnlMain.add(btnRepoBrowser, cc.xywh(4, 33, 1, 1));
-		pnlMain.add(pnlButtons, cc.xywh(1, 35, 4, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+		pnlMain.add(new JLabel("Update to revision:"), cc.xywh(1, 33, 1, 1));
+		pnlMain.add(sfUpdateTo, cc.xywh(3, 33, 2, 1));
+		pnlMain.add(btnUpdateToRevision, cc.xywh(4, 35, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 36, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 37, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 37, 1, 1));
+		pnlMain.add(btnRepoBrowser, cc.xywh(4, 37, 1, 1));
+
+		pnlMain.add(new JSeparator(), cc.xywh(1, 38, 4, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 39, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 39, 1, 1));
 
 		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Other");
 	}
@@ -251,14 +252,8 @@ public class OtherGui implements Working, Cancelable {
 		other.doRepoBrowser(sfWorkingCopy.getText());
 	}
 
-	private void doApplyPatch() {
-	// TODO Auto-generated method stub
-
-	}
-
-	private void doCreatePatch() {
-	// TODO Auto-generated method stub
-
+	private void doUpdateToRevision() throws Exception {
+		other.doUpdateToRevision(sfWorkingCopy.getText(), sfUpdateTo.getText().trim());
 	}
 
 	public void setStatusStartWorking() {
@@ -328,28 +323,14 @@ public class OtherGui implements Working, Cancelable {
 		}
 	}
 
-	private class CreatePatchAction extends ThreadAction {
+	private class UpdateToRevision extends ThreadAction {
 
-		public CreatePatchAction() {
-			super("Create Patch");
-			setEnabled(false);
+		public UpdateToRevision() {
+			super("Update to");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			doCreatePatch();
-		}
-
-	}
-
-	private class ApplyPatchAction extends ThreadAction {
-
-		public ApplyPatchAction() {
-			super("Apply Patch");
-			setEnabled(false);
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			doApplyPatch();
+			doUpdateToRevision();
 		}
 
 	}

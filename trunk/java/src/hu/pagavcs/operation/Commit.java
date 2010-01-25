@@ -1,9 +1,11 @@
 package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.CommitGui;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,6 +88,10 @@ public class Commit {
 		}
 
 		refresh();
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 	public void refresh() throws Exception {
@@ -228,6 +234,10 @@ public class Commit {
 		wcClient.setEventHandler(new AddIgnoreEventHandler());
 		wcClient.doAdd(wcFile, false, false, true, SVNDepth.INFINITY, false, false, true);
 		Manager.invalidate(wcFile);
+	}
+
+	public void createPatch(File[] wcFiles, OutputStream out) throws SVNException {
+		SvnHelper.createPatch(wcFiles, out);
 	}
 
 	public void ignore(File wcFile) throws SVNException {
