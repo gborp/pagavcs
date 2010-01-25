@@ -10,4 +10,4 @@ gconftool-2 –type bool –set /desktop/gnome/interface/menus_have_icons true
 
 (You can also use Applications > System Tools > Configuration editor, browse to that key and check the box.) 
 
-(thanks for [http://wiki.rabbitvcs.org/wiki/support/known-issues RabbitVCS] authors for this hints)
+(thanks for [http://wiki.rabbitvcs.org/wiki/support/known-issues RabbitVCS] authors for this hint)
