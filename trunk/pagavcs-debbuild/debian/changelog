@@ -1,3 +1,12 @@
+pagavcs (1.3.23ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * new: update to revision (in other gui)
+  * new: create patch (in commit gui)
+  * minor: move the buttons to the bottom in the Resolve conflict gui
+  
+ -- papaigabor <pagavcs@gmail.com>  Mon, 25 Jan 2010 23:10:00 +0500
+
 pagavcs (1.3.22ubuntu) karmic; urgency=low
 
   [ papaigabor ]

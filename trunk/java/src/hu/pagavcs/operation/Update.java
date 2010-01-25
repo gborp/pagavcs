@@ -34,13 +34,23 @@ public class Update implements Cancelable {
 		NONE, CONFLICTED, MERGED
 	}
 
-	String            path;
-	private boolean   cancel;
-	private UpdateGui gui;
+	String              path;
+	private boolean     cancel;
+	private UpdateGui   gui;
+	private SVNRevision updateToRevision;
 
 	public Update(String path) throws Exception {
 		this.path = path;
 		setCancel(false);
+		setUpdateToRevision(SVNRevision.HEAD);
+	}
+
+	public SVNRevision getUpdateToRevision() {
+		return updateToRevision;
+	}
+
+	public void setUpdateToRevision(SVNRevision updateToRevision) {
+		this.updateToRevision = updateToRevision;
 	}
 
 	public void execute() throws Exception {
@@ -59,7 +69,7 @@ public class Update implements Cancelable {
 			boolean successOrExit = false;
 			while (!successOrExit) {
 				try {
-					updateClient.doUpdate(new File(path), SVNRevision.HEAD, SVNDepth.INFINITY, true, true);
+					updateClient.doUpdate(new File(path), updateToRevision, SVNDepth.INFINITY, true, true);
 					successOrExit = true;
 				} catch (SVNException ex) {
 

@@ -92,7 +92,7 @@ public class ResolveConflictGui {
 			return;
 		}
 
-		FormLayout layout = new FormLayout("p,1dlu:g, p", "p,4dlu,p,4dlu,fill:10dlu:g");
+		FormLayout layout = new FormLayout("p,1dlu:g, p", "p,4dlu,fill:10dlu:g,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -102,10 +102,10 @@ public class ResolveConflictGui {
 		btnReload = new JButton(new ReloadAction());
 		btnSaveResolved = new JButton(new SaveResolvedAction());
 
-		pnlMain.add(btnReload, cc.xywh(1, 1, 1, 1));
-		pnlMain.add(btnSaveResolved, cc.xywh(3, 1, 1, 1));
-		pnlMain.add(new Label(mixedFile.getPath()), cc.xywh(1, 3, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
-		pnlMain.add(spConflict, cc.xywh(1, 5, 3, 1));
+		pnlMain.add(new Label(mixedFile.getPath()), cc.xywh(1, 1, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+		pnlMain.add(spConflict, cc.xywh(1, 3, 3, 1));
+		pnlMain.add(btnReload, cc.xy(1, 5));
+		pnlMain.add(btnSaveResolved, cc.xy(3, 5));
 
 		setNormalText = new SimpleAttributeSet();
 		setNormalText.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_NORMAL);
