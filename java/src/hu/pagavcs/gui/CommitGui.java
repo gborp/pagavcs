@@ -14,7 +14,6 @@ import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -22,6 +21,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -82,6 +84,7 @@ public class CommitGui implements Working, Refreshable {
 	private JButton                    btnSelectModified;
 	private JButton                    btnSelectFiles;
 	private JButton                    btnSelectDirectories;
+	private JButton                    btnCreatePatch;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
@@ -125,45 +128,15 @@ public class CommitGui implements Working, Refreshable {
 		pnlTop.add(new JLabel("Recent messages:"), cc.xy(1, 5));
 		pnlTop.add(cboMessage, cc.xy(3, 5));
 
-		btnStop = new JButton("Stop");
-		btnStop.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				btnStop.setEnabled(false);
-				commit.setCancel(true);
-			}
-		});
+		btnStop = new JButton(new StopAction());
 		prgWorkinProgress = new ProgressBar(this);
 		lblInfo = new Label();
-		btnCommit = new JButton("Commit");
+		btnCreatePatch = new JButton(new CreatePatchAction());
+		btnCreatePatch.setEnabled(false);
+		btnCommit = new JButton(new CommitAction());
 		btnCommit.setEnabled(false);
-		btnCommit.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-
-					public void run() {
-						try {
-							commitSelected();
-						} catch (Exception e) {
-							Manager.handle(e);
-						}
-					}
-				}).start();
-			}
-		});
-		btnRefresh = new JButton("Refresh");
+		btnRefresh = new JButton(new RefreshAction());
 		btnRefresh.setEnabled(false);
-		btnRefresh.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				try {
-					refresh();
-				} catch (Exception e1) {
-					Manager.handle(e1);
-				}
-			}
-		});
 
 		btnSelectAllNone = new JButton(new SelectAllNoneAction());
 		btnSelectNonVersioned = new JButton(new SelectNonVersionedAction());
@@ -183,13 +156,14 @@ public class CommitGui implements Working, Refreshable {
 		pnlCheck.add(btnSelectFiles, cc.xy(13, 1));
 		pnlCheck.add(btnSelectDirectories, cc.xy(15, 1));
 
-		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p", "p,4dlu,p"));
+		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
 		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 7, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		pnlBottom.add(btnRefresh, cc.xy(1, 3));
 		pnlBottom.add(prgWorkinProgress, cc.xy(3, 3));
-		pnlBottom.add(btnStop, cc.xy(5, 3));
-		pnlBottom.add(btnCommit, cc.xy(7, 3));
+		pnlBottom.add(btnCreatePatch, cc.xy(5, 3));
+		pnlBottom.add(btnStop, cc.xy(7, 3));
+		pnlBottom.add(btnCommit, cc.xy(9, 3));
 
 		JPanel pnlMain = new JPanel(new BorderLayout());
 		pnlMain.add(pnlTop, BorderLayout.NORTH);
@@ -271,6 +245,7 @@ public class CommitGui implements Working, Refreshable {
 					prgWorkinProgress.setIndeterminate(false);
 					btnStop.setEnabled(false);
 					btnCommit.setEnabled(true);
+					btnCreatePatch.setEnabled(true);
 					btnRefresh.setEnabled(true);
 					if (tmdlCommit.getAllData().isEmpty()) {
 						tblCommit.showMessage("There is nothing to commit", Manager.ICON_WARNING);
@@ -400,9 +375,47 @@ public class CommitGui implements Working, Refreshable {
 		}.run();
 	}
 
+	public void createPatch() throws Exception {
+		noCommit = 0;
+		ArrayList<File> lstCommit = new ArrayList<File>();
+		for (CommitListItem li : tmdlCommit.getAllData()) {
+			if (li.isSelected()) {
+				lstCommit.add(li.getPath());
+				noCommit++;
+
+				if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
+					int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
+					tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
+					MessagePane.showError(frame, "Cannot create patch", "Cannot create patch from conflicted file! Please resolve the conflict first.");
+					return;
+				}
+			}
+		}
+		if (noCommit == 0) {
+			MessagePane.showError(frame, "Cannot create patch", "Nothing is selected for creating patch");
+			return;
+		}
+
+		JFileChooser fc = new JFileChooser(new File(commit.getPath()));
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+		int choosed = fc.showSaveDialog(frame);
+
+		if (choosed == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			if (file.getName().indexOf('.') == -1) {
+				file = new File(file.getAbsolutePath() + ".patch");
+			}
+
+			OutputStream out = new FileOutputStream(file);
+			commit.createPatch(lstCommit.toArray(new File[0]), out);
+		}
+	}
+
 	public void commitSelected() throws Exception {
-		if (taMessage.getText().trim().length() < logMinSize) {
-			MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
+		int minimumLogSize = Math.max(logMinSize, 1);
+		if (taMessage.getText().trim().length() < minimumLogSize) {
+			MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + minimumLogSize + "!");
 			return;
 		}
 
@@ -430,7 +443,7 @@ public class CommitGui implements Working, Refreshable {
 			}
 		}
 		if (noCommit == 0) {
-			MessagePane.showError(frame, "Nothing to commit", "Nothing is selected to commit");
+			MessagePane.showError(frame, "Cannot commit", "Nothing is selected to commit");
 			return;
 		}
 
@@ -534,6 +547,57 @@ public class CommitGui implements Working, Refreshable {
 			lstResult.add(tmdlCommit.getRow(tblCommit.convertRowIndexToModel(row)));
 		}
 		return lstResult;
+	}
+
+	private class CreatePatchAction extends ThreadAction {
+
+		public CreatePatchAction() {
+			super("Create patch");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			createPatch();
+		}
+	}
+
+	private class CommitAction extends ThreadAction {
+
+		public CommitAction() {
+			super("Commit");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			commitSelected();
+		}
+	}
+
+	private class RefreshAction extends ThreadAction {
+
+		public RefreshAction() {
+			super("Refresh");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			refresh();
+		}
+	}
+
+	private class StopAction extends ThreadAction {
+
+		public StopAction() {
+			super("Stop");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					btnStop.setEnabled(false);
+				}
+
+			}.run();
+			commit.setCancel(true);
+		}
 	}
 
 	private class AddAction extends ThreadAction {

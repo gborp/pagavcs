@@ -233,4 +233,16 @@ public class Other implements Cancelable {
 	public void doRepoBrowser(String wcFile) throws Exception {
 		new RepoBrowser(wcFile).execute();
 	}
+
+	public void doUpdateToRevision(String wc, String toRevision) throws Exception {
+		SVNRevision revision;
+		if (toRevision.isEmpty()) {
+			revision = SVNRevision.HEAD;
+		} else {
+			revision = SVNRevision.create(Long.valueOf(toRevision));
+		}
+		Update update = new Update(wc);
+		update.setUpdateToRevision(revision);
+		update.execute();
+	}
 }
