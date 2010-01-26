@@ -15,8 +15,12 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.Icon;
@@ -24,6 +28,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -42,6 +48,9 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -215,11 +224,19 @@ public class Manager {
 		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource(path)));
 	}
 
-	public static Window createAndShowFrame(JComponent main, String applicationName) {
+	public static JComponent addBorder(JComponent pnlMain) {
+		JPanel pnlBorder = new JPanel(new FormLayout("10dlu,p:g,10dlu", "10dlu,p:g,10dlu"));
+
+		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
+
+		return new JScrollPane(pnlBorder);
+	}
+
+	public static Window createAndShowFrame(JComponent pnlMain, String applicationName) {
 
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.getContentPane().add(main);
+		frame.getContentPane().add(pnlMain);
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
 		frame.pack();
@@ -383,6 +400,37 @@ public class Manager {
 
 	public static void invalidateAllFiles() {
 		FileStatusCache.getInstance().invalidateAll();
+	}
+
+	public static String getOsCommandResult(String... args) throws IOException {
+
+		ProcessBuilder pb = new ProcessBuilder(args);
+		Process process = pb.start();
+		BufferedReader commandResult = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
+		String line = "";
+		StringBuilder sb = new StringBuilder();
+		while ((line = commandResult.readLine()) != null) {
+			sb.append(line);
+			sb.append("\n");
+		}
+
+		return sb.toString();
+	}
+
+	public static String getFileAsString(File file) throws IOException {
+		Charset charSet = Charset.defaultCharset();
+
+		StringBuilder text = new StringBuilder();
+		InputStreamReader input = new InputStreamReader(new FileInputStream(file), charSet);
+		char[] buffer = new char[16384];
+		int length;
+		while ((length = input.read(buffer)) != -1) {
+			text.append(buffer, 0, length);
+		}
+
+		input.close();
+
+		return text.toString();
 	}
 
 }
