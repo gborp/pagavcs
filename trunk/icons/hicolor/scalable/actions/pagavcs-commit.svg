@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -16,21 +17,27 @@
    height="48"
    id="svg11300"
    sodipodi:version="0.32"
-   inkscape:version="0.45"
-   sodipodi:docbase="/home/dobey/Projects/gnome-icon-theme/scalable/actions"
-   sodipodi:docname="edit-redo.svg"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="pagavcs-commit.svg"
    version="1.0"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs3">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective27" />
     <linearGradient
        id="linearGradient1913">
       <stop
-         style="stop-color:#73d216;stop-opacity:1"
+         style="stop-color:#1683d2;stop-opacity:1;"
          offset="0"
          id="stop1915" />
       <stop
-         style="stop-color:#8ae234;stop-opacity:1"
+         style="stop-color:#347ce2;stop-opacity:1;"
          offset="1"
          id="stop1917" />
     </linearGradient>
@@ -119,21 +126,22 @@
      borderopacity="1"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="42.402351"
-     inkscape:cy="4.5251669"
+     inkscape:zoom="4"
+     inkscape:cx="-33.325513"
+     inkscape:cy="18.735368"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1072"
-     inkscape:window-height="970"
-     inkscape:window-x="488"
-     inkscape:window-y="21"
+     inkscape:window-width="1280"
+     inkscape:window-height="955"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      width="48px"
      height="48px"
-     showborder="false" />
+     showborder="false"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata4">
     <rdf:RDF>
@@ -197,7 +205,7 @@ Lapo Calamandrei</dc:title>
        style="opacity:0.13;color:black;fill:url(#radialGradient8668);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        sodipodi:type="arc" />
     <path
-       style="opacity:1;color:#000000;fill:url(#linearGradient1919);fill-opacity:1.0;fill-rule:nonzero;stroke:#4e9a06;stroke-width:0.99999887;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible"
+       style="opacity:1;color:#000000;fill:url(#linearGradient1919);fill-opacity:1;fill-rule:nonzero;stroke:#064f9a;stroke-width:0.99999886999999998;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:block;overflow:visible"
        d="M 17.424821,41.893434 C 0.283744,32.442251 9.935604,12.409146 26.422371,12.56649 L 26.422371,4.4999994 L 42.5,18.558177 L 26.422371,33.301549 C 26.422371,33.301549 26.422371,24.572517 26.422371,24.572517 C 16.187754,24.157353 11.680698,31.839537 20.650045,37.935965 C 23.217139,39.680812 21.438823,44.106661 17.424821,41.893434 z "
        id="path1432"
        sodipodi:nodetypes="ccccccss" />
