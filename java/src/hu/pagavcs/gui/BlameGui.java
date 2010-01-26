@@ -84,7 +84,7 @@ public class BlameGui {
 		pnlMain.add(prgWorking, cc.xywh(2, 2, 1, 1));
 		pnlMain.add(btnStop, cc.xywh(3, 2, 1, 1));
 
-		Manager.createAndShowFrame(new JScrollPane(pnlMain), "Blame");
+		Manager.createAndShowFrame(pnlMain, "Blame");
 
 		tableModel.addLines(lstBlame);
 	}

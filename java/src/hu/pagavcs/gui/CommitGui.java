@@ -95,7 +95,7 @@ public class CommitGui implements Working, Refreshable {
 		logMinSize = 0;
 		CellConstraints cc = new CellConstraints();
 		tmdlCommit = new TableModel<CommitListItem>(new CommitListItem());
-		tblCommit = new Table(tmdlCommit);
+		tblCommit = new Table<CommitListItem>(tmdlCommit);
 		tblCommit.addMouseListener(new PopupupMouseListener());
 		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(tmdlCommit));
 		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
