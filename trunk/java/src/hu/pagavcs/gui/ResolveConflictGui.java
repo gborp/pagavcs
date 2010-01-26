@@ -121,7 +121,7 @@ public class ResolveConflictGui {
 
 		reload();
 
-		frame = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Resolve Conflict");
+		frame = Manager.createAndShowFrame(pnlMain, "Resolve Conflict");
 
 		Document doc = tpConflict.getStyledDocument();
 		doc.addDocumentListener(new DocumentListener() {

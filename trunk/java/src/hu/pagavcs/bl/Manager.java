@@ -224,8 +224,8 @@ public class Manager {
 		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource(path)));
 	}
 
-	public static JComponent addBorder(JComponent pnlMain) {
-		JPanel pnlBorder = new JPanel(new FormLayout("10dlu,p:g,10dlu", "10dlu,p:g,10dlu"));
+	private static JComponent addBorder(JComponent pnlMain) {
+		JPanel pnlBorder = new JPanel(new FormLayout("10dlu,fill:p:g,10dlu", "10dlu,fill:p:g,10dlu"));
 
 		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
 
@@ -236,7 +236,7 @@ public class Manager {
 
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.getContentPane().add(pnlMain);
+		frame.getContentPane().add(addBorder(pnlMain));
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
 		frame.pack();
@@ -256,7 +256,7 @@ public class Manager {
 
 	public static JDialog createDialog(Window parent, JComponent main, String title) {
 		JDialog dialog = new JDialog(parent);
-		dialog.getContentPane().add(main);
+		dialog.getContentPane().add(addBorder(main));
 		dialog.setTitle(title);
 		dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
 		dialog.pack();
