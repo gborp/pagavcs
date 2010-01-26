@@ -83,7 +83,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
-		Window frame = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Repository Browser");
+		Window frame = Manager.createAndShowFrame(pnlMain, "Repository Browser");
 	}
 
 	public void setStatus(RepoBrowserStatus status) {

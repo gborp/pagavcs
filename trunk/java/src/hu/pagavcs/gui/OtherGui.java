@@ -21,7 +21,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 
 import org.tmatesoft.svn.core.SVNException;
@@ -187,7 +186,7 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 41, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 41, 1, 1));
 
-		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Other");
+		window = Manager.createAndShowFrame(pnlMain, "Other");
 	}
 
 	public void setStatus(OtherStatus status) {

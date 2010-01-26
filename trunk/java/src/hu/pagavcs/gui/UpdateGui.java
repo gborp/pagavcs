@@ -88,7 +88,7 @@ public class UpdateGui {
 
 		tableModel = new TableModel<UpdateListItem>(new UpdateListItem());
 
-		tblUpdate = new Table(tableModel);
+		tblUpdate = new Table<UpdateListItem>(tableModel);
 		tblUpdate.addMouseListener(new PopupupMouseListener());
 		new StatusCellRendererForUpdateListItem(tblUpdate);
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
@@ -113,7 +113,7 @@ public class UpdateGui {
 		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
 		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
-		Window window = Manager.createAndShowFrame(new JScrollPane(pnlMain), title);
+		Window window = Manager.createAndShowFrame(pnlMain, title);
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
