@@ -2,17 +2,22 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.Other.OtherStatus;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -63,6 +68,7 @@ public class OtherGui implements Working, Cancelable {
 	private JButton     btnRepoBrowser;
 	private JButton     btnUpdateToRevision;
 	private EditField   sfUpdateTo;
+	private JButton     btnApplyPatch;
 
 	public OtherGui(Other other) {
 		this.other = other;
@@ -70,7 +76,7 @@ public class OtherGui implements Working, Cancelable {
 
 	public void display() throws SVNException {
 		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p",
-		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,10dlu,p");
+		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -125,6 +131,8 @@ public class OtherGui implements Working, Cancelable {
 
 		btnRepoBrowser = new JButton(new RepoBrowserAction());
 
+		btnApplyPatch = new JButton(new ApplyPatchAction());
+
 		lblStatus = new Label(" ");
 		prgBusy = new ProgressBar(this);
 
@@ -173,10 +181,11 @@ public class OtherGui implements Working, Cancelable {
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 36, 4, 1));
 		pnlMain.add(btnRepoBrowser, cc.xywh(4, 37, 1, 1));
+		pnlMain.add(btnApplyPatch, cc.xywh(4, 39, 1, 1));
 
-		pnlMain.add(new JSeparator(), cc.xywh(1, 38, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 39, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 39, 1, 1));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 40, 4, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 41, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 41, 1, 1));
 
 		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Other");
 	}
@@ -256,12 +265,49 @@ public class OtherGui implements Working, Cancelable {
 		other.doUpdateToRevision(sfWorkingCopy.getText(), sfUpdateTo.getText().trim());
 	}
 
+	// TODO
+	private void doApplyPatch() throws Exception {
+		if (true) {
+			throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
+		}
+		JFileChooser fc = new JFileChooser(new File(other.getPath()));
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int choosed = fc.showSaveDialog(window);
+		if (choosed == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+
+			String result = Manager.getOsCommandResult("lsdiff", file.getPath());
+			// TODO display file names, select from files
+
+			// FIXME debug
+			System.out.println(result);
+
+			List<String> lstFilesToPatch = new ArrayList<String>();
+			for (String filename : result.split("\n")) {
+				lstFilesToPatch.add(filename);
+			}
+
+		}
+	}
+
 	public void setStatusStartWorking() {
 		setStatus(OtherStatus.WORKING);
 	}
 
 	public void setStatusStopWorking() {
 		setStatus(OtherStatus.COMPLETED);
+	}
+
+	private class ApplyPatchAction extends ThreadAction {
+
+		public ApplyPatchAction() {
+			super("Apply patch");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			doApplyPatch();
+		}
+
 	}
 
 	private class MergeAction extends ThreadAction {
