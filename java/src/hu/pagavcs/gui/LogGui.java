@@ -9,6 +9,7 @@ import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.Log.ShowLogStatus;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.Window;
@@ -137,10 +138,13 @@ public class LogGui implements Working {
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		splDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spDetailLog);
+		splDetail.setPreferredSize(new Dimension(40, 40));
+
 		if (settingsStore.getGuiLogSeparatorDetail() != null) {
 			splDetail.setDividerLocation(settingsStore.getGuiLogSeparatorDetail());
 		}
 		splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLog, splDetail);
+		splMain.setPreferredSize(new Dimension(40, 40));
 		if (settingsStore.getGuiLogSeparatorMain() != null) {
 			splMain.setDividerLocation(settingsStore.getGuiLogSeparatorMain());
 		}
