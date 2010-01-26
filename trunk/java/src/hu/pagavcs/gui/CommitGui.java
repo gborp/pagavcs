@@ -11,6 +11,7 @@ import hu.pagavcs.operation.Commit.CommitStatus;
 import hu.pagavcs.operation.Commit.CommittedItemStatus;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -106,7 +107,7 @@ public class CommitGui implements Working, Refreshable {
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		JSplitPane splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spCommitList);
-
+		splMain.setPreferredSize(new Dimension(40, 40));
 		lblUrl = new Label();
 		lblWorkingCopy = new Label();
 		cboMessage = new JComboBox();
@@ -115,7 +116,7 @@ public class CommitGui implements Working, Refreshable {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					if (e.getItem() != null) {
-						taMessage.setText(e.getItem().toString());
+						taMessage.setText(((RecentMessageSlot) e.getItem()).message);
 					}
 				}
 			}
@@ -211,7 +212,12 @@ public class CommitGui implements Working, Refreshable {
 	}
 
 	public void setRecentMessages(String[] recentMessages) {
-		ComboBoxModel modelUrl = new DefaultComboBoxModel(recentMessages);
+		List<RecentMessageSlot> lstRecentMessageSlot = new ArrayList<RecentMessageSlot>();
+		for (String str : recentMessages) {
+			RecentMessageSlot li = new RecentMessageSlot(str);
+			lstRecentMessageSlot.add(li);
+		}
+		ComboBoxModel modelUrl = new DefaultComboBoxModel(lstRecentMessageSlot.toArray());
 		cboMessage.setModel(modelUrl);
 	}
 
@@ -1062,5 +1068,27 @@ public class CommitGui implements Working, Refreshable {
 			}.run();
 		}
 
+	}
+
+	private class RecentMessageSlot {
+
+		private static final int SHORT_MESSAGE_LENGTH = 64;
+		private final String     message;
+		private String           shortMessage;
+
+		public RecentMessageSlot(String message) {
+			this.message = message;
+			shortMessage = message;
+			if (shortMessage != null && shortMessage.length() > SHORT_MESSAGE_LENGTH) {
+				shortMessage = shortMessage.substring(0, SHORT_MESSAGE_LENGTH) + "...";
+			}
+			if (shortMessage == null) {
+				shortMessage = "";
+			}
+		}
+
+		public String toString() {
+			return shortMessage;
+		}
 	}
 }
