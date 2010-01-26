@@ -12,11 +12,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -147,7 +144,7 @@ public class ResolveConflictGui {
 	}
 
 	private void reload() throws IOException, BadLocationException {
-		String strMixed = getFileAsString(mixedFile);
+		String strMixed = Manager.getFileAsString(mixedFile);
 		String[] lines = strMixed.split("\n");
 
 		Document doc = tpConflict.getStyledDocument();
@@ -216,22 +213,6 @@ public class ResolveConflictGui {
 
 		frame.setVisible(false);
 		frame.dispose();
-	}
-
-	private String getFileAsString(File file) throws IOException {
-		Charset charSet = Charset.defaultCharset();
-
-		StringBuilder text = new StringBuilder();
-		InputStreamReader input = new InputStreamReader(new FileInputStream(file), charSet);
-		char[] buffer = new char[16384];
-		int length;
-		while ((length = input.read(buffer)) != -1) {
-			text.append(buffer, 0, length);
-		}
-
-		input.close();
-
-		return text.toString();
 	}
 
 	private class ReloadAction extends ThreadAction {

@@ -85,6 +85,7 @@ public class CommitGui implements Working, Refreshable {
 	private JButton                    btnSelectFiles;
 	private JButton                    btnSelectDirectories;
 	private JButton                    btnCreatePatch;
+	private JButton                    btnSelectDeselectSelected;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
@@ -145,8 +146,9 @@ public class CommitGui implements Working, Refreshable {
 		btnSelectModified = new JButton(new SelectModifiedAction());
 		btnSelectFiles = new JButton(new SelectFilesAction());
 		btnSelectDirectories = new JButton(new SelectDirectoriesAction());
+		btnSelectDeselectSelected = new JButton(new SelectDeselectSelectedAction());
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p"));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p"));
 		pnlCheck.add(new JLabel("Check:"), cc.xy(1, 1));
 		pnlCheck.add(btnSelectAllNone, cc.xy(3, 1));
 		pnlCheck.add(btnSelectNonVersioned, cc.xy(5, 1));
@@ -155,6 +157,7 @@ public class CommitGui implements Working, Refreshable {
 		pnlCheck.add(btnSelectModified, cc.xy(11, 1));
 		pnlCheck.add(btnSelectFiles, cc.xy(13, 1));
 		pnlCheck.add(btnSelectDirectories, cc.xy(15, 1));
+		pnlCheck.add(btnSelectDeselectSelected, cc.xy(17, 1));
 
 		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
@@ -1023,5 +1026,41 @@ public class CommitGui implements Working, Refreshable {
 		public boolean doUnSelect(CommitListItem li) {
 			return false;
 		}
+	}
+
+	private class SelectDeselectSelectedAction extends ThreadAction {
+
+		public SelectDeselectSelectedAction() {
+			super("-+Selected");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+
+			boolean hasSelected = false;
+			for (CommitListItem li : getSelectedItems()) {
+				if (li.isSelected()) {
+					hasSelected = true;
+					break;
+				}
+			}
+			boolean selectThem;
+			if (hasSelected) {
+				selectThem = false;
+			} else {
+				selectThem = true;
+			}
+			for (CommitListItem li : getSelectedItems()) {
+				li.setSelected(selectThem);
+			}
+
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					tblCommit.repaint();
+				}
+
+			}.run();
+		}
+
 	}
 }

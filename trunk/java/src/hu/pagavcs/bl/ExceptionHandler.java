@@ -60,6 +60,9 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 				case CONNECTION_ERROR:
 					MessagePane.showError(null, "Connection Error", "Error in Communication");
 					return;
+				case UNIMPLEMENTED:
+					MessagePane.showError(null, "Connection Error", "Unimplemented");
+					return;
 			}
 		}
 
