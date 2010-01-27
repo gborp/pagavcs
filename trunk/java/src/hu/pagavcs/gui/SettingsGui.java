@@ -1,17 +1,19 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.operation.Settings;
 
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.tmatesoft.svn.core.SVNException;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -35,27 +37,47 @@ public class SettingsGui {
 	}
 
 	public void display() throws SVNException {
+		FormLayout layout = new FormLayout("p", "p,4dlu,p");
+		JPanel pnlMain = new JPanel(layout);
+		CellConstraints cc = new CellConstraints();
 
-		JPanel pnlMain = new JPanel(new GridLayout(1, 1));
-		JButton btnClearLogin = new JButton("Clear saved login name/password");
-		btnClearLogin.addActionListener(new ActionListener() {
+		JButton btnClearLogin = new JButton(new ClearLoginCacheAction());
+		JButton btnShowIcons = new JButton(new ShowIconsInContextMenu());
 
-			public void actionPerformed(ActionEvent e) {
-				int choice = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Are you sure you want to delete all saved login and password information?",
-				        "Deleting login/password cache", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-				if (choice == JOptionPane.YES_OPTION) {
-					clearLogin();
-				}
-			}
-		});
-
-		pnlMain.add(btnClearLogin);
+		pnlMain.add(btnClearLogin, cc.xy(1, 1));
+		pnlMain.add(btnShowIcons, cc.xy(1, 3));
 
 		Manager.createAndShowFrame(pnlMain, "Settings");
 	}
 
-	public void clearLogin() {
-		Manager.getSettings().clearLogin();
+	private class ClearLoginCacheAction extends ThreadAction {
+
+		public ClearLoginCacheAction() {
+			super("Clear saved login name/password");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			int choice = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Are you sure you want to delete all saved login and password information?",
+			        "Deleting login/password cache", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (choice == JOptionPane.YES_OPTION) {
+				Manager.getSettings().clearLogin();
+			}
+		}
+
+	}
+
+	private class ShowIconsInContextMenu extends ThreadAction {
+
+		public ShowIconsInContextMenu() {
+			super("Show icons in context menu");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			Runtime.getRuntime().exec("gconftool-2 –type bool –set /desktop/gnome/interface/menus_have_icons true");
+			// get the status:
+			// gconftool-2 -g /desktop/gnome/interface/menus_have_icons
+		}
+
 	}
 
 }

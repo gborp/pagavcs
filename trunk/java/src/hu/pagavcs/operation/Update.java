@@ -31,7 +31,7 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 public class Update implements Cancelable {
 
 	public enum UpdateContentStatus {
-		NONE, CONFLICTED, MERGED
+		NONE, CONFLICTED, MERGED, RESOLVED
 	}
 
 	String              path;
