@@ -80,6 +80,7 @@ public class Manager {
 	private static String           tempDir;
 	private static boolean          inited           = false;
 	private static ExceptionHandler exceptionHandler;
+	private static boolean          forceShowingLoginDialogNextTime;
 
 	public static void init() throws BackingStoreException {
 		if (!inited) {
@@ -130,11 +131,12 @@ public class Manager {
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 		SVNClientManager result = null;
 		boolean reTryLogin = false;
-		while (result == null) {
+		while (forceShowingLoginDialogNextTime || result == null) {
 
 			String username = getSettings().getUsername(repoid);
 			String password = getSettings().getPassword(repoid);
-			if (password == null || username == null || "".equals(username) || "".equals(password) || reTryLogin) {
+			if (forceShowingLoginDialogNextTime || password == null || username == null || "".equals(username) || "".equals(password) || reTryLogin) {
+				forceShowingLoginDialogNextTime = false;
 				final LoginGui loginGui = new LoginGui(username, password);
 				SwingUtilities.invokeLater(new Runnable() {
 
@@ -446,6 +448,10 @@ public class Manager {
 		input.close();
 
 		return text.toString();
+	}
+
+	public static void setForceShowingLoginDialogNextTime(boolean forceShowingLoginDialogNextTime) {
+		Manager.forceShowingLoginDialogNextTime = forceShowingLoginDialogNextTime;
 	}
 
 }
