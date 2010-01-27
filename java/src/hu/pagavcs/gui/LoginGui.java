@@ -53,6 +53,7 @@ public class LoginGui {
 
 		Label lblUsername = new Label("UserName:");
 		sfUsername = new EditField(predefinedUsername, 20);
+		sfUsername.setToolTipText("Leave it empty if user name is not required");
 		Label lblPassword = new Label("Password:");
 		sfPassword = new JPasswordField(predefinedPassword, 20);
 		btnLogin = new JButton("Login");
