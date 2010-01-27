@@ -1,17 +1,20 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.SettingsStore;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -39,6 +42,8 @@ public class LoginGui {
 	private final String   predefinedUsername;
 	private final String   predefinedPassword;
 	private boolean        loginButtonPressed;
+	private JCheckBox      cbUsername;
+	private JCheckBox      cbPassword;
 
 	public LoginGui(String username, String password) {
 		this.predefinedUsername = username;
@@ -47,13 +52,19 @@ public class LoginGui {
 	}
 
 	public void display() {
-		FormLayout layout = new FormLayout("4dlu,p,4dlu, p:g,p,4dlu", "4dlu,p,4dlu,p,4dlu,p,4dlu");
-		JPanel pnlMain = new JPanel(layout);
+		JPanel pnlMain = new JPanel(new FormLayout("p,4dlu,p,4dlu, p:g,p", "p,4dlu,p,4dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
-		Label lblUsername = new Label("UserName:");
+		cbUsername = new JCheckBox();
+		cbUsername.setToolTipText("Remember username");
+		cbUsername.setFocusable(false);
+		Label lblUsername = new Label("Username:");
 		sfUsername = new EditField(predefinedUsername, 20);
-		sfUsername.setToolTipText("Leave it empty if user name is not required");
+		sfUsername.setToolTipText("Leave it empty if username is not required");
+
+		cbPassword = new JCheckBox();
+		cbPassword.setToolTipText("Remember password");
+		cbPassword.setFocusable(false);
 		Label lblPassword = new Label("Password:");
 		sfPassword = new JPasswordField(predefinedPassword, 20);
 		btnLogin = new JButton("Login");
@@ -61,21 +72,53 @@ public class LoginGui {
 
 			public void actionPerformed(ActionEvent e) {
 				loginButtonPressed = true;
+
+				SettingsStore settings = Manager.getSettings();
+				settings.setRememberUsername(cbUsername.isSelected());
+				settings.setRememberPassword(cbPassword.isSelected());
+
 				synchronized (logMeIn) {
 					logMeIn.notifyAll();
 				}
 			}
 		});
-		pnlMain.add(lblUsername, cc.xywh(2, 2, 1, 1));
-		pnlMain.add(sfUsername, cc.xywh(4, 2, 2, 1));
-		pnlMain.add(lblPassword, cc.xywh(2, 4, 1, 1));
-		pnlMain.add(sfPassword, cc.xywh(4, 4, 2, 1));
-		pnlMain.add(btnLogin, cc.xywh(5, 6, 1, 1));
+		pnlMain.add(cbUsername, cc.xywh(1, 1, 1, 1));
+		pnlMain.add(lblUsername, cc.xywh(3, 1, 1, 1));
+		pnlMain.add(sfUsername, cc.xywh(5, 1, 2, 1));
+		pnlMain.add(cbPassword, cc.xywh(1, 3, 1, 1));
+		pnlMain.add(lblPassword, cc.xywh(3, 3, 1, 1));
+		pnlMain.add(sfPassword, cc.xywh(5, 3, 2, 1));
+		pnlMain.add(btnLogin, cc.xywh(6, 5, 1, 1));
 
-		window = Manager.createAndShowFrame(new JScrollPane(pnlMain), "Login");
+		SettingsStore settings = Manager.getSettings();
+		cbUsername.setSelected(Boolean.TRUE.equals(settings.getRememberUsername()));
+		cbPassword.setSelected(Boolean.TRUE.equals(settings.getRememberPassword()));
+
+		sfUsername.addKeyListener(new KeyAdapter() {
+
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == '\n') {
+					sfPassword.requestFocus();
+					e.consume();
+				}
+			}
+		});
+
+		sfPassword.addKeyListener(new KeyAdapter() {
+
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == '\n') {
+					btnLogin.doClick();
+					e.consume();
+				}
+			}
+		});
+
+		window = Manager.createAndShowFrame(pnlMain, "Login");
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
+
 				synchronized (logMeIn) {
 					logMeIn.notifyAll();
 				}
@@ -95,6 +138,7 @@ public class LoginGui {
 		} catch (InterruptedException e) {
 			Manager.handle(e);
 		}
+
 		window.setVisible(false);
 		window.dispose();
 		return loginButtonPressed;
@@ -105,7 +149,15 @@ public class LoginGui {
 	}
 
 	public String getPredefinedPassword() {
-		return sfPassword.getText().trim();
+		return new String(sfPassword.getPassword()).trim();
+	}
+
+	public boolean getRememberUsername() {
+		return cbUsername.isSelected();
+	}
+
+	public boolean getRememberPassword() {
+		return cbPassword.isSelected();
 	}
 
 }

@@ -528,26 +528,6 @@ public class CommitGui implements Working, Refreshable {
 			return;
 		}
 		new ResolveConflict(this, file.getPath()).execute();
-
-		// SVNInfo info = Manager.getInfo(file.getPath());
-		//
-		// // info.getConflictOldFile();
-		// File newFile = info.getConflictNewFile();
-		// File oldFile = info.getConflictOldFile();
-		// File wrkFile = info.getConflictWrkFile();
-		//
-		// Process process = Runtime.getRuntime().exec(
-		// "meld -L old " + oldFile.getPath() + " -L working-copy " +
-		// wrkFile.getPath() + " -L new " + newFile.getPath());
-		// process.waitFor();
-		//
-		// int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(),
-		// "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
-		// JOptionPane.QUESTION_MESSAGE);
-		// if (choosed == JOptionPane.YES_OPTION) {
-		// Manager.resolveConflictUsingMine(file.getPath());
-		// refresh();
-		// }
 	}
 
 	private List<CommitListItem> getSelectedItems() {

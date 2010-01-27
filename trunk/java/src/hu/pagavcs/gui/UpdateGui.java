@@ -6,6 +6,7 @@ import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
+import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Update.UpdateContentStatus;
 
 import java.awt.Point;
@@ -17,7 +18,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,7 +32,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -67,6 +66,7 @@ public class UpdateGui {
 	private boolean                               shuttingDown;
 	private Label                                 lblWorkingCopy;
 	private Label                                 lblRepo;
+	private Window                                window;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -113,7 +113,7 @@ public class UpdateGui {
 		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
 		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
-		Window window = Manager.createAndShowFrame(pnlMain, title);
+		window = Manager.createAndShowFrame(pnlMain, title);
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
@@ -210,31 +210,36 @@ public class UpdateGui {
 
 	}
 
-	public void resolveConflict(UpdateListItem li) throws SVNException, IOException, InterruptedException {
+	public void resolveConflict(UpdateListItem li) throws Exception {
 
-		String path = li.getPath();
 		File file = new File(li.getPath());
 		if (file.isDirectory()) {
+			MessagePane.showError(window, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 			return;
 		}
-		SVNInfo info = Manager.getInfo(path);
-
-		// info.getConflictOldFile();
-		File newFile = info.getConflictNewFile();
-		File oldFile = info.getConflictOldFile();
-		File wrkFile = info.getConflictWrkFile();
-
-		Process process = Runtime.getRuntime().exec(
-		        "meld -L old " + oldFile.getPath() + " -L working-copy " + wrkFile.getPath() + " -L new " + newFile.getPath());
-		process.waitFor();
+		new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath()).execute();
 
 		int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
 		        JOptionPane.QUESTION_MESSAGE);
 		if (choosed == JOptionPane.YES_OPTION) {
-			Manager.resolveConflictUsingMine(path);
-			li.setContentStatus(null);
+			li.setContentStatus(UpdateContentStatus.RESOLVED);
 			tblUpdate.repaint();
 		}
+	}
+
+	private class RefreshUpdateGuiIfResolved implements Refreshable {
+
+		private final UpdateListItem li;
+
+		public RefreshUpdateGuiIfResolved(UpdateListItem li) {
+			this.li = li;
+		}
+
+		public void refresh() throws Exception {
+			li.setContentStatus(UpdateContentStatus.RESOLVED);
+			tblUpdate.repaint();
+		}
+
 	}
 
 	private void doRevalidateTable() {
@@ -319,11 +324,11 @@ public class UpdateGui {
 		}
 	}
 
-	private class ResolveConflictUsingTheirs extends AbstractAction {
+	private class ResolveConflictUsingTheirsAction extends AbstractAction {
 
 		private final PopupupMouseListener popupupMouseListener;
 
-		public ResolveConflictUsingTheirs(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingTheirsAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolve conflict using theirs");
 			this.popupupMouseListener = popupupMouseListener;
 		}
@@ -341,11 +346,11 @@ public class UpdateGui {
 		}
 	}
 
-	private class ResolveConflictUsingMine extends AbstractAction {
+	private class ResolveConflictUsingMineAction extends AbstractAction {
 
 		private final PopupupMouseListener popupupMouseListener;
 
-		public ResolveConflictUsingMine(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingMineAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolve conflict using mine");
 			this.popupupMouseListener = popupupMouseListener;
 		}
@@ -363,11 +368,11 @@ public class UpdateGui {
 		}
 	}
 
-	private class ResolveConflict extends AbstractAction {
+	private class ResolveConflictAction extends AbstractAction {
 
 		private final PopupupMouseListener popupupMouseListener;
 
-		public ResolveConflict(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictAction(PopupupMouseListener popupupMouseListener) {
 			super("Resolve conflict");
 			this.popupupMouseListener = popupupMouseListener;
 		}
@@ -406,9 +411,9 @@ public class UpdateGui {
 			ppConflicted.add(new CopyLineToClipboard(this));
 			ppConflicted.add(new CopyAllToClipboard(this));
 			ppConflicted.add(new ShowLog(this));
-			ppConflicted.add(new ResolveConflictUsingTheirs(this));
-			ppConflicted.add(new ResolveConflictUsingMine(this));
-			ppConflicted.add(new ResolveConflict(this));
+			ppConflicted.add(new ResolveConflictUsingTheirsAction(this));
+			ppConflicted.add(new ResolveConflictUsingMineAction(this));
+			ppConflicted.add(new ResolveConflictAction(this));
 		}
 
 		public UpdateListItem getSelected() {
