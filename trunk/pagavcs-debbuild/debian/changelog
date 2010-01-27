@@ -1,3 +1,14 @@
+pagavcs (1.3.25ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * checks whether openjdk- or sun-jre is the default java. if not, than after an are-you-sure it sets as default java sun or openjdk jre
+  * use resolveconfiggui in updategui too
+  * remember username and password checkboxes in logingui (and they do what they say)
+  * new in settingsGui: "show icons in context menu" button
+  * new in settingsGui: "Force showing login dialog next time"
+  
+ -- papaigabor <pagavcs@gmail.com>  Wed, 27 Jan 2010 22:02:00 +0500
+
 pagavcs (1.3.24_3ubuntu) karmic; urgency=low
 
   [ papaigabor ]
