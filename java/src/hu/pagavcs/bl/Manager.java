@@ -150,8 +150,18 @@ public class Manager {
 				}
 				username = loginGui.getPredefinedUsername();
 				password = loginGui.getPredefinedPassword();
-				getSettings().setUsername(repoid, username);
-				getSettings().setPassword(repoid, password);
+
+				if (loginGui.getRememberUsername()) {
+					getSettings().setUsername(repoid, username);
+					if (loginGui.getRememberPassword()) {
+						getSettings().setPassword(repoid, password);
+					} else {
+						getSettings().setPassword(repoid, null);
+					}
+				} else {
+					getSettings().setUsername(repoid, null);
+					getSettings().setPassword(repoid, null);
+				}
 			}
 
 			int readTimeout = 60 * 1000;

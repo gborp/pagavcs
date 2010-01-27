@@ -37,6 +37,8 @@ public class SettingsStore {
 	private static final String  KEY_WINDOW_BOUNDS            = "window-bounds";
 	private static final String  KEY_GUI_LOG_SEPARATOR_DETAIL = "gui-log-separator-detail";
 	private static final String  KEY_GUI_LOG_SEPARATOR_MAIN   = "gui-log-separator-main";
+	private static final String  KEY_LOGIN_REMEMBER_USERNAME  = "gui-login-remember-username";
+	private static final String  KEY_LOGIN_REMEMBER_PASSWORD  = "gui-login-remember-password";
 
 	private Map<String, String>  mapUsername                  = new HashMap<String, String>();
 	private Map<String, String>  mapPassword                  = new HashMap<String, String>();
@@ -45,6 +47,8 @@ public class SettingsStore {
 	private Map<String, String>  mapWindowBounds              = new HashMap<String, String>();
 	private Integer              guiLogSeparatorDetail;
 	private Integer              guiLogSeparatorMain;
+	private Boolean              rememberUsername;
+	private Boolean              rememberPassword;
 
 	public static SettingsStore getInstance() {
 		if (singleton == null) {
@@ -61,6 +65,8 @@ public class SettingsStore {
 		storeMap(KEY_WINDOW_BOUNDS, mapWindowBounds);
 		storeInteger(KEY_GUI_LOG_SEPARATOR_DETAIL, guiLogSeparatorDetail);
 		storeInteger(KEY_GUI_LOG_SEPARATOR_MAIN, guiLogSeparatorMain);
+		storeBoolean(KEY_LOGIN_REMEMBER_USERNAME, rememberUsername);
+		storeBoolean(KEY_LOGIN_REMEMBER_PASSWORD, rememberPassword);
 		prefs.flush();
 	}
 
@@ -72,6 +78,8 @@ public class SettingsStore {
 		mapWindowBounds = loadMap(KEY_WINDOW_BOUNDS);
 		guiLogSeparatorDetail = loadInteger(KEY_GUI_LOG_SEPARATOR_DETAIL);
 		guiLogSeparatorMain = loadInteger(KEY_GUI_LOG_SEPARATOR_MAIN);
+		rememberUsername = loadBoolean(KEY_LOGIN_REMEMBER_USERNAME);
+		rememberPassword = loadBoolean(KEY_LOGIN_REMEMBER_PASSWORD);
 	}
 
 	private List<String> loadList(String listName) throws BackingStoreException {
@@ -116,6 +124,22 @@ public class SettingsStore {
 		}
 	}
 
+	private Boolean loadBoolean(String name) {
+		Integer intValue = loadInteger(name);
+		if (intValue == null) {
+			return null;
+		}
+		return intValue == 1;
+	}
+
+	private void storeBoolean(String name, Boolean value) {
+		Integer valueToStore = null;
+		if (value != null) {
+			valueToStore = value ? 1 : 0;
+		}
+		storeInteger(name, valueToStore);
+	}
+
 	private Integer loadInteger(String name) {
 		String value = prefs.get(name, null);
 		if (value == null) {
@@ -158,7 +182,11 @@ public class SettingsStore {
 	}
 
 	public void setUsername(String repoid, String username) {
-		mapUsername.put(repoid, username);
+		if (username != null) {
+			mapUsername.put(repoid, username);
+		} else {
+			mapUsername.remove(repoid);
+		}
 	}
 
 	public String getPassword(String repoid) {
@@ -166,7 +194,11 @@ public class SettingsStore {
 	}
 
 	public void setPassword(String repoid, String password) {
-		mapPassword.put(repoid, password);
+		if (password != null) {
+			mapPassword.put(repoid, password);
+		} else {
+			mapPassword.remove(repoid);
+		}
 	}
 
 	public void addCommitMessageForHistory(String message) {
@@ -232,6 +264,22 @@ public class SettingsStore {
 
 	public void setGuiLogSeparatorMain(Integer guiLogSeparatorMain) {
 		this.guiLogSeparatorMain = guiLogSeparatorMain;
+	}
+
+	public Boolean getRememberUsername() {
+		return this.rememberUsername;
+	}
+
+	public void setRememberUsername(Boolean rememberUsername) {
+		this.rememberUsername = rememberUsername;
+	}
+
+	public Boolean getRememberPassword() {
+		return this.rememberPassword;
+	}
+
+	public void setRememberPassword(Boolean rememberPassword) {
+		this.rememberPassword = rememberPassword;
 	}
 
 	// store and load immediately settings.
