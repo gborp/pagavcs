@@ -13,7 +13,38 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
-START_SERVER="java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar"
+START_SERVER_CMD="java -Xmx99m -jar /usr/share/pagavcs/bin/pagavcs.jar"
+function startserver {
+
+	# check default java
+	if [ `update-alternatives --query java | grep "Value:" | grep "gij" -c` == 1 ];
+	then
+		zenity --question --text="PagaVCS needs the default java to be OpenJDK- or SUN-JRE. Do you want to make it default?" --title "Change default Java for PagaVCS"
+		
+		RETVAL=$?
+		if [ $RETVAL == 0 ];
+		then
+			if [ `update-alternatives --query java | grep "java-6-sun" -c` == 1 ];
+			then
+				gksudo "update-java-alternatives -s java-6-sun"
+			elif [ `update-alternatives --query java | grep "java-6-openjdk" -c` == 1 ];				
+			then
+				gksudo "update-java-alternatives -s java-6-openjdk"
+			else
+				zenity --error --text "PagaVCS needs OpenJDK- or SUN-JRE"
+			fi
+		fi
+	fi
+	
+    echo server is not running, start a new PagaVCS server
+    ${START_SERVER_CMD} &
+
+    # waiting server to boot up    
+    while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
+       sleep 0.5s
+    done
+}
+
 
 # don't wakeup server for stop command
 if [ "$1" == "stop" ];
@@ -27,18 +58,13 @@ fi
 whoami=`whoami`
 if [ "${whoami}" == "root" ];
 then
-	exit
+   echo PagaVCS should not run as root!
 fi
 
 if [ ! -f /tmp/pagavcs/server-running-indicator ];
 then
-    echo server not running, start a new PagaVCS server
-    ${START_SERVER} &
-
-    # waiting server to boot up    
-    while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
-       sleep 0.5s
-    done
+   echo server not running, start a new PagaVCS server
+   startserver
 fi
 
 echo "send command to PagaVCS-server: $@"
@@ -46,14 +72,9 @@ echo "$@" > /dev/tcp/localhost/12905 2> /dev/null
 RETVAL=$?
 if [ $RETVAL != 0 ];
 then
-	echo "failed, (re)starting PagaVCS-server"
+    echo "failed, (re)starting PagaVCS-server"
     rm -f /tmp/pagavcs/server-running-indicator
-    ${START_SERVER} &
-
-    # waiting server to boot up    
-    while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
-       sleep 0.5s
-    done
+    startserver
     echo "resend command to PagaVCS-server: $@"
     echo $@ > /dev/tcp/localhost/12905 2> /dev/null
 else
