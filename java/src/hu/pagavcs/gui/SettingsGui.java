@@ -37,15 +37,17 @@ public class SettingsGui {
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("p", "p,4dlu,p");
+		FormLayout layout = new FormLayout("p", "p,4dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
 		JButton btnClearLogin = new JButton(new ClearLoginCacheAction());
-		JButton btnShowIcons = new JButton(new ShowIconsInContextMenu());
+		JButton btnShowIcons = new JButton(new ShowIconsInContextMenuAction());
+		JButton btnShowLoginDialogNextTime = new JButton(new ShowLoginDialogNextTimeAction());
 
 		pnlMain.add(btnClearLogin, cc.xy(1, 1));
 		pnlMain.add(btnShowIcons, cc.xy(1, 3));
+		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(1, 5));
 
 		Manager.createAndShowFrame(pnlMain, "Settings");
 	}
@@ -66,9 +68,9 @@ public class SettingsGui {
 
 	}
 
-	private class ShowIconsInContextMenu extends ThreadAction {
+	private class ShowIconsInContextMenuAction extends ThreadAction {
 
-		public ShowIconsInContextMenu() {
+		public ShowIconsInContextMenuAction() {
 			super("Show icons in context menu");
 		}
 
@@ -76,6 +78,18 @@ public class SettingsGui {
 			Runtime.getRuntime().exec("gconftool-2 –type bool –set /desktop/gnome/interface/menus_have_icons true");
 			// get the status:
 			// gconftool-2 -g /desktop/gnome/interface/menus_have_icons
+		}
+
+	}
+
+	private class ShowLoginDialogNextTimeAction extends ThreadAction {
+
+		public ShowLoginDialogNextTimeAction() {
+			super("Force showing login dialog next time");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			Manager.setForceShowingLoginDialogNextTime(true);
 		}
 
 	}
