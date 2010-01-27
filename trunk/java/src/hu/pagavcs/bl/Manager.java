@@ -156,8 +156,13 @@ public class Manager {
 
 			int readTimeout = 60 * 1000;
 			int connectionTimeout = 20 * 1000;
-			ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(username, password),
-			        readTimeout, connectionTimeout);
+			ISVNAuthenticationManager defAuthManager;
+			if (username == null || username.isEmpty()) {
+				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager();
+			} else {
+				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
+			}
+			ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(defAuthManager, readTimeout, connectionTimeout);
 			result = SVNClientManager.newInstance(null, authManager);
 			reTryLogin = false;
 			try {
