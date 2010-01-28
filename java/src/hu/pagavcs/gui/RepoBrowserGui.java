@@ -90,11 +90,11 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		lblStatus.setText("Status: " + status.toString());
 	}
 
-	public void setStatusStartWorking() {
+	public void workStarted() {
 		setStatus(RepoBrowserStatus.WORKING);
 	}
 
-	public void setStatusStopWorking() {
+	public void workEnded() {
 		setStatus(RepoBrowserStatus.COMPLETED);
 	}
 

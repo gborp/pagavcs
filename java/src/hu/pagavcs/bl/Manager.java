@@ -297,12 +297,12 @@ public class Manager {
 	}
 
 	public static int getMaxUrlHistoryItems() {
-		// TODO set it from preferences
+		// TODO getMaxUrlHistoryItems set it from preferences
 		return 20;
 	}
 
 	public static int getMaxMessageHistoryItems() {
-		// TODO set it from preferences
+		// TODO getMaxMessageHistoryItems set it from preferences
 		return 20;
 	}
 
@@ -399,12 +399,12 @@ public class Manager {
 		FileRevisionCache.getInstance().releaseFile(svnUrl, revision);
 	}
 
-	public static File getWorkingCopyFile(File wcFile) throws Exception {
-		return FileRevisionCache.getInstance().getWorkingCopyFile(wcFile);
+	public static File getBaseFile(File wcFile) throws Exception {
+		return FileRevisionCache.getInstance().getBaseFile(wcFile);
 	}
 
-	public static void releaseWorkingCopyFile(File wcFile) throws Exception {
-		FileRevisionCache.getInstance().releaseWorkingCopyFile(wcFile);
+	public static void releaseBaseFile(File wcFile) throws Exception {
+		FileRevisionCache.getInstance().releaseBase(wcFile);
 	}
 
 	public static void showFailedDialog() {

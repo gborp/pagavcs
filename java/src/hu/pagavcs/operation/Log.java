@@ -41,7 +41,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 public class Log implements Cancelable {
 
 	public enum ShowLogStatus {
-		INIT, STARTED, CANCEL, COMPLETED
+		INIT, STARTED, CANCEL, COMPLETED, CANCELLED
 
 	}
 
@@ -94,9 +94,13 @@ public class Log implements Cancelable {
 		boolean includeMergedRevisions = false;
 		String[] revisionProperties = null;
 		ISVNLogEntryHandler handler = new LogEntryHandler();
-		logClient.doLog(filePaths, startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions, limit,
-		        revisionProperties, handler);
-		gui.setStatus(ShowLogStatus.COMPLETED);
+		try {
+			logClient.doLog(filePaths, startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions, limit,
+			        revisionProperties, handler);
+			gui.setStatus(ShowLogStatus.COMPLETED);
+		} catch (SVNCancelException ex) {
+			gui.setStatus(ShowLogStatus.CANCELLED);
+		}
 		gui.workEnded();
 	}
 

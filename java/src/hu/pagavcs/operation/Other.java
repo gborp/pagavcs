@@ -245,4 +245,8 @@ public class Other implements Cancelable {
 		update.setUpdateToRevision(revision);
 		update.execute();
 	}
+
+	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {
+		new Log(pathToShowLog).execute();
+	}
 }
