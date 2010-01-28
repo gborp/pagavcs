@@ -3,6 +3,7 @@ package hu.pagavcs.bl;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -35,6 +36,10 @@ public abstract class ThreadAction extends AbstractAction {
 			}
 
 		}).start();
+	}
+
+	public void setLabel(String label) {
+		putValue(Action.NAME, label);
 	}
 
 	public abstract void actionProcess(ActionEvent e) throws Exception;
