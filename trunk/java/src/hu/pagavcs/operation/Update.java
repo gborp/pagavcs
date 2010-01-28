@@ -8,6 +8,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import org.tmatesoft.svn.core.SVNCancelException;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
@@ -71,9 +72,11 @@ public class Update implements Cancelable {
 				try {
 					updateClient.doUpdate(new File(path), updateToRevision, SVNDepth.INFINITY, true, true);
 					successOrExit = true;
+				} catch (SVNCancelException ex) {
+					// do nothing
 				} catch (SVNException ex) {
-
-					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
+					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
+					if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
 						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
 						        JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {

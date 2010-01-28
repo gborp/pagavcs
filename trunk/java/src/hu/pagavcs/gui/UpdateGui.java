@@ -12,7 +12,6 @@ import hu.pagavcs.operation.Update.UpdateContentStatus;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -54,7 +53,7 @@ public class UpdateGui {
 	private Table                                 tblUpdate;
 	private TableModel<UpdateListItem>            tableModel;
 	private final Cancelable                      update;
-	private JButton                               btnStop;
+	private JButton                               btnStopFinish;
 	private final String                          title;
 	// TODO use Progress, btnStop make it stop too
 	private JProgressBar                          prgWorking;
@@ -67,6 +66,7 @@ public class UpdateGui {
 	private Label                                 lblWorkingCopy;
 	private Label                                 lblRepo;
 	private Window                                window;
+	private StopExitAction                        actStopFinish;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -93,25 +93,16 @@ public class UpdateGui {
 		new StatusCellRendererForUpdateListItem(tblUpdate);
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
 
-		btnStop = new JButton("Stop");
-		btnStop.addActionListener(new ActionListener() {
+		actStopFinish = new StopExitAction();
+		btnStopFinish = new JButton(actStopFinish);
 
-			public void actionPerformed(ActionEvent e) {
-				try {
-					btnStop.setEnabled(false);
-					update.setCancel(true);
-				} catch (Exception e1) {
-					Manager.handle(e1);
-				}
-			}
-		});
 		prgWorking = new JProgressBar();
 
 		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
 		pnlMain.add(lblRepo, cc.xywh(1, 3, 1, 1));
 		pnlMain.add(scrollPane, cc.xywh(1, 5, 5, 1));
 		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
-		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
+		pnlMain.add(btnStopFinish, cc.xywh(5, 7, 1, 1));
 
 		window = Manager.createAndShowFrame(pnlMain, title);
 		window.addWindowListener(new WindowAdapter() {
@@ -163,20 +154,17 @@ public class UpdateGui {
 
 				if (ContentStatus.CANCEL.equals(status)) {
 					prgWorking.setIndeterminate(false);
-					btnStop.setEnabled(false);
-					btnStop.setText("Cancelled");
+					actStopFinish.setType(StopExitActionType.Cancelled);
 				}
 
 				if (ContentStatus.FAILED.equals(status)) {
 					prgWorking.setIndeterminate(false);
-					btnStop.setEnabled(false);
-					btnStop.setText("Failed");
+					actStopFinish.setType(StopExitActionType.Failed);
 				}
 
 				if (ContentStatus.COMPLETED.equals(status)) {
 					prgWorking.setIndeterminate(false);
-					btnStop.setEnabled(false);
-					btnStop.setText("Finished");
+					actStopFinish.setType(StopExitActionType.Finished);
 					if (conflictedItemsPresent) {
 						JOptionPane.showMessageDialog(Manager.getRootFrame(), "There were conflicted items!", "Conflict", JOptionPane.WARNING_MESSAGE);
 					}
@@ -454,6 +442,48 @@ public class UpdateGui {
 			if (e.isPopupTrigger()) {
 				showPopup(e);
 			}
+		}
+	}
+
+	private enum StopExitActionType {
+		Stop, Cancelled, Failed, Finished
+	}
+
+	private class StopExitAction extends ThreadAction {
+
+		private StopExitActionType type;
+
+		public StopExitAction() {
+			super("");
+			setType(StopExitActionType.Stop);
+		}
+
+		public void setType(StopExitActionType type) {
+			this.type = type;
+			setLabel(type.toString());
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			switch (type) {
+				case Stop:
+					update.setCancel(true);
+					setType(StopExitActionType.Cancelled);
+					break;
+				case Cancelled:
+					exit();
+					break;
+				case Failed:
+					exit();
+					break;
+				case Finished:
+					exit();
+					break;
+			}
+		}
+
+		private void exit() {
+			window.setVisible(false);
+			window.dispose();
 		}
 	}
 }
