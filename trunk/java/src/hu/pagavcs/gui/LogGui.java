@@ -182,6 +182,7 @@ public class LogGui implements Working {
 
 			public void actionPerformed(ActionEvent e) {
 				btnStop.setEnabled(false);
+				btnStop.setText("Cancelled");
 				log.setCancel(true);
 			}
 		});
@@ -224,24 +225,18 @@ public class LogGui implements Working {
 
 	public synchronized void workStarted() throws Exception {
 		prgWorkInProgress.startProgress();
+		setStatus(ShowLogStatus.STARTED);
 	}
 
 	public synchronized void workEnded() throws Exception {
 		prgWorkInProgress.stopProgress();
+		setStatus(ShowLogStatus.COMPLETED);
 	}
 
 	public void setStatus(ShowLogStatus status) {
 		if (ShowLogStatus.COMPLETED.equals(status)) {
 			btnStop.setEnabled(false);
 		}
-	}
-
-	public void setStatusStartWorking() {
-		setStatus(ShowLogStatus.STARTED);
-	}
-
-	public void setStatusStopWorking() {
-		setStatus(ShowLogStatus.COMPLETED);
 	}
 
 	public void addItem(long revision, String author, Date date, String message, Map<String, SVNLogEntryPath> mapChanges) {
@@ -375,6 +370,18 @@ public class LogGui implements Working {
 		return lstResult;
 	}
 
+	private void doDetailShowChanges() throws Exception {
+		workStarted();
+		try {
+			LogListItem liLog = getSelectedLogItem();
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				log.showChanges(liDetail.getPath(), liLog.getRevision());
+			}
+		} finally {
+			workEnded();
+		}
+	}
+
 	private class DetailShowChangesAction extends ThreadAction {
 
 		public DetailShowChangesAction() {
@@ -382,11 +389,9 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogListItem liLog = getSelectedLogItem();
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				log.showChanges(liDetail.getPath(), liLog.getRevision());
-			}
+			doDetailShowChanges();
 		}
+
 	}
 
 	private class DetailRevertChangesFromThisRevisionAction extends ThreadAction {
@@ -497,9 +502,20 @@ public class LogGui implements Working {
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
 
+			if (e.getClickCount() == 2) {
+				new Thread(new Runnable() {
+
+					public void run() {
+						try {
+							doDetailShowChanges();
+						} catch (Exception e1) {
+							Manager.handle(e1);
+						}
+					}
+				}).start();
 			}
+
 		}
 	}
 

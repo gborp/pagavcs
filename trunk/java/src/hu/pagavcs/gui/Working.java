@@ -15,7 +15,7 @@ package hu.pagavcs.gui;
  */
 public interface Working {
 
-	public void setStatusStartWorking();
+	public void workStarted() throws Exception;
 
-	public void setStatusStopWorking();
+	public void workEnded() throws Exception;
 }

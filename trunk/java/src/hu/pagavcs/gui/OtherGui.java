@@ -85,8 +85,7 @@ public class OtherGui implements Working, Cancelable {
 		Label lblRepo = new Label("Repository:");
 		sfRepo = new EditField();
 		sfRepo.setEditable(false);
-		btnShowLog = new JButton("Show log");
-		btnShowLog.setEnabled(false);
+		btnShowLog = new JButton(new ShowLogAction());
 
 		sfNewPath = new EditField(other.getPath());
 		cbMove = new JCheckBox("Copy");
@@ -110,8 +109,7 @@ public class OtherGui implements Working, Cancelable {
 		sfRevisionRange = new EditField();
 		sfRevisionRange.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
 		cbReverseMerge = new JCheckBox("Reverse merge");
-		btnShowLogFrom = new JButton("Show log (from)");
-		btnShowLogFrom.setEnabled(false);
+		btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
 		btnMergeRevisions = new JButton(new MergeAction());
 
 		sfSwitchToUrl = new EditField();
@@ -126,7 +124,7 @@ public class OtherGui implements Working, Cancelable {
 		btnExportTo = new JButton(new ExportAction());
 
 		sfUpdateTo = new EditField();
-		btnUpdateToRevision = new JButton(new UpdateToRevision());
+		btnUpdateToRevision = new JButton(new UpdateToRevisionAction());
 
 		btnRepoBrowser = new JButton(new RepoBrowserAction());
 
@@ -256,15 +254,7 @@ public class OtherGui implements Working, Cancelable {
 		}
 	}
 
-	private void doRepoBrowser() throws Exception {
-		other.doRepoBrowser(sfWorkingCopy.getText());
-	}
-
-	private void doUpdateToRevision() throws Exception {
-		other.doUpdateToRevision(sfWorkingCopy.getText(), sfUpdateTo.getText().trim());
-	}
-
-	// TODO
+	// TODO doApplyPatch
 	private void doApplyPatch() throws Exception {
 		if (true) {
 			throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
@@ -276,10 +266,7 @@ public class OtherGui implements Working, Cancelable {
 			File file = fc.getSelectedFile();
 
 			String result = Manager.getOsCommandResult("lsdiff", file.getPath());
-			// TODO display file names, select from files
-
-			// FIXME debug
-			System.out.println(result);
+			// display file names, select from files
 
 			List<String> lstFilesToPatch = new ArrayList<String>();
 			for (String filename : result.split("\n")) {
@@ -289,11 +276,11 @@ public class OtherGui implements Working, Cancelable {
 		}
 	}
 
-	public void setStatusStartWorking() {
+	public void workStarted() {
 		setStatus(OtherStatus.WORKING);
 	}
 
-	public void setStatusStopWorking() {
+	public void workEnded() {
 		setStatus(OtherStatus.COMPLETED);
 	}
 
@@ -364,18 +351,44 @@ public class OtherGui implements Working, Cancelable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			doRepoBrowser();
+			other.doRepoBrowser(sfWorkingCopy.getText());
 		}
 	}
 
-	private class UpdateToRevision extends ThreadAction {
+	private class UpdateToRevisionAction extends ThreadAction {
 
-		public UpdateToRevision() {
+		public UpdateToRevisionAction() {
 			super("Update to");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			doUpdateToRevision();
+			other.doUpdateToRevision(sfWorkingCopy.getText(), sfUpdateTo.getText().trim());
+		}
+
+	}
+
+	private class ShowLogAction extends ThreadAction {
+
+		public ShowLogAction() {
+			super("Show log");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			other.doShowLog(sfWorkingCopy.getText());
+		}
+
+	}
+
+	private class ShowLogMergeFromAction extends ThreadAction {
+
+		public ShowLogMergeFromAction() {
+			super("Show log (from)");
+			setEnabled(false);
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			String url = sfUrlToMergeFrom.getText().trim();
+			// TODO ShowLogMergeFromAction
 		}
 
 	}

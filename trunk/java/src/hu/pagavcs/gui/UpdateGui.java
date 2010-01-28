@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
+import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
@@ -48,10 +49,10 @@ import com.jgoodies.forms.layout.FormLayout;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class UpdateGui {
+public class UpdateGui implements Working {
 
 	private Table                                 tblUpdate;
-	private TableModel<UpdateListItem>            tableModel;
+	private TableModel<UpdateListItem>            tmdlUpdate;
 	private final Cancelable                      update;
 	private JButton                               btnStopFinish;
 	private final String                          title;
@@ -86,9 +87,9 @@ public class UpdateGui {
 		lblWorkingCopy = new Label();
 		lblRepo = new Label();
 
-		tableModel = new TableModel<UpdateListItem>(new UpdateListItem());
+		tmdlUpdate = new TableModel<UpdateListItem>(new UpdateListItem());
 
-		tblUpdate = new Table<UpdateListItem>(tableModel);
+		tblUpdate = new Table<UpdateListItem>(tmdlUpdate);
 		tblUpdate.addMouseListener(new PopupupMouseListener());
 		new StatusCellRendererForUpdateListItem(tblUpdate);
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
@@ -254,7 +255,7 @@ public class UpdateGui {
 								lstLi.add(li);
 							}
 						}
-						tableModel.addLines(lstLi);
+						tmdlUpdate.addLines(lstLi);
 						tblUpdate.scrollRectToVisible(tblUpdate.getCellRect(tblUpdate.getRowCount() - 1, 0, true));
 					}
 				}.run();
@@ -264,18 +265,19 @@ public class UpdateGui {
 		}
 	}
 
+	private UpdateListItem getSelectedUpdateListItem() {
+		return tmdlUpdate.getRow(tblUpdate.convertRowIndexToModel(tblUpdate.getSelectedRow()));
+	}
+
 	private class CopyAllToClipboard extends AbstractAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public CopyAllToClipboard(PopupupMouseListener popupupMouseListener) {
+		public CopyAllToClipboard() {
 			super("Copy all to clipboard");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			StringBuilder result = new StringBuilder();
-			for (UpdateListItem li : tableModel.getAllData()) {
+			for (UpdateListItem li : tmdlUpdate.getAllData()) {
 				result.append(li.getStatus() + " " + li.getPath() + "\n");
 			}
 			Manager.setClipboard(result.toString());
@@ -284,46 +286,49 @@ public class UpdateGui {
 
 	private class CopyLineToClipboard extends AbstractAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public CopyLineToClipboard(PopupupMouseListener popupupMouseListener) {
+		public CopyLineToClipboard() {
 			super("Copy line to clipboard");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			UpdateListItem li = popupupMouseListener.getSelected();
+			UpdateListItem li = getSelectedUpdateListItem();
 			Manager.setClipboard(li.getStatus() + " " + li.getPath());
 		}
 	}
 
 	private class ShowLog extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ShowLog(PopupupMouseListener popupupMouseListener) {
+		public ShowLog() {
 			super("Show log");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			UpdateListItem li = popupupMouseListener.getSelected();
+			UpdateListItem li = getSelectedUpdateListItem();
 			new Log(li.getPath()).execute();
+		}
+	}
+
+	private class ShowChanges extends ThreadAction {
+
+		public ShowChanges() {
+			super("Show changes");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			UpdateListItem li = getSelectedUpdateListItem();
+			SvnHelper.showChangesFromBase(UpdateGui.this, new File(li.getPath()));
 		}
 	}
 
 	private class ResolveConflictUsingTheirsAction extends AbstractAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ResolveConflictUsingTheirsAction(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingTheirsAction() {
 			super("Resolve conflict using theirs");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				UpdateListItem li = popupupMouseListener.getSelected();
+				UpdateListItem li = getSelectedUpdateListItem();
 				Manager.resolveConflictUsingTheirs(li.getPath());
 				li.setContentStatus(null);
 				tblUpdate.repaint();
@@ -336,16 +341,13 @@ public class UpdateGui {
 
 	private class ResolveConflictUsingMineAction extends AbstractAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ResolveConflictUsingMineAction(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingMineAction() {
 			super("Resolve conflict using mine");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				UpdateListItem li = popupupMouseListener.getSelected();
+				UpdateListItem li = getSelectedUpdateListItem();
 				Manager.resolveConflictUsingMine(li.getPath());
 				li.setContentStatus(null);
 				tblUpdate.repaint();
@@ -358,16 +360,13 @@ public class UpdateGui {
 
 	private class ResolveConflictAction extends AbstractAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ResolveConflictAction(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictAction() {
 			super("Resolve conflict");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				UpdateListItem li = popupupMouseListener.getSelected();
+				UpdateListItem li = getSelectedUpdateListItem();
 				resolveConflict(li);
 
 			} catch (Exception e1) {
@@ -379,33 +378,30 @@ public class UpdateGui {
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu     ppVisible;
-		private JPopupMenu     ppCompleted;
-		private JPopupMenu     ppConflicted;
-		private UpdateListItem selected;
-		private JPopupMenu     ppUpdated;
+		private JPopupMenu ppVisible;
+		private JPopupMenu ppCompleted;
+		private JPopupMenu ppConflicted;
+		private JPopupMenu ppUpdated;
 
 		public PopupupMouseListener() {
 			ppCompleted = new JPopupMenu();
-			ppCompleted.add(new CopyLineToClipboard(this));
-			ppCompleted.add(new CopyAllToClipboard(this));
+			ppCompleted.add(new CopyLineToClipboard());
+			ppCompleted.add(new CopyAllToClipboard());
 
 			ppUpdated = new JPopupMenu();
-			ppUpdated.add(new CopyLineToClipboard(this));
-			ppUpdated.add(new CopyAllToClipboard(this));
-			ppUpdated.add(new ShowLog(this));
+			ppUpdated.add(new CopyLineToClipboard());
+			ppUpdated.add(new CopyAllToClipboard());
+			ppUpdated.add(new ShowLog());
+			// TODO ShowChanges
+			// ppUpdated.add(new ShowChanges());
 
 			ppConflicted = new JPopupMenu();
-			ppConflicted.add(new CopyLineToClipboard(this));
-			ppConflicted.add(new CopyAllToClipboard(this));
-			ppConflicted.add(new ShowLog(this));
-			ppConflicted.add(new ResolveConflictUsingTheirsAction(this));
-			ppConflicted.add(new ResolveConflictUsingMineAction(this));
-			ppConflicted.add(new ResolveConflictAction(this));
-		}
-
-		public UpdateListItem getSelected() {
-			return selected;
+			ppConflicted.add(new CopyLineToClipboard());
+			ppConflicted.add(new CopyAllToClipboard());
+			ppConflicted.add(new ShowLog());
+			ppConflicted.add(new ResolveConflictUsingTheirsAction());
+			ppConflicted.add(new ResolveConflictUsingMineAction());
+			ppConflicted.add(new ResolveConflictAction());
 		}
 
 		public void showPopup(MouseEvent e) {
@@ -414,7 +410,9 @@ public class UpdateGui {
 			if (row == -1) {
 				return;
 			}
-			selected = tableModel.getRow(tblUpdate.convertRowIndexToModel(row));
+			int rowIndex = tblUpdate.convertRowIndexToModel(row);
+			tblUpdate.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+			UpdateListItem selected = getSelectedUpdateListItem();
 			ContentStatus status = selected.getStatus();
 
 			if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
@@ -485,5 +483,13 @@ public class UpdateGui {
 			window.setVisible(false);
 			window.dispose();
 		}
+	}
+
+	public void workEnded() throws Exception {
+	// TODO workEnded
+	}
+
+	public void workStarted() throws Exception {
+	// TODO workStarted
 	}
 }
