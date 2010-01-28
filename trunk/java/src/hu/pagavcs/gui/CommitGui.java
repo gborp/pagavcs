@@ -191,10 +191,6 @@ public class CommitGui implements Working, Refreshable {
 		this.logMinSize = logMinSize;
 	}
 
-	public void setStatusStartWorking() {}
-
-	public void setStatusStopWorking() {}
-
 	public synchronized void workStarted() throws Exception {
 		prgWorkinProgress.startProgress();
 	}
@@ -644,7 +640,7 @@ public class CommitGui implements Working, Refreshable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			for (CommitListItem li : getSelectedItems()) {
-				commit.showChanges(li.getPath());
+				commit.showChangesFromBase(li.getPath());
 			}
 		}
 	}

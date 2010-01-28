@@ -1,6 +1,7 @@
 package hu.pagavcs.bl;
 
 import hu.pagavcs.gui.UpdateGui;
+import hu.pagavcs.gui.Working;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.UpdateEventHandler;
@@ -105,4 +106,21 @@ public class SvnHelper {
 		}
 	}
 
+	public static void showChangesFromBase(Working working, File wcFile) throws Exception {
+		working.workStarted();
+		try {
+			File fileOld = Manager.getBaseFile(wcFile);
+
+			String wcFilePath = wcFile.getPath();
+			String fileName = wcFilePath.substring(wcFilePath.lastIndexOf('/') + 1);
+
+			ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileOld.getName(), fileOld.getPath(), "-L " + fileName, wcFilePath);
+			Process process = processBuilder.start();
+			working.workEnded();
+			process.waitFor();
+
+		} finally {
+			Manager.releaseBaseFile(wcFile);
+		}
+	}
 }

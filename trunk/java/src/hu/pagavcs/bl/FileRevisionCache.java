@@ -31,7 +31,7 @@ public class FileRevisionCache {
 
 	private static HashMap<Pair<SVNURL, SVNRevision>, File> mapFiles            = new HashMap<Pair<SVNURL, SVNRevision>, File>();
 	private static HashSet<Pair<SVNURL, SVNRevision>>       lstUsedFiles        = new HashSet<Pair<SVNURL, SVNRevision>>();
-	private static HashMap<File, File>                      lstWorkingCopyFiles = new HashMap<File, File>();
+	private static HashMap<File, File>                      lstBaseFiles = new HashMap<File, File>();
 
 	public static synchronized FileRevisionCache getInstance() {
 		if (singleton == null) {
@@ -119,8 +119,8 @@ public class FileRevisionCache {
 		lstUsedFiles.remove(key);
 	}
 
-	public File getWorkingCopyFile(File wcFile) throws Exception {
-		File result = lstWorkingCopyFiles.get(wcFile);
+	public File getBaseFile(File wcFile) throws Exception {
+		File result = lstBaseFiles.get(wcFile);
 
 		if (result == null) {
 			String tempPrefix = Manager.getTempDir() + "w/";
@@ -139,16 +139,16 @@ public class FileRevisionCache {
 			wcClient.doGetFileContents(wcFile, SVNRevision.BASE, SVNRevision.BASE, false, outOldRevision);
 			outOldRevision.close();
 
-			lstWorkingCopyFiles.put(wcFile, file);
+			lstBaseFiles.put(wcFile, file);
 			result = file;
 		}
 		return result;
 	}
 
-	public void releaseWorkingCopyFile(File wcFile) {
-		File cacheFile = lstWorkingCopyFiles.get(wcFile);
+	public void releaseBase(File wcFile) {
+		File cacheFile = lstBaseFiles.get(wcFile);
 		if (cacheFile != null) {
-			lstWorkingCopyFiles.remove(wcFile);
+			lstBaseFiles.remove(wcFile);
 			cacheFile.delete();
 		}
 	}

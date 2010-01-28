@@ -21,8 +21,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ToolTipManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -122,25 +120,6 @@ public class ResolveConflictGui {
 		reload();
 
 		frame = Manager.createAndShowFrame(pnlMain, "Resolve Conflict");
-
-		Document doc = tpConflict.getStyledDocument();
-		doc.addDocumentListener(new DocumentListener() {
-
-			public void removeUpdate(DocumentEvent e) {
-			// TODO Auto-generated method stub
-
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-			// TODO Auto-generated method stub
-
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-			// TODO Auto-generated method stub
-
-			}
-		});
 	}
 
 	private void reload() throws IOException, BadLocationException {

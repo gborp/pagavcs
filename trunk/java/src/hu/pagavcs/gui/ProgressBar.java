@@ -32,7 +32,7 @@ public class ProgressBar extends JProgressBar {
 			protected void process() throws Exception {
 				if (busyCount == 0) {
 					setIndeterminate(true);
-					working.setStatusStartWorking();
+					// working.workStarted();
 				}
 				busyCount++;
 			}
@@ -47,7 +47,7 @@ public class ProgressBar extends JProgressBar {
 					busyCount--;
 					if (busyCount == 0) {
 						setIndeterminate(false);
-						working.setStatusStopWorking();
+						// working.workEnded();
 					}
 				}
 			}
@@ -60,7 +60,7 @@ public class ProgressBar extends JProgressBar {
 			protected void process() throws Exception {
 				busyCount = 0;
 				setIndeterminate(false);
-				working.setStatusStopWorking();
+				working.workEnded();
 			}
 		}.run();
 	}

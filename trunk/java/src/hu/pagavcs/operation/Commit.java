@@ -210,22 +210,8 @@ public class Commit {
 		return rootUrl;
 	}
 
-	public void showChanges(File wcFile) throws Exception {
-		gui.workStarted();
-		try {
-			File fileOld = Manager.getWorkingCopyFile(wcFile);
-
-			String wcFilePath = wcFile.getPath();
-			String fileName = wcFilePath.substring(wcFilePath.lastIndexOf('/') + 1);
-
-			ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileOld.getName(), fileOld.getPath(), "-L " + fileName, wcFilePath);
-			Process process = processBuilder.start();
-			gui.workEnded();
-			process.waitFor();
-
-		} finally {
-			Manager.releaseWorkingCopyFile(wcFile);
-		}
+	public void showChangesFromBase(File wcFile) throws Exception {
+		SvnHelper.showChangesFromBase(gui, wcFile);
 	}
 
 	public void add(File wcFile) throws SVNException {
