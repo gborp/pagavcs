@@ -1,6 +1,7 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.Delete.DeleteStatus;
 

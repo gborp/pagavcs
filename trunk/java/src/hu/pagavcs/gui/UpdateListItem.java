@@ -1,5 +1,6 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.gui.platform.ListItem;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Update.UpdateContentStatus;
 

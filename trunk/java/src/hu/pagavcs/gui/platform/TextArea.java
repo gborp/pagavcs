@@ -1,4 +1,5 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
+
 
 import javax.swing.JTextArea;
 

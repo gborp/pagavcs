@@ -1,6 +1,4 @@
-package hu.pagavcs.gui;
-
-import java.awt.Color;
+package hu.pagavcs.gui.platform;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -15,13 +13,6 @@ import java.awt.Color;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class NullCellRenderer extends AbstractCellRendererColorizator {
+public interface ContextSensitivePopupMenu {
 
-	public NullCellRenderer(Table table) {
-		super(table);
-	}
-
-	public Color getForegroundColor(ListItem li) {
-		return null;
-	}
 }

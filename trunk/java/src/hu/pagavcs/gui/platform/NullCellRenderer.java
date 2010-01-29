@@ -1,6 +1,7 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
 
-import javax.swing.JLabel;
+
+import java.awt.Color;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -15,20 +16,13 @@ import javax.swing.JLabel;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Label extends JLabel {
+public class NullCellRenderer extends AbstractCellRendererColorizator {
 
-	public Label() {
-		super();
-		init();
+	public NullCellRenderer(Table table) {
+		super(table);
 	}
 
-	public Label(String text) {
-		super(text);
-		init();
+	public Color getForegroundColor(ListItem li) {
+		return null;
 	}
-
-	private void init() {
-		GuiHelper.addPopupMenu(this);
-	}
-
 }

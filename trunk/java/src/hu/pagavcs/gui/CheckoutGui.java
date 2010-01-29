@@ -1,6 +1,8 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Checkout;
 
 import java.awt.BorderLayout;

@@ -1,4 +1,4 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
