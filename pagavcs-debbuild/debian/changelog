@@ -1,3 +1,11 @@
+pagavcs (1.3.26ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * update gui: enable "finished" button when finished
+  * other gui: show log and show log (from) action
+  
+ -- papaigabor <pagavcs@gmail.com>  Thu, 28 Jan 2010 21:15:00 +0500
+
 pagavcs (1.3.25ubuntu) karmic; urgency=low
 
   [ papaigabor ]
