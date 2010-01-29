@@ -1,6 +1,5 @@
 package hu.pagavcs.gui.platform;
 
-
 import java.awt.Color;
 import java.awt.Component;
 
@@ -23,19 +22,21 @@ import javax.swing.table.TableCellRenderer;
 public abstract class AbstractCellRendererColorizator<L extends ListItem> implements TableCellRenderer {
 
 	private final TableCellRenderer delegate;
+	private Table<L>                decorTable;
 	private static final Color      alternateColor = new Color(240, 240, 240);
 
-	public AbstractCellRendererColorizator(Table table) {
+	public AbstractCellRendererColorizator(Table<L> table) {
 		delegate = table.getDefaultRenderer(Object.class);
 		table.setDefaultRenderer(Object.class, this);
+		decorTable = table;
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
 
-		Component delegeteComponent = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, vColIndex);
+		Component delegeteComponent = delegate.getTableCellRendererComponent(decorTable, value, isSelected, hasFocus, rowIndex, vColIndex);
 		if (!isSelected) {
-			delegeteComponent.setForeground(getForegroundColor((L) ((TableModel) (table.getModel())).getRow(table.convertRowIndexToModel(rowIndex))));
-			delegeteComponent.setBackground(rowIndex % 2 == 0 ? alternateColor : null);
+			delegeteComponent.setForeground(getForegroundColor(decorTable.getModel().getRow(decorTable.convertRowIndexToModel(rowIndex))));
+			delegeteComponent.setBackground(rowIndex % 2 == 0 ? AbstractCellRendererColorizator.alternateColor : null);
 		} else {
 			delegeteComponent.setForeground(null);
 		}

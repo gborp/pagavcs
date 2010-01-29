@@ -156,21 +156,21 @@ public class SettingsStore {
 		}
 	}
 
-	private Double loadDouble(String name) {
-		String value = prefs.get(name, null);
-		if (value == null) {
-			return null;
-		}
-		return Double.valueOf(value);
-	}
-
-	private void storeDouble(String name, Double value) {
-		if (value == null) {
-			prefs.remove(name);
-		} else {
-			prefs.put(name, Double.toString(value));
-		}
-	}
+	// private Double loadDouble(String name) {
+	// String value = prefs.get(name, null);
+	// if (value == null) {
+	// return null;
+	// }
+	// return Double.valueOf(value);
+	// }
+	//
+	// private void storeDouble(String name, Double value) {
+	// if (value == null) {
+	// prefs.remove(name);
+	// } else {
+	// prefs.put(name, Double.toString(value));
+	// }
+	// }
 
 	public void clearLogin() {
 		mapUsername.clear();

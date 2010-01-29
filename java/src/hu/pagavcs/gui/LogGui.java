@@ -67,12 +67,12 @@ import com.toedter.calendar.JDateChooser;
  */
 public class LogGui implements Working {
 
-	private Table                                   tblLog;
+	private Table<LogListItem>                      tblLog;
 	private TableModel<LogListItem>                 tmdlLog;
 	private final Log                               log;
 	private JButton                                 btnStop;
 	private TableModel<LogDetailListItem>           tmdlLogDetail;
-	private Table                                   tblDetailLog;
+	private Table<LogDetailListItem>                tblDetailLog;
 	private TextArea                                taMessage;
 	private ProgressBar                             prgWorkInProgress;
 	private Label                                   lblUrl;
@@ -95,7 +95,7 @@ public class LogGui implements Working {
 
 	public void display() throws SVNException {
 
-		tmrTableRevalidate = new Timer("Revalidate table");
+		tmrTableRevalidate = new Timer("Revalidate table", true);
 		SettingsStore settingsStore = Manager.getSettings();
 		tmdlLog = new TableModel<LogListItem>(new LogListItem());
 		tblLog = new Table<LogListItem>(tmdlLog);
@@ -122,7 +122,7 @@ public class LogGui implements Working {
 
 		});
 		tblLog.setRowSorter(sorterLog);
-		new NullCellRenderer(tblLog);
+		new NullCellRenderer<LogListItem>(tblLog);
 		tblLog.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			public void valueChanged(ListSelectionEvent e) {
@@ -377,18 +377,6 @@ public class LogGui implements Working {
 		return lstResult;
 	}
 
-	private void doDetailShowChanges() throws Exception {
-		workStarted();
-		try {
-			LogListItem liLog = getSelectedLogItem();
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				log.showChanges(liDetail.getPath(), liLog.getRevision());
-			}
-		} finally {
-			workEnded();
-		}
-	}
-
 	private class DetailShowChangesAction extends ThreadAction {
 
 		public DetailShowChangesAction() {
@@ -396,7 +384,15 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			doDetailShowChanges();
+			workStarted();
+			try {
+				LogListItem liLog = getSelectedLogItem();
+				for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+					log.showChanges(liDetail.getPath(), liLog.getRevision());
+				}
+			} finally {
+				workEnded();
+			}
 		}
 
 	}
@@ -515,7 +511,7 @@ public class LogGui implements Working {
 
 					public void run() {
 						try {
-							doDetailShowChanges();
+							new DetailShowChangesAction().actionProcess(null);
 						} catch (Exception e1) {
 							Manager.handle(e1);
 						}

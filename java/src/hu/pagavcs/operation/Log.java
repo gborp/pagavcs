@@ -208,6 +208,7 @@ public class Log implements Cancelable {
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {
 
+		@SuppressWarnings("unchecked")
 		public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
 			long revision = logEntry.getRevision();
 			String author = logEntry.getAuthor();

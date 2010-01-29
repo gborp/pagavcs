@@ -38,7 +38,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class BlameGui {
 
-	private Table                     tblBlame;
+	private Table<BlameListItem>      tblBlame;
 	private TableModel<BlameListItem> tableModel;
 	private final Cancelable          update;
 	private JButton                   btnStop;
@@ -64,7 +64,7 @@ public class BlameGui {
 
 		tableModel = new TableModel<BlameListItem>(new BlameListItem());
 
-		tblBlame = new Table(tableModel);
+		tblBlame = new Table<BlameListItem>(tableModel);
 		tblBlame.addMouseListener(new PopupupMouseListener());
 		JScrollPane scrollPane = new JScrollPane(tblBlame);
 

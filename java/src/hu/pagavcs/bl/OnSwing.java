@@ -15,26 +15,15 @@ import javax.swing.SwingUtilities;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public abstract class OnSwing<P extends Object> {
+public abstract class OnSwing {
 
-	private static final boolean DEFAULT_FORCE_INVOKE_LATER = false;
-	protected P                  argument;
-	private final boolean        forceInvokeLater;
+	private final boolean forceInvokeLater;
 
 	public OnSwing() {
-		this(DEFAULT_FORCE_INVOKE_LATER);
-	}
-
-	public OnSwing(P argument) {
-		this(argument, DEFAULT_FORCE_INVOKE_LATER);
+		this(false);
 	}
 
 	public OnSwing(boolean forceInvokeLater) {
-		this(null, forceInvokeLater);
-	}
-
-	public OnSwing(P argument, boolean forceInvokeLater) {
-		this.argument = argument;
 		this.forceInvokeLater = forceInvokeLater;
 	}
 

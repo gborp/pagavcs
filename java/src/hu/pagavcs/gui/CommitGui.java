@@ -69,7 +69,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class CommitGui implements Working, Refreshable {
 
 	private Window                     frame;
-	private Table                      tblCommit;
+	private Table<CommitListItem>      tblCommit;
 	private TableModel<CommitListItem> tmdlCommit;
 	private Commit                     commit;
 	private JButton                    btnStop;
@@ -290,7 +290,7 @@ public class CommitGui implements Working, Refreshable {
 	}
 
 	public void refresh() throws Exception {
-		new OnSwing<Object>() {
+		new OnSwing() {
 
 			protected void process() throws Exception {
 				workStarted();
@@ -386,87 +386,6 @@ public class CommitGui implements Working, Refreshable {
 		}.run();
 	}
 
-	public void createPatch() throws Exception {
-		noCommit = 0;
-		ArrayList<File> lstCommit = new ArrayList<File>();
-		for (CommitListItem li : tmdlCommit.getAllData()) {
-			if (li.isSelected()) {
-				lstCommit.add(li.getPath());
-				noCommit++;
-
-				if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
-					int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
-					tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
-					MessagePane.showError(frame, "Cannot create patch", "Cannot create patch from conflicted file! Please resolve the conflict first.");
-					return;
-				}
-			}
-		}
-		if (noCommit == 0) {
-			MessagePane.showError(frame, "Cannot create patch", "Nothing is selected for creating patch");
-			return;
-		}
-
-		JFileChooser fc = new JFileChooser(new File(commit.getPath()));
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-		int choosed = fc.showSaveDialog(frame);
-
-		if (choosed == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			if (file.getName().indexOf('.') == -1) {
-				file = new File(file.getAbsolutePath() + ".patch");
-			}
-
-			OutputStream out = new FileOutputStream(file);
-			commit.createPatch(lstCommit.toArray(new File[0]), out);
-		}
-	}
-
-	public void commitSelected() throws Exception {
-		int minimumLogSize = Math.max(logMinSize, 1);
-		if (taMessage.getText().trim().length() < minimumLogSize) {
-			MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + minimumLogSize + "!");
-			return;
-		}
-
-		Manager.getSettings().addCommitMessageForHistory(taMessage.getText().trim());
-
-		noCommit = 0;
-		ArrayList<File> lstCommit = new ArrayList<File>();
-		for (CommitListItem li : tmdlCommit.getAllData()) {
-			if (li.isSelected()) {
-				lstCommit.add(li.getPath());
-				noCommit++;
-
-				if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
-					// auto-add unversioned items
-					commit.add(li.getPath());
-					// MessagePane.showWarning(frame, "Cannot commit",
-					// "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
-					// return;
-				} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
-					int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
-					tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
-					MessagePane.showError(frame, "Cannot commit", "Cannot commit conflicted file! Please resolve the conflict first.");
-					return;
-				}
-			}
-		}
-		if (noCommit == 0) {
-			MessagePane.showError(frame, "Cannot commit", "Nothing is selected to commit");
-			return;
-		}
-
-		tblCommit.setEnabled(false);
-		btnCommit.setEnabled(false);
-		prgWorkinProgress.setValue(0);
-		prgWorkinProgress.setIndeterminate(true);
-		preRealCommitProcess = true;
-		commit.doCommit(lstCommit, taMessage.getText());
-
-	}
-
 	public void addCommittedItem(String fileName, CommittedItemStatus itemStatus) {
 		if (preRealCommitProcess) {
 			prgWorkinProgress.setIndeterminate(false);
@@ -480,38 +399,6 @@ public class CommitGui implements Working, Refreshable {
 		if (itemStatus.equals(CommittedItemStatus.COMPLETED)) {
 			lblInfo.setText(fileName);
 		}
-	}
-
-	private CommitListItem getCommitListItem(File file) {
-		for (CommitListItem li : tmdlCommit.getAllData()) {
-			if (li.getPath().equals(file)) {
-				return li;
-			}
-		}
-		return null;
-	}
-
-	public void changeFromUnversionedToAdded(File file) {
-		CommitListItem li = getCommitListItem(file);
-		if (li != null) {
-			li.setStatus(ContentStatus.ADDED);
-			li.setSelected(true);
-			tblCommit.repaint();
-		}
-	}
-
-	public void changeToIgnore(File file) {
-		CommitListItem li = getCommitListItem(file);
-		li.setStatus(ContentStatus.IGNORED);
-		li.setSelected(false);
-		tblCommit.repaint();
-	}
-
-	public void changeToDeleted(File file) {
-		CommitListItem li = getCommitListItem(file);
-		li.setStatus(ContentStatus.DELETED);
-		li.setSelected(true);
-		tblCommit.repaint();
 	}
 
 	private void removeListItemIfNormal(CommitListItem li) {
@@ -547,7 +434,40 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			createPatch();
+			noCommit = 0;
+			ArrayList<File> lstCommit = new ArrayList<File>();
+			for (CommitListItem li : tmdlCommit.getAllData()) {
+				if (li.isSelected()) {
+					lstCommit.add(li.getPath());
+					noCommit++;
+
+					if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
+						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
+						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
+						MessagePane.showError(frame, "Cannot create patch", "Cannot create patch from conflicted file! Please resolve the conflict first.");
+						return;
+					}
+				}
+			}
+			if (noCommit == 0) {
+				MessagePane.showError(frame, "Cannot create patch", "Nothing is selected for creating patch");
+				return;
+			}
+
+			JFileChooser fc = new JFileChooser(new File(commit.getPath()));
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+			int choosed = fc.showSaveDialog(frame);
+
+			if (choosed == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				if (file.getName().indexOf('.') == -1) {
+					file = new File(file.getAbsolutePath() + ".patch");
+				}
+
+				OutputStream out = new FileOutputStream(file);
+				commit.createPatch(lstCommit.toArray(new File[0]), out);
+			}
 		}
 	}
 
@@ -558,7 +478,46 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			commitSelected();
+			int minimumLogSize = Math.max(logMinSize, 1);
+			if (taMessage.getText().trim().length() < minimumLogSize) {
+				MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + minimumLogSize + "!");
+				return;
+			}
+
+			Manager.getSettings().addCommitMessageForHistory(taMessage.getText().trim());
+
+			noCommit = 0;
+			ArrayList<File> lstCommit = new ArrayList<File>();
+			for (CommitListItem li : tmdlCommit.getAllData()) {
+				if (li.isSelected()) {
+					lstCommit.add(li.getPath());
+					noCommit++;
+
+					if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
+						// auto-add unversioned items
+						commit.add(li.getPath());
+						// MessagePane.showWarning(frame, "Cannot commit",
+						// "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
+						// return;
+					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
+						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
+						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
+						MessagePane.showError(frame, "Cannot commit", "Cannot commit conflicted file! Please resolve the conflict first.");
+						return;
+					}
+				}
+			}
+			if (noCommit == 0) {
+				MessagePane.showError(frame, "Cannot commit", "Nothing is selected to commit");
+				return;
+			}
+
+			tblCommit.setEnabled(false);
+			btnCommit.setEnabled(false);
+			prgWorkinProgress.setValue(0);
+			prgWorkinProgress.setIndeterminate(true);
+			preRealCommitProcess = true;
+			commit.doCommit(lstCommit, taMessage.getText());
 		}
 	}
 
@@ -852,7 +811,7 @@ public class CommitGui implements Working, Refreshable {
 				int row = tblCommit.convertRowIndexToModel(rowAtPoint);
 				CommitListItem selected = tmdlCommit.getRow(row);
 				ContentStatus status = selected.getStatus();
-				ContentStatus propertyStatus = selected.getPropertyStatus();
+				// ContentStatus propertyStatus = selected.getPropertyStatus();
 				if (status.equals(ContentStatus.MODIFIED)) {
 					new ShowChangesAction(this).actionPerformed(null);
 				}
