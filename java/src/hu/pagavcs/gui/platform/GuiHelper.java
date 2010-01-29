@@ -1,4 +1,4 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
 
 import hu.pagavcs.bl.Manager;
 

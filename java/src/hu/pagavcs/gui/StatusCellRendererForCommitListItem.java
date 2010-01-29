@@ -1,6 +1,9 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.AbstractCellRendererColorizator;
+import hu.pagavcs.gui.platform.ListItem;
+import hu.pagavcs.gui.platform.Table;
 
 import java.awt.Color;
 

@@ -3,6 +3,8 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.MessagePane;
 
 import java.awt.Color;
 import java.awt.Point;

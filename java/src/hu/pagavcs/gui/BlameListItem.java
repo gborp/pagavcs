@@ -1,5 +1,7 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.gui.platform.ListItem;
+
 import java.util.Date;
 
 /**

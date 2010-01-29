@@ -4,6 +4,8 @@ import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.Tree;
 import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.RepoBrowser.RepoBrowserStatus;
 

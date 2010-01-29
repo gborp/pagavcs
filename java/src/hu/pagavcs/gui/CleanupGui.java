@@ -1,6 +1,7 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Cleanup.CleanupStatus;
 

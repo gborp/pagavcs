@@ -5,6 +5,9 @@ import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
+import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.ProgressBar;
 import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.Other.OtherStatus;
 

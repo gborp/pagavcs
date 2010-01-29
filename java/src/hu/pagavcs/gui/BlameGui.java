@@ -3,6 +3,8 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.Table;
+import hu.pagavcs.gui.platform.TableModel;
 import hu.pagavcs.operation.Log;
 
 import java.awt.Point;

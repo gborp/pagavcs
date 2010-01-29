@@ -1,6 +1,7 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
 
 import hu.pagavcs.bl.OnSwing;
+import hu.pagavcs.gui.Working;
 
 import javax.swing.JProgressBar;
 
