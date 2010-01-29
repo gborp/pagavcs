@@ -55,7 +55,6 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
         filename = urllib.unquote(file.get_uri()[7:])
         filenameForParam = filename
         if (server_creating):
-            file.add_emblem ('pagavcs-svn')
             return
         try:
             clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -65,14 +64,12 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
         except (socket.timeout, socket.error):
             server_creating = True
             StartPagaVCSServerThread().start()
-            file.add_emblem ('pagavcs-svn')
             return
 
         data = ""
         try:
             data = clientsocket.recv(16)
         except (socket.timeout, socket.error):
-            file.add_emblem ('pagavcs-svn')
             return  
         clientsocket.close()
         if (data != ""):
