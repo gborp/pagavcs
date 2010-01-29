@@ -3,7 +3,7 @@ package hu.pagavcs.bl;
 import hu.pagavcs.Communication;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.LoginGui;
-import hu.pagavcs.gui.MessagePane;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Color;

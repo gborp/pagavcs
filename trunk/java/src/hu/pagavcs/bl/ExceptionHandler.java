@@ -1,8 +1,8 @@
 package hu.pagavcs.bl;
 
-import hu.pagavcs.gui.EditField;
-import hu.pagavcs.gui.MessagePane;
-import hu.pagavcs.gui.TextArea;
+import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.MessagePane;
+import hu.pagavcs.gui.platform.TextArea;
 
 import java.awt.BorderLayout;
 import java.io.IOException;

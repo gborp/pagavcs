@@ -1,4 +1,7 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
+
+
+import javax.swing.JTextField;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -13,14 +16,29 @@ package hu.pagavcs.gui;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public interface ListItem {
+public class EditField extends JTextField {
 
-	Object getValue(int index);
+	public EditField() {
+		super();
+		init();
+	}
 
-	String[] getColumnNames();
+	public EditField(String text) {
+		super(text);
+		init();
+	}
 
-	boolean isColumnEditable(int columnIndex);
+	public EditField(int columns) {
+		super(columns);
+		init();
+	}
 
-	void setValue(int index, Object value);
+	public EditField(String text, int columns) {
+		super(text, columns);
+	}
+
+	private void init() {
+		GuiHelper.addPopupMenu(this);
+	}
 
 }

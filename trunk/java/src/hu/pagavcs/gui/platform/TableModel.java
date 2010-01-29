@@ -1,4 +1,5 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.platform;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
