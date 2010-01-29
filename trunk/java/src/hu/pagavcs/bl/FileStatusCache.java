@@ -149,7 +149,12 @@ public class FileStatusCache {
 		} else {
 			StatusSlot slot = new StatusSlot();
 			slot.timeInMs = System.currentTimeMillis();
-			slot.status = STATUS.NONE;
+			if (file.isDirectory() && new File(file, ".svn").exists()) {
+				slot.status = STATUS.SVNED;
+			} else {
+				slot.status = STATUS.NONE;
+			}
+
 			mapCache.put(file, slot);
 			return slot.status;
 		}
