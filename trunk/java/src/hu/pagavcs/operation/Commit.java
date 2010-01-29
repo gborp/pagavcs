@@ -217,7 +217,6 @@ public class Commit {
 	public void add(File wcFile) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient wcClient = mgrSvn.getWCClient();
-		wcClient.setEventHandler(new AddIgnoreEventHandler());
 		wcClient.doAdd(wcFile, false, false, true, SVNDepth.INFINITY, false, false, true);
 		Manager.invalidate(wcFile);
 	}
@@ -229,7 +228,6 @@ public class Commit {
 	public void ignore(File wcFile) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient wcClient = mgrSvn.getWCClient();
-		wcClient.setEventHandler(new AddIgnoreEventHandler());
 		File dir = wcFile.getParentFile().getAbsoluteFile();
 		SVNPropertyData property = wcClient.doGetProperty(dir, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
 		String alreadyIgnoredItems = "";
@@ -239,25 +237,6 @@ public class Commit {
 		wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY, null,
 		        null);
 		Manager.invalidate(wcFile);
-	}
-
-	private class AddIgnoreEventHandler implements ISVNEventHandler {
-
-		public void handleEvent(SVNEvent event, double progress) throws SVNException {
-
-			if (SVNEventAction.ADD.equals(event.getAction())) {
-				gui.changeFromUnversionedToAdded(event.getFile());
-			}
-			// else if (SVNEventAction.PROPERTY_ADD.equals(event.getAction()) ||
-			// SVNEventAction.PROPERTY_MODIFY.equals(event.getAction())) {
-			// // it assumes that a property adding is a ignore list
-			// // thing
-			// // it doesn't work
-			// gui.changeToIgnore(event.getFile());
-			// }
-		}
-
-		public void checkCancelled() throws SVNCancelException {}
 	}
 
 	private class StatusEventHandler implements ISVNStatusHandler {
@@ -279,7 +258,7 @@ public class Commit {
 				contentStatus = ContentStatus.IGNORED;
 			} else if (SVNStatusType.STATUS_INCOMPLETE.equals(svnContentStatus)) {
 				contentStatus = ContentStatus.INCOMPLETE;
-			} else if (SVNStatusType.STATUS_MERGED.equals(svnContentStatus)) {
+			} else if (SVNStatusType.MERGED.equals(svnContentStatus)) {
 				contentStatus = ContentStatus.MERGED;
 			} else if (SVNStatusType.STATUS_MISSING.equals(svnContentStatus)) {
 				contentStatus = ContentStatus.MISSING;
@@ -312,7 +291,7 @@ public class Commit {
 				propertyStatus = ContentStatus.IGNORED;
 			} else if (SVNStatusType.STATUS_INCOMPLETE.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.INCOMPLETE;
-			} else if (SVNStatusType.STATUS_MERGED.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.MERGED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.MERGED;
 			} else if (SVNStatusType.STATUS_MISSING.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.MISSING;

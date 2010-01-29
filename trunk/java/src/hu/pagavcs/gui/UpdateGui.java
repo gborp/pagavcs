@@ -55,7 +55,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class UpdateGui implements Working {
 
-	private Table                                 tblUpdate;
+	private Table<UpdateListItem>                 tblUpdate;
 	private TableModel<UpdateListItem>            tmdlUpdate;
 	private final Cancelable                      update;
 	private JButton                               btnStopFinish;
@@ -201,23 +201,6 @@ public class UpdateGui implements Working {
 
 		}.run();
 
-	}
-
-	public void resolveConflict(UpdateListItem li) throws Exception {
-
-		File file = new File(li.getPath());
-		if (file.isDirectory()) {
-			MessagePane.showError(window, "Cannot resolve conflict", "Cannot resolve conflict on directory");
-			return;
-		}
-		new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath()).execute();
-
-		int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
-		        JOptionPane.QUESTION_MESSAGE);
-		if (choosed == JOptionPane.YES_OPTION) {
-			li.setContentStatus(UpdateContentStatus.RESOLVED);
-			tblUpdate.repaint();
-		}
 	}
 
 	private class RefreshUpdateGuiIfResolved implements Refreshable {
@@ -371,7 +354,19 @@ public class UpdateGui implements Working {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				UpdateListItem li = getSelectedUpdateListItem();
-				resolveConflict(li);
+				File file = new File(li.getPath());
+				if (file.isDirectory()) {
+					MessagePane.showError(window, "Cannot resolve conflict", "Cannot resolve conflict on directory");
+					return;
+				}
+				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath()).execute();
+
+				int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
+				        JOptionPane.QUESTION_MESSAGE);
+				if (choosed == JOptionPane.YES_OPTION) {
+					li.setContentStatus(UpdateContentStatus.RESOLVED);
+					tblUpdate.repaint();
+				}
 
 			} catch (Exception e1) {
 				Manager.handle(e1);

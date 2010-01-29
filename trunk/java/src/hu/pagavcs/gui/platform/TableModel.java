@@ -1,6 +1,5 @@
 package hu.pagavcs.gui.platform;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -96,7 +95,7 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 		return lstData.get(rowIndex).isColumnEditable(columnIndex);
 	}
 
-	public Class getColumnClass(int c) {
+	public Class<?> getColumnClass(int c) {
 		if (getRowCount() < 1) {
 			return Object.class;
 		}

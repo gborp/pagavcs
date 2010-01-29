@@ -2,7 +2,6 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.platform.AbstractCellRendererColorizator;
-import hu.pagavcs.gui.platform.ListItem;
 import hu.pagavcs.gui.platform.Table;
 
 import java.awt.Color;
@@ -20,13 +19,13 @@ import java.awt.Color;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class StatusCellRendererForUpdateListItem extends AbstractCellRendererColorizator {
+public class StatusCellRendererForUpdateListItem extends AbstractCellRendererColorizator<UpdateListItem> {
 
-	public StatusCellRendererForUpdateListItem(Table table) {
+	public StatusCellRendererForUpdateListItem(Table<UpdateListItem> table) {
 		super(table);
 	}
 
-	public Color getForegroundColor(ListItem li) {
+	public Color getForegroundColor(UpdateListItem li) {
 		return Manager.getColorByContentStatus(((UpdateListItem) li).getStatus());
 	}
 }

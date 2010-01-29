@@ -1,6 +1,5 @@
 package hu.pagavcs.gui.platform;
 
-
 import java.awt.Color;
 
 /**
@@ -16,9 +15,9 @@ import java.awt.Color;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class NullCellRenderer extends AbstractCellRendererColorizator {
+public class NullCellRenderer<L extends ListItem> extends AbstractCellRendererColorizator<L> {
 
-	public NullCellRenderer(Table table) {
+	public NullCellRenderer(Table<L> table) {
 		super(table);
 	}
 
