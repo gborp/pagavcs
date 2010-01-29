@@ -82,6 +82,8 @@ public class Manager {
 	private static ExceptionHandler exceptionHandler;
 	private static boolean          forceShowingLoginDialogNextTime;
 
+	private static boolean          shutdown;
+
 	public static void init() throws BackingStoreException {
 		if (!inited) {
 			SVNRepositoryFactoryImpl.setup();
@@ -311,6 +313,7 @@ public class Manager {
 	}
 
 	public static void shutdown() throws Exception {
+		shutdown = true;
 		getSettings().save();
 		Communication.getInstance().shutdown();
 	}
@@ -452,6 +455,10 @@ public class Manager {
 
 	public static void setForceShowingLoginDialogNextTime(boolean forceShowingLoginDialogNextTime) {
 		Manager.forceShowingLoginDialogNextTime = forceShowingLoginDialogNextTime;
+	}
+
+	public static boolean isShutdown() {
+		return shutdown;
 	}
 
 }
