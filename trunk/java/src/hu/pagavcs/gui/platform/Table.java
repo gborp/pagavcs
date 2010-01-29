@@ -70,6 +70,10 @@ public class Table<L extends ListItem> extends JTable {
 		});
 	}
 
+	public TableModel<L> getModel() {
+		return getModel();
+	}
+
 	public void showMessage(String message, Icon icon) {
 		hideMessage();
 		lblMessage = new Label(message);
