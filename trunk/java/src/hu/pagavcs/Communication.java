@@ -2,6 +2,7 @@ package hu.pagavcs;
 
 import hu.pagavcs.bl.FileStatusCache;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.FileStatusCache.STATUS;
 import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Commit;
@@ -49,8 +50,38 @@ public class Communication {
 	private File                 running;
 	private ServerSocket         serverSocket;
 
-	private Communication() {
+	private Communication() {}
 
+	private String getFileEmblem(STATUS status) {
+		if (status == null) {
+			return "";
+		}
+		switch (status) {
+			case ADDED:
+				return "pagavcs-added";
+			case CONFLICTS:
+				return "pagavcs-conflicted";
+			case DELETED:
+				return "pagavcs-deleted";
+			case IGNORED:
+				return "pagavcs-ignored";
+			case LOCKED:
+				return "pagavcs-locked";
+			case MODIFIED:
+				return "pagavcs-modified";
+			case NONE:
+				return "";
+			case NORMAL:
+				return "pagavcs-normal";
+			case OBSTRUCTED:
+				return "pagavcs-obstructed";
+			case READONLY:
+				return "pagavcs-readonly";
+			case SVNED:
+				return "pagavcs-svn";
+			default:
+				return "";
+		}
 	}
 
 	public void execute() throws Exception {
@@ -88,7 +119,7 @@ public class Communication {
 				if (command.equals("getfileinfo")) {
 
 					BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-					outToClient.write(fileStatusCache.getStatus(new File(arg)).toString());
+					outToClient.write(getFileEmblem(fileStatusCache.getStatus(new File(arg))));
 					outToClient.flush();
 					outToClient.close();
 				} else {
