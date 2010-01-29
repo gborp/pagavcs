@@ -36,6 +36,10 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 
 	public void handle(Throwable ex) {
 
+		if (Manager.isShutdown()) {
+			return;
+		}
+
 		if (ex instanceof SVNException) {
 			SVNErrorCode errorCode = ((SVNException) ex).getErrorMessage().getErrorCode();
 			if (SVNErrorCode.UNVERSIONED_RESOURCE.equals(errorCode)) {
