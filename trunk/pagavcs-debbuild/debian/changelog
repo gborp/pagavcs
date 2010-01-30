@@ -1,3 +1,14 @@
+pagavcs (1.3.27ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * #13 [log gui] print in gray in detail log the items which not log command is issued for
+  * #16 [resolve conflict gui]  goto first conflict on opening
+  * hide exceptions during shutdown
+  * new icons for conflict and obstructed emblem
+  
+ -- papaigabor <pagavcs@gmail.com>  Sat, 30 Jan 2010 20:57:00 +0500
+
+
 pagavcs (1.3.26ubuntu) karmic; urgency=low
 
   [ papaigabor ]
