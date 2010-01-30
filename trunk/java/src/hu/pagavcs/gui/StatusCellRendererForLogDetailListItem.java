@@ -26,6 +26,9 @@ public class StatusCellRendererForLogDetailListItem extends AbstractCellRenderer
 	}
 
 	public Color getForegroundColor(LogDetailListItem li) {
-		return Manager.getColorByContentStatus(li.getAction());
+		if (li.isInScope()) {
+			return Manager.getColorByContentStatus(li.getAction());
+		}
+		return Color.GRAY;
 	}
 }

@@ -1,5 +1,6 @@
 package hu.pagavcs.operation;
 
+import hu.pagavcs.bl.CacheLog;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.SvnHelper;
@@ -8,6 +9,7 @@ import hu.pagavcs.gui.LogGui;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
@@ -64,6 +66,8 @@ public class Log implements Cancelable {
 		gui.display();
 		gui.setStatus(ShowLogStatus.INIT);
 		gui.setUrlLabel(getRootUrl().toDecodedString());
+		gui.setLogRootsFiles(Arrays.asList(new File(path)));
+		gui.setSvnRepoRootUrl(Manager.getSvnRootUrlByFile(new File(path)));
 
 		doShowLog(SVNRevision.HEAD, LIMIT);
 	}
@@ -77,15 +81,9 @@ public class Log implements Cancelable {
 	public void doShowLog(SVNRevision startRevision, long limit) throws Exception {
 		gui.workStarted();
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		if (mgrSvn == null) {
-			Manager.showFailedDialog();
-			return;
-		}
 		SVNLogClient logClient = mgrSvn.getLogClient();
 		logClient.setEventHandler(new LogEventHandler());
 		gui.setStatus(ShowLogStatus.STARTED);
-		File[] filePaths = new File[1];
-		filePaths[0] = new File(path);
 
 		SVNRevision endRevision = SVNRevision.create(0);
 		SVNRevision pegRevision = SVNRevision.UNDEFINED;
@@ -95,8 +93,9 @@ public class Log implements Cancelable {
 		String[] revisionProperties = null;
 		ISVNLogEntryHandler handler = new LogEntryHandler();
 		try {
-			logClient.doLog(filePaths, startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions, limit,
-			        revisionProperties, handler);
+			CacheLog.getInstance().doLog(logClient, new File(path), startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths,
+			        includeMergedRevisions, limit, revisionProperties, handler);
+
 			gui.setStatus(ShowLogStatus.COMPLETED);
 		} catch (SVNCancelException ex) {
 			gui.setStatus(ShowLogStatus.CANCELLED);
