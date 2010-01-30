@@ -54,26 +54,43 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
         global server_creating
         filename = urllib.unquote(file.get_uri()[7:])
         filenameForParam = filename
-        if (server_creating):
-            return
-        try:
-            clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            clientsocket.settimeout(1)
-            clientsocket.connect(("localhost", 12905))                     
-            clientsocket.sendall("getfileinfo "+filenameForParam+"\n")
-        except (socket.timeout, socket.error):
-            server_creating = True
-            StartPagaVCSServerThread().start()
-            return
+        if os.path.isdir(filename):
+            svnpath = filename+'/.svn';
+            (filepath, filename) = os.path.split(filename)
+            svnparentpath = filepath+'/.svn';
+            dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
+            if ((not dosvn) and (os.path.exists(svnpath) and os.path.isdir(svnpath))):
+                file.add_emblem ('pagavcs-svn')
+                return
+        else:
+            (filepath, filename) = os.path.split(filename)
+            svnparentpath = filepath+'/.svn';
+            dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
+            
+        if (dosvn):
+            if (server_creating):
+                file.add_emblem ('pagavcs-svn')
+                return
+            try:
+                clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                clientsocket.settimeout(1)
+                clientsocket.connect(("localhost", 12905))                     
+                clientsocket.sendall("getfileinfo "+filenameForParam+"\n")
+            except (socket.timeout, socket.error):
+                server_creating = True
+	        StartPagaVCSServerThread().start()
+        	file.add_emblem ('pagavcs-svn')
+                return
 
-        data = ""
-        try:
-            data = clientsocket.recv(16)
-        except (socket.timeout, socket.error):
-            return  
-        clientsocket.close()
-        if (data != ""):
-            file.add_emblem (data)
+            data = ""
+            try:
+                data = clientsocket.recv(16)
+            except (socket.timeout, socket.error):
+	        file.add_emblem ('pagavcs-svn')
+                return  
+            clientsocket.close()
+            if (data != ""):
+                file.add_emblem (data)           
 
 class PagaVCS(nautilus.MenuProvider):
     def __init__(self):
@@ -236,8 +253,8 @@ class PagaVCS(nautilus.MenuProvider):
         return folderitem,    
     
     def _get_unversioned_but_parent_is_versioned_items(self, file):
-        folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
-        folderitem.set_property('icon', 'pagavcs-logo')
+    	folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
+    	folderitem.set_property('icon', 'pagavcs-logo')
         submenu = nautilus.Menu()
         folderitem.set_submenu(submenu)    
             
