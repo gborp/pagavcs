@@ -110,6 +110,8 @@ public class CommitGui implements Working, Refreshable {
 		JScrollPane spCommitList = new JScrollPane(tblCommit);
 
 		taMessage = new TextArea();
+		taMessage.setLineWrap(true);
+		taMessage.setWrapStyleWord(true);
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		JSplitPane splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spCommitList);
