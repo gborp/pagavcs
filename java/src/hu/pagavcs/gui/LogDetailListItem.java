@@ -25,6 +25,7 @@ public class LogDetailListItem implements ListItem {
 	private String        copyFromPath;
 	private Long          revision;
 	private SVNNodeKind   kind;
+	private boolean       inScope;
 
 	public String[] getColumnNames() {
 		return new String[] { "Path", "Action", "Copy from path", "Revision" };
@@ -87,6 +88,14 @@ public class LogDetailListItem implements ListItem {
 
 	public SVNNodeKind getKind() {
 		return kind;
+	}
+
+	public boolean isInScope() {
+		return this.inScope;
+	}
+
+	public void setInScope(boolean inScope) {
+		this.inScope = inScope;
 	}
 
 }
