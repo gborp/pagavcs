@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -24,7 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ToolTipManager;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
@@ -82,49 +80,60 @@ public class ResolveConflictGui {
 		this.wrkFile = wrkFile;
 	}
 
-	public void display() throws IOException, BadLocationException {
+	public void display() throws Exception {
 
-		if (wrkFile == null) {
-			MessagePane.showError(null, "No conflict", "Unable to resolve conflict on a non-conflicted file.");
-			return;
-		}
+		new OnSwing() {
 
-		FormLayout layout = new FormLayout("p,1dlu:g, p", "p,4dlu,fill:10dlu:g,4dlu,p");
-		JPanel pnlMain = new JPanel(layout);
-		CellConstraints cc = new CellConstraints();
+			protected void process() throws Exception {
+				if (wrkFile == null) {
+					MessagePane.showError(null, "No conflict", "Unable to resolve conflict on a non-conflicted file.");
+					return;
+				}
 
-		tpConflict = new TextPane();
-		tpConflict.setBackground(Color.WHITE);
-		JScrollPane spConflict = new JScrollPane(tpConflict);
-		btnReload = new JButton(new ReloadAction());
-		btnSaveResolved = new JButton(new SaveResolvedAction());
+				FormLayout layout = new FormLayout("p,1dlu:g, p", "p,4dlu,fill:10dlu:g,4dlu,p");
+				JPanel pnlMain = new JPanel(layout);
+				CellConstraints cc = new CellConstraints();
 
-		pnlMain.add(new Label(mixedFile.getPath()), cc.xywh(1, 1, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
-		pnlMain.add(spConflict, cc.xywh(1, 3, 3, 1));
-		pnlMain.add(btnReload, cc.xy(1, 5));
-		pnlMain.add(btnSaveResolved, cc.xy(3, 5));
+				tpConflict = new TextPane();
+				tpConflict.setBackground(Color.WHITE);
+				tpConflict.setAutoscrolls(true);
+				JScrollPane spConflict = new JScrollPane(tpConflict);
+				btnReload = new JButton(new ReloadAction());
+				btnSaveResolved = new JButton(new SaveResolvedAction());
 
-		setNormalText = new SimpleAttributeSet();
-		setNormalText.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_NORMAL);
+				pnlMain.add(new Label(mixedFile.getPath()), cc.xywh(1, 1, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+				pnlMain.add(spConflict, cc.xywh(1, 3, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+				pnlMain.add(btnReload, cc.xy(1, 5));
+				pnlMain.add(btnSaveResolved, cc.xy(3, 5));
 
-		setMixedText = new SimpleAttributeSet();
-		StyleConstants.setBackground(setMixedText, Color.LIGHT_GRAY);
-		setMixedText.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_MIXED);
+				setNormalText = new SimpleAttributeSet();
+				setNormalText.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_NORMAL);
 
-		setConflictWorking = new SimpleAttributeSet();
-		StyleConstants.setBackground(setConflictWorking, Color.YELLOW);
-		setConflictWorking.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_WORKING);
+				setMixedText = new SimpleAttributeSet();
+				StyleConstants.setBackground(setMixedText, Color.LIGHT_GRAY);
+				StyleConstants.setBold(setMixedText, true);
+				setMixedText.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_MIXED);
 
-		setConflictTheirs = new SimpleAttributeSet();
-		StyleConstants.setBackground(setConflictTheirs, Color.CYAN);
-		setConflictTheirs.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_THEIRS);
+				setConflictWorking = new SimpleAttributeSet();
+				StyleConstants.setBackground(setConflictWorking, Color.YELLOW);
+				StyleConstants.setBold(setConflictWorking, true);
+				setConflictWorking.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_WORKING);
 
-		reload();
+				setConflictTheirs = new SimpleAttributeSet();
+				StyleConstants.setBackground(setConflictTheirs, Color.ORANGE);
+				StyleConstants.setBold(setConflictTheirs, true);
+				setConflictTheirs.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_THEIRS);
 
-		frame = Manager.createAndShowFrame(pnlMain, "Resolve Conflict");
+				reload();
+
+				frame = Manager.createAndShowFrame(pnlMain, "Resolve Conflict");
+			}
+
+		}.run();
+
 	}
 
-	private void reload() throws IOException, BadLocationException {
+	private void reload() throws Exception {
 		String strMixed = Manager.getFileAsString(mixedFile);
 		String[] lines = strMixed.split("\n");
 
@@ -134,10 +143,16 @@ public class ResolveConflictGui {
 		boolean conflictStarted = false;
 		boolean conflictOtherBlock = false;
 
+		Integer firstConflictPos = null;
+		Integer firstConflictPosEnd = null;
+
 		for (String line : lines) {
 
 			if (line.startsWith("<<<<<<< ")) {
 				conflictStarted = true;
+				if (firstConflictPos == null) {
+					firstConflictPos = doc.getLength();
+				}
 				continue;
 			} else if (line.equals("=======")) {
 				conflictStarted = false;
@@ -146,6 +161,9 @@ public class ResolveConflictGui {
 			} else if (line.startsWith(">>>>>>> ")) {
 				conflictStarted = false;
 				conflictOtherBlock = false;
+				if (firstConflictPosEnd == null) {
+					firstConflictPosEnd = doc.getLength();
+				}
 				continue;
 			}
 
@@ -159,6 +177,25 @@ public class ResolveConflictGui {
 			}
 
 			doc.insertString(doc.getLength(), line + "\n", setActual);
+		}
+
+		if (firstConflictPosEnd != null) {
+			new SetCaret(firstConflictPosEnd);
+		}
+		if (firstConflictPos != null) {
+			new SetCaret(firstConflictPos);
+		}
+	}
+
+	private class SetCaret {
+
+		public SetCaret(final int pos) throws Exception {
+			new OnSwing(true) {
+
+				protected void process() throws Exception {
+					tpConflict.setCaretPosition(pos);
+				}
+			}.run();
 		}
 	}
 
