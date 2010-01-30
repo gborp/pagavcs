@@ -60,7 +60,7 @@ public class Communication {
 			case ADDED:
 				return "pagavcs-added";
 			case CONFLICTS:
-				return "pagavcs-conflicted";
+				return "pagavcs-conflict";
 			case DELETED:
 				return "pagavcs-deleted";
 			case IGNORED:
