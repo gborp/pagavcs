@@ -26,6 +26,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import com.toedter.calendar.JDateChooser;
@@ -88,6 +90,8 @@ public class LogGui implements Working {
 	private EditField                               sfFilter;
 	private boolean                                 shuttingDown;
 	private TableRowSorter<TableModel<LogListItem>> sorterLog;
+	private List<SVNURL>                            lstLogRoot;
+	private SVNURL                                  svnRepoRootUrl;
 
 	public LogGui(Log log) {
 		this.log = log;
@@ -343,6 +347,39 @@ public class LogGui implements Working {
 		throw new RuntimeException("Unimplemented");
 	}
 
+	public void setSvnRepoRootUrl(SVNURL svnRepoRootUrl) {
+		this.svnRepoRootUrl = svnRepoRootUrl;
+	}
+
+	public void setLogRootsFiles(List<File> lstLogRoot) throws SVNException {
+		ArrayList<SVNURL> svnLogRoots = new ArrayList<SVNURL>(lstLogRoot.size());
+		for (File logRoot : lstLogRoot) {
+			svnLogRoots.add(Manager.getSvnUrlByFile(logRoot));
+		}
+		setLogRoots(svnLogRoots);
+	}
+
+	public void setLogRoots(List<SVNURL> lstLogRoot) throws SVNException {
+		this.lstLogRoot = lstLogRoot;
+	}
+
+	private boolean isInScope(String entryPath) {
+		String pathPrefix = svnRepoRootUrl.getPath();
+
+		for (SVNURL svnurl : lstLogRoot) {
+			String absPath = pathPrefix + entryPath;
+			String svnPath = svnurl.getPath();
+			if (absPath.startsWith(svnPath)) {
+				String restOfPath = absPath.substring(svnPath.length());
+				if (restOfPath.isEmpty() || restOfPath.charAt(0) == '/') {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public void refreshDetailView() {
 		int selectedRow = tblLog.getSelectedRow();
 		if (selectedRow == -1) {
@@ -350,9 +387,11 @@ public class LogGui implements Working {
 		}
 
 		tblDetailLog.getSelectionModel().clearSelection();
-		LogListItem liLog = tmdlLog.getRow(tblLog.convertRowIndexToModel(selectedRow));
+		LogListItem liLog = getSelectedLogItem();
 		taMessage.setText(liLog.getMessage());
 		tmdlLogDetail.clear();
+		boolean hasOutOfScope = false;
+		ArrayList<LogDetailListItem> lstResult = new ArrayList<LogDetailListItem>();
 		for (SVNLogEntryPath liEntryPath : liLog.getChanges().values()) {
 			LogDetailListItem liDetail = new LogDetailListItem();
 			liDetail.setPath(liEntryPath.getPath());
@@ -360,8 +399,30 @@ public class LogGui implements Working {
 			liDetail.setCopyFromPath(liEntryPath.getCopyPath());
 			liDetail.setRevision(liEntryPath.getCopyRevision() != -1 ? liEntryPath.getCopyRevision() : null);
 			liDetail.setKind(liEntryPath.getKind());
-			tmdlLogDetail.addLine(liDetail);
+			liDetail.setInScope(isInScope(liEntryPath.getPath()));
+			lstResult.add(liDetail);
+
+			if (!liDetail.isInScope()) {
+				hasOutOfScope = true;
+			}
 		}
+
+		if (hasOutOfScope) {
+			ArrayList<LogDetailListItem> lstPrioResult = new ArrayList<LogDetailListItem>(lstResult.size());
+			for (LogDetailListItem li : lstResult) {
+				if (li.isInScope()) {
+					lstPrioResult.add(li);
+				}
+			}
+			for (LogDetailListItem li : lstResult) {
+				if (!li.isInScope()) {
+					lstPrioResult.add(li);
+				}
+			}
+			lstResult = lstPrioResult;
+		}
+
+		tmdlLogDetail.addLines(lstResult);
 	}
 
 	private LogListItem getSelectedLogItem() {

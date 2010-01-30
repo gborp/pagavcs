@@ -120,6 +120,10 @@ public class Manager {
 		return SVNClientManager.newInstance();
 	}
 
+	public static SVNURL getSvnUrlByFile(File path) throws SVNException {
+		return getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getURL();
+	}
+
 	public static SVNURL getSvnRootUrlByFile(File path) throws SVNException {
 		return getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL();
 	}
