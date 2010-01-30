@@ -108,10 +108,10 @@ public class Manager {
 		return "PagaVCS";
 	}
 
-	public static String getTempDir() {
-		if (tempDir == null) {
-			tempDir = System.getProperty("java.io.tmpdir") + "/pagavcs/";
-			new File(tempDir).mkdirs();
+	public static String getTümpDir() {
+		if (tümpDir == null) {
+			tümpDir = System.getProperty("java.io.tmpdir") + "/pagavcs/";
+			new File(tümpDir).mkdirs();
 		}
 		return tempDir;
 	}
