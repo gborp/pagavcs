@@ -109,8 +109,10 @@ public class FileStatusCache {
 			File file = status.getFile();
 
 			StatusSlot slot = new StatusSlot();
-			slot.timeInMs = System.currentTimeMillis();
 			slot.status = getStatus(file, status);
+			slot.lastModified = file.lastModified();
+			slot.timestamp = System.currentTimeMillis();
+			slot.fileSize = file.length();
 			synchronized (mapCache) {
 				mapCache.put(file, slot);
 			}
@@ -121,8 +123,13 @@ public class FileStatusCache {
 
 		synchronized (mapCache) {
 			StatusSlot slot = mapCache.get(file);
-			if (slot != null && ((System.currentTimeMillis() - slot.timeInMs) < CACHE_TOO_OLD)) {
-				return slot.status;
+			if (slot != null) {
+				if (file.lastModified() != slot.lastModified || file.length() != slot.fileSize
+				        || ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD)) {
+					mapCache.remove(file);
+				} else {
+					return slot.status;
+				}
 			}
 		}
 
@@ -148,7 +155,9 @@ public class FileStatusCache {
 			}
 		} else {
 			StatusSlot slot = new StatusSlot();
-			slot.timeInMs = System.currentTimeMillis();
+			slot.timestamp = System.currentTimeMillis();
+			slot.lastModified = file.lastModified();
+			slot.fileSize = file.length();
 			if (file.isDirectory() && new File(file, ".svn").exists()) {
 				slot.status = STATUS.SVNED;
 			} else {
@@ -163,7 +172,9 @@ public class FileStatusCache {
 	private static class StatusSlot {
 
 		STATUS status;
-		long   timeInMs;
+		long   lastModified;
+		long   fileSize;
+		long   timestamp;
 	}
 
 }
