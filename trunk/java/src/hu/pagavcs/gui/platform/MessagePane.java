@@ -64,7 +64,7 @@ public class MessagePane {
 		panel.add(lblMessage, cc.xywh(1, 1, 1, 1));
 		panel.add(btnOk, cc.xywh(1, 3, 1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
 
-		dialog = Manager.createDialog(parent, panel, title);
+		dialog = GuiHelper.createDialog(parent, panel, title);
 		dialog.setModalityType(ModalityType.DOCUMENT_MODAL);
 		dialog.setVisible(true);
 		dialog.dispose();

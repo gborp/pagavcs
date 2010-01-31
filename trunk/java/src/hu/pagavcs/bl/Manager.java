@@ -7,17 +7,16 @@ import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -25,11 +24,7 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -48,9 +43,6 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -237,61 +229,8 @@ public class Manager {
 		return wcClient.doInfo(path, SVNRevision.WORKING);
 	}
 
-	private static void centerScreen(Window window) {
-		Dimension dim = window.getToolkit().getScreenSize();
-		Rectangle bounds = window.getBounds();
-		window.setLocation((dim.width - bounds.width) / 2, (dim.height - bounds.height) / 2);
-	}
-
 	public static Icon loadIcon(String path) {
 		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource(path)));
-	}
-
-	private static JComponent addBorder(JComponent pnlMain) {
-		JPanel pnlBorder = new JPanel(new FormLayout("10dlu,fill:p:g,10dlu", "10dlu,fill:p:g,10dlu"));
-
-		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
-
-		return new JScrollPane(pnlBorder);
-	}
-
-	public static Window createAndShowFrame(JComponent pnlMain, String applicationName) {
-
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.getContentPane().add(addBorder(pnlMain));
-		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
-		frame.pack();
-
-		Rectangle bounds = getSettings().getWindowBounds(applicationName);
-		if (bounds != null) {
-			frame.setBounds(bounds);
-		} else {
-			centerScreen(frame);
-		}
-
-		frame.addWindowListener(new WindowPreferencesSaverOnClose(applicationName));
-		frame.setVisible(true);
-
-		return frame;
-	}
-
-	public static JDialog createDialog(Window parent, JComponent main, String title) {
-		JDialog dialog = new JDialog(parent);
-		dialog.getContentPane().add(addBorder(main));
-		dialog.setTitle(title);
-		dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
-		dialog.pack();
-
-		Rectangle bounds = getSettings().getWindowBounds(title);
-		if (bounds != null) {
-			dialog.setBounds(bounds);
-		} else {
-			centerScreen(dialog);
-		}
-
-		return dialog;
 	}
 
 	public static JFrame getRootFrame() {
@@ -441,7 +380,7 @@ public class Manager {
 		return sb.toString();
 	}
 
-	public static String getFileAsString(File file) throws IOException {
+	public static String loadFileToString(File file) throws IOException {
 		Charset charSet = Charset.defaultCharset();
 
 		StringBuilder text = new StringBuilder();
@@ -455,6 +394,12 @@ public class Manager {
 		input.close();
 
 		return text.toString();
+	}
+
+	public static void saveStringToFile(File file, String data) throws IOException {
+		BufferedWriter out = new BufferedWriter(new FileWriter(file));
+		out.write(data);
+		out.close();
 	}
 
 	public static void setForceShowingLoginDialogNextTime(boolean forceShowingLoginDialogNextTime) {

@@ -5,6 +5,7 @@ import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.NullCellRenderer;
 import hu.pagavcs.gui.platform.ProgressBar;
@@ -49,6 +50,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
+import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -213,7 +215,7 @@ public class LogGui implements Working {
 		pnlMain.add(splMain, BorderLayout.CENTER);
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
-		Window window = Manager.createAndShowFrame(pnlMain, "Show Log");
+		Window window = GuiHelper.createAndShowFrame(pnlMain, "Show Log");
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
@@ -449,7 +451,11 @@ public class LogGui implements Working {
 			try {
 				LogListItem liLog = getSelectedLogItem();
 				for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-					log.showChanges(liDetail.getPath(), liLog.getRevision());
+					if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
+						log.showChanges(liDetail.getPath(), liLog.getRevision());
+					} else if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
+						log.showDirChanges(liDetail.getPath(), liLog.getRevision());
+					}
 				}
 			} finally {
 				workEnded();

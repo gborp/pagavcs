@@ -1,6 +1,6 @@
 package hu.pagavcs.gui;
 
-import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Cleanup.CleanupStatus;
@@ -44,7 +44,7 @@ public class CleanupGui {
 		pnlMain.add(lblWorkingCopy, BorderLayout.NORTH);
 		pnlMain.add(lblStatus, BorderLayout.SOUTH);
 
-		window = Manager.createAndShowFrame(pnlMain, "Cleanup");
+		window = GuiHelper.createAndShowFrame(pnlMain, "Cleanup");
 	}
 
 	public void setStatus(CleanupStatus status) {
