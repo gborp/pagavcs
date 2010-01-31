@@ -361,17 +361,9 @@ public class UpdateGui implements Working {
 				}
 				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath()).execute();
 
-				int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Is conflict resolved?", "Resolved?", JOptionPane.YES_NO_OPTION,
-				        JOptionPane.QUESTION_MESSAGE);
-				if (choosed == JOptionPane.YES_OPTION) {
-					li.setContentStatus(UpdateContentStatus.RESOLVED);
-					tblUpdate.repaint();
-				}
-
-			} catch (Exception e1) {
-				Manager.handle(e1);
+			} catch (Exception ex) {
+				Manager.handle(ex);
 			}
-
 		}
 	}
 
