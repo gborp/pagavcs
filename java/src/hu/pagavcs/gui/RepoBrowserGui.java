@@ -4,6 +4,7 @@ import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.Tree;
 import hu.pagavcs.operation.RepoBrowser;
@@ -85,7 +86,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
-		Window frame = Manager.createAndShowFrame(pnlMain, "Repository Browser");
+		Window frame = GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
 	}
 
 	public void setStatus(RepoBrowserStatus status) {

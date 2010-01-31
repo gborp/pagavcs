@@ -5,6 +5,7 @@ import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.Table;
@@ -109,7 +110,7 @@ public class UpdateGui implements Working {
 		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
 		pnlMain.add(btnStopFinish, cc.xywh(5, 7, 1, 1));
 
-		window = Manager.createAndShowFrame(pnlMain, title);
+		window = GuiHelper.createAndShowFrame(pnlMain, title);
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {

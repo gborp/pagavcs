@@ -6,6 +6,7 @@ import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.ProgressBar;
 import hu.pagavcs.operation.Other;
@@ -187,7 +188,7 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 41, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 41, 1, 1));
 
-		window = Manager.createAndShowFrame(pnlMain, "Other");
+		window = GuiHelper.createAndShowFrame(pnlMain, "Other");
 	}
 
 	public void setStatus(OtherStatus status) {

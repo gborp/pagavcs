@@ -2,6 +2,7 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Checkout;
 
@@ -82,7 +83,7 @@ public class CheckoutGui {
 		pnlInner.add(btnCheckout);
 
 		pnlMain.add(pnlInner, BorderLayout.CENTER);
-		Manager.createAndShowFrame(pnlMain, "Checkout Settings");
+		GuiHelper.createAndShowFrame(pnlMain, "Checkout Settings");
 	}
 
 	public void setUrlHistory(String[] urlHistory) {

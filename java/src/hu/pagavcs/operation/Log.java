@@ -121,6 +121,14 @@ public class Log implements Cancelable {
 		return rootUrl;
 	}
 
+	public void showDirChanges(String showChangesPath, long revision) throws Exception {
+		SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+		SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
+		        + showChangesPath, true);
+		long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
+		SvnHelper.showPropertyChangesFromRepo(gui, svnUrl, revision, previousRevision);
+	}
+
 	public void showChanges(String showChangesPath, long revision) throws Exception {
 
 		FileOutputStream outNewRevision = null;

@@ -1,6 +1,7 @@
 package hu.pagavcs.bl;
 
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.TextArea;
 
@@ -92,6 +93,6 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 		pnlMain.add(sfMessage, BorderLayout.NORTH);
 		pnlMain.add(new JScrollPane(taStacktrace), BorderLayout.CENTER);
 
-		Manager.createAndShowFrame(pnlMain, "Exception occured");
+		GuiHelper.createAndShowFrame(pnlMain, "Exception occured");
 	}
 }

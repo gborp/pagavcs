@@ -1,6 +1,6 @@
 package hu.pagavcs.gui;
 
-import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Unignore;
 import hu.pagavcs.operation.Delete.DeleteStatus;
@@ -43,7 +43,7 @@ public class UnignoreGui {
 		pnlMain.add(lblWorkingCopy, BorderLayout.NORTH);
 		pnlMain.add(lblStatus, BorderLayout.SOUTH);
 
-		window = Manager.createAndShowFrame(pnlMain, "Unignore");
+		window = GuiHelper.createAndShowFrame(pnlMain, "Unignore");
 	}
 
 	public void setStatus(DeleteStatus status) {

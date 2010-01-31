@@ -1,6 +1,6 @@
 package hu.pagavcs.gui;
 
-import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Revert.RevertStatus;
@@ -44,7 +44,7 @@ public class RevertGui {
 		pnlMain.add(lblWorkingCopy, BorderLayout.NORTH);
 		pnlMain.add(lblStatus, BorderLayout.SOUTH);
 
-		window = Manager.createAndShowFrame(pnlMain, "Revert");
+		window = GuiHelper.createAndShowFrame(pnlMain, "Revert");
 	}
 
 	public void setStatus(RevertStatus status) {

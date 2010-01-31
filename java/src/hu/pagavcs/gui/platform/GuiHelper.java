@@ -1,16 +1,28 @@
 package hu.pagavcs.gui.platform;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.WindowPreferencesSaverOnClose;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.text.JTextComponent;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -136,6 +148,59 @@ public class GuiHelper {
 		public void actionPerformed(ActionEvent e) {
 			target.paste();
 		}
+	}
+
+	private static void centerScreen(Window window) {
+		Dimension dim = window.getToolkit().getScreenSize();
+		Rectangle bounds = window.getBounds();
+		window.setLocation((dim.width - bounds.width) / 2, (dim.height - bounds.height) / 2);
+	}
+
+	public static Window createAndShowFrame(JComponent pnlMain, String applicationName) {
+
+		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().add(addBorder(pnlMain));
+		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
+		frame.pack();
+
+		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
+		if (bounds != null) {
+			frame.setBounds(bounds);
+		} else {
+			centerScreen(frame);
+		}
+
+		frame.addWindowListener(new WindowPreferencesSaverOnClose(applicationName));
+		frame.setVisible(true);
+
+		return frame;
+	}
+
+	public static JDialog createDialog(Window parent, JComponent main, String title) {
+		JDialog dialog = new JDialog(parent);
+		dialog.getContentPane().add(addBorder(main));
+		dialog.setTitle(title);
+		dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
+		dialog.pack();
+
+		Rectangle bounds = Manager.getSettings().getWindowBounds(title);
+		if (bounds != null) {
+			dialog.setBounds(bounds);
+		} else {
+			centerScreen(dialog);
+		}
+
+		return dialog;
+	}
+
+	private static JComponent addBorder(JComponent pnlMain) {
+		JPanel pnlBorder = new JPanel(new FormLayout("10dlu,fill:p:g,10dlu", "10dlu,fill:p:g,10dlu"));
+
+		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
+
+		return new JScrollPane(pnlBorder);
 	}
 
 }

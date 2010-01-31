@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.ProgressBar;
@@ -182,7 +183,7 @@ public class CommitGui implements Working, Refreshable {
 		pnlMain.add(splMain, BorderLayout.CENTER);
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
-		frame = Manager.createAndShowFrame(pnlMain, "Commit");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit");
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
@@ -554,7 +555,7 @@ public class CommitGui implements Working, Refreshable {
 
 	private class AddAction extends ThreadAction {
 
-		public AddAction(PopupupMouseListener popupupMouseListener) {
+		public AddAction() {
 			super("Add");
 		}
 
@@ -568,7 +569,7 @@ public class CommitGui implements Working, Refreshable {
 
 	private class IgnoreAction extends ThreadAction {
 
-		public IgnoreAction(PopupupMouseListener popupupMouseListener) {
+		public IgnoreAction() {
 			super("Ignore");
 		}
 
@@ -586,7 +587,7 @@ public class CommitGui implements Working, Refreshable {
 
 	private class DeleteAction extends ThreadAction {
 
-		public DeleteAction(PopupupMouseListener popupupMouseListener) {
+		public DeleteAction() {
 			super("Delete");
 		}
 
@@ -614,53 +615,48 @@ public class CommitGui implements Working, Refreshable {
 
 	private class RevertChangesAction extends ThreadAction {
 
-		public RevertChangesAction(PopupupMouseListener popupupMouseListener) {
+		public RevertChangesAction() {
 			super("Revert changes");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			for (CommitListItem li : getSelectedItems()) {
 				commit.revertChanges(li.getPath());
-				// li.setStatus(ContentStatus.NORMAL);
 			}
-			// removeListItemIfNormal(li);
 			refresh();
+		}
+	}
+
+	private class ShowPropertyChangesAction extends ThreadAction {
+
+		public ShowPropertyChangesAction() {
+			super("Show property changes");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				commit.showPropertyChangesFromBase(li.getPath());
+			}
 		}
 	}
 
 	private class RevertPropertyChangesAction extends ThreadAction {
 
-		public RevertPropertyChangesAction(PopupupMouseListener popupupMouseListener) {
+		public RevertPropertyChangesAction() {
 			super("Revert property changes");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			for (CommitListItem li : getSelectedItems()) {
 				commit.revertPropertyChanges(li.getPath());
-				// li.setPropertyStatus(ContentStatus.NORMAL);
 			}
-			// removeListItemIfNormal(li);
 			refresh();
 		}
 	}
 
-	// private class ResolvedAction extends ThreadAction {
-	//
-	// public ResolvedAction(PopupupMouseListener popupupMouseListener) {
-	// super("Resolved");
-	// }
-	//
-	// public void actionProcess(ActionEvent e) throws Exception {
-	// for (CommitListItem li : getSelectedItems()) {
-	// commit.resolved(li.getPath());
-	// }
-	// refresh();
-	// }
-	// }
-
 	private class ShowLog extends ThreadAction {
 
-		public ShowLog(PopupupMouseListener popupupMouseListener) {
+		public ShowLog() {
 			super("Show log");
 		}
 
@@ -677,7 +673,7 @@ public class CommitGui implements Working, Refreshable {
 
 	private class ResolveConflictUsingTheirsAction extends ThreadAction {
 
-		public ResolveConflictUsingTheirsAction(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingTheirsAction() {
 			super("Resolve conflict using theirs");
 		}
 
@@ -691,7 +687,7 @@ public class CommitGui implements Working, Refreshable {
 
 	private class ResolveConflictUsingMineAction extends ThreadAction {
 
-		public ResolveConflictUsingMineAction(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictUsingMineAction() {
 			super("Resolve conflict using mine");
 		}
 
@@ -705,7 +701,7 @@ public class CommitGui implements Working, Refreshable {
 
 	private class ResolveConflictAction extends ThreadAction {
 
-		public ResolveConflictAction(PopupupMouseListener popupupMouseListener) {
+		public ResolveConflictAction() {
 			super("Resolve conflict");
 		}
 
@@ -759,29 +755,29 @@ public class CommitGui implements Working, Refreshable {
 
 			if (setUsedStatus.contains(ContentStatus.MODIFIED) && !setUsedStatus.contains(ContentStatus.UNVERSIONED)
 			        && !setUsedStatus.contains(ContentStatus.ADDED)) {
-				ppMixed.add(new ShowLog(this));
+				ppMixed.add(new ShowLog());
 			}
 
 			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED))
 			        && !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
-				ppMixed.add(new RevertChangesAction(this));
+				ppMixed.add(new RevertChangesAction());
 			}
 
-			ppMixed.add(new IgnoreAction(this));
+			ppMixed.add(new IgnoreAction());
 			if (onlyOneKind && setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
-				ppMixed.add(new AddAction(this));
+				ppMixed.add(new AddAction());
 			}
-			ppMixed.add(new DeleteAction(this));
+			ppMixed.add(new DeleteAction());
 
 			if (setUsedPropertyStatus.contains(ContentStatus.MODIFIED)) {
-				ppMixed.add(new RevertPropertyChangesAction(this));
+				ppMixed.add(new ShowPropertyChangesAction());
+				ppMixed.add(new RevertPropertyChangesAction());
 			}
 
 			if (onlyOneKind && setUsedStatus.contains(ContentStatus.CONFLICTED)) {
-				// ppMixed.add(new ResolvedAction(this));
-				ppMixed.add(new ResolveConflictUsingTheirsAction(this));
-				ppMixed.add(new ResolveConflictUsingMineAction(this));
-				ppMixed.add(new ResolveConflictAction(this));
+				ppMixed.add(new ResolveConflictUsingTheirsAction());
+				ppMixed.add(new ResolveConflictUsingMineAction());
+				ppMixed.add(new ResolveConflictAction());
 			}
 
 			ppVisible = ppMixed;

@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
 
@@ -13,9 +14,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -128,7 +127,7 @@ public class ResolveConflictGui {
 
 				reload();
 
-				frame = Manager.createAndShowFrame(pnlMain, "Resolve Conflict");
+				frame = GuiHelper.createAndShowFrame(pnlMain, "Resolve Conflict");
 			}
 
 		}.run();
@@ -136,7 +135,7 @@ public class ResolveConflictGui {
 	}
 
 	private void reload() throws Exception {
-		String strMixed = Manager.getFileAsString(mixedFile);
+		String strMixed = Manager.loadFileToString(mixedFile);
 		String[] lines = strMixed.split("\n");
 
 		Document doc = tpConflict.getStyledDocument();
@@ -218,9 +217,7 @@ public class ResolveConflictGui {
 		}
 
 		// save
-		BufferedWriter out = new BufferedWriter(new FileWriter(mixedFile));
-		out.write(doc.getText(0, doc.getLength()));
-		out.close();
+		Manager.saveStringToFile(mixedFile, doc.getText(0, doc.getLength()));
 
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient client = svnMgr.getWCClient();
