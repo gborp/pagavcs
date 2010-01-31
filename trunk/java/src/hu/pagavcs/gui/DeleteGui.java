@@ -1,6 +1,6 @@
 package hu.pagavcs.gui;
 
-import hu.pagavcs.bl.Manager;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.Delete.DeleteStatus;
@@ -42,7 +42,7 @@ public class DeleteGui {
 		pnlMain.add(lblWorkingCopy, BorderLayout.NORTH);
 		pnlMain.add(lblStatus, BorderLayout.SOUTH);
 
-		window = Manager.createAndShowFrame(pnlMain, "Delete");
+		window = GuiHelper.createAndShowFrame(pnlMain, "Delete");
 	}
 
 	public void setStatus(DeleteStatus status) {

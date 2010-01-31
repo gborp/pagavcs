@@ -214,6 +214,10 @@ public class Commit {
 		SvnHelper.showChangesFromBase(gui, wcFile);
 	}
 
+	public void showPropertyChangesFromBase(File wcFile) throws Exception {
+		SvnHelper.showPropertyChangesFromBase(gui, wcFile);
+	}
+
 	public void add(File wcFile) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient wcClient = mgrSvn.getWCClient();

@@ -2,6 +2,7 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.operation.Settings;
 
 import java.awt.event.ActionEvent;
@@ -49,7 +50,7 @@ public class SettingsGui {
 		pnlMain.add(btnShowIcons, cc.xy(1, 3));
 		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(1, 5));
 
-		Manager.createAndShowFrame(pnlMain, "Settings");
+		GuiHelper.createAndShowFrame(pnlMain, "Settings");
 	}
 
 	private class ClearLoginCacheAction extends ThreadAction {

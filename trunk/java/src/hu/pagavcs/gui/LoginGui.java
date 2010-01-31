@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 
 import java.awt.Window;
@@ -116,7 +117,7 @@ public class LoginGui {
 			}
 		});
 
-		window = Manager.createAndShowFrame(pnlMain, "Login");
+		window = GuiHelper.createAndShowFrame(pnlMain, "Login");
 		window.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {

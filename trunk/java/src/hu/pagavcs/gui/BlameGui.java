@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Table;
 import hu.pagavcs.gui.platform.TableModel;
 import hu.pagavcs.operation.Log;
@@ -86,7 +87,7 @@ public class BlameGui {
 		pnlMain.add(prgWorking, cc.xywh(2, 2, 1, 1));
 		pnlMain.add(btnStop, cc.xywh(3, 2, 1, 1));
 
-		Manager.createAndShowFrame(pnlMain, "Blame");
+		GuiHelper.createAndShowFrame(pnlMain, "Blame");
 
 		tableModel.addLines(lstBlame);
 	}
