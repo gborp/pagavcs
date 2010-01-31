@@ -7,6 +7,7 @@ import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -97,6 +98,7 @@ public class ResolveConflictGui {
 				tpConflict = new TextPane();
 				tpConflict.setBackground(Color.WHITE);
 				tpConflict.setAutoscrolls(true);
+				tpConflict.setPreferredSize(new Dimension(20, 20));
 				JScrollPane spConflict = new JScrollPane(tpConflict);
 				btnReload = new JButton(new ReloadAction());
 				btnSaveResolved = new JButton(new SaveResolvedAction());
@@ -363,6 +365,18 @@ public class ResolveConflictGui {
 
 	}
 
+	private class UseNoneTextBlockAction extends AbstractBlockAction {
+
+		public UseNoneTextBlockAction(TextPane tp, Element element) {
+			super(tp, element, "Use none text block");
+		}
+
+		public void doBlockEdit(StyledDocument doc) throws Exception {
+			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
+			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+		}
+	}
+
 	private class TextPane extends JTextPane {
 
 		public TextPane() {
@@ -378,9 +392,11 @@ public class ResolveConflictGui {
 					if (type.equals(ATTRIBUTE_WORKING)) {
 						ppVisible.add(new UseMineTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseMineBeforTheirsTextBlockAction(TextPane.this, element));
+						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
 					} else if (type.equals(ATTRIBUTE_THEIRS)) {
 						ppVisible.add(new UseTheirsTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseTheirsBeforeMineTextBlockAction(TextPane.this, element));
+						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
 					}
 
 					if (ppVisible.getComponentCount() > 0) {
