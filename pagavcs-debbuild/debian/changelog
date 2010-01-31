@@ -1,3 +1,14 @@
+pagavcs (1.3.28ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * new: add "Use none text block" context menu item for conlict solving; fix too big textarea
+  * new: [commit] show (property) changes on directories too
+  * new: [log] show property changes
+  * fix: don't show "is this conflict resolved" dialog right after starting conflict resolving
+  * fix: smarter file status (emblem) cache
+  
+ -- papaigabor <pagavcs@gmail.com>  Sun, 31 Jan 2010 16:47:00 +0500
+
 pagavcs (1.3.27ubuntu) karmic; urgency=low
 
   [ papaigabor ]
