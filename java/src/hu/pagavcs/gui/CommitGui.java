@@ -758,7 +758,8 @@ public class CommitGui implements Working, Refreshable {
 				ppMixed.add(new ShowLog());
 			}
 
-			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED))
+			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED) || setUsedStatus.contains(ContentStatus.MISSING) || setUsedStatus
+			        .contains(ContentStatus.DELETED))
 			        && !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
 				ppMixed.add(new RevertChangesAction());
 			}
