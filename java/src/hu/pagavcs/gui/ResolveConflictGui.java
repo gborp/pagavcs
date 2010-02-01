@@ -98,6 +98,7 @@ public class ResolveConflictGui {
 				tpConflict.setBackground(Color.WHITE);
 				tpConflict.setAutoscrolls(true);
 				tpConflict.setPreferredSize(new Dimension(20, 20));
+				GuiHelper.addUndoRedo(tpConflict);
 				JScrollPane spConflict = new JScrollPane(tpConflict);
 				btnReload = new JButton(new ReloadAction());
 				btnSaveResolved = new JButton(new SaveResolvedAction());

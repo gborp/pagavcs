@@ -1,6 +1,5 @@
 package hu.pagavcs.gui.platform;
 
-
 import javax.swing.JTextArea;
 
 /**
@@ -30,6 +29,7 @@ public class TextArea extends JTextArea {
 
 	private void init() {
 		GuiHelper.addPopupMenu(this);
+		GuiHelper.addUndoRedo(this);
 	}
 
 }

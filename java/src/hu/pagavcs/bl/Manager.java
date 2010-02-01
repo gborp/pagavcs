@@ -59,18 +59,20 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
  */
 public class Manager {
 
-	public static final long        REVALIDATE_DELAY = 500;
+	public static final long        REVALIDATE_DELAY                    = 500;
 
-	public static Icon              ICON_ERROR       = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
-	public static Icon              ICON_INFORMATION = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
-	public static Icon              ICON_PASSWORD    = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
-	public static Icon              ICON_QUESTION    = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
-	public static Icon              ICON_WARNING     = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
+	public static Icon              ICON_ERROR                          = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
+	public static Icon              ICON_INFORMATION                    = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
+	public static Icon              ICON_PASSWORD                       = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
+	public static Icon              ICON_QUESTION                       = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
+	public static Icon              ICON_WARNING                        = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
 
-	private static final Color      COLOR_PURPLE     = new Color(100, 0, 100);
+	public static final String      COMMIT_COMPLETED_TEMPLATE_SEPARATOR = ">>>";
+
+	private static final Color      COLOR_PURPLE                        = new Color(100, 0, 100);
 
 	private static String           tempDir;
-	private static boolean          inited           = false;
+	private static boolean          inited                              = false;
 	private static ExceptionHandler exceptionHandler;
 	private static boolean          forceShowingLoginDialogNextTime;
 

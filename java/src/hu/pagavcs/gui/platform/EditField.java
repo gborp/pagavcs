@@ -1,6 +1,5 @@
 package hu.pagavcs.gui.platform;
 
-
 import javax.swing.JTextField;
 
 /**
@@ -39,6 +38,7 @@ public class EditField extends JTextField {
 
 	private void init() {
 		GuiHelper.addPopupMenu(this);
+		GuiHelper.addUndoRedo(this);
 	}
 
 }
