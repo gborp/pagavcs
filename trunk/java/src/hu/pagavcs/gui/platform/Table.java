@@ -50,7 +50,7 @@ public class Table<L extends ListItem> extends JTable {
 
 						public void run() {
 							try {
-								Thread.sleep(500);
+								Thread.sleep(200);
 								new OnSwing(true) {
 
 									protected void process() throws Exception {
@@ -58,8 +58,8 @@ public class Table<L extends ListItem> extends JTable {
 									}
 
 								}.run();
-							} catch (Exception e1) {
-								Manager.handle(e1);
+							} catch (Exception ex) {
+								Manager.handle(ex);
 							}
 						}
 
@@ -104,16 +104,16 @@ public class Table<L extends ListItem> extends JTable {
 			TableColumn col = colModel.getColumn(i);
 			int width = 0;
 
-			TableCellRenderer renderer = null;// col.getHeaderRenderer();
-			renderer = getCellRenderer(0, i);
+			TableCellRenderer renderer = getCellRenderer(0, i);
 			for (L li : tableModel.getAllData()) {
 				Component comp = renderer.getTableCellRendererComponent(this, li.getValue(i), false, false, 0, i);
 				width = Math.max(width, comp.getPreferredSize().width);
 			}
-			col.setMinWidth(width + 12);
-			col.setPreferredWidth(width + 12);
+			width += 12;
+			col.setMinWidth(width);
+			col.setPreferredWidth(width);
 			if (i != columnCount - 1) {
-				col.setMaxWidth(width + 12);
+				col.setMaxWidth(width);
 			}
 		}
 	}
