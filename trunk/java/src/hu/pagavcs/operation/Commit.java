@@ -193,7 +193,7 @@ public class Commit {
 					gui.addCommittedItem(fileName, CommittedItemStatus.DELTA_SENT);
 				} else if (SVNEventAction.COMMIT_COMPLETED.equals(action)) {
 					gui.addCommittedItem("Revision: " + event.getRevision(), CommittedItemStatus.COMPLETED);
-					gui.setStatus(CommitStatus.COMMIT_COMPLETED, "Revision: " + event.getRevision());
+					gui.setStatus(CommitStatus.COMMIT_COMPLETED, Long.toString(event.getRevision()));
 				}
 			} catch (Exception ex) {
 				Manager.handle(ex);
