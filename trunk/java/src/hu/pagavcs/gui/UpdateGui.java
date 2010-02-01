@@ -73,6 +73,7 @@ public class UpdateGui implements Working {
 	private Label                                 lblRepo;
 	private Window                                window;
 	private StopExitAction                        actStopFinish;
+	private Label                                 lblInfo;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -99,6 +100,8 @@ public class UpdateGui implements Working {
 		new StatusCellRendererForUpdateListItem(tblUpdate);
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
 
+		lblInfo = new Label();
+
 		actStopFinish = new StopExitAction();
 		btnStopFinish = new JButton(actStopFinish);
 
@@ -107,6 +110,7 @@ public class UpdateGui implements Working {
 		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
 		pnlMain.add(lblRepo, cc.xywh(1, 3, 1, 1));
 		pnlMain.add(scrollPane, cc.xywh(1, 5, 5, 1));
+		pnlMain.add(lblInfo, cc.xy(1, 7));
 		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
 		pnlMain.add(btnStopFinish, cc.xywh(5, 7, 1, 1));
 
@@ -168,20 +172,8 @@ public class UpdateGui implements Working {
 					actStopFinish.setType(StopExitActionType.Failed);
 				}
 
-				if (ContentStatus.COMPLETED.equals(status)) {
-					prgWorking.setIndeterminate(false);
-					actStopFinish.setType(StopExitActionType.Finished);
-					if (conflictedItemsPresent) {
-						JOptionPane.showMessageDialog(Manager.getRootFrame(), "There were conflicted items!", "Conflict", JOptionPane.WARNING_MESSAGE);
-					}
-				}
-
 				if (update.isCancel() && !ContentStatus.CANCEL.equals(status)) {
 					return;
-				}
-
-				if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)) {
-					conflictedItemsPresent = true;
 				}
 
 				ContentStatus effectiveStatus = status;
@@ -198,6 +190,34 @@ public class UpdateGui implements Working {
 				li.setContentStatus(updateContentStatus);
 				quNewItems.add(li);
 				doRevalidateTable();
+
+				if (ContentStatus.COMPLETED.equals(status)) {
+
+					prgWorking.setIndeterminate(false);
+					actStopFinish.setType(StopExitActionType.Finished);
+
+					int total = 0;
+					int conflicted = 0;
+					for (UpdateListItem uli : tmdlUpdate.getAllData()) {
+						UpdateContentStatus contentStatus = uli.getContentStatus();
+						if (UpdateContentStatus.CONFLICTED.equals(contentStatus)) {
+							conflicted++;
+						}
+						if (contentStatus != null) {
+							total++;
+						}
+					}
+					String strInfo = "Changed: " + total;
+					if (conflicted > 0) {
+						strInfo += " Conflicted: " + conflicted;
+					}
+					lblInfo.setText(strInfo);
+
+					if (conflicted > 0) {
+						JOptionPane.showMessageDialog(Manager.getRootFrame(), "There were " + conflicted + " conflicted items!", "Conflict",
+						        JOptionPane.WARNING_MESSAGE);
+					}
+				}
 			}
 
 		}.run();
