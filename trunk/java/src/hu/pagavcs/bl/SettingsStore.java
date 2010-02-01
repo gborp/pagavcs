@@ -27,28 +27,30 @@ import org.tmatesoft.svn.core.SVNException;
  */
 public class SettingsStore {
 
-	private Preferences          prefs                        = Preferences.userNodeForPackage(this.getClass());
+	private Preferences          prefs                                  = Preferences.userNodeForPackage(this.getClass());
 	private static SettingsStore singleton;
 
-	private static final String  KEY_USERNAME                 = "username";
-	private static final String  KEY_PASSWORD                 = "password";
-	private static final String  KEY_COMMIT_MESSAGES          = "commit-messages";
-	private static final String  KEY_REPO_URL                 = "repo-url";
-	private static final String  KEY_WINDOW_BOUNDS            = "window-bounds";
-	private static final String  KEY_GUI_LOG_SEPARATOR_DETAIL = "gui-log-separator-detail";
-	private static final String  KEY_GUI_LOG_SEPARATOR_MAIN   = "gui-log-separator-main";
-	private static final String  KEY_LOGIN_REMEMBER_USERNAME  = "gui-login-remember-username";
-	private static final String  KEY_LOGIN_REMEMBER_PASSWORD  = "gui-login-remember-password";
+	private static final String  KEY_USERNAME                           = "username";
+	private static final String  KEY_PASSWORD                           = "password";
+	private static final String  KEY_COMMIT_MESSAGES                    = "commit-messages";
+	private static final String  KEY_REPO_URL                           = "repo-url";
+	private static final String  KEY_WINDOW_BOUNDS                      = "window-bounds";
+	private static final String  KEY_GUI_LOG_SEPARATOR_DETAIL           = "gui-log-separator-detail";
+	private static final String  KEY_GUI_LOG_SEPARATOR_MAIN             = "gui-log-separator-main";
+	private static final String  KEY_LOGIN_REMEMBER_USERNAME            = "gui-login-remember-username";
+	private static final String  KEY_LOGIN_REMEMBER_PASSWORD            = "gui-login-remember-password";
+	private static final String  KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES = "commit-completed-message-templates";
 
-	private Map<String, String>  mapUsername                  = new HashMap<String, String>();
-	private Map<String, String>  mapPassword                  = new HashMap<String, String>();
-	private List<String>         lstCommitMessages            = new ArrayList<String>();
-	private List<String>         lstRepoUrl                   = new ArrayList<String>();
-	private Map<String, String>  mapWindowBounds              = new HashMap<String, String>();
+	private Map<String, String>  mapUsername                            = new HashMap<String, String>();
+	private Map<String, String>  mapPassword                            = new HashMap<String, String>();
+	private List<String>         lstCommitMessages                      = new ArrayList<String>();
+	private List<String>         lstRepoUrl                             = new ArrayList<String>();
+	private Map<String, String>  mapWindowBounds                        = new HashMap<String, String>();
 	private Integer              guiLogSeparatorDetail;
 	private Integer              guiLogSeparatorMain;
 	private Boolean              rememberUsername;
 	private Boolean              rememberPassword;
+	private String               commitCompletedMessageTemplates;
 
 	public static SettingsStore getInstance() {
 		if (singleton == null) {
@@ -67,6 +69,7 @@ public class SettingsStore {
 		storeInteger(KEY_GUI_LOG_SEPARATOR_MAIN, guiLogSeparatorMain);
 		storeBoolean(KEY_LOGIN_REMEMBER_USERNAME, rememberUsername);
 		storeBoolean(KEY_LOGIN_REMEMBER_PASSWORD, rememberPassword);
+		storeString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES, commitCompletedMessageTemplates);
 		prefs.flush();
 	}
 
@@ -80,6 +83,7 @@ public class SettingsStore {
 		guiLogSeparatorMain = loadInteger(KEY_GUI_LOG_SEPARATOR_MAIN);
 		rememberUsername = loadBoolean(KEY_LOGIN_REMEMBER_USERNAME);
 		rememberPassword = loadBoolean(KEY_LOGIN_REMEMBER_PASSWORD);
+		commitCompletedMessageTemplates = loadString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES);
 	}
 
 	private List<String> loadList(String listName) throws BackingStoreException {
@@ -153,6 +157,18 @@ public class SettingsStore {
 			prefs.remove(name);
 		} else {
 			prefs.put(name, Integer.toString(value));
+		}
+	}
+
+	private String loadString(String name) {
+		return prefs.get(name, null);
+	}
+
+	private void storeString(String name, String value) {
+		if (value == null) {
+			prefs.remove(name);
+		} else {
+			prefs.put(name, value);
 		}
 	}
 
@@ -282,5 +298,11 @@ public class SettingsStore {
 		this.rememberPassword = rememberPassword;
 	}
 
-	// store and load immediately settings.
+	public void setCommitCompletedMessageTemplates(String commitCompletedMessageTemplates) {
+		this.commitCompletedMessageTemplates = commitCompletedMessageTemplates;
+	}
+
+	public String getCommitCompletedMessageTemplates() {
+		return commitCompletedMessageTemplates;
+	}
 }

@@ -31,6 +31,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -279,7 +280,7 @@ public class CommitGui implements Working, Refreshable {
 
 				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
 
-					MessagePane.showInfo(frame, "Completed", message);
+					MessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
 					frame.setVisible(false);
 					frame.dispose();
 				} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
@@ -290,6 +291,23 @@ public class CommitGui implements Working, Refreshable {
 			}
 
 		}.run();
+	}
+
+	private String getCommitNotifyMessage(String revision) {
+		String messageTemplates = Manager.getSettings().getCommitCompletedMessageTemplates();
+		String sep = Manager.COMMIT_COMPLETED_TEMPLATE_SEPARATOR;
+		String path = commit.getPath();
+		for (String tmpl : messageTemplates.split("\n")) {
+			int sepIndex = tmpl.indexOf(sep);
+			if (sepIndex != -1) {
+				String pattern = tmpl.substring(0, sepIndex);
+				String template = tmpl.substring(sepIndex + sep.length());
+				if (path.contains(pattern)) {
+					return MessageFormat.format(template, revision);
+				}
+			}
+		}
+		return "Revision: " + revision;
 	}
 
 	public void refresh() throws Exception {
@@ -404,14 +422,6 @@ public class CommitGui implements Working, Refreshable {
 		}
 	}
 
-	private void removeListItemIfNormal(CommitListItem li) {
-		if (li.getStatus().equals(ContentStatus.NORMAL) && li.getPropertyStatus().equals(ContentStatus.NONE)
-		        && li.getPropertyStatus().equals(ContentStatus.NORMAL)) {
-			tmdlCommit.removeLine(li);
-			tblCommit.getSelectionModel().clearSelection();
-		}
-	}
-
 	public void resolveConflict(CommitListItem li) throws Exception {
 
 		File file = li.getPath();
@@ -499,9 +509,6 @@ public class CommitGui implements Working, Refreshable {
 					if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
 						// auto-add unversioned items
 						commit.add(li.getPath());
-						// MessagePane.showWarning(frame, "Cannot commit",
-						// "Cannot commit unversioned file! Please Add, Delete or Ignore it (or deselect it).");
-						// return;
 					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
 						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
 						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));

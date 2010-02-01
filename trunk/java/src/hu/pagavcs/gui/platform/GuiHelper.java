@@ -12,6 +12,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,7 +21,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -203,4 +212,38 @@ public class GuiHelper {
 		return new JScrollPane(pnlBorder);
 	}
 
+	public static void addUndoRedo(JTextComponent comp) {
+		final UndoManager undo = new UndoManager();
+		Document doc = comp.getDocument();
+		doc.addUndoableEditListener(new UndoableEditListener() {
+
+			public void undoableEditHappened(UndoableEditEvent evt) {
+				undo.addEdit(evt.getEdit());
+			}
+		});
+		ActionMap actionMap = comp.getActionMap();
+		InputMap inputMap = comp.getInputMap();
+		actionMap.put("Undo", new AbstractAction("Undo") {
+
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					if (undo.canUndo()) {
+						undo.undo();
+					}
+				} catch (CannotUndoException e) {}
+			}
+		});
+		inputMap.put(KeyStroke.getKeyStroke("control Z"), "Undo");
+		actionMap.put("Redo", new AbstractAction("Redo") {
+
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					if (undo.canRedo()) {
+						undo.redo();
+					}
+				} catch (CannotRedoException e) {}
+			}
+		});
+		inputMap.put(KeyStroke.getKeyStroke("control Y"), "Redo");
+	}
 }
