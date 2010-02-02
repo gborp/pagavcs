@@ -197,7 +197,7 @@ public class Other implements Cancelable {
 				// convert tabulators to 4 spaces
 				line = line.replace("\t", "    ");
 				li.setLine(line);
-
+				li.setLineNumber(lstBlame.size() + 1);
 				lstBlame.add(li);
 			}
 
