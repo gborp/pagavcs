@@ -8,7 +8,6 @@ import hu.pagavcs.gui.platform.Table;
 import hu.pagavcs.gui.platform.TableModel;
 import hu.pagavcs.operation.Log;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -94,17 +93,12 @@ public class BlameGui {
 
 	private class ShowLog extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public ShowLog(PopupupMouseListener popupupMouseListener) {
+		public ShowLog() {
 			super("Show log");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			try {
-				popupupMouseListener.hidePopup();
-				BlameListItem li = popupupMouseListener.getSelected();
 				new Log(file).execute();
 			} catch (Exception ex) {
 				Manager.handle(ex);
@@ -114,35 +108,16 @@ public class BlameGui {
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu    ppVisible;
-		private JPopupMenu    ppModified;
-		private BlameListItem selected;
+		private JPopupMenu ppModified;
 
 		public PopupupMouseListener() {
 			ppModified = new JPopupMenu();
-			ppModified.add(new ShowLog(this));
+			ppModified.add(new ShowLog());
 		}
 
-		public BlameListItem getSelected() {
-			return selected;
-		}
-
-		private void hidePopup() {
-			if (ppVisible != null) {
-				ppVisible.setVisible(false);
-				ppVisible = null;
-			}
-		}
-
-		public void mousePressed(MouseEvent e) {
-			hidePopup();
-			if (e.getButton() == MouseEvent.BUTTON3) {
-
-				Point p = new Point(e.getX(), e.getY());
-				int row = tblBlame.convertRowIndexToModel(tblBlame.rowAtPoint(p));
-				selected = tableModel.getRow(row);
-				ppVisible = ppModified;
-
+		private void showPopup(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				JPopupMenu ppVisible = ppModified;
 				if (ppVisible != null) {
 					ppVisible.setInvoker(tblBlame);
 					ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
@@ -150,7 +125,14 @@ public class BlameGui {
 					e.consume();
 				}
 			}
-			super.mousePressed(e);
+		}
+
+		public void mousePressed(MouseEvent e) {
+			showPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			showPopup(e);
 		}
 	}
 }
