@@ -2,14 +2,13 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
-import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.ThreadAction;
-import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.ProgressBar;
 import hu.pagavcs.operation.Other;
+import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Other.OtherStatus;
 
 import java.awt.Window;
@@ -258,34 +257,62 @@ public class OtherGui implements Working, Cancelable {
 		}
 	}
 
-	// TODO doApplyPatch
 	private void doApplyPatch(String path) throws Exception {
-		if (true) {
-			throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
-		}
 		JFileChooser fc = new JFileChooser(new File(other.getPath()));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int choosed = fc.showSaveDialog(window);
 		if (choosed == JFileChooser.APPROVE_OPTION) {
-			File baseDir = new File(path);
+
+			final File baseDir = new File(path);
 			File file = fc.getSelectedFile();
 
 			String result = Manager.getOsCommandResult(baseDir, "lsdiff", file.getPath());
-			// display file names, select from files
+			// TODO display file names, select from files
 
 			List<String> lstFilesToPatch = new ArrayList<String>();
 			for (String filename : result.split("\n")) {
 				lstFilesToPatch.add(filename);
 			}
-			String lstConflicted = Manager.getOsCommandResult(baseDir, "patch", "-p0", "--no-backup-if-mismatch", "-U", "-i", file.getPath());
+			Manager.getOsCommandResult(baseDir, "patch", "-p0", "--no-backup-if-mismatch", "-U", "-i", file.getPath());
+			/*
+			 * example output: patching file a Hunk #1 FAILED at 9. 1 out of 1
+			 * hunk FAILED -- saving rejects to file a.rej
+			 */
 
 			// find rejected files
+			List<String> lstRejected = new ArrayList<String>();
+			for (String fileName : lstFilesToPatch) {
+				File f = new File(baseDir, fileName + ".rej");
+				if (f.exists() && f.isFile()) {
+					lstRejected.add(fileName);
+				}
+			}
 
-			// TODO
-			// ls -R | grep .rej
+			List<String> lstUnresolved = new ArrayList<String>();
+			for (String fileName : lstRejected) {
+				/*
+				 * example output: 1 unresolved conflict found
+				 */
+				String output = Manager.getOsCommandResult(baseDir, "wiggle", "--replace", fileName, fileName + ".rej");
+				if (output.contains("unresolved conflict")) {
+					lstUnresolved.add(fileName);
+				}
+			}
 
-			// TODO
-			// wiggle --replace a a.rej
+			for (final String fileName : lstUnresolved) {
+
+				Refreshable li = new Refreshable() {
+
+					public void refresh() throws Exception {
+						// delete .rej and .porig files if everything was
+						// successful
+						new File(baseDir, fileName + ".rej").delete();
+						new File(baseDir, fileName + ".porig").delete();
+					}
+				};
+				ResolveConflict resolveConflict = new ResolveConflict(li, path + "/" + fileName, true);
+				resolveConflict.execute();
+			}
 		}
 	}
 
