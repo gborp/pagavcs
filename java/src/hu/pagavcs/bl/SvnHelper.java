@@ -103,9 +103,10 @@ public class SvnHelper {
 		}
 	}
 
-	public static void createPatch(File[] wcFiles, OutputStream out) throws SVNException {
+	public static void createPatch(File basePath, File[] wcFiles, OutputStream out) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNDiffClient diffClient = mgrSvn.getDiffClient();
+		diffClient.getDiffGenerator().setBasePath(basePath);
 		for (File wcFile : wcFiles) {
 			diffClient.doDiff(wcFile, SVNRevision.BASE, wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, true, out, null);
 		}

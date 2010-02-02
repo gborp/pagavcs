@@ -226,7 +226,7 @@ public class Commit {
 	}
 
 	public void createPatch(File[] wcFiles, OutputStream out) throws SVNException {
-		SvnHelper.createPatch(wcFiles, out);
+		SvnHelper.createPatch(new File(path), wcFiles, out);
 	}
 
 	public void ignore(File wcFile) throws SVNException {

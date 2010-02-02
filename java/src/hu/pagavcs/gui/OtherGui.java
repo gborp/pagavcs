@@ -259,7 +259,7 @@ public class OtherGui implements Working, Cancelable {
 	}
 
 	// TODO doApplyPatch
-	private void doApplyPatch() throws Exception {
+	private void doApplyPatch(String path) throws Exception {
 		if (true) {
 			throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
 		}
@@ -267,16 +267,25 @@ public class OtherGui implements Working, Cancelable {
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int choosed = fc.showSaveDialog(window);
 		if (choosed == JFileChooser.APPROVE_OPTION) {
+			File baseDir = new File(path);
 			File file = fc.getSelectedFile();
 
-			String result = Manager.getOsCommandResult("lsdiff", file.getPath());
+			String result = Manager.getOsCommandResult(baseDir, "lsdiff", file.getPath());
 			// display file names, select from files
 
 			List<String> lstFilesToPatch = new ArrayList<String>();
 			for (String filename : result.split("\n")) {
 				lstFilesToPatch.add(filename);
 			}
+			String lstConflicted = Manager.getOsCommandResult(baseDir, "patch", "-p0", "--no-backup-if-mismatch", "-U", "-i", file.getPath());
 
+			// find rejected files
+
+			// TODO
+			// ls -R | grep .rej
+
+			// TODO
+			// wiggle --replace a a.rej
 		}
 	}
 
@@ -295,7 +304,7 @@ public class OtherGui implements Working, Cancelable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			doApplyPatch();
+			doApplyPatch(other.getPath());
 		}
 
 	}
