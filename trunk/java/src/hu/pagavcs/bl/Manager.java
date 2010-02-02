@@ -367,9 +367,11 @@ public class Manager {
 		FileStatusCache.getInstance().invalidateAll();
 	}
 
-	public static String getOsCommandResult(String... args) throws IOException {
+	public static String getOsCommandResult(File baseDir, String... args) throws IOException {
 
 		ProcessBuilder pb = new ProcessBuilder(args);
+		pb.directory(baseDir);
+		pb.redirectErrorStream(true);
 		Process process = pb.start();
 		BufferedReader commandResult = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
 		String line = "";
