@@ -431,7 +431,7 @@ public class CommitGui implements Working, Refreshable {
 			MessagePane.showError(frame, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 			return;
 		}
-		new ResolveConflict(this, file.getPath()).execute();
+		new ResolveConflict(this, file.getPath(), false).execute();
 	}
 
 	private List<CommitListItem> getSelectedItems() {

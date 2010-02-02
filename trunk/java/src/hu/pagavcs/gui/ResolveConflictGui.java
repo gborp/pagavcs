@@ -54,6 +54,7 @@ public class ResolveConflictGui {
 
 	private static final String ATTRIBUTE_TYPE_KEY = "PAGAVCS-CONFLICT";
 	private static final String ATTRIBUTE_NORMAL   = "normal";
+	private static final String ATTRIBUTE_ORIGINAL = "original";
 	private static final String ATTRIBUTE_WORKING  = "working";
 	private static final String ATTRIBUTE_THEIRS   = "theirs";
 	private static final String ATTRIBUTE_MIXED    = "mixed";
@@ -67,17 +68,20 @@ public class ResolveConflictGui {
 	private SimpleAttributeSet  setConflictWorking;
 	private SimpleAttributeSet  setConflictTheirs;
 	private SimpleAttributeSet  setMixedText;
+	private SimpleAttributeSet  setOriginal;
 	private JButton             btnReload;
 	private JButton             btnSaveResolved;
 	private Window              frame;
 	private final Refreshable   parentRefreshable;
+	private final boolean       applyPatchConlict;
 
-	public ResolveConflictGui(Refreshable parentRefreshable, File mixedFile, File oldFile, File newFile, File wrkFile) {
+	public ResolveConflictGui(Refreshable parentRefreshable, File mixedFile, File oldFile, File newFile, File wrkFile, boolean applyPatchConlict) {
 		this.parentRefreshable = parentRefreshable;
 		this.mixedFile = mixedFile;
 		this.oldFile = oldFile;
 		this.newFile = newFile;
 		this.wrkFile = wrkFile;
+		this.applyPatchConlict = applyPatchConlict;
 	}
 
 	public void display() throws Exception {
@@ -85,7 +89,7 @@ public class ResolveConflictGui {
 		new OnSwing() {
 
 			protected void process() throws Exception {
-				if (wrkFile == null) {
+				if (!applyPatchConlict && wrkFile == null) {
 					MessagePane.showError(null, "No conflict", "Unable to resolve conflict on a non-conflicted file.");
 					return;
 				}
@@ -126,6 +130,11 @@ public class ResolveConflictGui {
 				StyleConstants.setBold(setConflictTheirs, true);
 				setConflictTheirs.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_THEIRS);
 
+				setOriginal = new SimpleAttributeSet();
+				StyleConstants.setBackground(setOriginal, Color.CYAN);
+				StyleConstants.setBold(setOriginal, true);
+				setOriginal.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_ORIGINAL);
+
 				reload();
 
 				frame = GuiHelper.createAndShowFrame(pnlMain, "Resolve Conflict");
@@ -143,6 +152,7 @@ public class ResolveConflictGui {
 		doc.remove(0, doc.getLength());
 
 		boolean conflictStarted = false;
+		boolean originalStarted = false;
 		boolean conflictOtherBlock = false;
 
 		Integer firstConflictPos = null;
@@ -150,18 +160,27 @@ public class ResolveConflictGui {
 
 		for (String line : lines) {
 
-			if (line.startsWith("<<<<<<< ")) {
+			if (line.startsWith("<<<<<<<")) {
 				conflictStarted = true;
+				originalStarted = false;
+				conflictOtherBlock = false;
 				if (firstConflictPos == null) {
 					firstConflictPos = doc.getLength();
 				}
 				continue;
+			} else if (line.equals("|||||||")) {
+				conflictStarted = false;
+				originalStarted = true;
+				conflictOtherBlock = false;
+				continue;
 			} else if (line.equals("=======")) {
 				conflictStarted = false;
+				originalStarted = false;
 				conflictOtherBlock = true;
 				continue;
-			} else if (line.startsWith(">>>>>>> ")) {
+			} else if (line.startsWith(">>>>>>>")) {
 				conflictStarted = false;
+				originalStarted = false;
 				conflictOtherBlock = false;
 				if (firstConflictPosEnd == null) {
 					firstConflictPosEnd = doc.getLength();
@@ -172,6 +191,8 @@ public class ResolveConflictGui {
 			SimpleAttributeSet setActual;
 			if (conflictStarted) {
 				setActual = setConflictWorking;
+			} else if (originalStarted) {
+				setActual = setOriginal;
 			} else if (conflictOtherBlock) {
 				setActual = setConflictTheirs;
 			} else {
@@ -275,6 +296,8 @@ public class ResolveConflictGui {
 		protected final Element  element;
 		protected int            startMineOffset;
 		protected int            endMineOffset;
+		protected int            startOriginalOffset;
+		protected int            endOriginalOffset;
 		protected int            startTheirsOffset;
 		protected int            endTheirsOffset;
 
@@ -291,16 +314,27 @@ public class ResolveConflictGui {
 			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_THEIRS))) {
 				startMineOffset--;
 			}
+			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_ORIGINAL))) {
+				startMineOffset--;
+			}
 			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_WORKING))) {
 				startMineOffset--;
 			}
-			startMineOffset++;
+			while (!tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_WORKING)) {
+				startMineOffset++;
+			}
 			endMineOffset = startMineOffset;
 			while (endMineOffset < doc.getLength() && tp.getAttributeType(endMineOffset).equals(ATTRIBUTE_WORKING)) {
 				endMineOffset++;
 			}
 
-			startTheirsOffset = endMineOffset;
+			startOriginalOffset = endMineOffset;
+			endOriginalOffset = startOriginalOffset;
+			while (endOriginalOffset < doc.getLength() && tp.getAttributeType(endOriginalOffset).equals(ATTRIBUTE_ORIGINAL)) {
+				endOriginalOffset++;
+			}
+
+			startTheirsOffset = endOriginalOffset;
 			endTheirsOffset = startTheirsOffset;
 			while (endTheirsOffset < doc.getLength() && tp.getAttributeType(endTheirsOffset).equals(ATTRIBUTE_THEIRS)) {
 				endTheirsOffset++;
@@ -322,6 +356,7 @@ public class ResolveConflictGui {
 		public void doBlockEdit(StyledDocument doc) throws Exception {
 			doc.setCharacterAttributes(startMineOffset, endMineOffset - startMineOffset, setMixedText, true);
 			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
+			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 		}
 	}
 
@@ -334,6 +369,7 @@ public class ResolveConflictGui {
 		public void doBlockEdit(StyledDocument doc) throws Exception {
 			doc.setCharacterAttributes(startMineOffset, endMineOffset - startMineOffset, setMixedText, true);
 			doc.setCharacterAttributes(startTheirsOffset, endTheirsOffset - startTheirsOffset, setMixedText, true);
+			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 		}
 	}
 
@@ -345,6 +381,7 @@ public class ResolveConflictGui {
 
 		public void doBlockEdit(StyledDocument doc) throws Exception {
 			doc.setCharacterAttributes(startTheirsOffset, endTheirsOffset - startTheirsOffset, setMixedText, true);
+			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
 		}
 	}
@@ -358,6 +395,7 @@ public class ResolveConflictGui {
 		public void doBlockEdit(StyledDocument doc) throws Exception {
 			doc.setCharacterAttributes(startTheirsOffset, endTheirsOffset - startTheirsOffset, setMixedText, true);
 			doc.insertString(endTheirsOffset, doc.getText(startMineOffset, endMineOffset - startMineOffset), setMixedText);
+			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
 		}
 
@@ -367,6 +405,19 @@ public class ResolveConflictGui {
 
 		public UseNoneTextBlockAction(TextPane tp, Element element) {
 			super(tp, element, "Use none text block");
+		}
+
+		public void doBlockEdit(StyledDocument doc) throws Exception {
+			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
+			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
+			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+		}
+	}
+
+	private class UseOriginalTextBlockAction extends AbstractBlockAction {
+
+		public UseOriginalTextBlockAction(TextPane tp, Element element) {
+			super(tp, element, "Use base text block");
 		}
 
 		public void doBlockEdit(StyledDocument doc) throws Exception {
@@ -394,6 +445,9 @@ public class ResolveConflictGui {
 					} else if (type.equals(ATTRIBUTE_THEIRS)) {
 						ppVisible.add(new UseTheirsTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseTheirsBeforeMineTextBlockAction(TextPane.this, element));
+						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
+					} else if (type.equals(ATTRIBUTE_ORIGINAL)) {
+						ppVisible.add(new UseOriginalTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
 					}
 
@@ -443,6 +497,8 @@ public class ResolveConflictGui {
 
 			if (ATTRIBUTE_WORKING.equals(type)) {
 				return "Working copy";
+			} else if (ATTRIBUTE_ORIGINAL.equals(type)) {
+				return "Base";
 			} else if (ATTRIBUTE_THEIRS.equals(type)) {
 				return "Theirs";
 			} else if (ATTRIBUTE_MIXED.equals(type)) {
