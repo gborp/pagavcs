@@ -295,15 +295,17 @@ public class CommitGui implements Working, Refreshable {
 
 	private String getCommitNotifyMessage(String revision) {
 		String messageTemplates = Manager.getSettings().getCommitCompletedMessageTemplates();
-		String sep = Manager.COMMIT_COMPLETED_TEMPLATE_SEPARATOR;
-		String path = commit.getPath();
-		for (String tmpl : messageTemplates.split("\n")) {
-			int sepIndex = tmpl.indexOf(sep);
-			if (sepIndex != -1) {
-				String pattern = tmpl.substring(0, sepIndex);
-				String template = tmpl.substring(sepIndex + sep.length());
-				if (path.contains(pattern)) {
-					return MessageFormat.format(template, revision);
+		if (messageTemplates != null) {
+			String sep = Manager.COMMIT_COMPLETED_TEMPLATE_SEPARATOR;
+			String path = commit.getPath();
+			for (String tmpl : messageTemplates.split("\n")) {
+				int sepIndex = tmpl.indexOf(sep);
+				if (sepIndex != -1) {
+					String pattern = tmpl.substring(0, sepIndex);
+					String template = tmpl.substring(sepIndex + sep.length());
+					if (path.contains(pattern)) {
+						return MessageFormat.format(template, revision);
+					}
 				}
 			}
 		}
