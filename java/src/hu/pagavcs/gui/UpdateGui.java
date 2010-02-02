@@ -380,7 +380,7 @@ public class UpdateGui implements Working {
 					MessagePane.showError(window, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 					return;
 				}
-				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath()).execute();
+				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath(), false).execute();
 
 			} catch (Exception ex) {
 				Manager.handle(ex);

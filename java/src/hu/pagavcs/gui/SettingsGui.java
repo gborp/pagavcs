@@ -52,7 +52,7 @@ public class SettingsGui {
 		JButton btnSetCommitCompletedMessageTemplates = new JButton(new SetCommitCompletedMessageTemplatesAction());
 
 		taCommitCompleteTemplate = new TextArea();
-		taCommitCompleteTemplate.setToolTipText("Example: /pagavcs/trunk/>>>#{0} trunk.PagaVCS");
+		taCommitCompleteTemplate.setToolTipText("Example: /pagavcs/trunk>>>#{0} trunk.PagaVCS");
 
 		pnlMain.add(btnClearLogin, cc.xy(3, 1));
 		pnlMain.add(btnShowIcons, cc.xy(3, 3));

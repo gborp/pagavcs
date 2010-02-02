@@ -199,7 +199,7 @@ public class Communication {
 					Settings settings = new Settings();
 					settings.execute();
 				} else if ("resolve".equals(command)) {
-					ResolveConflict resolve = new ResolveConflict(null, arg);
+					ResolveConflict resolve = new ResolveConflict(null, arg, false);
 					resolve.execute();
 				} else if ("stop".equals(command)) {
 					System.exit(0);

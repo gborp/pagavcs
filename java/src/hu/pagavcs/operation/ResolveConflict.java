@@ -28,22 +28,31 @@ public class ResolveConflict {
 	private String             path;
 	private ResolveConflictGui gui;
 	private final Refreshable  parentRefreshable;
+	private final boolean      applyPatchConlict;
 
-	public ResolveConflict(Refreshable parentRefreshable, String path) throws BackingStoreException, SVNException {
+	public ResolveConflict(Refreshable parentRefreshable, String path, boolean applyPatchConlict) throws BackingStoreException, SVNException {
 		this.parentRefreshable = parentRefreshable;
 		this.path = path;
+		this.applyPatchConlict = applyPatchConlict;
 	}
 
 	public void execute() throws Exception {
+		File newFile = null;
+		File oldFile = null;
+		File wrkFile = null;
+		File mixedFile = null;
+		if (!applyPatchConlict) {
+			SVNInfo info = Manager.getInfo(path);
 
-		SVNInfo info = Manager.getInfo(path);
+			newFile = info.getConflictNewFile();
+			oldFile = info.getConflictOldFile();
+			wrkFile = info.getConflictWrkFile();
+			mixedFile = info.getFile();
+		} else {
+			mixedFile = new File(path);
+		}
 
-		File newFile = info.getConflictNewFile();
-		File oldFile = info.getConflictOldFile();
-		File wrkFile = info.getConflictWrkFile();
-		File mixedFile = info.getFile();
-
-		gui = new ResolveConflictGui(parentRefreshable, mixedFile, oldFile, newFile, wrkFile);
+		gui = new ResolveConflictGui(parentRefreshable, mixedFile, oldFile, newFile, wrkFile, applyPatchConlict);
 		gui.display();
 	}
 
