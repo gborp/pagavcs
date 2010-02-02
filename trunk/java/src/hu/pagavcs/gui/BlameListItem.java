@@ -22,10 +22,11 @@ public class BlameListItem implements ListItem {
 	private long   revision;
 	private String author;
 	private Date   date;
+	private int    lineNumber; ;
 	private String line;
 
 	public String[] getColumnNames() {
-		return new String[] { "Revision", "Author", "Date", "Line" };
+		return new String[] { "Revision", "Author", "Date", "Nr", "Line" };
 	}
 
 	public Object getValue(int index) {
@@ -36,6 +37,8 @@ public class BlameListItem implements ListItem {
 		} else if (index == 2) {
 			return getDate();
 		} else if (index == 3) {
+			return getLineNumber();
+		} else if (index == 4) {
 			return getLine();
 		}
 		throw new RuntimeException("not implemented");
@@ -77,6 +80,14 @@ public class BlameListItem implements ListItem {
 
 	public void setLine(String message) {
 		this.line = message;
+	}
+
+	public int getLineNumber() {
+		return this.lineNumber;
+	}
+
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
 	}
 
 }
