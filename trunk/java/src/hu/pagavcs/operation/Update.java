@@ -1,10 +1,14 @@
 package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Cancelable;
+import hu.pagavcs.bl.FileStatusCache;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.FileStatusCache.STATUS;
 import hu.pagavcs.gui.UpdateGui;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -35,13 +39,22 @@ public class Update implements Cancelable {
 		NONE, CONFLICTED, MERGED, RESOLVED
 	}
 
-	String              path;
+	private List<File>  lstFile;
 	private boolean     cancel;
 	private UpdateGui   gui;
 	private SVNRevision updateToRevision;
+	private File        baseDir;
+	private boolean     baseDirIsNotSvned;
 
-	public Update(String path) throws Exception {
-		this.path = path;
+	public Update(List<String> lstArg) throws Exception {
+		lstFile = new ArrayList<File>();
+		for (String fileName : lstArg) {
+			lstFile.add(new File(fileName));
+		}
+		baseDir = Manager.getCommonBaseDir(lstFile);
+		if (!FileStatusCache.getInstance().getStatus(baseDir).equals(STATUS.NONE)) {
+			baseDirIsNotSvned = true;
+		}
 		setCancel(false);
 		setUpdateToRevision(SVNRevision.HEAD);
 	}
@@ -59,10 +72,19 @@ public class Update implements Cancelable {
 		gui.display();
 		try {
 			gui.setStatus(ContentStatus.INIT);
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+			SVNClientManager mgrSvn;
+			if (!baseDirIsNotSvned) {
+				mgrSvn = Manager.getSVNClientManager(baseDir);
+			} else {
+				mgrSvn = Manager.getSVNClientManager(lstFile.get(0));
+			}
 
-			gui.setWorkingCopy(path);
-			gui.setRepo(Manager.getInfo(path).getURL().toDecodedString());
+			gui.setWorkingCopy(baseDir.getPath());
+			if (!baseDirIsNotSvned) {
+				gui.setRepo(Manager.getInfo(baseDir).getURL().toDecodedString());
+			} else {
+				gui.setRepo("<Multiply repos>");
+			}
 
 			SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
 			updateClient.setEventHandler(new UpdateEventHandler(this, gui));
@@ -70,7 +92,7 @@ public class Update implements Cancelable {
 			boolean successOrExit = false;
 			while (!successOrExit) {
 				try {
-					updateClient.doUpdate(new File(path), updateToRevision, SVNDepth.INFINITY, true, true);
+					updateClient.doUpdate(lstFile.toArray(new File[0]), updateToRevision, SVNDepth.INFINITY, true, true);
 					successOrExit = true;
 				} catch (SVNCancelException ex) {
 					// do nothing
@@ -80,7 +102,7 @@ public class Update implements Cancelable {
 						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
 						        JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
-							Cleanup cleanup = new Cleanup(path);
+							Cleanup cleanup = new Cleanup(baseDir.getPath());
 							cleanup.setAutoClose(true);
 							cleanup.execute();
 						} else {

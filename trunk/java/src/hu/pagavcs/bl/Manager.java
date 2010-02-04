@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.Icon;
@@ -412,6 +413,26 @@ public class Manager {
 
 	public static boolean isShutdown() {
 		return shutdown;
+	}
+
+	public static File getCommonBaseDir(List<File> lstFiles) {
+		String commonPath = null;
+		for (File file : lstFiles) {
+			if (!file.isDirectory()) {
+				file = file.getParentFile();
+			}
+			String newPath = file.getPath();
+
+			if (commonPath == null) {
+				commonPath = newPath;
+			} else {
+				if (commonPath.length() > newPath.length()) {
+					commonPath = newPath;
+				}
+			}
+		}
+
+		return new File(commonPath);
 	}
 
 }
