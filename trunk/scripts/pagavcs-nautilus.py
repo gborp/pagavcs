@@ -22,14 +22,43 @@ import gobject
 import gnomevfs
 import os
 import sys
+import traceback
 import socket
 import threading
 
 EXECUTABLE = '/usr/bin/pagavcs'
 SEPARATOR = unicode(u'\u2015'*10)
-
-
 server_creating = False
+
+
+def sendRequest(request):
+	global server_creating
+	if (server_creating):
+		#print ("DEBUG server is under creating")
+		return ""
+	try:
+		clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		clientsocket.settimeout(None)
+		clientsocket.connect(("localhost", 12905))                     
+		#print ('sendrequest: '+request)
+		clientsocket.sendall(request+'\n')
+	except (socket.timeout, socket.error):
+		server_creating = True
+		StartPagaVCSServerThread().start()
+		#print ("DEBUG comm error")
+		#traceback.print_exc(file=sys.stdout)
+		return ""
+
+	data = ""
+	try:
+		data = clientsocket.recv(1024)
+	except (socket.timeout, socket.error):
+		#print ("DEBUG comm timeout or error")
+		#traceback.print_exc(file=sys.stdout)
+		return  ""
+	clientsocket.close()
+	return data
+
 
 class StartPagaVCSServerThread (threading.Thread):
 
@@ -51,322 +80,92 @@ class EmblemExtensionSignature(nautilus.InfoProvider):
         pass
         
     def update_file_info (self, file):
-        global server_creating
         filename = urllib.unquote(file.get_uri()[7:])
-        filenameForParam = filename
-        if os.path.isdir(filename):
-            svnpath = filename+'/.svn';
-            (filepath, filename) = os.path.split(filename)
-            svnparentpath = filepath+'/.svn';
-            dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
-            if ((not dosvn) and (os.path.exists(svnpath) and os.path.isdir(svnpath))):
-                file.add_emblem ('pagavcs-svn')
-                return
-        else:
-            (filepath, filename) = os.path.split(filename)
-            svnparentpath = filepath+'/.svn';
-            dosvn = os.path.exists(svnparentpath) and os.path.isdir(svnparentpath)
-            
-        if (dosvn):
-            if (server_creating):
-                file.add_emblem ('pagavcs-svn')
-                return
-            try:
-                clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                clientsocket.settimeout(1)
-                clientsocket.connect(("localhost", 12905))                     
-                clientsocket.sendall("getfileinfo "+filenameForParam+"\n")
-            except (socket.timeout, socket.error):
-                server_creating = True
-	        StartPagaVCSServerThread().start()
-        	file.add_emblem ('pagavcs-svn')
-                return
+        data = sendRequest('getfileinfo '+filename)
+        if (data != ''):
+            file.add_emblem (data)           
 
-            data = ""
-            try:
-                data = clientsocket.recv(16)
-            except (socket.timeout, socket.error):
-	        file.add_emblem ('pagavcs-svn')
-                return  
-            clientsocket.close()
-            if (data != ""):
-                file.add_emblem (data)           
 
 class PagaVCS(nautilus.MenuProvider):
     def __init__(self):
         #self.client = gconf.client_get_default()
         pass
         
-    def _is_versioned(self, file):
-        filename = urllib.unquote(file.get_uri()[7:])
-        return self._is_versioned_filename(filename)
+    def _do_command(self, menu, strFiles, command):
+       sendRequest(command+' '+strFiles)
         
-    def _is_versioned_filename(self, filename):
-        if os.path.isdir(filename):
-            svnpath = filename+'/.svn';
+    def _get_all_items(self, toolbar, strFiles):
+        if (not toolbar):
+            folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
+            folderitem.set_property('icon', 'pagavcs-logo')
+            submenu = nautilus.Menu()
+            folderitem.set_submenu(submenu)
+            actionNamePostfix = ''
         else:
-            (filepath, filename) = os.path.split(filename)
-            svnpath = filepath+'/.svn';
+            lstItems = []
+            actionNamePostfix = '-tb'
+        
+        
+        menuItemsString = ''
+        menuItemsString = sendRequest('getmenuitems '+strFiles)
+        menuItems = menuItemsString.split('\n')
+
+        i = 0
+        while (i < (len(menuItems) - 1)):
+            if (toolbar):
+                 if (menuItems[i+4] != 't'):
+                      i = i + 6
+                      continue
             
-        return (os.path.exists(svnpath) and os.path.isdir(svnpath))
-        
-    def _is_parentdir_versioned(self, file):
-        dirname = urllib.unquote(file.get_uri()[7:])
-        if not os.path.isdir(dirname):
-            (filepath, filename) = os.path.split(filename)
-            dirname=filepath
-        parentdir = os.path.normpath(os.path.join(dirname, '..'))
-        return parentdir != dirname and self._is_versioned_filename(parentdir)
-
-    def _do_command(self, file, command):
-        filename = urllib.unquote(file.get_uri()[7:])
-        executeCommand = EXECUTABLE+' '+command+' "'+filename+'" &'    
-        os.system(executeCommand)
-        
-    def update_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'update')
-
-    def commit_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'commit')
-        
-    def log_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'log')
-
-    def ignore_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'ignore')
-    
-    def unignore_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'unignore')
-    
-    def delete_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'delete')
-        
-    def revert_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'revert')
-    
-    def checkout_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'checkout')    
-    
-    def cleanup_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'cleanup')
-        
-    def resolve_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'resolve')        
-    
-    def other_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'other')
-    
-    def settings_menu_activate_cb(self, menu, file):
-        self._do_command(file, 'settings')
-        
-    def _get_all_items(self, file):
-        folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
-        folderitem.set_property('icon', 'pagavcs-logo')
-        submenu = nautilus.Menu()
-        folderitem.set_submenu(submenu)    
+            item = nautilus.MenuItem(menuItems[i]+actionNamePostfix, menuItems[i+1], menuItems[i+2])
+            item.set_property('icon', menuItems[i+3])
             
-        item = nautilus.MenuItem('NautilusPython::update_file_item',
-                                 'Update' ,
-                                 'Update %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-update')
-        item.connect('activate', self.update_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::commit_file_item',
-                                 'Commit' ,
-                                 'Commit %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-commit') 
-        item.connect('activate', self.commit_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::log_file_item',
-                                 'Log' ,
-                                 'Log %s' % file.get_name())
-        item.connect('activate', self.log_menu_activate_cb, file)
-        item.set_property('icon', 'pagavcs-log')
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::ignore_file_item',
-                                 'Ignore' ,
-                                 'Ignore %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-ignore')
-        item.connect('activate', self.ignore_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::unignore_file_item',
-                                 'Unignore' ,
-                                 'Unignore %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-unignore')
-        item.connect('activate', self.unignore_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::delete_file_item',
-                                 'Delete' ,
-                                 'Delete %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-delete')
-        item.connect('activate', self.delete_menu_activate_cb, file)
-        submenu.append_item(item)
-                
-        item = nautilus.MenuItem('NautilusPython::revert_file_item',
-                                 'Revert' ,
-                                 'Revert In %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-revert')
-        item.connect('activate', self.revert_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::checkout_file_item',
-                                 'Checkout' ,
-                                 'Checkout %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-checkout')
-        item.connect('activate', self.checkout_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::cleanup_file_item',
-                                 'Cleanup' ,
-                                 'Cleanup %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-cleanup')
-        item.connect('activate', self.cleanup_menu_activate_cb, file)        
-        submenu.append_item(item)
-        
-        # TODO only for conflicted items. also include use theirs and use mine option
-        item = nautilus.MenuItem('NautilusPython::resolve_file_item',
-                                 'Resolve conflict' ,
-                                 'Resolve conflict %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-resolve')
-        item.connect('activate', self.resolve_menu_activate_cb, file)        
-        submenu.append_item(item)
-
-        item = nautilus.MenuItem('NautilusPython::other_file_item',
-                                 'Other' ,
-                                 'Other %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-other')
-        item.connect('activate', self.other_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::settings_file_item',
-                                 'Settings' ,
-                                 'Settings')
-        item.set_property('icon', 'pagavcs-settings')
-        item.connect('activate', self.settings_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        return folderitem,    
-    
-    def _get_unversioned_but_parent_is_versioned_items(self, file):
-    	folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
-    	folderitem.set_property('icon', 'pagavcs-logo')
-        submenu = nautilus.Menu()
-        folderitem.set_submenu(submenu)    
             
-        item = nautilus.MenuItem('NautilusPython::ignore_file_item',
-                                 'Ignore' ,
-                                 'Ignore %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-ignore')
-        item.connect('activate', self.ignore_menu_activate_cb, file)
-        submenu.append_item(item)
+            item.connect('activate', self._do_command, strFiles, menuItems[i+5])
+            if (not toolbar):
+                submenu.append_item(item)
+            else:
+                lstItems.append(item)
+            i = i + 6
         
-        item = nautilus.MenuItem('NautilusPython::unignore_file_item',
-                                 'Unignore' ,
-                                 'Unignore %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-unignore')
-        item.connect('activate', self.unignore_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::delete_file_item',
-                                 'Delete' ,
-                                 'Delete %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-delete')
-        item.connect('activate', self.unignore_menu_activate_cb, file)
-        submenu.append_item(item)
-                
-        item = nautilus.MenuItem('NautilusPython::revert_file_item',
-                                 'Revert' ,
-                                 'Revert %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-revert')
-        item.connect('activate', self.revert_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::settings_file_item',
-                                 'Settings' ,
-                                 'Settings')
-        item.set_property('icon', 'pagavcs-settings')
-        item.connect('activate', self.settings_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        return folderitem, 
+        if (not toolbar):
+            return folderitem,    
+        else:
+            return lstItems
     
-    def _get_full_unversioned_items(self, file):
-        folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
-        folderitem.set_property('icon', 'pagavcs-logo')
-        submenu = nautilus.Menu()
-        folderitem.set_submenu(submenu)    
-            
-        item = nautilus.MenuItem('NautilusPython::checkout_file_item',
-                                 'Checkout' ,
-                                 'Checkout %s' % file.get_name())
-        item.set_property('icon', 'pagavcs-checkout')
-        item.connect('activate', self.checkout_menu_activate_cb, file)
-        submenu.append_item(item)
-        
-        item = nautilus.MenuItem('NautilusPython::settings_file_item',
-                                 'Settings' ,
-                                 'Settings')
-        item.set_property('icon', 'pagavcs-settings')
-        item.connect('activate', self.settings_menu_activate_cb, file)
-
-        submenu.append_item(item)
-        
-        return folderitem, 
     
     def get_file_items(self, window, files):
-        if len(files) != 1:
+    
+        if (len(files)<1):
             return
+    
+        strFilesList = []
+        for file in files:
+            if file.get_uri_scheme() != 'file':        
+                return
+            filename = urllib.unquote(file.get_uri()[7:])
+            strFilesList.append('"')
+            strFilesList.append(filename)
+            strFilesList.append('" ')
         
-        file = files[0]
-        # not file.is_directory() or 
-        if file.get_uri_scheme() != 'file':        
-            return
-            
-        if not self._is_versioned(file):
-            if self._is_parentdir_versioned(file):
-                 return self._get_unversioned_but_parent_is_versioned_items(file)
-            else:
-                 return self._get_full_unversioned_items(file)
-        else:
-            return self._get_all_items(file)
+        strFiles = ''.join(strFilesList)
+
+        #print ('get_file_items: '+strFiles)
+
+        return self._get_all_items(False, strFiles)
 
     def get_background_items(self, window, file):
     
         if file.get_uri_scheme() != 'file':        
             return
-        if not self._is_versioned(file):
-            if self._is_parentdir_versioned(file):
-                 return self._get_unversioned_but_parent_is_versioned_items(file)
-            else:
-                 return self._get_full_unversioned_items(file)
-        else:
-            return self._get_all_items(file)
+        filename = urllib.unquote(file.get_uri()[7:])
+        
+            
+        return self._get_all_items(False, '"'+filename+'"')
         
     def get_toolbar_items(self, window, file):
-        if not self._is_versioned(file):
-             return
-                     
-        item1 = nautilus.MenuItem('NautilusPython::tb_update_file_item',
-                                 'Update' ,
-                                 'Update %s' % file.get_name())
-        item1.set_property('icon', 'pagavcs-update')                                 
-        item1.connect('activate', self.update_menu_activate_cb, file)
-        
-        item2 = nautilus.MenuItem('NautilusPython::tb_commit_file_item',
-                                 'Commit' ,
-                                 'Commit %s' % file.get_name())
-        item2.set_property('icon', 'pagavcs-commit') 
-        item2.connect('activate', self.commit_menu_activate_cb, file)      
-        
-        item3 = nautilus.MenuItem('NautilusPython::tb_log_file_item',
-                                 'Log' ,
-                                 'Log %s' % file.get_name())
-        item3.set_property('icon', 'pagavcs-log')                                 
-        item3.connect('activate', self.log_menu_activate_cb, file)
-                             
-        return item1, item2, item3
+        if file.get_uri_scheme() != 'file':        
+            return
+        filename = urllib.unquote(file.get_uri()[7:])
+            
+        return self._get_all_items(True, '"'+filename+'"')
