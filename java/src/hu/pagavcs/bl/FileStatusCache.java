@@ -28,7 +28,7 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 public class FileStatusCache {
 
 	public enum STATUS {
-		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE,
+		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE, UNVERSIONED,
 	}
 
 	private static final int                 CACHE_SIZE    = 1000;
@@ -89,7 +89,7 @@ public class FileStatusCache {
 		} else if (contentStatus.equals(SVNStatusType.STATUS_OBSTRUCTED)) {
 			result = STATUS.OBSTRUCTED;
 		} else if (contentStatus.equals(SVNStatusType.STATUS_UNVERSIONED)) {
-			result = STATUS.NONE;
+			result = STATUS.UNVERSIONED;
 		} else {
 			result = STATUS.SVNED;
 		}

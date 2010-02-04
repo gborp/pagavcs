@@ -68,7 +68,7 @@ then
 fi
 
 echo "send command to PagaVCS-server: $@"
-echo "$@" > /dev/tcp/localhost/12905 2> /dev/null
+echo $@ > /dev/tcp/localhost/12905 2> /dev/null
 RETVAL=$?
 if [ $RETVAL != 0 ];
 then

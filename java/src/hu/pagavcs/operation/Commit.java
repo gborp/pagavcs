@@ -7,6 +7,7 @@ import hu.pagavcs.gui.CommitGui;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -156,7 +157,7 @@ public class Commit {
 					int choosed = JOptionPane
 					        .showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Error", JOptionPane.YES_NO_OPTION);
 					if (choosed == JOptionPane.YES_OPTION) {
-						Update update = new Update(path);
+						Update update = new Update(Arrays.asList(path));
 						update.execute();
 					} else {
 						gui.setStatus(CommitStatus.CANCEL, null);

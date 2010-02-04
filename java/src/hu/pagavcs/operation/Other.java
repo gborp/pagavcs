@@ -10,6 +10,7 @@ import hu.pagavcs.gui.UpdateGui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -241,7 +242,7 @@ public class Other implements Cancelable {
 		} else {
 			revision = SVNRevision.create(Long.valueOf(toRevision));
 		}
-		Update update = new Update(wc);
+		Update update = new Update(Arrays.asList(wc));
 		update.setUpdateToRevision(revision);
 		update.execute();
 	}
