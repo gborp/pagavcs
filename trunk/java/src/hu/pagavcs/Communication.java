@@ -3,6 +3,7 @@ package hu.pagavcs;
 import hu.pagavcs.bl.FileStatusCache;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.FileStatusCache.STATUS;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Commit;
@@ -335,6 +336,12 @@ public class Communication {
 			this.lstArg = lstArg;
 		}
 
+		private void warningIfMultiSelection() {
+			if (lstArg.size() > 1) {
+				MessagePane.showWarning(null, "Only on first selected", "THe operation is executed only on the first selected element.");
+			}
+		}
+
 		public void run() {
 			try {
 
@@ -342,36 +349,46 @@ public class Communication {
 					Update update = new Update(lstArg);
 					update.execute();
 				} else if ("log".equals(command)) {
+					warningIfMultiSelection();
 					Log showlog = new Log(lstArg.get(0));
 					showlog.execute();
 				} else if ("commit".equals(command)) {
+					warningIfMultiSelection();
 					Commit commit = new Commit(lstArg.get(0));
 					commit.execute();
 				} else if ("ignore".equals(command)) {
+					warningIfMultiSelection();
 					Ignore ignore = new Ignore(lstArg.get(0));
 					ignore.execute();
 				} else if ("unignore".equals(command)) {
+					warningIfMultiSelection();
 					Unignore unignore = new Unignore(lstArg.get(0));
 					unignore.execute();
 				} else if ("revert".equals(command)) {
+					warningIfMultiSelection();
 					Revert revert = new Revert(lstArg.get(0));
 					revert.execute();
 				} else if ("cleanup".equals(command)) {
+					warningIfMultiSelection();
 					Cleanup cleanup = new Cleanup(lstArg.get(0));
 					cleanup.execute();
 				} else if ("delete".equals(command)) {
+					warningIfMultiSelection();
 					Delete delete = new Delete(lstArg.get(0));
 					delete.execute();
 				} else if ("other".equals(command)) {
+					warningIfMultiSelection();
 					Other other = new Other(lstArg.get(0));
 					other.execute();
 				} else if ("checkout".equals(command)) {
+					warningIfMultiSelection();
 					Checkout checkout = new Checkout(lstArg.get(0));
 					checkout.execute();
 				} else if ("settings".equals(command)) {
 					Settings settings = new Settings();
 					settings.execute();
 				} else if ("resolve".equals(command)) {
+					warningIfMultiSelection();
 					ResolveConflict resolve = new ResolveConflict(null, lstArg.get(0), false);
 					resolve.execute();
 				} else if ("stop".equals(command)) {
