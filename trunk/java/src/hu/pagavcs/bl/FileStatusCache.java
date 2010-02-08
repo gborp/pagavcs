@@ -150,7 +150,12 @@ public class FileStatusCache {
 				}
 			}
 			synchronized (mapCache) {
-				return mapCache.get(file).status;
+				StatusSlot slot = mapCache.get(file);
+				if (mapCache.get(file) != null) {
+					return slot.status;
+				} else {
+					return STATUS.NONE;
+				}
 
 			}
 		} else {
