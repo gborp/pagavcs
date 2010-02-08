@@ -95,7 +95,7 @@ public class Update implements Cancelable {
 					updateClient.doUpdate(lstFile.toArray(new File[0]), updateToRevision, SVNDepth.INFINITY, true, true);
 					successOrExit = true;
 				} catch (SVNCancelException ex) {
-					// do nothing
+					successOrExit = true;
 				} catch (SVNException ex) {
 					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 					if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
