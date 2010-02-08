@@ -70,6 +70,7 @@ public class ResolveConflictGui {
 	private SimpleAttributeSet  setMixedText;
 	private SimpleAttributeSet  setOriginal;
 	private JButton             btnReload;
+	private JButton             btnNextConflict;
 	private JButton             btnSaveResolved;
 	private Window              frame;
 	private final Refreshable   parentRefreshable;
@@ -94,7 +95,7 @@ public class ResolveConflictGui {
 					return;
 				}
 
-				FormLayout layout = new FormLayout("p,1dlu:g, p", "p,4dlu,fill:10dlu:g,4dlu,p");
+				FormLayout layout = new FormLayout("p,1dlu:g,p,4dlu,p", "p,4dlu,fill:10dlu:g,4dlu,p");
 				JPanel pnlMain = new JPanel(layout);
 				CellConstraints cc = new CellConstraints();
 
@@ -105,12 +106,14 @@ public class ResolveConflictGui {
 				GuiHelper.addUndoRedo(tpConflict);
 				JScrollPane spConflict = new JScrollPane(tpConflict);
 				btnReload = new JButton(new ReloadAction());
+				btnNextConflict = new JButton(new GotoNextConflictAction());
 				btnSaveResolved = new JButton(new SaveResolvedAction());
 
-				pnlMain.add(new Label(mixedFile.getPath()), cc.xywh(1, 1, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
-				pnlMain.add(spConflict, cc.xywh(1, 3, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+				pnlMain.add(new Label(mixedFile.getPath()), cc.xywh(1, 1, 5, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+				pnlMain.add(spConflict, cc.xywh(1, 3, 5, 1, CellConstraints.FILL, CellConstraints.FILL));
 				pnlMain.add(btnReload, cc.xy(1, 5));
-				pnlMain.add(btnSaveResolved, cc.xy(3, 5));
+				pnlMain.add(btnNextConflict, cc.xy(3, 5));
+				pnlMain.add(btnSaveResolved, cc.xy(5, 5));
 
 				setNormalText = new SimpleAttributeSet();
 				setNormalText.addAttribute(ATTRIBUTE_TYPE_KEY, ATTRIBUTE_NORMAL);
@@ -145,6 +148,7 @@ public class ResolveConflictGui {
 	}
 
 	private void reload() throws Exception {
+		btnNextConflict.setEnabled(true);
 		String strMixed = Manager.loadFileToString(mixedFile);
 		String[] lines = strMixed.split("\n");
 
@@ -155,18 +159,12 @@ public class ResolveConflictGui {
 		boolean originalStarted = false;
 		boolean conflictOtherBlock = false;
 
-		Integer firstConflictPos = null;
-		Integer firstConflictPosEnd = null;
-
 		for (String line : lines) {
 
 			if (line.startsWith("<<<<<<<")) {
 				conflictStarted = true;
 				originalStarted = false;
 				conflictOtherBlock = false;
-				if (firstConflictPos == null) {
-					firstConflictPos = doc.getLength();
-				}
 				continue;
 			} else if (line.equals("|||||||")) {
 				conflictStarted = false;
@@ -182,9 +180,7 @@ public class ResolveConflictGui {
 				conflictStarted = false;
 				originalStarted = false;
 				conflictOtherBlock = false;
-				if (firstConflictPosEnd == null) {
-					firstConflictPosEnd = doc.getLength();
-				}
+
 				continue;
 			}
 
@@ -202,12 +198,53 @@ public class ResolveConflictGui {
 			doc.insertString(doc.getLength(), line + "\n", setActual);
 		}
 
-		if (firstConflictPosEnd != null) {
-			new SetCaret(firstConflictPosEnd);
+		nextConflict(0);
+	}
+
+	private void nextConflict(int initialPos) throws Exception {
+		Document doc = tpConflict.getStyledDocument();
+
+		int pos = initialPos;
+		while (pos < doc.getLength() && !tpConflict.getAttributeType(pos).equals(ATTRIBUTE_NORMAL)) {
+			pos++;
 		}
-		if (firstConflictPos != null) {
-			new SetCaret(firstConflictPos);
+		if (pos >= doc.getLength()) {
+			pos = 0;
+			while (pos < initialPos && !tpConflict.getAttributeType(pos).equals(ATTRIBUTE_NORMAL)) {
+				pos++;
+			}
 		}
+		while (pos < doc.getLength() && tpConflict.getAttributeType(pos).equals(ATTRIBUTE_NORMAL)) {
+			pos++;
+		}
+		if (pos >= doc.getLength()) {
+			pos = 0;
+			while (pos < initialPos && tpConflict.getAttributeType(pos).equals(ATTRIBUTE_NORMAL)) {
+				pos++;
+			}
+		}
+		int startPos = pos;
+
+		Object startType = tpConflict.getAttributeType(pos);
+		if (startType.equals(ATTRIBUTE_NORMAL) || startType.equals(ATTRIBUTE_MIXED)) {
+			btnNextConflict.setEnabled(false);
+		}
+
+		while (pos < doc.getLength() && tpConflict.getAttributeType(pos).equals(ATTRIBUTE_WORKING)) {
+			pos++;
+		}
+
+		while (pos < doc.getLength() && tpConflict.getAttributeType(pos).equals(ATTRIBUTE_ORIGINAL)) {
+			pos++;
+		}
+
+		while (pos < doc.getLength() && tpConflict.getAttributeType(pos).equals(ATTRIBUTE_THEIRS)) {
+			pos++;
+		}
+		int endPos = pos;
+
+		new SetCaret(endPos);
+		new SetCaret(startPos);
 	}
 
 	private class SetCaret {
@@ -265,6 +302,24 @@ public class ResolveConflictGui {
 
 				protected void process() throws Exception {
 					reload();
+				};
+			}.run();
+
+		}
+
+	}
+
+	private class GotoNextConflictAction extends ThreadAction {
+
+		public GotoNextConflictAction() {
+			super("Next conflict");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					nextConflict(tpConflict.getCaretPosition());
 				};
 			}.run();
 
@@ -357,6 +412,7 @@ public class ResolveConflictGui {
 			doc.setCharacterAttributes(startMineOffset, endMineOffset - startMineOffset, setMixedText, true);
 			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
 			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
+			nextConflict(tp.getCaretPosition());
 		}
 	}
 
@@ -370,6 +426,7 @@ public class ResolveConflictGui {
 			doc.setCharacterAttributes(startMineOffset, endMineOffset - startMineOffset, setMixedText, true);
 			doc.setCharacterAttributes(startTheirsOffset, endTheirsOffset - startTheirsOffset, setMixedText, true);
 			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
+			nextConflict(tp.getCaretPosition());
 		}
 	}
 
@@ -383,6 +440,7 @@ public class ResolveConflictGui {
 			doc.setCharacterAttributes(startTheirsOffset, endTheirsOffset - startTheirsOffset, setMixedText, true);
 			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+			nextConflict(tp.getCaretPosition());
 		}
 	}
 
@@ -397,6 +455,7 @@ public class ResolveConflictGui {
 			doc.insertString(endTheirsOffset, doc.getText(startMineOffset, endMineOffset - startMineOffset), setMixedText);
 			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+			nextConflict(tp.getCaretPosition());
 		}
 
 	}
@@ -411,6 +470,7 @@ public class ResolveConflictGui {
 			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
 			doc.remove(startOriginalOffset, endOriginalOffset - startOriginalOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+			nextConflict(tp.getCaretPosition());
 		}
 	}
 
@@ -423,6 +483,7 @@ public class ResolveConflictGui {
 		public void doBlockEdit(StyledDocument doc) throws Exception {
 			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+			nextConflict(tp.getCaretPosition());
 		}
 	}
 
