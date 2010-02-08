@@ -418,7 +418,6 @@ public class Manager {
 	}
 
 	public static File getCommonBaseDir(List<File> lstFiles) {
-		String commonPath = null;
 		List<List<String>> lstPathLists = new ArrayList<List<String>>();
 		for (File file : lstFiles) {
 			if (!file.isDirectory()) {
