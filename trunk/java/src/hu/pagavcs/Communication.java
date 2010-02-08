@@ -175,6 +175,7 @@ public class Communication {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
 						new Thread(new ProcessInput(command, lstArg), line).start();
+						outComm(socket, "ok. processing...");
 					}
 				}
 
