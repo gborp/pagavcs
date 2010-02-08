@@ -140,6 +140,8 @@ public class Commit {
 			try {
 				commitClient.doCommit(lstCommit.toArray(new File[] {}), true, message, null, null, true, false, SVNDepth.INFINITY);
 				successOrExit = true;
+			} catch (SVNCancelException ex) {
+				successOrExit = true;
 			} catch (SVNException ex) {
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 				if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
