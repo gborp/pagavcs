@@ -52,7 +52,7 @@ public class Update implements Cancelable {
 			lstFile.add(new File(fileName));
 		}
 		baseDir = Manager.getCommonBaseDir(lstFile);
-		if (!FileStatusCache.getInstance().getStatus(baseDir).equals(STATUS.NONE)) {
+		if (FileStatusCache.getInstance().getStatus(baseDir).equals(STATUS.NONE)) {
 			baseDirIsNotSvned = true;
 		}
 		setCancel(false);
