@@ -263,7 +263,12 @@ public class OtherGui implements Working, Cancelable {
 		int choosed = fc.showSaveDialog(window);
 		if (choosed == JFileChooser.APPROVE_OPTION) {
 
-			final File baseDir = new File(path);
+			File baseDirCandiate = new File(path);
+			if (!baseDirCandiate.isDirectory()) {
+				baseDirCandiate = baseDirCandiate.getParentFile();
+			}
+
+			final File baseDir = baseDirCandiate;
 			File file = fc.getSelectedFile();
 
 			String result = Manager.getOsCommandResult(baseDir, "lsdiff", file.getPath());
@@ -310,7 +315,7 @@ public class OtherGui implements Working, Cancelable {
 						new File(baseDir, fileName + ".porig").delete();
 					}
 				};
-				ResolveConflict resolveConflict = new ResolveConflict(li, path + "/" + fileName, true);
+				ResolveConflict resolveConflict = new ResolveConflict(li, baseDir.getPath() + "/" + fileName, true);
 				resolveConflict.execute();
 			}
 		}
