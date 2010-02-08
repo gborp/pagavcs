@@ -20,6 +20,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 
@@ -417,22 +419,57 @@ public class Manager {
 
 	public static File getCommonBaseDir(List<File> lstFiles) {
 		String commonPath = null;
+		List<List<String>> lstPathLists = new ArrayList<List<String>>();
 		for (File file : lstFiles) {
 			if (!file.isDirectory()) {
 				file = file.getParentFile();
 			}
-			String newPath = file.getPath();
 
-			if (commonPath == null) {
-				commonPath = newPath;
-			} else {
-				if (commonPath.length() > newPath.length()) {
-					commonPath = newPath;
-				}
+			LinkedList<String> lstPath = new LinkedList<String>();
+			String li = file.getName();
+			lstPath.add(li);
+			File parent = file.getParentFile();
+			while (parent != null) {
+				lstPath.add(0, parent.getName());
+				parent = parent.getParentFile();
 			}
+			lstPathLists.add(lstPath);
 		}
 
-		return new File(commonPath);
+		ArrayList<String> lstCommonPath = new ArrayList<String>();
+
+		int i = 0;
+
+		boolean match = true;
+		while (match) {
+			String pathLi = null;
+			for (List<String> lstLi : lstPathLists) {
+				if (lstLi.size() <= i) {
+					match = false;
+					break;
+				}
+				String newPathLi = lstLi.get(i);
+				if (pathLi == null || pathLi.equals(newPathLi)) {
+					pathLi = newPathLi;
+				} else {
+					match = false;
+					break;
+				}
+			}
+			if (match) {
+				lstCommonPath.add(pathLi);
+			}
+			i++;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(File.separatorChar);
+		for (String li : lstCommonPath) {
+			sb.append(li);
+			sb.append(File.separatorChar);
+		}
+
+		return new File(sb.toString());
 	}
 
 }
