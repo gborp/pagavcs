@@ -1,3 +1,16 @@
+pagavcs (1.3.33ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * new: issue #15 [resolve conflict gui] goto next/previous conflict buttons  --- only next conflict button
+  * fix: issue #27 Nautilus is sometimes just froze
+  * fix: issue#19 fix displaying "multiply repos": only if necessery
+  * fix: issue#19 display warning message if multiply element is selected, but the selected operation doesn't (yet) support it
+  * fix: [update, commit] properly exit on close or cancel
+  * fix: fix NPE exception in FileStatusCache if a file is just deleted
+  * fix: fix apply patch and conflict handling on file not directory
+  
+ -- papaigabor <pagavcs@gmail.com>  Mon, 09 Feb 2010 23:50:00 +0500
+
 pagavcs (1.3.32ubuntu) karmic; urgency=low
 
   [ papaigabor ]
