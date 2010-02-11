@@ -157,11 +157,10 @@ public class Commit {
 						successOrExit = true;
 					}
 				} else if (SVNErrorCode.FS_TXN_OUT_OF_DATE.equals(errorCode)) {
-					File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
-					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need for " + file.getPath() + ", do update now?",
-					        "Update is needed", JOptionPane.YES_NO_OPTION);
+					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Update is needed",
+					        JOptionPane.YES_NO_OPTION);
 					if (choosed == JOptionPane.YES_OPTION) {
-						Update update = new Update(Arrays.asList(file.getPath()));
+						Update update = new Update(Arrays.asList(path));
 						update.execute();
 					} else {
 						gui.setStatus(CommitStatus.CANCEL, null);
