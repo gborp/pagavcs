@@ -145,10 +145,11 @@ public class Commit {
 			} catch (SVNException ex) {
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 				if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
-					        JOptionPane.YES_NO_OPTION);
+					File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
+					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
+					        "Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
 					if (choosed == JOptionPane.YES_OPTION) {
-						Cleanup cleanup = new Cleanup(path);
+						Cleanup cleanup = new Cleanup(file.getPath());
 						cleanup.setAutoClose(true);
 						cleanup.execute();
 					} else {
@@ -156,10 +157,11 @@ public class Commit {
 						successOrExit = true;
 					}
 				} else if (SVNErrorCode.FS_TXN_OUT_OF_DATE.equals(errorCode)) {
-					int choosed = JOptionPane
-					        .showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Error", JOptionPane.YES_NO_OPTION);
+					File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
+					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need for " + file.getPath() + ", do update now?",
+					        "Update is needed", JOptionPane.YES_NO_OPTION);
 					if (choosed == JOptionPane.YES_OPTION) {
-						Update update = new Update(Arrays.asList(path));
+						Update update = new Update(Arrays.asList(file.getPath()));
 						update.execute();
 					} else {
 						gui.setStatus(CommitStatus.CANCEL, null);
