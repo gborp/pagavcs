@@ -1,3 +1,12 @@
+pagavcs (1.3.35ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * fix: [revolve conflict gui] various bug fixes
+  * fix: issue #28 [log] double click on DELETED results exception
+  * add gedit to package dependency (for displaying "changes" of deleted and added files)
+  
+ -- papaigabor <pagavcs@gmail.com>  Tue, 11 Feb 2010 23:47:00 +0500
+
 pagavcs (1.3.34ubuntu) karmic; urgency=low
 
   [ papaigabor ]
