@@ -8,7 +8,7 @@ Homepage: http://pagavcs.googlecode.com
 
 Package: pagavcs
 Architecture: all
-Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme, zenity, wiggle
+Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme, zenity, wiggle, gedit
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
  It's written in Java and Python (Nautilus-integration).
