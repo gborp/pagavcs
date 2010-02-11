@@ -452,11 +452,11 @@ public class LogGui implements Working {
 				LogListItem liLog = getSelectedLogItem();
 				for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
 					if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-						log.showDirChanges(liDetail.getPath(), liLog.getRevision());
+						log.showDirChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
 					} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-						log.showChanges(liDetail.getPath(), liLog.getRevision());
+						log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
 					} else {
-						log.showChanges(liDetail.getPath(), liLog.getRevision());
+						log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
 					}
 				}
 			} finally {

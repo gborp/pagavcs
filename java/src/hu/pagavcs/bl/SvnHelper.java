@@ -212,7 +212,8 @@ public class SvnHelper {
 		fileWorking.delete();
 	}
 
-	public static void showPropertyChangesFromRepo(Working working, SVNURL svnUrl, long revision1, long revision2) throws Exception {
+	public static void showPropertyChangesFromRepo(Working working, SVNURL svnUrl, long revision1, long revision2, ContentStatus contentStatus)
+	        throws Exception {
 		working.workStarted();
 		String strBase = propertyListToString(showPropertyChangesFromBase(working, svnUrl, SVNRevision.HEAD, SVNRevision.create(revision1)));
 		String strWorking = propertyListToString(showPropertyChangesFromBase(working, svnUrl, SVNRevision.HEAD, SVNRevision.create(revision2)));
