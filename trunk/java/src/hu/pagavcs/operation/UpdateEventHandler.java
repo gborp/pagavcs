@@ -52,9 +52,7 @@ public class UpdateEventHandler implements ISVNEventHandler {
 
 			String fileName = event.getFile() != null ? event.getFile().getAbsolutePath() : null;
 			if (SVNEventAction.UPDATE_NONE.equals(action)) {
-
 				gui.addItem(fileName, updateContentStatus, ContentStatus.NONE);
-
 			} else if (SVNEventAction.UPDATE_ADD.equals(action)) {
 				gui.addItem(fileName, updateContentStatus, ContentStatus.ADDED);
 			} else if (SVNEventAction.UPDATE_DELETE.equals(action)) {
