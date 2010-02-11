@@ -28,9 +28,9 @@ public class PreviousRevisionFetcher {
 	public void execute(SVNURL svnUrl, long revision) throws SVNException, PagaException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl);
 		SVNLogClient logClient = mgrSvn.getLogClient();
-		SVNRevision startRevision = SVNRevision.create(revision);
+		SVNRevision startRevision = SVNRevision.create(revision - 1);
 		SVNRevision endRevision = SVNRevision.create(0);
-		SVNRevision pegRevision = SVNRevision.UNDEFINED;
+		SVNRevision pegRevision = startRevision;
 		boolean stopOnCopy = false;
 		boolean discoverChangedPaths = true;
 		boolean includeMergedRevisions = false;

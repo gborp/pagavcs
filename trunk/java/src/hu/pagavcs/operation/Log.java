@@ -121,15 +121,18 @@ public class Log implements Cancelable {
 		return rootUrl;
 	}
 
-	public void showDirChanges(String showChangesPath, long revision) throws Exception {
+	public void showDirChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
 		SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
 		SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
 		        + showChangesPath, true);
-		long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
-		SvnHelper.showPropertyChangesFromRepo(gui, svnUrl, revision, previousRevision);
+		long previousRevision = -1;
+		if (!contentStatus.equals(ContentStatus.ADDED)) {
+			previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
+		}
+		SvnHelper.showPropertyChangesFromRepo(gui, svnUrl, revision, previousRevision, contentStatus);
 	}
 
-	public void showChanges(String showChangesPath, long revision) throws Exception {
+	public void showChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
 
 		FileOutputStream outNewRevision = null;
 		FileOutputStream outOldRevision = null;
@@ -142,7 +145,10 @@ public class Log implements Cancelable {
 			        + showChangesPath, true);
 			SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
 			SVNWCClient wcClient = mgrSvn.getWCClient();
-			long previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
+			long previousRevision = -1;
+			if (!contentStatus.equals(ContentStatus.ADDED)) {
+				previousRevision = Manager.getPreviousRevisionNumber(svnUrl, revision);
+			}
 
 			String fileName = showChangesPath.substring(showChangesPath.lastIndexOf('/') + 1);
 
@@ -157,9 +163,13 @@ public class Log implements Cancelable {
 			outNewRevision = new FileOutputStream(tempPrefix + fileNameNew);
 			outOldRevision = new FileOutputStream(tempPrefix + fileNameOld);
 
-			wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, SVNRevision.create(revision), false, outNewRevision);
+			if (!contentStatus.equals(ContentStatus.DELETED)) {
+				wcClient.doGetFileContents(svnUrl, SVNRevision.create(revision), SVNRevision.create(revision), false, outNewRevision);
+			}
 
-			wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, SVNRevision.create(previousRevision), false, outOldRevision);
+			if (!contentStatus.equals(ContentStatus.ADDED)) {
+				wcClient.doGetFileContents(svnUrl, SVNRevision.create(previousRevision), SVNRevision.create(previousRevision), false, outOldRevision);
+			}
 
 			outNewRevision.close();
 			outOldRevision.close();
@@ -168,8 +178,15 @@ public class Log implements Cancelable {
 			fileNew.deleteOnExit();
 			fileOld.setReadOnly();
 			fileOld.deleteOnExit();
-			ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileNameOld, tempPrefix + fileNameOld, "-L " + fileNameNew, tempPrefix
-			        + fileNameNew);
+
+			ProcessBuilder processBuilder;
+			if (contentStatus.equals(ContentStatus.DELETED)) {
+				processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameOld);
+			} else if (contentStatus.equals(ContentStatus.ADDED)) {
+				processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameNew);
+			} else {
+				processBuilder = new ProcessBuilder("meld", "-L " + fileNameOld, tempPrefix + fileNameOld, "-L " + fileNameNew, tempPrefix + fileNameNew);
+			}
 			Process process = processBuilder.start();
 			gui.workEnded();
 			process.waitFor();
