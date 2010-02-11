@@ -99,10 +99,11 @@ public class Update implements Cancelable {
 				} catch (SVNException ex) {
 					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 					if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
-						        JOptionPane.YES_NO_OPTION);
+						File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
+						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
+						        "Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
-							Cleanup cleanup = new Cleanup(baseDir.getPath());
+							Cleanup cleanup = new Cleanup(file.getPath());
 							cleanup.setAutoClose(true);
 							cleanup.execute();
 						} else {
