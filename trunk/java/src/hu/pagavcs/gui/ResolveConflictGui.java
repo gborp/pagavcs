@@ -53,6 +53,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ResolveConflictGui {
 
 	private static final String ATTRIBUTE_TYPE_KEY = "PAGAVCS-CONFLICT";
+	private static final String ATTRIBUTE_BLOCK_ID = "PAGAVCS-BLOCKID";
 	private static final String ATTRIBUTE_NORMAL   = "normal";
 	private static final String ATTRIBUTE_ORIGINAL = "original";
 	private static final String ATTRIBUTE_WORKING  = "working";
@@ -155,44 +156,27 @@ public class ResolveConflictGui {
 		Document doc = tpConflict.getStyledDocument();
 		doc.remove(0, doc.getLength());
 
-		boolean conflictStarted = false;
-		boolean originalStarted = false;
-		boolean conflictOtherBlock = false;
+		Integer blockId = 0;
+		SimpleAttributeSet setActual = setNormalText;
 
 		for (String line : lines) {
 
 			if (line.startsWith("<<<<<<<")) {
-				conflictStarted = true;
-				originalStarted = false;
-				conflictOtherBlock = false;
+				blockId++;
+				setActual = (SimpleAttributeSet) setConflictWorking.clone();
+				setActual.addAttribute(ATTRIBUTE_BLOCK_ID, blockId);
 				continue;
 			} else if (line.equals("|||||||")) {
-				conflictStarted = false;
-				originalStarted = true;
-				conflictOtherBlock = false;
+				setActual = (SimpleAttributeSet) setOriginal.clone();
+				setActual.addAttribute(ATTRIBUTE_BLOCK_ID, blockId);
 				continue;
 			} else if (line.equals("=======")) {
-				conflictStarted = false;
-				originalStarted = false;
-				conflictOtherBlock = true;
+				setActual = (SimpleAttributeSet) setConflictTheirs.clone();
+				setActual.addAttribute(ATTRIBUTE_BLOCK_ID, blockId);
 				continue;
 			} else if (line.startsWith(">>>>>>>")) {
-				conflictStarted = false;
-				originalStarted = false;
-				conflictOtherBlock = false;
-
-				continue;
-			}
-
-			SimpleAttributeSet setActual;
-			if (conflictStarted) {
-				setActual = setConflictWorking;
-			} else if (originalStarted) {
-				setActual = setOriginal;
-			} else if (conflictOtherBlock) {
-				setActual = setConflictTheirs;
-			} else {
 				setActual = setNormalText;
+				continue;
 			}
 
 			doc.insertString(doc.getLength(), line + "\n", setActual);
@@ -366,32 +350,28 @@ public class ResolveConflictGui {
 			StyledDocument doc = (StyledDocument) tp.getDocument();
 
 			startMineOffset = element.getStartOffset();
-			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_THEIRS))) {
+			Object blockId = tp.getBlockId(element);
+			int length = doc.getLength();
+
+			while (startMineOffset > 1 && blockId.equals(tp.getBlockId(startMineOffset - 1))) {
 				startMineOffset--;
 			}
-			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_ORIGINAL))) {
-				startMineOffset--;
-			}
-			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_WORKING))) {
-				startMineOffset--;
-			}
-			while (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_ORIGINAL)) {
-				startMineOffset++;
-			}
+
 			endMineOffset = startMineOffset;
-			while (endMineOffset < doc.getLength() && tp.getAttributeType(endMineOffset).equals(ATTRIBUTE_WORKING)) {
+			while (endMineOffset < length && tp.getAttributeType(endMineOffset).equals(ATTRIBUTE_WORKING) && blockId.equals(tp.getBlockId(endMineOffset))) {
 				endMineOffset++;
 			}
 
 			startOriginalOffset = endMineOffset;
 			endOriginalOffset = startOriginalOffset;
-			while (endOriginalOffset < doc.getLength() && tp.getAttributeType(endOriginalOffset).equals(ATTRIBUTE_ORIGINAL)) {
+			while (endOriginalOffset < length && tp.getAttributeType(endOriginalOffset).equals(ATTRIBUTE_ORIGINAL)
+			        && blockId.equals(tp.getBlockId(endOriginalOffset))) {
 				endOriginalOffset++;
 			}
 
 			startTheirsOffset = endOriginalOffset;
 			endTheirsOffset = startTheirsOffset;
-			while (endTheirsOffset < doc.getLength() && tp.getAttributeType(endTheirsOffset).equals(ATTRIBUTE_THEIRS)) {
+			while (endTheirsOffset < length && tp.getAttributeType(endTheirsOffset).equals(ATTRIBUTE_THEIRS) && blockId.equals(tp.getBlockId(endTheirsOffset))) {
 				endTheirsOffset++;
 			}
 
@@ -481,8 +461,23 @@ public class ResolveConflictGui {
 		}
 
 		public void doBlockEdit(StyledDocument doc) throws Exception {
+			doc.setCharacterAttributes(startOriginalOffset, endOriginalOffset - startOriginalOffset, setMixedText, true);
 			doc.remove(startTheirsOffset, endTheirsOffset - startTheirsOffset);
 			doc.remove(startMineOffset, endMineOffset - startMineOffset);
+			nextConflict(tp.getCaretPosition());
+		}
+	}
+
+	private class UseAllTextBlockAction extends AbstractBlockAction {
+
+		public UseAllTextBlockAction(TextPane tp, Element element) {
+			super(tp, element, "Use all text block");
+		}
+
+		public void doBlockEdit(StyledDocument doc) throws Exception {
+			doc.setCharacterAttributes(startMineOffset, endMineOffset - startMineOffset, setMixedText, true);
+			doc.setCharacterAttributes(startOriginalOffset, endOriginalOffset - startOriginalOffset, setMixedText, true);
+			doc.setCharacterAttributes(startTheirsOffset, endTheirsOffset - startTheirsOffset, setMixedText, true);
 			nextConflict(tp.getCaretPosition());
 		}
 	}
@@ -503,13 +498,16 @@ public class ResolveConflictGui {
 						ppVisible.add(new UseMineTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseMineBeforTheirsTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
+						ppVisible.add(new UseAllTextBlockAction(TextPane.this, element));
 					} else if (type.equals(ATTRIBUTE_THEIRS)) {
 						ppVisible.add(new UseTheirsTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseTheirsBeforeMineTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
+						ppVisible.add(new UseAllTextBlockAction(TextPane.this, element));
 					} else if (type.equals(ATTRIBUTE_ORIGINAL)) {
 						ppVisible.add(new UseOriginalTextBlockAction(TextPane.this, element));
 						ppVisible.add(new UseNoneTextBlockAction(TextPane.this, element));
+						ppVisible.add(new UseAllTextBlockAction(TextPane.this, element));
 					}
 
 					if (ppVisible.getComponentCount() > 0) {
@@ -549,6 +547,16 @@ public class ResolveConflictGui {
 		public Object getAttributeType(int pos) {
 			StyledDocument doc = (StyledDocument) getDocument();
 			return getAttributeType(doc.getCharacterElement(pos));
+		}
+
+		public Object getBlockId(Element element) {
+			AttributeSet charAttributes = element.getAttributes();
+			return charAttributes.getAttribute(ATTRIBUTE_BLOCK_ID);
+		}
+
+		public Object getBlockId(int pos) {
+			StyledDocument doc = (StyledDocument) getDocument();
+			return getBlockId(doc.getCharacterElement(pos));
 		}
 
 		public String getToolTipText(MouseEvent event) {
