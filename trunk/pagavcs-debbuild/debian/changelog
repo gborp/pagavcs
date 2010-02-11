@@ -1,3 +1,12 @@
+pagavcs (1.3.34ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * fix: issue #19 on demand cleanup working copy for the right path
+  * fix: issue #31 [update/merge] show number of changed files correctly
+  * fix: [Checkout Settings] tidy up window layout
+  
+ -- papaigabor <pagavcs@gmail.com>  Tue, 11 Feb 2010 06:51:00 +0500
+
 pagavcs (1.3.33ubuntu) karmic; urgency=low
 
   [ papaigabor ]
