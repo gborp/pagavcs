@@ -6,8 +6,6 @@ import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.operation.Checkout;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,6 +16,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import org.tmatesoft.svn.core.SVNException;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -46,7 +47,8 @@ public class CheckoutGui {
 
 	public void display() throws SVNException {
 
-		JPanel pnlMain = new JPanel(new BorderLayout());
+		CellConstraints cc = new CellConstraints();
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p"));
 
 		Label lblUrl = new Label("Url:");
 		cboUrl = new JComboBox();
@@ -73,16 +75,14 @@ public class CheckoutGui {
 				}).start();
 			}
 		});
-		JPanel pnlInner = new JPanel(new GridLayout(4, 2));
-		pnlInner.add(lblUrl);
-		pnlInner.add(cboUrl);
-		pnlInner.add(lblDir);
-		pnlInner.add(sfDir);
-		pnlInner.add(lblRevison);
-		pnlInner.add(sfRevision);
-		pnlInner.add(btnCheckout);
+		pnlMain.add(lblUrl, cc.xy(1, 1));
+		pnlMain.add(cboUrl, cc.xywh(3, 1, 2, 1));
+		pnlMain.add(lblDir, cc.xy(1, 3));
+		pnlMain.add(sfDir, cc.xywh(3, 3, 2, 1));
+		pnlMain.add(lblRevison, cc.xy(1, 5));
+		pnlMain.add(sfRevision, cc.xywh(3, 5, 2, 1));
+		pnlMain.add(btnCheckout, cc.xy(4, 7));
 
-		pnlMain.add(pnlInner, BorderLayout.CENTER);
 		GuiHelper.createAndShowFrame(pnlMain, "Checkout Settings");
 	}
 
