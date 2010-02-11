@@ -375,7 +375,7 @@ public class ResolveConflictGui {
 			while (startMineOffset > 0 && (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_WORKING))) {
 				startMineOffset--;
 			}
-			while (!tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_WORKING)) {
+			while (tp.getAttributeType(startMineOffset).equals(ATTRIBUTE_ORIGINAL)) {
 				startMineOffset++;
 			}
 			endMineOffset = startMineOffset;
