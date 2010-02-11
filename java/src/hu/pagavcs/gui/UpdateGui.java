@@ -199,12 +199,23 @@ public class UpdateGui implements Working {
 					int total = 0;
 					int conflicted = 0;
 					for (UpdateListItem uli : tmdlUpdate.getAllData()) {
-						UpdateContentStatus contentStatus = uli.getContentStatus();
-						if (UpdateContentStatus.CONFLICTED.equals(contentStatus)) {
+						UpdateContentStatus updateContentStatus = uli.getContentStatus();
+						ContentStatus contentStatus = uli.getStatus();
+						if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus) || ContentStatus.CONFLICTED.equals(contentStatus)) {
 							conflicted++;
 						}
 						if (contentStatus != null) {
-							total++;
+							if (ContentStatus.ADDED.equals(contentStatus) || ContentStatus.ADDED.equals(contentStatus)
+							        || ContentStatus.CONFLICTED.equals(contentStatus) || ContentStatus.DELETED.equals(contentStatus)
+							        || ContentStatus.EXTERNAL.equals(contentStatus) || ContentStatus.IGNORED.equals(contentStatus)
+							        || ContentStatus.INCOMPLETE.equals(contentStatus) || ContentStatus.MERGED.equals(contentStatus)
+							        || ContentStatus.MISSING.equals(contentStatus) || ContentStatus.MODIFIED.equals(contentStatus)
+							        || ContentStatus.NONE.equals(contentStatus) || ContentStatus.NORMAL.equals(contentStatus)
+							        || ContentStatus.OBSTRUCTED.equals(contentStatus) || ContentStatus.REPLACED.equals(contentStatus)
+							        || ContentStatus.UNVERSIONED.equals(contentStatus) || ContentStatus.EXISTS.equals(contentStatus)
+							        || ContentStatus.UPDATE.equals(contentStatus)) {
+								total++;
+							}
 						}
 					}
 					String strInfo = "Changed: " + total;
