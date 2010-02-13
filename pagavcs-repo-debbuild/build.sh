@@ -12,4 +12,4 @@ rmdir debian/input
 sudo rm -r debian/pagavcs-repo/*
 sudo rmdir debian/pagavcs-repo
 cd ..
-mv -f pagavcs-repo_1.0.0ubuntu_all.deb ../binary/Packages/
+mv -f pagavcs-repo_1.0.0ubuntu_all.deb ../binary/
