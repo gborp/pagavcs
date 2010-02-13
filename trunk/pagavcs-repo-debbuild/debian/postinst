@@ -1,0 +1,28 @@
+#!/bin/sh
+# postinst script for the pagavcs repository
+#
+# see: dh_installdeb(1)
+
+set -e
+
+case "$1" in
+    configure)
+    release=$(lsb_release -sc)
+    if [ -f /etc/apt/sources.list.d/pagavcs.list ]
+    then
+    	cp /etc/apt/sources.list.d/pagavcs.list /etc/apt/sources.list.d/pagavcs.list.bck
+    fi
+    echo "deb http://pagavcs.googlecode.com/svn/binary ./" > /etc/apt/sources.list.d/getdeb.list
+    wget -O- http://pagavcs.googlecode.com/svn/binary/pagavcs-archive.key | sudo apt-key add -  
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+exit 0

@@ -1,0 +1,6 @@
+pagavcs-repo (1.0.0ubuntu) karmic; urgency=low
+
+  [ papaigabor ]
+  * Initial release
+
+ -- papaigabor <pagavcs@gmail.com>  Sat, 13 Jan 2010 17:53:30 +0500

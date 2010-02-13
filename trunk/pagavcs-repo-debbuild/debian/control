@@ -1,0 +1,13 @@
+Source: pagavcs-repo
+Section: devel
+Priority: optional
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.8.3
+Homepage: http://pagavcs.googlecode.com
+
+Package: pagavcs-repo
+Architecture: all
+Depends: 
+Description: Import repository for PagaVCS project
+ Imports repository and gpg public key for apt-get.
