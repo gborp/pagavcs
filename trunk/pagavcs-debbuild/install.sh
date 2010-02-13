@@ -6,6 +6,7 @@ sudo dpkg -i `ls trunk/*.deb`
 mv -f trunk/*.deb binary/Packages/
 dpkg-scanpackages binary /dev/null | gzip -9c > binary/Packages.gz
 cd binary
+rm -f Release
 apt-ftparchive release . > Release
 rm -f Release.gpg
 gpg --keyserver keyserver.ubuntu.com -abs -o Release.gpg Release
