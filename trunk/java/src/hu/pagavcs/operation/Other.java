@@ -63,6 +63,7 @@ public class Other implements Cancelable {
 		gui = new OtherGui(this);
 		gui.display();
 		gui.setStatus(OtherStatus.INIT);
+		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
 		SVNWCClient wcClient = mgrSvn.getWCClient();
@@ -249,5 +250,9 @@ public class Other implements Cancelable {
 
 	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {
 		new Log(pathToShowLog).execute();
+	}
+
+	public void storeUrlForHistory(String url) {
+		SvnHelper.storeUrlForHistory(url);
 	}
 }
