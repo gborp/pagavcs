@@ -5,6 +5,7 @@ import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
@@ -16,7 +17,6 @@ import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Update.UpdateContentStatus;
 
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -71,7 +71,7 @@ public class UpdateGui implements Working {
 	private boolean                               shuttingDown;
 	private Label                                 lblWorkingCopy;
 	private Label                                 lblRepo;
-	private Window                                window;
+	private Frame                                 frame;
 	private StopExitAction                        actStopFinish;
 	private Label                                 lblInfo;
 
@@ -114,8 +114,8 @@ public class UpdateGui implements Working {
 		pnlMain.add(prgWorking, cc.xywh(3, 7, 2, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlMain.add(btnStopFinish, cc.xy(6, 7));
 
-		window = GuiHelper.createAndShowFrame(pnlMain, title);
-		window.addWindowListener(new WindowAdapter() {
+		frame = GuiHelper.createAndShowFrame(pnlMain, title);
+		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
 				try {
@@ -137,6 +137,7 @@ public class UpdateGui implements Working {
 
 	public void setWorkingCopy(String workingCopy) {
 		lblWorkingCopy.setText(workingCopy);
+		frame.setTitlePrefix(workingCopy);
 	}
 
 	public void setRepo(String repo) {
@@ -388,7 +389,7 @@ public class UpdateGui implements Working {
 				UpdateListItem li = getSelectedUpdateListItem();
 				File file = new File(li.getPath());
 				if (file.isDirectory()) {
-					MessagePane.showError(window, "Cannot resolve conflict", "Cannot resolve conflict on directory");
+					MessagePane.showError(frame, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 					return;
 				}
 				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath(), false).execute();
@@ -503,8 +504,8 @@ public class UpdateGui implements Working {
 		}
 
 		private void exit() {
-			window.setVisible(false);
-			window.dispose();
+			frame.setVisible(false);
+			frame.dispose();
 		}
 	}
 

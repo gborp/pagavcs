@@ -16,7 +16,6 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -165,13 +164,11 @@ public class GuiHelper {
 		window.setLocation((dim.width - bounds.width) / 2, (dim.height - bounds.height) / 2);
 	}
 
-	public static Window createAndShowFrame(JComponent pnlMain, String applicationName) {
+	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName) {
 
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		Frame frame = new Frame();
 		frame.getContentPane().add(addBorder(pnlMain));
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
 		frame.pack();
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
