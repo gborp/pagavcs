@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Table;
 import hu.pagavcs.gui.platform.TableModel;
@@ -46,6 +47,7 @@ public class BlameGui {
 	private JProgressBar              prgWorking;
 	private List<BlameListItem>       lstBlame;
 	private final String              file;
+	private Frame                     frame;
 
 	public BlameGui(Cancelable update, String file) {
 		this.update = update;
@@ -86,7 +88,8 @@ public class BlameGui {
 		pnlMain.add(prgWorking, cc.xywh(2, 2, 1, 1));
 		pnlMain.add(btnStop, cc.xywh(3, 2, 1, 1));
 
-		GuiHelper.createAndShowFrame(pnlMain, "Blame");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
+		frame.setTitlePrefix(file);
 
 		tableModel.addLines(lstBlame);
 	}

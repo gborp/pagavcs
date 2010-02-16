@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
@@ -20,7 +21,6 @@ import hu.pagavcs.operation.Commit.CommittedItemStatus;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -70,7 +70,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class CommitGui implements Working, Refreshable {
 
-	private Window                     frame;
+	private Frame                      frame;
 	private Table<CommitListItem>      tblCommit;
 	private TableModel<CommitListItem> tmdlCommit;
 	private Commit                     commit;
@@ -215,6 +215,7 @@ public class CommitGui implements Working, Refreshable {
 
 	public void setPath(String path) {
 		lblWorkingCopy.setText(path);
+		frame.setTitlePrefix(path);
 	}
 
 	public void setRecentMessages(String[] recentMessages) {

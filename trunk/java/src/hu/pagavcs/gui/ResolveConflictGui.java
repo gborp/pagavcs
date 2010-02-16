@@ -3,6 +3,7 @@ package hu.pagavcs.gui;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
@@ -10,7 +11,6 @@ import hu.pagavcs.gui.platform.MessagePane;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -73,7 +73,7 @@ public class ResolveConflictGui {
 	private JButton             btnReload;
 	private JButton             btnNextConflict;
 	private JButton             btnSaveResolved;
-	private Window              frame;
+	private Frame               frame;
 	private final Refreshable   parentRefreshable;
 	private final boolean       applyPatchConlict;
 
@@ -142,6 +142,7 @@ public class ResolveConflictGui {
 				reload();
 
 				frame = GuiHelper.createAndShowFrame(pnlMain, "Resolve Conflict");
+				frame.setTitlePrefix(mixedFile.getPath());
 			}
 
 		}.run();
