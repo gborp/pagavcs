@@ -2,11 +2,11 @@ package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.CheckoutGui;
 import hu.pagavcs.gui.UpdateGui;
 
 import java.io.File;
-import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import org.tmatesoft.svn.core.SVNDepth;
@@ -48,8 +48,7 @@ public class Checkout implements Cancelable {
 	public void execute() throws SVNException, BackingStoreException {
 		gui = new CheckoutGui(this);
 		gui.display();
-		// gui.setStatus(CleanupStatus.INIT);
-		gui.setUrlHistory(getRepoUrlHistory());
+		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
 
 		// TODO check if directory is under version control
 	}
@@ -94,27 +93,7 @@ public class Checkout implements Cancelable {
 		return cancel;
 	}
 
-	public String[] getRepoUrlHistory() {
-		return Manager.getSettings().getLstRepoUrl().toArray(new String[0]);
-	}
-
 	public void storeUrlForHistory(String url) {
-		List<String> lstRepoUrl = Manager.getSettings().getLstRepoUrl();
-		boolean alreadyLogged = false;
-		for (String li : lstRepoUrl) {
-			if (li.equals(url)) {
-				alreadyLogged = true;
-				break;
-			}
-		}
-		if (!alreadyLogged) {
-			lstRepoUrl.add(0, url);
-		}
-
-		int maxNo = Manager.getMaxUrlHistoryItems();
-		while (lstRepoUrl.size() > maxNo) {
-			lstRepoUrl.remove(lstRepoUrl.size() - 1);
-		}
-
+		SvnHelper.storeUrlForHistory(url);
 	}
 }

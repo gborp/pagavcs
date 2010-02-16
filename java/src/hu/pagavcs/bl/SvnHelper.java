@@ -232,4 +232,27 @@ public class SvnHelper {
 		file1.delete();
 		file2.delete();
 	}
+
+	public static String[] getRepoUrlHistory() {
+		return Manager.getSettings().getLstRepoUrl().toArray(new String[0]);
+	}
+
+	public static void storeUrlForHistory(String url) {
+		List<String> lstRepoUrl = Manager.getSettings().getLstRepoUrl();
+		boolean alreadyLogged = false;
+		for (String li : lstRepoUrl) {
+			if (li.equals(url)) {
+				alreadyLogged = true;
+				break;
+			}
+		}
+		if (!alreadyLogged) {
+			lstRepoUrl.add(0, url);
+		}
+
+		int maxNo = Manager.getMaxUrlHistoryItems();
+		while (lstRepoUrl.size() > maxNo) {
+			lstRepoUrl.remove(lstRepoUrl.size() - 1);
+		}
+	}
 }
