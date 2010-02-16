@@ -4,6 +4,7 @@ import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.ProgressBar;
@@ -11,7 +12,6 @@ import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Other.OtherStatus;
 
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -51,7 +51,7 @@ public class OtherGui implements Working, Cancelable {
 
 	private Other       other;
 	private JLabel      lblStatus;
-	private Window      window;
+	private Frame       frame;
 	private EditField   sfRepo;
 	private EditField   sfNewPath;
 	private JCheckBox   cbMove;
@@ -191,7 +191,8 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 41, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 41, 1, 1));
 
-		window = GuiHelper.createAndShowFrame(pnlMain, "Other");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Other");
+		frame.setTitlePrefix(other.getPath());
 	}
 
 	public void setStatus(OtherStatus status) {
@@ -199,8 +200,8 @@ public class OtherGui implements Working, Cancelable {
 	}
 
 	public void close() {
-		window.setVisible(false);
-		window.dispose();
+		frame.setVisible(false);
+		frame.dispose();
 	}
 
 	public void setURL(String text) {
@@ -270,7 +271,7 @@ public class OtherGui implements Working, Cancelable {
 	private void doApplyPatch(String path) throws Exception {
 		JFileChooser fc = new JFileChooser(new File(other.getPath()));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		int choosed = fc.showSaveDialog(window);
+		int choosed = fc.showSaveDialog(frame);
 		if (choosed == JFileChooser.APPROVE_OPTION) {
 
 			File baseDirCandiate = new File(path);
