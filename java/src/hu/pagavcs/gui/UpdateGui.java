@@ -86,7 +86,7 @@ public class UpdateGui implements Working {
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("p,1dlu:g, p,4dlu, p", "p,4dlu,p,4dlu,fill:10dlu:g,4dlu,p");
+		FormLayout layout = new FormLayout("p,4dlu,1dlu:g, p,4dlu, p", "p,4dlu,p,4dlu,fill:10dlu:g,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -107,12 +107,12 @@ public class UpdateGui implements Working {
 
 		prgWorking = new JProgressBar();
 
-		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
-		pnlMain.add(lblRepo, cc.xywh(1, 3, 1, 1));
-		pnlMain.add(scrollPane, cc.xywh(1, 5, 5, 1));
+		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 6, 1));
+		pnlMain.add(lblRepo, cc.xywh(1, 3, 6, 1));
+		pnlMain.add(scrollPane, cc.xywh(1, 5, 6, 1));
 		pnlMain.add(lblInfo, cc.xy(1, 7));
-		pnlMain.add(prgWorking, cc.xywh(2, 7, 2, 1));
-		pnlMain.add(btnStopFinish, cc.xywh(5, 7, 1, 1));
+		pnlMain.add(prgWorking, cc.xywh(3, 7, 2, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlMain.add(btnStopFinish, cc.xy(6, 7));
 
 		window = GuiHelper.createAndShowFrame(pnlMain, title);
 		window.addWindowListener(new WindowAdapter() {
