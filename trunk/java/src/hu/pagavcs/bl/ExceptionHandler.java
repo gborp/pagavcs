@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.tmatesoft.svn.core.SVNErrorCode;
+import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
 
 /**
@@ -42,14 +43,17 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 		}
 
 		if (ex instanceof SVNException) {
-			SVNErrorCode errorCode = ((SVNException) ex).getErrorMessage().getErrorCode();
+			SVNErrorMessage errorMessage = ((SVNException) ex).getErrorMessage();
+			String errorString = errorMessage.toString();
+			SVNErrorCode errorCode = errorMessage.getErrorCode();
 			if (SVNErrorCode.UNVERSIONED_RESOURCE.equals(errorCode)) {
 				MessagePane.showError(null, ex.getMessage(), "Error");
 				return;
-			}
-
-			if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-				MessagePane.showError(null, "Working Copy Locked", ((SVNException) ex).getErrorMessage().getMessage());
+			} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
+				MessagePane.showError(null, "Working Copy Locked", errorString);
+				return;
+			} else if (SVNErrorCode.ENTRY_NOT_FOUND.equals(errorCode)) {
+				MessagePane.showError(null, "Not under version control", errorString);
 				return;
 			}
 			System.out.println("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"
