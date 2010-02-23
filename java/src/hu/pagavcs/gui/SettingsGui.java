@@ -42,13 +42,14 @@ public class SettingsGui {
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("p,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p:g");
+		FormLayout layout = new FormLayout("p,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p:g");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
 		JButton btnClearLogin = new JButton(new ClearLoginCacheAction());
 		JButton btnShowIcons = new JButton(new ShowIconsInContextMenuAction());
 		JButton btnShowLoginDialogNextTime = new JButton(new ShowLoginDialogNextTimeAction());
+		JButton btnExitPagavcs = new JButton(new ExitPagavcsAction());
 		JButton btnSetCommitCompletedMessageTemplates = new JButton(new SetCommitCompletedMessageTemplatesAction());
 
 		taCommitCompleteTemplate = new TextArea();
@@ -57,9 +58,10 @@ public class SettingsGui {
 		pnlMain.add(btnClearLogin, cc.xy(3, 1));
 		pnlMain.add(btnShowIcons, cc.xy(3, 3));
 		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(3, 5));
-		pnlMain.add(new Label("Commit completed message templates:"), cc.xy(1, 7));
-		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 7));
-		pnlMain.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 9, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(btnExitPagavcs, cc.xy(3, 7));
+		pnlMain.add(new Label("Commit completed message templates:"), cc.xy(1, 9));
+		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 9));
+		pnlMain.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 11, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
 
 		taCommitCompleteTemplate.setText(Manager.getSettings().getCommitCompletedMessageTemplates());
 
@@ -104,6 +106,18 @@ public class SettingsGui {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			Manager.setForceShowingLoginDialogNextTime(true);
+		}
+
+	}
+
+	private class ExitPagavcsAction extends ThreadAction {
+
+		public ExitPagavcsAction() {
+			super("Exit PagaVCS server");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			System.exit(0);
 		}
 
 	}
