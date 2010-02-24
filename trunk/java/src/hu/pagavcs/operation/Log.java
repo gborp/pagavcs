@@ -8,7 +8,6 @@ import hu.pagavcs.gui.LogGui;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
@@ -132,6 +131,57 @@ public class Log implements Cancelable {
 		SvnHelper.showPropertyChangesFromRepo(gui, svnUrl, revision, previousRevision, contentStatus);
 	}
 
+	public void showFile(String showChangesPath, long revision) throws Exception {
+		String fileName = showChangesPath.substring(showChangesPath.lastIndexOf('/') + 1);
+		String tempPrefix = Manager.getTempDir();
+		String fileNameNew = "r" + revision + "-" + fileName;
+		File fileNew = new File(tempPrefix + fileNameNew);
+		try {
+			gui.workStarted();
+			saveRevisionTo(showChangesPath, revision, fileNew);
+			ProcessBuilder processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameNew);
+			Process process = processBuilder.start();
+			gui.workEnded();
+			process.waitFor();
+		} catch (Exception e) {
+			try {
+				gui.workEnded();
+			} catch (Exception e1) {
+				Manager.handle(e1);
+			}
+			throw e;
+		} finally {
+			if (fileNew != null) {
+				fileNew.delete();
+			}
+		}
+	}
+
+	public void saveRevisionTo(String showChangesPath, long revision, File destination) throws Exception {
+		FileOutputStream outNewRevision = null;
+		try {
+			gui.workStarted();
+
+			outNewRevision = new FileOutputStream(destination);
+
+			SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
+			        + showChangesPath, true);
+			SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+
+			wcClient.doGetFileContents(svnUrl, SVNRevision.create(revision), SVNRevision.create(revision), false, outNewRevision);
+
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			gui.workEnded();
+			if (outNewRevision != null) {
+				outNewRevision.close();
+			}
+		}
+	}
+
 	public void showChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
 
 		FileOutputStream outNewRevision = null;
@@ -171,9 +221,6 @@ public class Log implements Cancelable {
 				wcClient.doGetFileContents(svnUrl, SVNRevision.create(previousRevision), SVNRevision.create(previousRevision), false, outOldRevision);
 			}
 
-			outNewRevision.close();
-			outOldRevision.close();
-
 			fileNew.setReadOnly();
 			fileNew.deleteOnExit();
 			fileOld.setReadOnly();
@@ -198,21 +245,17 @@ public class Log implements Cancelable {
 			}
 			throw e;
 		} finally {
-			try {
-				if (outNewRevision != null) {
-					outNewRevision.close();
-				}
-				if (outOldRevision != null) {
-					outOldRevision.close();
-				}
-				if (fileNew != null) {
-					fileNew.delete();
-				}
-				if (fileOld != null) {
-					fileOld.delete();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (outNewRevision != null) {
+				outNewRevision.close();
+			}
+			if (outOldRevision != null) {
+				outOldRevision.close();
+			}
+			if (fileNew != null) {
+				fileNew.delete();
+			}
+			if (fileOld != null) {
+				fileOld.delete();
 			}
 		}
 	}
