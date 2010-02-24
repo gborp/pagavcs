@@ -73,6 +73,7 @@ public class Manager {
 	public static final String      COMMIT_COMPLETED_TEMPLATE_SEPARATOR = ">>>";
 
 	private static final Color      COLOR_PURPLE                        = new Color(100, 0, 100);
+	private static final Color      COLOR_GREEN                         = new Color(20, 80, 25);
 
 	private static String           tempDir;
 	private static boolean          inited                              = false;
@@ -292,54 +293,38 @@ public class Manager {
 	}
 
 	public static Color getColorByContentStatus(ContentStatus status) {
-		Color color = null;
 		switch (status) {
 			case ADDED:
-				color = COLOR_PURPLE;
-				break;
+				return COLOR_PURPLE;
 			case CONFLICTED:
-				color = Color.RED;
-				break;
+				return Color.RED;
 			case DELETED:
-				color = Color.RED;
-				break;
+				return Color.RED;
 			case EXTERNAL:
-				color = Color.DARK_GRAY;
-				break;
+				return Color.DARK_GRAY;
 			case IGNORED:
-				color = Color.ORANGE;
-				break;
+				return Color.ORANGE;
 			case INCOMPLETE:
-				color = Color.RED;
-				break;
+				return Color.RED;
 			case MERGED:
-				color = Color.GREEN;
-				break;
-
+				return COLOR_GREEN;
 			case MISSING:
-				color = Color.RED;
-				break;
+				return Color.RED;
 			case MODIFIED:
-				color = Color.BLUE;
-				break;
+				return Color.BLUE;
 			case NONE:
-				color = Color.BLACK;
-				break;
+				return Color.BLACK;
 			case NORMAL:
-				color = Color.BLACK;
-				break;
+				return Color.BLACK;
 			case OBSTRUCTED:
-				color = Color.RED;
-				break;
+				return Color.RED;
 			case REPLACED:
-				color = Color.RED;
-				break;
+				return Color.RED;
 			case UNVERSIONED:
-				color = Color.BLACK;
-				break;
+				return Color.BLACK;
+			default:
+				return null;
 		}
-
-		return color;
 	}
 
 	public static File getFile(SVNURL svnUrl, SVNRevision revision) throws Exception {
