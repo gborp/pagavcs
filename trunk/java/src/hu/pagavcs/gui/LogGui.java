@@ -2,11 +2,15 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
+import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.NullCellRenderer;
 import hu.pagavcs.gui.platform.ProgressBar;
 import hu.pagavcs.gui.platform.Table;
@@ -20,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -37,6 +40,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -94,6 +98,7 @@ public class LogGui implements Working {
 	private TableRowSorter<TableModel<LogListItem>> sorterLog;
 	private List<SVNURL>                            lstLogRoot;
 	private SVNURL                                  svnRepoRootUrl;
+	private Frame                                   frame;
 
 	public LogGui(Log log) {
 		this.log = log;
@@ -215,8 +220,8 @@ public class LogGui implements Working {
 		pnlMain.add(splMain, BorderLayout.CENTER);
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
-		Window window = GuiHelper.createAndShowFrame(pnlMain, "Show Log");
-		window.addWindowListener(new WindowAdapter() {
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log");
+		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
 				SettingsStore settingsStore = Manager.getSettings();
@@ -447,23 +452,75 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			workStarted();
-			try {
-				LogListItem liLog = getSelectedLogItem();
-				for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-					if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-						log.showDirChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
-					} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-						log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
-					} else {
-						log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
-					}
+			LogListItem liLog = getSelectedLogItem();
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
+					log.showDirChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
+				} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
+					log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
+				} else {
+					log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
 				}
-			} finally {
-				workEnded();
 			}
 		}
+	}
 
+	private class ShowFileAction extends ThreadAction {
+
+		public ShowFileAction() {
+			super("Show file");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			LogListItem liLog = getSelectedLogItem();
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
+					throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
+				} else {
+					ContentStatus cs = liDetail.getAction();
+					if (ContentStatus.DELETED.equals(cs)) {
+						MessagePane.showError(frame, "Cannot save", "File is deleted in this revision.");
+					}
+					log.showFile(liDetail.getPath(), liLog.getRevision());
+				}
+			}
+		}
+	}
+
+	private class SaveRevisionToAction extends ThreadAction {
+
+		public SaveRevisionToAction() {
+			super("Save revision to");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			LogListItem liLog = getSelectedLogItem();
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
+					throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
+				} else {
+					ContentStatus cs = liDetail.getAction();
+					if (ContentStatus.DELETED.equals(cs)) {
+						MessagePane.showError(frame, "Cannot save", "File is deleted in this revision.");
+					}
+
+					String path = liDetail.getPath();
+					if (path.lastIndexOf('/') != -1) {
+						path = path.substring(path.lastIndexOf('/'));
+					}
+					JFileChooser fc = new JFileChooser();
+					fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					fc.setSelectedFile(new File(path));
+
+					int choosed = fc.showSaveDialog(frame);
+
+					if (choosed == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						log.saveRevisionTo(liDetail.getPath(), liLog.getRevision(), file);
+					}
+				}
+			}
+		}
 	}
 
 	private class DetailRevertChangesFromThisRevisionAction extends ThreadAction {
@@ -539,6 +596,8 @@ public class LogGui implements Working {
 		public DetailPopupupMouseListener() {
 			ppModified = new JPopupMenu();
 			ppModified.add(new DetailShowChangesAction());
+			ppModified.add(new ShowFileAction());
+			ppModified.add(new SaveRevisionToAction());
 			ppModified.add(new DetailRevertChangesFromThisRevisionAction());
 		}
 
