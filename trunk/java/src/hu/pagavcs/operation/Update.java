@@ -85,6 +85,7 @@ public class Update implements Cancelable {
 			} else {
 				gui.setRepo("<Multiply repos>");
 			}
+			gui.setPaths(lstFile);
 
 			SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
 			updateClient.setEventHandler(new UpdateEventHandler(this, gui));
