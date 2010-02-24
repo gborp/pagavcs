@@ -28,6 +28,7 @@ public class ProgressBar extends JProgressBar {
 	}
 
 	public void startProgress() throws Exception {
+		System.nanoTime();
 		new OnSwing() {
 
 			protected void process() throws Exception {
@@ -41,6 +42,7 @@ public class ProgressBar extends JProgressBar {
 	}
 
 	public void stopProgress() throws Exception {
+		System.nanoTime();
 		new OnSwing() {
 
 			protected void process() throws Exception {
