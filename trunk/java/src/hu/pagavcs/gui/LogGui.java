@@ -220,7 +220,7 @@ public class LogGui implements Working {
 		pnlMain.add(splMain, BorderLayout.CENTER);
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log", "/hu/pagavcs/resources/showlog-app-icon.png");
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {

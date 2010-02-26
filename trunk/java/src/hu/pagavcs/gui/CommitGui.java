@@ -184,7 +184,7 @@ public class CommitGui implements Working, Refreshable {
 		pnlMain.add(splMain, BorderLayout.CENTER);
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit", "/hu/pagavcs/resources/commit-app-icon.png");
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {

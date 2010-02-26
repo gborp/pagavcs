@@ -191,7 +191,7 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 41, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 41, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Other");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Other", "/hu/pagavcs/resources/other-app-icon.png");
 		frame.setTitlePrefix(other.getPath());
 	}
 
