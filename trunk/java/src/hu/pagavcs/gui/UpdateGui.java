@@ -66,7 +66,6 @@ public class UpdateGui implements Working {
 	private JProgressBar                          prgWorking;
 	private boolean                               started;
 	private int                                   numberOfPathUpdated;
-	private boolean                               conflictedItemsPresent;
 	private ConcurrentLinkedQueue<UpdateListItem> quNewItems = new ConcurrentLinkedQueue<UpdateListItem>();
 	private Timer                                 tmrTableRevalidate;
 	private boolean                               revalidateIsTimed;
@@ -165,7 +164,6 @@ public class UpdateGui implements Working {
 			protected void process() throws Exception {
 				if (!started) {
 					prgWorking.setIndeterminate(true);
-					conflictedItemsPresent = false;
 					started = true;
 				}
 

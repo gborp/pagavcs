@@ -9,6 +9,7 @@ import hu.pagavcs.operation.UpdateEventHandler;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class SvnHelper {
 
 		cancelable.setCancel(false);
 		UpdateGui updateGui = new UpdateGui(cancelable, "Merge");
+		updateGui.setPaths(Arrays.asList(new File(pathTo)));
 		updateGui.display();
 		try {
 			updateGui.setStatus(ContentStatus.INIT);

@@ -124,6 +124,7 @@ public class Other implements Cancelable {
 	public void doSwitch(String wc, String toUrl, String toRevision) throws Exception {
 		setCancel(false);
 		UpdateGui updateGui = new UpdateGui(this, "Switch");
+		updateGui.setPaths(Arrays.asList(new File(wc)));
 		updateGui.display();
 		try {
 			updateGui.setStatus(ContentStatus.INIT);
