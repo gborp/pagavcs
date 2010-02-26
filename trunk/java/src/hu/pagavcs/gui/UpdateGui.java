@@ -118,7 +118,7 @@ public class UpdateGui implements Working {
 		pnlMain.add(prgWorking, cc.xywh(3, 7, 4, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlMain.add(btnStopFinish, cc.xy(8, 7));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, title);
+		frame = GuiHelper.createAndShowFrame(pnlMain, title, "/hu/pagavcs/resources/update-app-icon.png");
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {

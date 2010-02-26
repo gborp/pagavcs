@@ -165,8 +165,14 @@ public class GuiHelper {
 	}
 
 	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName) {
+		return createAndShowFrame(pnlMain, applicationName, null);
+	}
 
-		Frame frame = new Frame();
+	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName) {
+		if (iconName == null) {
+			iconName = "/hu/pagavcs/resources/icon.png";
+		}
+		Frame frame = new Frame(iconName);
 		frame.getContentPane().add(addBorder(pnlMain));
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
 		frame.pack();
