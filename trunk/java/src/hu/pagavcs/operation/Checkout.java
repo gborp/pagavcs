@@ -7,6 +7,7 @@ import hu.pagavcs.gui.CheckoutGui;
 import hu.pagavcs.gui.UpdateGui;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.prefs.BackingStoreException;
 
 import org.tmatesoft.svn.core.SVNDepth;
@@ -59,6 +60,7 @@ public class Checkout implements Cancelable {
 
 	public void doCheckout(String url, String dir, long revision) throws Exception {
 		UpdateGui updateGui = new UpdateGui(this, "Checkout");
+		updateGui.setPaths(Arrays.asList(new File(dir)));
 		updateGui.display();
 		try {
 			updateGui.setStatus(ContentStatus.INIT);
