@@ -359,6 +359,9 @@ public class LogGui implements Working {
 	}
 
 	public void setLogRootsFiles(List<File> lstLogRoot) throws SVNException {
+		if (lstLogRoot.size() == 1) {
+			frame.setTitlePrefix(lstLogRoot.get(0).getPath());
+		}
 		ArrayList<SVNURL> svnLogRoots = new ArrayList<SVNURL>(lstLogRoot.size());
 		for (File logRoot : lstLogRoot) {
 			svnLogRoots.add(Manager.getSvnUrlByFile(logRoot));
