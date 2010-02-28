@@ -218,11 +218,7 @@ public class SettingsStore {
 	}
 
 	public void addCommitMessageForHistory(String message) {
-		for (String li : lstCommitMessages) {
-			if (message.equals(li)) {
-				return;
-			}
-		}
+		lstCommitMessages.remove(message);
 		lstCommitMessages.add(message);
 		if (lstCommitMessages.size() > Manager.getMaxMessageHistoryItems()) {
 			lstCommitMessages.remove(0);
