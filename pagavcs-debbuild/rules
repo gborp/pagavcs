@@ -7,7 +7,7 @@ build-stamp:
 
 clean:
 	dh_testdir
-	dh_testroot
+#	dh_testroot
 	rm -f build-stamp
 	dh_clean
 	
