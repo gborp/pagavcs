@@ -241,16 +241,8 @@ public class SvnHelper {
 
 	public static void storeUrlForHistory(String url) {
 		List<String> lstRepoUrl = Manager.getSettings().getLstRepoUrl();
-		boolean alreadyLogged = false;
-		for (String li : lstRepoUrl) {
-			if (li.equals(url)) {
-				alreadyLogged = true;
-				break;
-			}
-		}
-		if (!alreadyLogged) {
-			lstRepoUrl.add(0, url);
-		}
+		lstRepoUrl.remove(url);
+		lstRepoUrl.add(0, url);
 
 		int maxNo = Manager.getMaxUrlHistoryItems();
 		while (lstRepoUrl.size() > maxNo) {
