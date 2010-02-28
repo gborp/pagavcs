@@ -10,6 +10,12 @@ clean:
 	dh_testroot
 	rm -f build-stamp
 	dh_clean
+	
+binary-arch:
+
+binary-indep:
+
+build:
 
 binary:
 	dh_testdir
