@@ -19,7 +19,7 @@ build:
 
 binary:
 	dh_testdir
-	dh_testroot
+#	dh_testroot
 	dh_clean -k
 	dh_install
 	dh_installchangelogs
