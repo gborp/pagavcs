@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.prefs.BackingStoreException;
 
+import org.tmatesoft.svn.core.SVNCancelException;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -78,6 +79,8 @@ public class Checkout implements Cancelable {
 			updateClient.setEventHandler(new UpdateEventHandler(this, updateGui));
 			updateGui.setStatus(ContentStatus.STARTED);
 			updateClient.doCheckout(svnUrl, new File(dir), SVNRevision.UNDEFINED, svnRevision, SVNDepth.INFINITY, true);
+		} catch (SVNCancelException ex) {
+			updateGui.setStatus(ContentStatus.CANCEL);
 		} catch (Exception ex) {
 			updateGui.setStatus(ContentStatus.FAILED);
 			throw ex;
@@ -85,9 +88,6 @@ public class Checkout implements Cancelable {
 	}
 
 	public void setCancel(boolean cancel) {
-		// if (cancel) {
-		// gui.addItem("", UpdateStatus.CANCEL);
-		// }
 		this.cancel = cancel;
 	}
 
