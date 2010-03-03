@@ -45,6 +45,7 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.util.SVNDebugLog;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -81,8 +82,12 @@ public class Manager {
 
 	private static boolean          shutdown;
 
+	private static BandwidthMeter   bandwidthMeter;
+
 	public static void init() throws BackingStoreException {
 		if (!inited) {
+			bandwidthMeter = new BandwidthMeter();
+			SVNDebugLog.setDefaultLog(bandwidthMeter);
 			SVNRepositoryFactoryImpl.setup();
 			// Enable full HTTP request spooling to prevent "svn: REPORT request
 			// failed on '/svn/VSMRepo/!svn/vcc/default'"
@@ -99,6 +104,10 @@ public class Manager {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception e) {}
 		}
+	}
+
+	public static BandwidthMeter getBandwidthMeter() {
+		return bandwidthMeter;
 	}
 
 	public static String getApplicationRootName() {
@@ -441,7 +450,7 @@ public class Manager {
 			i++;
 		}
 
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(128);
 		sb.append(File.separatorChar);
 		for (String li : lstCommonPath) {
 			sb.append(li);
