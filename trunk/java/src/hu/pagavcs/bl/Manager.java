@@ -3,7 +3,6 @@ package hu.pagavcs.bl;
 import hu.pagavcs.Communication;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.LoginGui;
-import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Color;
@@ -341,10 +340,6 @@ public class Manager {
 
 	public static void releaseBaseFile(File wcFile) throws Exception {
 		FileRevisionCache.getInstance().releaseBase(wcFile);
-	}
-
-	public static void showFailedDialog() {
-		MessagePane.showError(null, "Failed", "Failed");
 	}
 
 	public static void invalidate(File file) {

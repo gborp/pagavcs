@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.tmatesoft.svn.core.SVNCancelException;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
@@ -80,6 +81,8 @@ public class SvnHelper {
 				try {
 					diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, dryRun,
 					        recordOnly);
+					successOrExit = true;
+				} catch (SVNCancelException ex) {
 					successOrExit = true;
 				} catch (SVNException ex) {
 					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {

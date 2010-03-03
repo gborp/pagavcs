@@ -128,10 +128,6 @@ public class Commit {
 	public void doCommit(ArrayList<File> lstCommit, String message) throws Exception {
 		gui.setStatus(CommitStatus.COMMIT_STARTED, null);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		if (mgrSvn == null) {
-			Manager.showFailedDialog();
-			return;
-		}
 		SVNCommitClient commitClient = mgrSvn.getCommitClient();
 		commitClient.setEventHandler(new CommitEventHandler());
 
