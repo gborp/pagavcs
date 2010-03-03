@@ -34,7 +34,7 @@ public class PreviousRevisionFetcher {
 		boolean stopOnCopy = false;
 		boolean discoverChangedPaths = true;
 		boolean includeMergedRevisions = false;
-		long limit = 2;
+		long limit = 1;
 		String[] revisionProperties = null;
 		ISVNLogEntryHandler handler = new LogEntryHandler();
 		logClient.doLog(svnUrl, new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions, limit,
