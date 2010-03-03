@@ -1,9 +1,9 @@
-pagavcs (1.3.40) karmic; urgency=low
+pagavcs (1.3.40) karmic; urgency=medium
 
   [ Gábor Pápai ]
-  * fix: ppa issues
+  * fix: Issue 36: [log-gui] the show changes compares that revision to wrong revision
   
- -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 28 Feb 2010 12:03:00 +0500
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 03 Mar 2010 07:53:53 +0100
 
 pagavcs (1.3.39) karmic; urgency=low
 
