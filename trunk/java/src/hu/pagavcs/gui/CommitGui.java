@@ -142,6 +142,7 @@ public class CommitGui implements Working, Refreshable {
 
 		btnStop = new JButton(new StopAction());
 		prgWorkinProgress = new ProgressBar(this);
+		prgWorkinProgress.setStringPainted(true);
 		lblInfo = new Label();
 		btnCreatePatch = new JButton(new CreatePatchAction());
 		btnCreatePatch.setEnabled(false);
@@ -413,14 +414,23 @@ public class CommitGui implements Working, Refreshable {
 	public void addCommittedItem(String fileName, CommittedItemStatus itemStatus) {
 		if (preRealCommitProcess) {
 			prgWorkinProgress.setIndeterminate(false);
-			prgWorkinProgress.getModel().setMaximum(noCommit);
+			prgWorkinProgress.getModel().setMaximum(noCommit + 1);
+			prgWorkinProgress.setValue(1);
 			preRealCommitProcess = false;
 		}
+
+		if (itemStatus.equals(CommittedItemStatus.ADDED) || itemStatus.equals(CommittedItemStatus.DELETED) || itemStatus.equals(CommittedItemStatus.MODIFIED)
+		        || itemStatus.equals(CommittedItemStatus.REPLACED)) {
+			prgWorkinProgress.setString(fileName);
+		}
+
 		if (itemStatus.equals(CommittedItemStatus.DELTA_SENT)) {
 			prgWorkinProgress.setValue(prgWorkinProgress.getValue() + 1);
+			prgWorkinProgress.setString(null);
 		}
 
 		if (itemStatus.equals(CommittedItemStatus.COMPLETED)) {
+			prgWorkinProgress.setString(null);
 			lblInfo.setText(fileName);
 		}
 	}
