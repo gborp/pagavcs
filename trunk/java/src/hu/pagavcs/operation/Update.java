@@ -9,6 +9,8 @@ import hu.pagavcs.gui.UpdateGui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 
@@ -70,6 +72,16 @@ public class Update implements Cancelable {
 	public void execute() throws Exception {
 		gui = new UpdateGui(this);
 		gui.display();
+
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+		executor.scheduleAtFixedRate(new Runnable() {
+
+			public void run() {
+				gui.setBandwidth(Manager.getBandwidthMeter().getBandwidth());
+			}
+
+		}, 0, 1, TimeUnit.SECONDS);
+
 		try {
 			gui.setStatus(ContentStatus.INIT);
 			SVNClientManager mgrSvn;
@@ -120,6 +132,8 @@ public class Update implements Cancelable {
 		} catch (Exception ex) {
 			gui.setStatus(ContentStatus.FAILED);
 			throw ex;
+		} finally {
+			executor.shutdownNow();
 		}
 	}
 

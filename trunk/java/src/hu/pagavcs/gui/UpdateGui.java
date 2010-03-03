@@ -76,6 +76,7 @@ public class UpdateGui implements Working {
 	private StopExitAction                        actStopFinish;
 	private Label                                 lblInfo;
 	private List<File>                            lstPath;
+	private long                                  totalReceived;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -173,11 +174,13 @@ public class UpdateGui implements Working {
 
 				if (ContentStatus.CANCEL.equals(status)) {
 					prgWorking.setIndeterminate(false);
+					prgWorking.setStringPainted(false);
 					actStopFinish.setType(StopExitActionType.Cancelled);
 				}
 
 				if (ContentStatus.FAILED.equals(status)) {
 					prgWorking.setIndeterminate(false);
+					prgWorking.setStringPainted(false);
 					actStopFinish.setType(StopExitActionType.Failed);
 				}
 
@@ -204,6 +207,7 @@ public class UpdateGui implements Working {
 					numberOfPathUpdated++;
 					if (numberOfPathUpdated == lstPath.size()) {
 
+						prgWorking.setStringPainted(false);
 						prgWorking.setIndeterminate(false);
 						actStopFinish.setType(StopExitActionType.Finished);
 
@@ -526,6 +530,12 @@ public class UpdateGui implements Working {
 
 	public void workStarted() throws Exception {
 	// TODO workStarted
+	}
+
+	public void setBandwidth(int bandwidth) {
+		totalReceived += bandwidth;
+		prgWorking.setStringPainted(true);
+		prgWorking.setString("" + ((int) (bandwidth / 1024)) + " kB/sec (total: " + ((int) (totalReceived / 1024)) + " kB)");
 	}
 
 }
