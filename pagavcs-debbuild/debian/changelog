@@ -1,3 +1,11 @@
+pagavcs (1.3.41) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * new: [commit] show filename currently under commit
+  * new: [update] show currently used bandwidth and total bandwidth
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 04 Mar 2010 00:31:27 +0100
+
 pagavcs (1.3.40) karmic; urgency=medium
 
   [ Gábor Pápai ]
