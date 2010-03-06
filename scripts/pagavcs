@@ -45,12 +45,39 @@ function startserver {
     done
 }
 
+# display help
+if [ "x$1" == "x" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+	echo "usage: pagavcs [command] [argument(s)]"
+	echo "  update        Update working copy."
+	echo "  commit        Show commit dialog for working copy."
+	echo "  log           Show log for working copy."
+	echo "  ignore        Add file or directory to ignore list."
+	echo "  unignore      Remove file or directory from ignore list."
+	echo "  delete        Delete file or directory."
+	echo "  revert        Revert file or directory."
+	echo "  checkout      Checkout a working copy."
+	echo "  cleanup       Cleanup working copy."
+	echo "  resolve       Resolve conflict."
+	echo "  other         Display other window."
+	echo "  settings      Display settings window."
+	echo "  stop          Stop PagaVCS server."
+	echo "  getmenuitems  Get menuitems for file or directory. It is used by the nautilus-plugin."
+	echo "  -h, --help    Display this help."
+	echo ""
+	echo "Example:"
+	echo "  pagavcs update \"/home/johnny/big-project\" \"/home/johnny/mega-project\""
+	exit
+fi
+
+exec 5<>/dev/tcp/localhost/12905
 
 # don't wakeup server for stop command
 if [ "$1" == "stop" ];
 then
-	echo stop PagaVCS-server
-	echo "stop" > /dev/tcp/localhost/12905 2> /dev/null
+	#echo stop PagaVCS-server
+	echo "stop" >&5 2> /dev/null
+	cat <&5
 	exit
 fi
 
@@ -63,20 +90,29 @@ fi
 
 if [ ! -f /tmp/pagavcs/server-running-indicator ];
 then
-   echo server not running, start a new PagaVCS server
+   #echo server not running, start a new PagaVCS server
    startserver
 fi
 
-echo "send command to PagaVCS-server: $@"
-echo $@ > /dev/tcp/localhost/12905 2> /dev/null
-RETVAL=$?
-if [ $RETVAL != 0 ];
-then
-    echo "failed, (re)starting PagaVCS-server"
-    rm -f /tmp/pagavcs/server-running-indicator
-    startserver
-    echo "resend command to PagaVCS-server: $@"
-    echo $@ > /dev/tcp/localhost/12905 2> /dev/null
-else
-	echo successfull
-fi
+for x in "$@"; do
+	echo -n '"' >&5 2> /dev/null
+	echo -n $x >&5 2> /dev/null
+	echo -n '" ' >&5 2> /dev/null
+done
+echo "" >&5 2> /dev/null
+cat <&5
+
+#echo "send command to PagaVCS-server: $@"
+#echo $args >&5 2> /dev/null
+#RETVAL=$?
+#if [ $RETVAL != 0 ];
+#then
+#    #echo "failed, (re)starting PagaVCS-server"
+#    rm -f /tmp/pagavcs/server-running-indicator
+#    startserver
+#    #echo "resend command to PagaVCS-server: $@"
+#    echo "$argsToPass" >&5 2> /dev/null
+#else
+#echo successfull
+#fi
+
