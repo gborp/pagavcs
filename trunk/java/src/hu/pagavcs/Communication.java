@@ -119,7 +119,7 @@ public class Communication {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 				String line = br.readLine();
-				if (line == null) {
+				if (line == null || line.isEmpty()) {
 					continue;
 				}
 
@@ -129,6 +129,10 @@ public class Communication {
 				String arg = null;
 				if (commandEndIndex > -1) {
 					arg = line.substring(commandEndIndex + 1);
+				}
+
+				if (command.charAt(0) == '"') {
+					command = command.substring(1, command.length() - 1);
 				}
 
 				if (command.equals("getfileinfo")) {
@@ -176,7 +180,7 @@ public class Communication {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
 						new Thread(new ProcessInput(command, lstArg), line).start();
-						outComm(socket, "ok. processing...");
+						outComm(socket, "Processing...\n");
 					}
 				}
 
