@@ -1,4 +1,4 @@
-#summary Feautures.
+#summary Feautures
 
 =Features=
 
@@ -24,3 +24,6 @@
 
 ==Update==
 [http://pagavcs.googlecode.com/svn/wiki/screenshots/update.png]
+
+==Commit==
+[http://pagavcs.googlecode.com/svn/wiki/screenshots/commit.png]
