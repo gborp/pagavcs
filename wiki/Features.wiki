@@ -1,9 +1,11 @@
 #summary Feautures
 
+<wiki:toc max_depth="1" />
+
 =Features=
 
   * Subversion: svn, http, https
-  * Subversion: FeaturesUpdate Update ([http://pagavcs.googlecode.com/svn/wiki/screenshots/update.png screenshot])
+  * Subversion: Update ([http://pagavcs.googlecode.com/svn/wiki/screenshots/update.png screenshot])
   * Subversion: Commit ([http://pagavcs.googlecode.com/svn/wiki/screenshots/commit.png screenshot])
   * Subversion: Show log ([http://pagavcs.googlecode.com/svn/wiki/screenshots/showlog.png screenshot])
   * Subversion: Add
