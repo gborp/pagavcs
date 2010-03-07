@@ -2,7 +2,7 @@
 
 = Command LIne Interface =
 
-usage: pagavcs [command] [argument(s)]
+usage: pagavcs (command) (argument(s))
   * update        Update working copy.
   * commit        Show commit dialog for working copy.
   * og           Show log for working copy.
