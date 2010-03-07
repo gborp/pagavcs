@@ -23,3 +23,9 @@
   * It doesn’t slow down the nautilus navigation at all, even very large working copies don't affect the performance
   * Marks versioned files
   * Recenet messages for commit
+
+==Update==
+[http://pagavcs.googlecode.com/svn/wiki/screenshots/update.png]
+
+==Commit==
+[http://pagavcs.googlecode.com/svn/wiki/screenshots/commit.png]
