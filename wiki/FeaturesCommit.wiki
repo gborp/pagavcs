@@ -1,4 +1,0 @@
-#summary Commit operation
-
-==Commit==
-[http://pagavcs.googlecode.com/svn/wiki/screenshots/commit.png]
