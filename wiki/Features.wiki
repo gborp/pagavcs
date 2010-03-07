@@ -1,0 +1,23 @@
+#summary Feautures.
+
+=Features=
+
+  * Subversion: svn, http, https
+  * Subversion: Update ([http://pagavcs.googlecode.com/svn/wiki/screenshots/update.png screenshot])
+  * Subversion: Commit ([http://pagavcs.googlecode.com/svn/wiki/screenshots/commit.png screenshot])
+  * Subversion: Show log ([http://pagavcs.googlecode.com/svn/wiki/screenshots/showlog.png screenshot])
+  * Subversion: Add
+  * Subversion: Delete
+  * Subversion: Ignore
+  * Subversion: Unignore
+  * Subversion: Resolve conflict
+  * Subversion: Cleanup
+  * Subversion: Merge ([http://pagavcs.googlecode.com/svn/wiki/screenshots/other.png screenshot])
+  * Subversion: Switch ([http://pagavcs.googlecode.com/svn/wiki/screenshots/other.png screenshot])
+  * Subversion: Blame ([http://pagavcs.googlecode.com/svn/wiki/screenshots/other.png screenshot])
+  * Subversion: Export ([http://pagavcs.googlecode.com/svn/wiki/screenshots/other.png screenshot])
+  * Subversion: Repository Browser ([http://pagavcs.googlecode.com/svn/wiki/screenshots/repobrowser.png screenshot])
+  * Subversion: Create patch, Apply patch
+  * It doesn’t slow down the nautilus navigation at all, even very large working copies don't affect the performance
+  * Marks versioned files
+  * Recenet messages for commit
