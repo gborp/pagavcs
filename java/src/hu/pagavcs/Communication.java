@@ -138,6 +138,9 @@ public class Communication {
 				if (command.equals("getfileinfo")) {
 					String outStr = getFileEmblem(fileStatusCache.getStatus(new File(arg)));
 					outComm(socket, outStr);
+				} else if (command.equals("getfileinfonl")) {
+					String outStr = getFileEmblem(fileStatusCache.getStatus(new File(arg))) + "\n";
+					outComm(socket, outStr);
 				} else {
 					List<String> lstArg = new ArrayList<String>();
 					if (arg != null) {
