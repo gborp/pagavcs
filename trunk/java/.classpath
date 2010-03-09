@@ -6,7 +6,5 @@
 	<classpathentry kind="lib" path="lib/jcalendar-1.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/forms-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/trilead.jar"/>
-	<classpathentry kind="lib" path="lib/batik-transcoder.jar"/>
-	<classpathentry kind="lib" path="lib/batik-dom.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

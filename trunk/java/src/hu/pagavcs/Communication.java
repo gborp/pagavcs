@@ -17,11 +17,14 @@ import hu.pagavcs.operation.Settings;
 import hu.pagavcs.operation.Unignore;
 import hu.pagavcs.operation.Update;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ServerSocketFactory;
+import javax.swing.ImageIcon;
 
 import org.tmatesoft.svn.core.SVNException;
 
@@ -99,6 +103,21 @@ public class Communication {
 		outToClient.close();
 	}
 
+	private void outCommEmblem(Socket socket, String arg) throws IOException {
+		String[] args = arg.split(" ");
+
+		String name = args[0];
+		Integer width = Integer.valueOf(args[1]);
+		Integer height = Integer.valueOf(args[2]);
+
+		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(Communication.class.getResource("/hu/pagavcs/resources/emblems/" + name + ".png")));
+		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+
+		ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+		objOut.writeObject(imageIcon);
+		objOut.close();
+	}
+
 	public void execute() throws Exception {
 		String tempDir = Manager.getTempDir();
 		running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
@@ -141,6 +160,8 @@ public class Communication {
 				} else if (command.equals("getfileinfonl")) {
 					String outStr = getFileEmblem(fileStatusCache.getStatus(new File(arg))) + "\n";
 					outComm(socket, outStr);
+				} else if (command.equals("getemblem")) {
+					outCommEmblem(socket, arg);
 				} else {
 					List<String> lstArg = new ArrayList<String>();
 					if (arg != null) {
@@ -310,6 +331,8 @@ public class Communication {
 		sb.append("pagavcs-settings\n");
 		sb.append("\n");
 		sb.append("settings\n");
+
+		sb.append("--end--\n");
 
 		return sb.toString();
 	}
