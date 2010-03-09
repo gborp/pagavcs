@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- This file was created using the SVG export filter from Karbon14, a free vector drawing app. -->
+
 <!-- It is part of koffice, the free, integrated office suite for KDE (http://www.koffice.org/). -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -14,14 +16,13 @@
    height="256"
    id="svg1"
    sodipodi:version="0.32"
-   inkscape:version="0.45.1"
-   sodipodi:docname="TortoiseLocked.svg"
-   sodipodi:docbase="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="emblem-pagavcs-locked.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\TortoiseLocked.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-filename="/home/gg/locked.png"
+   inkscape:export-xdpi="72"
+   inkscape:export-ydpi="72">
   <metadata
      id="metadata54">
     <rdf:RDF>
@@ -30,6 +31,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -44,17 +46,36 @@
      inkscape:cx="69.795824"
      inkscape:cy="105.7186"
      inkscape:window-width="1241"
-     inkscape:window-height="1096"
+     inkscape:window-height="994"
      inkscape:window-x="115"
-     inkscape:window-y="68"
+     inkscape:window-y="0"
      inkscape:current-layer="svg1"
      showgrid="true"
-     gridspacingx="1.0000000mm"
-     gridspacingy="1.0000000mm"
      width="256px"
-     height="256px" />
+     height="256px"
+     inkscape:window-maximized="0">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.0000000mm"
+       spacingy="1.0000000mm"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="5" />
+  </sodipodi:namedview>
   <defs
      id="defs2">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 128 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="256 : 128 : 1"
+       inkscape:persp3d-origin="128 : 85.333333 : 1"
+       id="perspective48" />
     <radialGradient
        id="defitem0"
        gradientUnits="userSpaceOnUse"

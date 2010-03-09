@@ -18,11 +18,18 @@
    version="1.0"
    sodipodi:docname="emblem-pagavcs-conflict.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="D:\Development\SVN\TortoiseSVN\src\Resources\svg\Overlays\TortoiseAdded.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-filename="/home/gg/conflict.png"
+   inkscape:export-xdpi="69.75"
+   inkscape:export-ydpi="69.75">
   <defs
      id="defs2185">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 128 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="256 : 128 : 1"
+       inkscape:persp3d-origin="128 : 85.333333 : 1"
+       id="perspective14" />
     <linearGradient
        id="linearGradient3606">
       <stop
@@ -65,7 +72,7 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="1191"
-     inkscape:window-height="998"
+     inkscape:window-height="994"
      inkscape:window-x="306"
      inkscape:window-y="0"
      inkscape:window-maximized="0" />
