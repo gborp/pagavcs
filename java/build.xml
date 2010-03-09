@@ -1,4 +1,4 @@
-<project name="MyProject" default="dist" basedir=".">
+<project name="PagaVCS" default="dist" basedir=".">
 	
   <!-- set global properties for this build -->
   <property name="src" location="src"/>

@@ -112,6 +112,9 @@ class PagaVCS(nautilus.MenuProvider):
 
         i = 0
         while (i < (len(menuItems) - 1)):
+	        if (menuItems[i] == '--end--'):
+	        	i = i + 1
+	        	continue
             if (toolbar):
                  if (menuItems[i+4] != 't'):
                       i = i + 6
