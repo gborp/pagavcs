@@ -13,6 +13,8 @@
 
 package com.mucommander.file.icon.impl;
 
+import hu.pagavcs.mug.PagaVcsIntegration;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,7 +39,6 @@ import com.mucommander.file.util.ResourceLoader;
 import com.mucommander.io.SilenceableOutputStream;
 import com.mucommander.runtime.OsFamilies;
 import com.mucommander.runtime.OsVersion;
-import com.mucommander.ui.icon.CustomFileIconProvider;
 
 /**
  * Package-protected class which provides the
@@ -260,6 +261,6 @@ class SwingFileIconProviderImpl extends LocalFileIconProvider implements Cacheab
 			// icon = getSymlinkIcon(icon);
 		}
 
-		return CustomFileIconProvider.getSvnDecoratedFileIcon(icon, (java.io.File) localFile.getUnderlyingFileObject());
+		return PagaVcsIntegration.getSvnDecoratedFileIcon(icon, (java.io.File) localFile.getUnderlyingFileObject());
 	}
 }
