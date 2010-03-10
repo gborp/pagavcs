@@ -75,8 +75,13 @@ public class TablePopupMenu extends JPopupMenu {
 
 	private void pagaVcsMenu(AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked, FileSet markedFiles) {
 		try {
+			AbstractFile abstractFile = clickedFile;
+			if (abstractFile == null) {
+				abstractFile = currentFolder;
+			}
+
 			Socket socket = new Socket("localhost", 12905);
-			String strOut = "getmenuitems " + clickedFile.getAbsolutePath() + "\n";
+			String strOut = "getmenuitems " + abstractFile.getAbsolutePath() + "\n";
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			outToClient.write(strOut);
@@ -97,7 +102,7 @@ public class TablePopupMenu extends JPopupMenu {
 					br.readLine();
 					String command = br.readLine();
 
-					menuPagaVcs.add(new PagaVcsAction(label, command + " \"" + clickedFile.getAbsolutePath() + "\""));
+					menuPagaVcs.add(new PagaVcsAction(label, command + " \"" + abstractFile.getAbsolutePath() + "\""));
 					hasMenuItem = true;
 				}
 			}
