@@ -1,6 +1,8 @@
 package hu.pagavcs.bl;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
@@ -28,7 +30,7 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 public class FileStatusCache {
 
 	public enum STATUS {
-		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE, UNVERSIONED,
+		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE, UNVERSIONED, UNKNOWN
 	}
 
 	private static final int                 CACHE_SIZE    = 1000;
@@ -46,6 +48,10 @@ public class FileStatusCache {
 		statusClient = clientMgr.getStatusClient();
 		mapCache = new LruCache<File, StatusSlot>(CACHE_SIZE);
 		svnStatusHandler = new SvnStatusHandler();
+		Thread bgThread = new Thread(new BackgroundCalcer());
+		bgThread.setName("Background SVN status calculator");
+		bgThread.setDaemon(true);
+		bgThread.start();
 	}
 
 	public static FileStatusCache getInstance() {
@@ -117,6 +123,59 @@ public class FileStatusCache {
 				mapCache.put(file, slot);
 			}
 		}
+	}
+
+	private LinkedBlockingQueue<File> setCalc = new LinkedBlockingQueue<File>();
+
+	private class BackgroundCalcer implements Runnable {
+
+		public void run() {
+			try {
+				File fileHead;
+				while ((fileHead = setCalc.take()) != null) {
+					try {
+
+						ArrayList<File> lstFilesTo = new ArrayList<File>(256);
+						lstFilesTo.add(fileHead);
+						setCalc.drainTo(lstFilesTo);
+
+						for (File f : lstFilesTo) {
+							getStatus(f);
+						}
+
+					} catch (SVNException ex) {
+						Manager.handle(ex);
+					}
+				}
+			} catch (InterruptedException ex) {
+				Manager.handle(ex);
+			}
+		}
+
+	}
+
+	private void startCalcStatus(File file) {
+		setCalc.add(file);
+	}
+
+	public STATUS getStatusFast(File file) throws SVNException {
+
+		synchronized (mapCache) {
+			StatusSlot slot = mapCache.get(file);
+			if (slot != null) {
+				if (file.lastModified() != slot.lastModified || file.length() != slot.fileSize
+				        || ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD)) {
+					mapCache.remove(file);
+					startCalcStatus(file);
+				} else {
+					return slot.status;
+				}
+			}
+		}
+
+		startCalcStatus(file);
+
+		return STATUS.UNKNOWN;
 	}
 
 	public STATUS getStatus(File file) throws SVNException {

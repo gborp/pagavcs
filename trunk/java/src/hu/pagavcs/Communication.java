@@ -91,6 +91,8 @@ public class Communication {
 				return "pagavcs-svn";
 			case UNVERSIONED:
 				return "pagavcs-unversioned";
+			case UNKNOWN:
+				return "pagavcs-unknown";
 			default:
 				return "";
 		}
@@ -158,7 +160,7 @@ public class Communication {
 					String outStr = getFileEmblem(fileStatusCache.getStatus(new File(arg)));
 					outComm(socket, outStr);
 				} else if (command.equals("getfileinfonl")) {
-					String outStr = getFileEmblem(fileStatusCache.getStatus(new File(arg))) + "\n";
+					String outStr = getFileEmblem(fileStatusCache.getStatusFast(new File(arg))) + "\n";
 					outComm(socket, outStr);
 				} else if (command.equals("getemblem")) {
 					outCommEmblem(socket, arg);

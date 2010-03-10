@@ -34,6 +34,9 @@ import javax.swing.ImageIcon;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileProtocols;
 import com.mucommander.file.icon.FileIconProvider;
+import com.mucommander.ui.main.MainFrame;
+import com.mucommander.ui.main.WindowManager;
+import com.mucommander.ui.main.table.FileTable;
 
 /**
  * This {@link com.mucommander.file.icon.FileIconProvider} returns icons from
@@ -244,6 +247,43 @@ public class CustomFileIconProvider implements FileIconProvider {
 		}
 	}
 
+	static {
+		doPanelRefresh = new Object();
+		Thread refreshThread = new Thread(new RefreshPanels());
+		refreshThread.setName("PagaVCS emblem refresh job");
+		refreshThread.setDaemon(true);
+		refreshThread.start();
+	}
+
+	private static Object doPanelRefresh;
+
+	private static class RefreshPanels implements Runnable {
+
+		public void run() {
+
+			try {
+
+				while (true) {
+					synchronized (doPanelRefresh) {
+						doPanelRefresh.wait();
+					}
+					Thread.sleep(500);
+					MainFrame mainFrame = WindowManager.getCurrentMainFrame();
+					if (mainFrame != null) {
+						FileTable activeTable = mainFrame.getActiveTable();
+						FileTable inactiveTable = mainFrame.getInactiveTable();
+						activeTable.getFolderPanel().getFileTable().repaint();
+						inactiveTable.getFolderPanel().getFileTable().repaint();
+					}
+				}
+			} catch (InterruptedException ex) {
+				ex.printStackTrace();
+			}
+
+		}
+
+	}
+
 	public static synchronized Icon getSvnDecoratedFileIcon(Icon icon, File file) {
 
 		try {
@@ -264,16 +304,23 @@ public class CustomFileIconProvider implements FileIconProvider {
 			}
 
 			if (status != null && status.startsWith("pagavcs-")) {
-				ImageIcon overlayIcon = mapPagaVcsIcon.get(status.substring("pagavcs-".length()));
 
-				if (overlayIcon != null) {
-					BufferedImage bi = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+				if (status.equals("pagavcs-unknown")) {
+					synchronized (doPanelRefresh) {
+						doPanelRefresh.notifyAll();
+					}
+				} else {
+					ImageIcon overlayIcon = mapPagaVcsIcon.get(status.substring("pagavcs-".length()));
 
-					Graphics g = bi.getGraphics();
-					icon.paintIcon(null, g, 0, 0);
-					overlayIcon.paintIcon(null, g, 0, 8);
+					if (overlayIcon != null) {
+						BufferedImage bi = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
 
-					icon = new ImageIcon(bi);
+						Graphics g = bi.getGraphics();
+						icon.paintIcon(null, g, 0, 0);
+						overlayIcon.paintIcon(null, g, 0, 8);
+
+						icon = new ImageIcon(bi);
+					}
 				}
 			}
 
