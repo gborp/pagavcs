@@ -62,113 +62,111 @@ def sendRequest(request):
 
 class StartPagaVCSServerThread (threading.Thread):
 
-   def __init__(self):
-        threading.Thread.__init__(self)
-        pass
+	def __init__(self):
+		threading.Thread.__init__(self)
+		pass
 
-   def run ( self ):
-       global server_creating
-       executeCommand = EXECUTABLE+' ping'    
-       os.system(executeCommand)
-       server_creating = False
+	def run ( self ):
+		global server_creating
+		executeCommand = EXECUTABLE+' ping'    
+		os.system(executeCommand)
+		server_creating = False
 
 
 class EmblemExtensionSignature(nautilus.InfoProvider):
-    def __init__(self):
-        server_creating = True
-        StartPagaVCSServerThread().start()       
-        pass
-        
-    def update_file_info (self, file):
-        filename = urllib.unquote(file.get_uri()[7:])
-        data = sendRequest('getfileinfo '+filename)
-        if (data != ''):
-            file.add_emblem (data)           
+	def __init__(self):
+		server_creating = True
+		StartPagaVCSServerThread().start()       
+		pass
+	
+	def update_file_info (self, file):
+		filename = urllib.unquote(file.get_uri()[7:])
+		data = sendRequest('getfileinfo '+filename)
+		if (data != ''):
+			file.add_emblem (data)
 
 
 class PagaVCS(nautilus.MenuProvider):
-    def __init__(self):
-        #self.client = gconf.client_get_default()
-        pass
-        
-    def _do_command(self, menu, strFiles, command):
-       sendRequest(command+' '+strFiles)
-        
-    def _get_all_items(self, toolbar, strFiles):
-        if (not toolbar):
-            folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
-            folderitem.set_property('icon', 'pagavcs-logo')
-            submenu = nautilus.Menu()
-            folderitem.set_submenu(submenu)
-            actionNamePostfix = ''
-        else:
-            lstItems = []
-            actionNamePostfix = '-tb'
-        
-        
-        menuItemsString = ''
-        menuItemsString = sendRequest('getmenuitems '+strFiles)
-        menuItems = menuItemsString.split('\n')
+	def __init__(self):
+		#self.client = gconf.client_get_default()
+		pass
+	
+	def _do_command(self, menu, strFiles, command):
+		sendRequest(command+' '+strFiles)
+	
+	def _get_all_items(self, toolbar, strFiles):
+		if (not toolbar):
+			folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
+			folderitem.set_property('icon', 'pagavcs-logo')
+			submenu = nautilus.Menu()
+			folderitem.set_submenu(submenu)
+			actionNamePostfix = ''
+		else:
+			lstItems = []
+			actionNamePostfix = '-tb'
+		
+		
+		menuItemsString = ''
+		menuItemsString = sendRequest('getmenuitems '+strFiles)
+		menuItems = menuItemsString.split('\n')
+		
+		i = 0
+		while (i < (len(menuItems) - 1)):
+			
+			if (menuItems[i] == '--end--'):
+				i = i + 1
+				continue
+			
+			if (toolbar):
+				if (menuItems[i+4] != 't'):
+					i = i + 6
+					continue
+			
+			item = nautilus.MenuItem(menuItems[i]+actionNamePostfix, menuItems[i+1], menuItems[i+2])
+			item.set_property('icon', menuItems[i+3])
+			
+			item.connect('activate', self._do_command, strFiles, menuItems[i+5])
+			if (not toolbar):
+				submenu.append_item(item)
+			else:
+				lstItems.append(item)
+			i = i + 6
+		
+		if (not toolbar):
+			return folderitem,
+		else:
+			return lstItems
+	
+	
+	def get_file_items(self, window, files):
+		
+		if (len(files)<1):
+			return
+		
+		strFilesList = []
+		for file in files:
+			if file.get_uri_scheme() != 'file':        
+				return
+			filename = urllib.unquote(file.get_uri()[7:])
+			strFilesList.append('"')
+			strFilesList.append(filename)
+			strFilesList.append('" ')
+		
+		strFiles = ''.join(strFilesList)
+		#print ('get_file_items: '+strFiles)
+		return self._get_all_items(False, strFiles)
 
-        i = 0
-        while (i < (len(menuItems) - 1)):
-	        if (menuItems[i] == '--end--'):
-	        	i = i + 1
-	        	continue
-            if (toolbar):
-                 if (menuItems[i+4] != 't'):
-                      i = i + 6
-                      continue
-            
-            item = nautilus.MenuItem(menuItems[i]+actionNamePostfix, menuItems[i+1], menuItems[i+2])
-            item.set_property('icon', menuItems[i+3])
-            
-            
-            item.connect('activate', self._do_command, strFiles, menuItems[i+5])
-            if (not toolbar):
-                submenu.append_item(item)
-            else:
-                lstItems.append(item)
-            i = i + 6
-        
-        if (not toolbar):
-            return folderitem,    
-        else:
-            return lstItems
-    
-    
-    def get_file_items(self, window, files):
-    
-        if (len(files)<1):
-            return
-    
-        strFilesList = []
-        for file in files:
-            if file.get_uri_scheme() != 'file':        
-                return
-            filename = urllib.unquote(file.get_uri()[7:])
-            strFilesList.append('"')
-            strFilesList.append(filename)
-            strFilesList.append('" ')
-        
-        strFiles = ''.join(strFilesList)
-
-        #print ('get_file_items: '+strFiles)
-
-        return self._get_all_items(False, strFiles)
-
-    def get_background_items(self, window, file):
-    
-        if file.get_uri_scheme() != 'file':        
-            return
-        filename = urllib.unquote(file.get_uri()[7:])
-        
-            
-        return self._get_all_items(False, '"'+filename+'"')
-        
-    def get_toolbar_items(self, window, file):
-        if file.get_uri_scheme() != 'file':        
-            return
-        filename = urllib.unquote(file.get_uri()[7:])
-            
-        return self._get_all_items(True, '"'+filename+'"')
+	def get_background_items(self, window, file):
+		
+		if file.get_uri_scheme() != 'file':
+			return
+		filename = urllib.unquote(file.get_uri()[7:])
+		
+		return self._get_all_items(False, '"'+filename+'"')
+	
+	def get_toolbar_items(self, window, file):
+		if file.get_uri_scheme() != 'file':
+			return
+		filename = urllib.unquote(file.get_uri()[7:])
+		
+		return self._get_all_items(True, '"'+filename+'"')
