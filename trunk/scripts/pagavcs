@@ -36,13 +36,13 @@ function startserver {
 		fi
 	fi
 	
-    echo server is not running, start a new PagaVCS server
-    ${START_SERVER_CMD} &
+	echo server is not running, start a new PagaVCS server
+	${START_SERVER_CMD} &
 
-    # waiting server to boot up    
-    while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
-       sleep 0.5s
-    done
+	# waiting server to boot up    
+	while [ ! -f /tmp/pagavcs/server-running-indicator ]; do
+		sleep 0.5s
+	done
 }
 
 # display help
@@ -85,13 +85,14 @@ fi
 whoami=`whoami`
 if [ "${whoami}" == "root" ];
 then
-   echo PagaVCS should not run as root!
+	echo PagaVCS should not run as root!
 fi
 
 if [ ! -f /tmp/pagavcs/server-running-indicator ];
 then
-   #echo server not running, start a new PagaVCS server
-   startserver
+	#echo server not running, start a new PagaVCS server
+	startserver
+	exec 5<>/dev/tcp/localhost/12905
 fi
 
 for x in "$@"; do
