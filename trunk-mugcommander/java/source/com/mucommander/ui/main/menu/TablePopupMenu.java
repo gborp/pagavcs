@@ -13,18 +13,10 @@
 
 package com.mucommander.ui.main.menu;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import hu.pagavcs.mug.PagaVcsIntegration;
 
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -50,74 +42,6 @@ public class TablePopupMenu extends JPopupMenu {
 	/** Parent MainFrame instance */
 	private MainFrame mainFrame;
 
-	private class PagaVcsAction extends AbstractAction {
-
-		private final String command;
-
-		public PagaVcsAction(String label, String command) {
-			super(label);
-			this.command = command;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			try {
-				Socket socket = new Socket("localhost", 12905);
-				BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-				outToClient.write(command);
-				outToClient.flush();
-				socket.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-	}
-
-	private void pagaVcsMenu(AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked, FileSet markedFiles) {
-		try {
-			AbstractFile abstractFile = clickedFile;
-			if (abstractFile == null) {
-				abstractFile = currentFolder;
-			}
-
-			Socket socket = new Socket("localhost", 12905);
-			String strOut = "getmenuitems " + abstractFile.getAbsolutePath() + "\n";
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			outToClient.write(strOut);
-			outToClient.flush();
-
-			boolean end = false;
-			boolean hasMenuItem = false;
-			JMenu menuPagaVcs = new JMenu("PagaVcs");
-
-			while (!end) {
-				String line = br.readLine();
-				if ("--end--".equals(line)) {
-					end = true;
-				} else {
-					String label = br.readLine();
-					br.readLine();
-					br.readLine();
-					br.readLine();
-					String command = br.readLine();
-
-					menuPagaVcs.add(new PagaVcsAction(label, command + " \"" + abstractFile.getAbsolutePath() + "\""));
-					hasMenuItem = true;
-				}
-			}
-			socket.close();
-			if (hasMenuItem) {
-				add(menuPagaVcs);
-			}
-		} catch (UnknownHostException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-	}
-
 	/**
 	 * Creates a new TablePopupMenu.
 	 * 
@@ -136,7 +60,7 @@ public class TablePopupMenu extends JPopupMenu {
 	public TablePopupMenu(MainFrame mainFrame, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked, FileSet markedFiles) {
 		this.mainFrame = mainFrame;
 
-		pagaVcsMenu(currentFolder, clickedFile, parentFolderClicked, markedFiles);
+		PagaVcsIntegration.pagaVcsMenu(this, currentFolder, clickedFile, parentFolderClicked, markedFiles);
 
 		// 'Open' displayed if a single file was clicked
 		if (clickedFile != null || parentFolderClicked) {

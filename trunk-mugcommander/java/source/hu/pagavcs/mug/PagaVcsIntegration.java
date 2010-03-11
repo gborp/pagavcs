@@ -1,6 +1,7 @@
 package hu.pagavcs.mug;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,23 +14,44 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
 
+import com.mucommander.file.AbstractFile;
+import com.mucommander.file.util.FileSet;
 import com.mucommander.ui.icon.CustomFileIconProvider;
 import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.main.WindowManager;
+import com.mucommander.ui.main.menu.TablePopupMenu;
 import com.mucommander.ui.main.table.FileTable;
 
 public class PagaVcsIntegration {
 
+	private static boolean                    initialized;
 	private static HashMap<String, ImageIcon> mapPagaVcsIcon;
 
+	private static Socket getSocket() throws IOException {
+		try {
+			return new Socket("localhost", 12905);
+		} catch (Exception ex) {
+			return createAndGetSocket();
+		}
+	}
+
+	private static Socket createAndGetSocket() throws IOException {
+		Runtime.getRuntime().exec("/usr/bin/pagavcs ping");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException ex) {}
+		return new Socket("localhost", 12905);
+	}
+
 	private static void initOnePagaVcsIcon(String name, int width, int height) throws UnknownHostException, IOException, ClassNotFoundException {
-		Socket socket;
 		String strOut = "getemblem " + name + " " + width + " " + height + "\n";
 
-		socket = new Socket("localhost", 12905);
+		Socket socket = getSocket();
 
 		BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		outToClient.write(strOut);
@@ -41,7 +63,7 @@ public class PagaVcsIntegration {
 	}
 
 	private static void initPagaVcsIcon(int width, int height) throws UnknownHostException, IOException, ClassNotFoundException {
-		if (mapPagaVcsIcon == null) {
+		if (!initialized) {
 			mapPagaVcsIcon = new HashMap<String, ImageIcon>();
 			initOnePagaVcsIcon("added", width, height);
 			initOnePagaVcsIcon("conflict", width, height);
@@ -53,6 +75,7 @@ public class PagaVcsIntegration {
 			initOnePagaVcsIcon("readonly", width, height);
 			initOnePagaVcsIcon("svn", width, height);
 			initOnePagaVcsIcon("unversioned", width, height);
+			initialized = true;
 		}
 	}
 
@@ -101,7 +124,7 @@ public class PagaVcsIntegration {
 
 				initPagaVcsIcon(8, 8);
 
-				Socket socket = new Socket("localhost", 12905);
+				Socket socket = getSocket();
 				String strOut = "getfileinfonl " + file.getPath() + "\n";
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -133,14 +156,80 @@ public class PagaVcsIntegration {
 				}
 			}
 
-		} catch (UnknownHostException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (ClassNotFoundException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return icon;
 
 	}
+
+	public static void pagaVcsMenu(TablePopupMenu tablePopupMenu, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked,
+	        FileSet markedFiles) {
+		try {
+			AbstractFile abstractFile = clickedFile;
+			if (abstractFile == null) {
+				abstractFile = currentFolder;
+			}
+
+			Socket socket = getSocket();
+			String strOut = "getmenuitems " + abstractFile.getAbsolutePath() + "\n";
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			outToClient.write(strOut);
+			outToClient.flush();
+
+			boolean end = false;
+			boolean hasMenuItem = false;
+			JMenu menuPagaVcs = new JMenu("PagaVcs");
+
+			while (!end) {
+				String line = br.readLine();
+				if ("--end--".equals(line)) {
+					end = true;
+				} else {
+					String label = br.readLine();
+					br.readLine();
+					br.readLine();
+					br.readLine();
+					String command = br.readLine();
+
+					menuPagaVcs.add(new PagaVcsAction(label, command + " \"" + abstractFile.getAbsolutePath() + "\""));
+					hasMenuItem = true;
+				}
+			}
+			socket.close();
+			if (hasMenuItem) {
+				tablePopupMenu.add(menuPagaVcs);
+			}
+		} catch (UnknownHostException ex) {
+			ex.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	private static class PagaVcsAction extends AbstractAction {
+
+		private final String command;
+
+		public PagaVcsAction(String label, String command) {
+			super(label);
+			this.command = command;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Socket socket = new Socket("localhost", 12905);
+				BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				outToClient.write(command);
+				outToClient.flush();
+				socket.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+	}
+
 }

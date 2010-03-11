@@ -1,4 +1,4 @@
-<project name="muCommander" default="dist" basedir=".">
+<project name="mugCommander" default="dist" basedir=".">
 	
   <!-- set global properties for this build -->
   <property name="src" location="source"/>
@@ -49,7 +49,7 @@
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}"/>
 
-    <jar destfile="${dist}/mucommander.jar" >
+    <jar destfile="${dist}/mugcommander.jar" >
     	<zipfileset dir="${build}" prefix="" />
 		<zipfileset src="${lib}/include/ant-bzip2.jar" />
 		<zipfileset src="${lib}/include/commons-codec.jar" />
