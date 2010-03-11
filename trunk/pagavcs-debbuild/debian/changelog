@@ -1,7 +1,17 @@
+pagavcs (1.3.43) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * new: #44 [commit-gui] select/deselect with pressing space
+  * fix: #43 [merge] entering number starting with # causes exception
+  * fix: #40: [cli] better CLI interface
+  * fix: PagaVCS sometimes cannot restart properly
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 08 Mar 2010 22:31:27 +0100
+
 pagavcs (1.3.42) karmic; urgency=low
 
   [ Gábor Pápai ]
-  * new: muCommander integration
+  * new: muCommander integration (it needs modded muCommander (=mugCommander))
   
  -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 08 Mar 2010 22:31:27 +0100
 
