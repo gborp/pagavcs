@@ -1,5 +1,6 @@
 package hu.pagavcs.bl;
 
+import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.UpdateGui;
 import hu.pagavcs.gui.Working;
 import hu.pagavcs.operation.Cleanup;
@@ -33,10 +34,47 @@ public class SvnHelper {
 
 	private static SVNRevision decodeSVNRevision(String str) {
 		str = str.trim();
+		if (str.charAt(0) == '#') {
+			str = str.substring(1);
+		}
 		if (str.equalsIgnoreCase("head")) {
 			return SVNRevision.HEAD;
+		} else if (str.equalsIgnoreCase("base")) {
+			return SVNRevision.BASE;
+		} else if (str.equalsIgnoreCase("committed")) {
+			return SVNRevision.COMMITTED;
+		} else if (str.equalsIgnoreCase("previous")) {
+			return SVNRevision.PREVIOUS;
+		} else if (str.equalsIgnoreCase("working")) {
+			return SVNRevision.WORKING;
 		}
 		return SVNRevision.create(Long.valueOf(str));
+	}
+
+	public static Collection<SVNRevisionRange> getRevisionRanges(String revisionRange, boolean reverseMerge) throws PagaException {
+		Collection<SVNRevisionRange> rangesToMerge = new ArrayList<SVNRevisionRange>();
+		for (String range : revisionRange.split(",")) {
+			range = range.trim();
+
+			String[] rangeSplitted = range.split("-");
+			SVNRevision startRevision = decodeSVNRevision(rangeSplitted[0]);
+			SVNRevision endRevision;
+			if (rangeSplitted.length > 2) {
+				throw new PagaException(PagaExceptionType.INVALID_PARAMETERS);
+			}
+			if (rangeSplitted.length == 2) {
+				endRevision = decodeSVNRevision(rangeSplitted[1]);
+			} else {
+				endRevision = SVNRevision.create(startRevision.getNumber());
+			}
+			if (reverseMerge) {
+				rangesToMerge.add(new SVNRevisionRange(endRevision, SVNRevision.create(startRevision.getNumber() - 1)));
+			} else {
+				rangesToMerge.add(new SVNRevisionRange(SVNRevision.create(startRevision.getNumber() - 1), endRevision));
+			}
+		}
+
+		return rangesToMerge;
 	}
 
 	public static void doMerge(Cancelable cancelable, String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge) throws Exception {
@@ -54,24 +92,7 @@ public class SvnHelper {
 			boolean force = false;
 			boolean dryRun = false;
 			boolean recordOnly = false;
-			Collection<SVNRevisionRange> rangesToMerge = new ArrayList<SVNRevisionRange>();
-			String[] ranges = revisionRange.split(",");
-			for (String range : ranges) {
-				range = range.trim();
-				String[] rangeSplitted = range.split("-");
-				SVNRevision startRevision = decodeSVNRevision(rangeSplitted[0]);
-				SVNRevision endRevision;
-				if (rangeSplitted.length > 1) {
-					endRevision = decodeSVNRevision(rangeSplitted[0]);
-				} else {
-					endRevision = SVNRevision.create(startRevision.getNumber());
-				}
-				if (reverseMerge) {
-					rangesToMerge.add(new SVNRevisionRange(endRevision, SVNRevision.create(startRevision.getNumber() - 1)));
-				} else {
-					rangesToMerge.add(new SVNRevisionRange(SVNRevision.create(startRevision.getNumber() - 1), endRevision));
-				}
-			}
+			Collection<SVNRevisionRange> rangesToMerge = getRevisionRanges(revisionRange, reverseMerge);
 
 			diffClient.setEventHandler(new UpdateEventHandler(cancelable, updateGui));
 			updateGui.setStatus(ContentStatus.STARTED);
