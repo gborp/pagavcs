@@ -5,7 +5,7 @@ public class PagaException extends Exception {
 	private final PagaExceptionType type;
 
 	public enum PagaExceptionType {
-		LOGIN_FAILED, CONNECTION_ERROR, UNIMPLEMENTED
+		LOGIN_FAILED, CONNECTION_ERROR, UNIMPLEMENTED, INVALID_PARAMETERS
 	}
 
 	public PagaException(PagaExceptionType type) {
