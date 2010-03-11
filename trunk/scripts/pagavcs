@@ -96,24 +96,28 @@ then
 fi
 
 for x in "$@"; do
-	echo -n '"' >&5 2> /dev/null
-	echo -n $x >&5 2> /dev/null
+	echo -n '"'  >&5 2> /dev/null
+	echo -n $x   >&5 2> /dev/null
 	echo -n '" ' >&5 2> /dev/null
 done
 echo "" >&5 2> /dev/null
+RETVAL=$?
 cat <&5
 
 #echo "send command to PagaVCS-server: $@"
 #echo $args >&5 2> /dev/null
 #RETVAL=$?
-#if [ $RETVAL != 0 ];
-#then
-#    #echo "failed, (re)starting PagaVCS-server"
-#    rm -f /tmp/pagavcs/server-running-indicator
-#    startserver
-#    #echo "resend command to PagaVCS-server: $@"
-#    echo "$argsToPass" >&5 2> /dev/null
-#else
-#echo successfull
-#fi
+if [ $RETVAL != 0 ];
+then
+	rm -f /tmp/pagavcs/server-running-indicator
+	startserver
+	exec 5<>/dev/tcp/localhost/12905
+	for x in "$@"; do
+		echo -n '"'  >&5 2> /dev/null
+		echo -n $x   >&5 2> /dev/null
+		echo -n '" ' >&5 2> /dev/null
+	done
+	echo "" >&5 2> /dev/null
+	cat <&5
+fi
 
