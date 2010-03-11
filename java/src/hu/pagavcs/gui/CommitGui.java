@@ -24,6 +24,8 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -108,6 +110,15 @@ public class CommitGui implements Working, Refreshable {
 		tblCommit.addMouseListener(new PopupupMouseListener());
 		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(tmdlCommit));
 		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		tblCommit.addKeyListener(new KeyAdapter() {
+
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == ' ') {
+					btnSelectDeselectSelected.doClick();
+				}
+			}
+
+		});
 		new StatusCellRendererForCommitListItem(tblCommit);
 		JScrollPane spCommitList = new JScrollPane(tblCommit);
 
