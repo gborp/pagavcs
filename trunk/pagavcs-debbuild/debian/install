@@ -1,6 +1,8 @@
 debian/input/pagavcs.jar /usr/share/pagavcs/bin
+debian/input/mugcommander.jar /usr/share/pagavcs/bin
 debian/input/icon.png /usr/share/pagavcs/data
 debian/input/pagavcs /usr/bin
 debian/input/pagavcs-nautilus.py /usr/lib/nautilus/extensions-2.0/python
+debian/input/mugcommander /usr/bin
 debian/input/doc/* /usr/share/doc/pagavcs
 debian/input/icons/* /usr/share/icons
