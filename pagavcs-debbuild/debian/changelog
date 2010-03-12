@@ -1,3 +1,10 @@
+pagavcs (1.4.1) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * fix: mugCommander: make quick keys more similar to total commander: ctrl+r=refresh; alt+f5=pack; alt+f9=unpack; f9=run; ctrl+h=show/hide hidden files
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 11 Mar 2010 21:23:12 +0100
+
 pagavcs (1.4.0) karmic; urgency=low
 
   [ Gábor Pápai ]
