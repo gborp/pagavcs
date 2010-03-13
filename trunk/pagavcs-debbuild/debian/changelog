@@ -1,3 +1,11 @@
+pagavcs (1.4.2) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * mugCommander: find file: name pattern, find in archive, find text, case sensitive/insensitive mode, character encoding
+  * PagaVCS fix: more bulletproof socket-communication
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 13 Mar 2010 10:19:23 +0100
+
 pagavcs (1.4.1) karmic; urgency=low
 
   [ Gábor Pápai ]
