@@ -188,6 +188,10 @@ public class Communication {
 									if (c == '\\') {
 										inBackslash = true;
 									} else {
+										if (sb == null) {
+											// wrong file url
+											break;
+										}
 										sb.append(c);
 									}
 								}
