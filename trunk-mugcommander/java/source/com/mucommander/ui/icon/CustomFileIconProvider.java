@@ -16,7 +16,6 @@ package com.mucommander.ui.icon;
 import hu.pagavcs.mug.PagaVcsIntegration;
 
 import java.awt.Dimension;
-import java.io.File;
 import java.util.Hashtable;
 
 import javax.swing.Icon;
@@ -203,10 +202,10 @@ public class CustomFileIconProvider implements FileIconProvider {
 	// ///////////////////////////////////
 
 	public Icon getFileIcon(AbstractFile file, Dimension preferredResolution) {
-		return PagaVcsIntegration.getSvnDecoratedFileIcon(getFileIcon2(file, preferredResolution), new File(file.getAbsolutePath()));
+		return PagaVcsIntegration.getSvnDecoratedFileIcon(getFileIcon2(file, preferredResolution), file);
 	}
 
-	public Icon getFileIcon2(AbstractFile file, Dimension preferredResolution) {
+	protected Icon getFileIcon2(AbstractFile file, Dimension preferredResolution) {
 		// Call init, if not done already
 		if (!initialized)
 			init();

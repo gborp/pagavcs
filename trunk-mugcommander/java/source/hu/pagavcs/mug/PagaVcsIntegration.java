@@ -12,14 +12,18 @@ import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
+import javax.swing.JSeparator;
 
+import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
+import com.mucommander.file.ArchiveEntry;
 import com.mucommander.file.util.FileSet;
 import com.mucommander.ui.icon.CustomFileIconProvider;
 import com.mucommander.ui.main.MainFrame;
@@ -34,7 +38,10 @@ public class PagaVcsIntegration {
 
 	private static Socket getSocket() throws IOException {
 		try {
-			return new Socket("localhost", 12905);
+			Socket socket = new Socket("localhost", 12905);
+			// 10 secundum
+			socket.setSoTimeout(10 * 1000);
+			return socket;
 		} catch (Exception ex) {
 			return createAndGetSocket();
 		}
@@ -116,6 +123,14 @@ public class PagaVcsIntegration {
 
 	}
 
+	public static synchronized Icon getSvnDecoratedFileIcon(Icon icon, AbstractFile file) {
+		File f = new File(file.getAbsolutePath());
+		if (f.exists()) {
+			return getSvnDecoratedFileIcon(icon, f);
+		}
+		return icon;
+	}
+
 	public static synchronized Icon getSvnDecoratedFileIcon(Icon icon, File file) {
 
 		try {
@@ -163,16 +178,59 @@ public class PagaVcsIntegration {
 
 	}
 
+	private static AbstractFile getRealFile(AbstractFile file) {
+		if (file instanceof AbstractArchiveEntryFile) {
+			AbstractArchiveEntryFile a = ((AbstractArchiveEntryFile) file);
+			ArchiveEntry entry = a.getEntry();
+			if (entry instanceof FindFileArchiveEntry) {
+				AbstractFile realFile = ((FindFileArchiveEntry) entry).getRealFile();
+				return realFile;
+			}
+		}
+		return file;
+	}
+
 	public static void pagaVcsMenu(TablePopupMenu tablePopupMenu, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked,
 	        FileSet markedFiles) {
 		try {
-			AbstractFile abstractFile = clickedFile;
-			if (abstractFile == null) {
-				abstractFile = currentFolder;
+			ArrayList<String> lstFile = new ArrayList<String>();
+
+			if (clickedFile == null) {
+				String absPath = getRealFile(currentFolder).getAbsolutePath();
+				if (!new File(absPath).exists()) {
+					return;
+				}
+				lstFile.add(absPath);
+			} else {
+
+				if (!markedFiles.contains(clickedFile)) {
+					markedFiles = new FileSet();
+					markedFiles.add(clickedFile);
+				}
+
+				for (AbstractFile li : markedFiles) {
+					String absPath = getRealFile(li).getAbsolutePath();
+					if (!new File(absPath).exists()) {
+						return;
+					}
+					lstFile.add(absPath);
+				}
 			}
 
+			if (lstFile.isEmpty()) {
+				return;
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (String file : lstFile) {
+				sb.append('"');
+				sb.append(file);
+				sb.append('"');
+			}
+			String fileParamsString = sb.toString();
+
 			Socket socket = getSocket();
-			String strOut = "getmenuitems " + abstractFile.getAbsolutePath() + "\n";
+			String strOut = "getmenuitems " + fileParamsString + "\n";
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			outToClient.write(strOut);
@@ -193,13 +251,14 @@ public class PagaVcsIntegration {
 					br.readLine();
 					String command = br.readLine();
 
-					menuPagaVcs.add(new PagaVcsAction(label, command + " \"" + abstractFile.getAbsolutePath() + "\""));
+					menuPagaVcs.add(new PagaVcsAction(label, command + " " + fileParamsString + "\n"));
 					hasMenuItem = true;
 				}
 			}
 			socket.close();
 			if (hasMenuItem) {
 				tablePopupMenu.add(menuPagaVcs);
+				tablePopupMenu.add(new JSeparator());
 			}
 		} catch (UnknownHostException ex) {
 			ex.printStackTrace();
