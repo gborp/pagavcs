@@ -5,19 +5,15 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import com.mucommander.file.AbstractFile;
-import com.mucommander.file.UnsupportedFileOperationException;
 import com.mucommander.text.Translator;
 import com.mucommander.ui.action.ActionProperties;
 import com.mucommander.ui.action.impl.AddBookmarkAction;
@@ -51,6 +47,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 	// Dialog's width has to be at most 400
 	private final static Dimension MAXIMUM_DIALOG_DIMENSION = new Dimension(400, 10000);
 	private final MainFrame        mainFrame;
+	private String                 findInProgress;
 
 	public FindFileDialog(MainFrame mainFrame) {
 		super(mainFrame, ActionProperties.getActionLabel(AddBookmarkAction.Descriptor.ACTION_ID), mainFrame);
@@ -93,7 +90,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		btnCancel.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				cancelSearch();
 			}
 		});
 		contentPane.add(DialogToolkit.createOKCancelPanel(btnStartSearch, btnCancel, getRootPane(), this), BorderLayout.SOUTH);
@@ -110,105 +107,65 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		showDialog();
 	}
 
-	private void startSearch(AbstractFile currentFolder) {
-		try {
-			String searchFileName = nameField.getText();
-			String searchText = sfSearchText.getText();
-			String searchTextEncoding = sfSearchTextEncoding.getText();
-			boolean caseSensitive = cbCaseSensitive.isSelected();
-			boolean searchInArchive = cbSearchInArchive.isSelected();
-			Charset searchEncoding = null;
-
-			searchFileName = searchFileName.trim();
-			searchTextEncoding = searchTextEncoding.trim();
-			if (searchFileName.isEmpty()) {
-				searchFileName = "*";
-			}
-
-			searchFileName = searchFileName.replace(".", "\\.");
-			searchFileName = searchFileName.replace("*", ".*");
-
-			if (!searchText.isEmpty()) {
-
-				if (!caseSensitive) {
-					searchText = searchText.toUpperCase();
-				}
-
-				if (searchTextEncoding.isEmpty()) {
-					searchTextEncoding = "ISO-8859-1";
-				}
-				searchEncoding = Charset.forName(searchTextEncoding);
-			} else {
-				searchText = null;
-			}
-
-			String findId = currentFolder + "|" + searchFileName + "|" + searchText + "|" + caseSensitive + "|" + searchInArchive + "|" + new Date();
-
-			FindManager.getInstance().createResults(findId);
-
-			search(findId, currentFolder, searchFileName, searchText, searchEncoding, caseSensitive, searchInArchive);
+	private void cancelSearch() {
+		if (findInProgress == null) {
 			dispose();
+		} else {
+			FindManager.getInstance().cancelSearch(findInProgress);
+		}
 
-			mainFrame.getActivePanel().tryChangeCurrentFolder(new FindFileArchiveFile(findId, currentFolder));
+	}
+
+	private void startSearch(final AbstractFile currentFolder) {
+		if (findInProgress != null) {
+			return;
+		}
+		try {
+			final String searchFileName = nameField.getText();
+			final String searchText = sfSearchText.getText();
+			final String searchTextEncoding = sfSearchTextEncoding.getText();
+			final boolean caseSensitive = cbCaseSensitive.isSelected();
+			final boolean searchInArchive = cbSearchInArchive.isSelected();
+			final String findId = currentFolder + "|" + searchFileName + "|" + searchText + "|" + caseSensitive + "|" + searchInArchive + "|" + new Date();
+
+			findInProgress = findId;
+
+			btnStartSearch.setText("Searching...");
+
+			Thread searchThread = new Thread(new Runnable() {
+
+				public void run() {
+
+					FindManager.getInstance().startSearch(mainFrame, findId, currentFolder, searchFileName, searchText, searchTextEncoding, caseSensitive,
+					        searchInArchive);
+
+					findInProgress = null;
+					if (FindManager.getInstance().isCancel(findId)) {
+						FindManager.getInstance().removeCancel(findId);
+						SwingUtilities.invokeLater(new Runnable() {
+
+							public void run() {
+								btnStartSearch.setText("Start search");
+							}
+						});
+					} else {
+						SwingUtilities.invokeLater(new Runnable() {
+
+							public void run() {
+								FindFileDialog.this.dispose();
+							}
+						});
+					}
+				}
+
+			});
+			searchThread.setName("Search");
+			searchThread.setDaemon(true);
+			searchThread.start();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	private void search(String findId, AbstractFile file, String searchFileName, String searchText, Charset searchEncoding, boolean caseSensitive,
-	        boolean searchInArchive) {
-		if (file.isDirectory() || (searchInArchive && file.isBrowsable())) {
-			try {
-				for (AbstractFile child : file.ls()) {
-					search(findId, child, searchFileName, searchText, searchEncoding, caseSensitive, searchInArchive);
-				}
-			} catch (UnsupportedFileOperationException ex) {} catch (IOException ex) {}
-		} else {
-			if (file.getName().matches(searchFileName)) {
-				if (searchText == null) {
-					FindManager.getInstance().addResult(findId, file);
-				} else {
-					try {
-						searchText(findId, file, searchText, searchEncoding, caseSensitive);
-					} catch (UnsupportedFileOperationException ex) {} catch (IOException ex) {}
-				}
-			}
-		}
-	}
-
-	private void searchText(String findId, AbstractFile file, String searchText, Charset searchEncoding, boolean caseSensitive)
-	        throws UnsupportedFileOperationException, IOException {
-
-		InputStreamReader in = new InputStreamReader(new BufferedInputStream(file.getInputStream(), 4 * 32768), searchEncoding);
-
-		int j = 0;
-		boolean found = false;
-
-		int data;
-		while ((data = in.read()) != -1) {
-
-			char c = searchText.charAt(j);
-			if (!caseSensitive) {
-				data = Character.toUpperCase(data);
-			}
-			if (data == c) {
-				j++;
-				if (j == searchText.length()) {
-					found = true;
-					break;
-				}
-			} else {
-				j = 0;
-			}
-		}
-
-		in.close();
-
-		if (found) {
-			FindManager.getInstance().addResult(findId, file);
-		}
-
 	}
 
 	public void actionPerformed(ActionEvent e) {}
