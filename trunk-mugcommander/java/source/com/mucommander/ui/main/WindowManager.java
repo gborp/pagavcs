@@ -138,11 +138,6 @@ public class WindowManager implements WindowListener, ConfigurationListener {
 
 		if (lnfName == null)
 			AppLogger.fine("Could load look'n feel from preferences");
-
-		// FIXME
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {}
 	}
 
 	/**
