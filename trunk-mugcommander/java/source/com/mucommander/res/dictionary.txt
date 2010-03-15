@@ -16186,3 +16186,7 @@ recent_executed_files_quick_list.empty_message:RU:Не найдено недав
 #Pack.label:DA:Komprimer filer
 #Pack.label:UA:Стиснути файли
 #Pack.label:AR:أرشفة الملفات
+
+FindFile.label:EN:Find File
+
+FindFile.tooltip:EN:Opens Find File dialog 
