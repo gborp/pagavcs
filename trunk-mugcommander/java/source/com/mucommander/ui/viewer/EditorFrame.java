@@ -19,7 +19,32 @@
 
 package com.mucommander.ui.viewer;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+
 import com.mucommander.AppLogger;
+import com.mucommander.conf.impl.MuConfiguration;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileFactory;
 import com.mucommander.file.FileProtocols;
@@ -35,16 +60,6 @@ import com.mucommander.ui.helper.MenuToolkit;
 import com.mucommander.ui.helper.MnemonicHelper;
 import com.mucommander.ui.layout.AsyncPanel;
 import com.mucommander.ui.main.MainFrame;
-
-import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 
 /**
@@ -94,6 +109,7 @@ public class EditorFrame extends JFrame implements ActionListener {
         setResizable(true);
 
         initContentPane();
+		loadSize();
     }
 
     /**
@@ -303,6 +319,25 @@ public class EditorFrame extends JFrame implements ActionListener {
         }			
     }
 
+	public void loadSize() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = MuConfiguration.getIntegerVariable(MuConfiguration.EDITOR_FRAME_X);
+		int y = MuConfiguration.getIntegerVariable(MuConfiguration.EDITOR_FRAME_Y);
+		int width = MuConfiguration.getIntegerVariable(MuConfiguration.EDITOR_FRAME_WIDTH);
+		int height = MuConfiguration.getIntegerVariable(MuConfiguration.EDITOR_FRAME_HEIGHT);
+		if (width != 0 && height != 0 && width < screenSize.width && height < screenSize.height) {
+			setBounds(new Rectangle(x, y, width, height));
+		}
+	}
+
+	public void saveSize() {
+		Rectangle bounds = getBounds();
+		MuConfiguration.setVariable(MuConfiguration.EDITOR_FRAME_X, (int) bounds.getX());
+		MuConfiguration.setVariable(MuConfiguration.EDITOR_FRAME_Y, (int) bounds.getY());
+		MuConfiguration.setVariable(MuConfiguration.EDITOR_FRAME_WIDTH, (int) bounds.getWidth());
+		MuConfiguration.setVariable(MuConfiguration.EDITOR_FRAME_HEIGHT, (int) bounds.getHeight());
+	}
+
 
     ////////////////////////
     // Overridden methods //
@@ -319,9 +354,14 @@ public class EditorFrame extends JFrame implements ActionListener {
     }
 
 
+
     @Override
     public void dispose() {
-        if(askSave())   /// Returns true if the file does not have any unsaved change or if the user refused to save the changes
-            super.dispose();
+		// Returns true if the file does not have any unsaved change or if the
+		// user refused to save the changes
+		if (askSave()) {
+			saveSize();
+			super.dispose();
+		}
     }
 }

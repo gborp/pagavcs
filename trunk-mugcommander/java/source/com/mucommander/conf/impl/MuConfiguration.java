@@ -18,6 +18,10 @@
 
 package com.mucommander.conf.impl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
 import com.mucommander.RuntimeConstants;
 import com.mucommander.conf.Configuration;
 import com.mucommander.conf.ConfigurationException;
@@ -28,10 +32,6 @@ import com.mucommander.runtime.JavaVersions;
 import com.mucommander.runtime.OsFamilies;
 import com.mucommander.ui.icon.FileIcons;
 import com.mucommander.ui.main.table.Column;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * muCommander specific wrapper for the <code>com.mucommander.conf</code> API.
@@ -506,6 +506,20 @@ public class MuConfiguration {
     public static final String  LEFT_TREE_WIDTH                   = TREE_SECTION + "." + LEFT + "." + "width";
     public static final String  RIGHT_TREE_WIDTH                  = TREE_SECTION + "." + RIGHT + "." + "width";
 
+	// - Last window variables -----------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Section describing known information about the editor frame. */
+	public static final String         EDITOR_FRAME_SECTION                        = "editor_frame";
+	/** Last Editor Frame known extended state. */
+	public static final String         EDITOR_FRAME_EXTENDED_STATE                 = EDITOR_FRAME_SECTION + '.' + "extended_state";
+	/** Last Editor Frame known x position. */
+	public static final String         EDITOR_FRAME_X                              = EDITOR_FRAME_SECTION + '.' + "x";
+	/** Last Editor Frame known y position. */
+	public static final String         EDITOR_FRAME_Y                              = EDITOR_FRAME_SECTION + '.' + "y";
+	/** Last Editor Frame known width. */
+	public static final String         EDITOR_FRAME_WIDTH                          = EDITOR_FRAME_SECTION + '.' + "width";
+	/** Last Editor Frame known height. */
+	public static final String         EDITOR_FRAME_HEIGHT                         = EDITOR_FRAME_SECTION + '.' + "height";
 
     // - Instance fields -----------------------------------------------------
     // -----------------------------------------------------------------------
