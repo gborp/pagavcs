@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 
 import com.mucommander.file.AbstractFile;
 import com.mucommander.text.Translator;
+import com.mucommander.ui.action.ActionProperties;
 import com.mucommander.ui.dialog.DialogToolkit;
 import com.mucommander.ui.dialog.FocusDialog;
 import com.mucommander.ui.layout.XAlignedComponentPanel;
@@ -48,10 +49,8 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 	private String                 findInProgress;
 
 	public FindFileDialog(MainFrame mainFrame) {
-		// super(mainFrame,
-		// ActionProperties.getActionLabel(FindFileAction.Descriptor.ACTION_ID),
-		// mainFrame);
-		super(mainFrame, "Find File", mainFrame);
+		super(mainFrame, ActionProperties.getActionLabel(FindFileAction.Descriptor.ACTION_ID), mainFrame);
+		// super(mainFrame, "Find File", mainFrame);
 		this.mainFrame = mainFrame;
 
 		Container contentPane = getContentPane();
