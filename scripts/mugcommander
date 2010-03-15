@@ -13,4 +13,4 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
-java -Xmx121m -jar /usr/share/pagavcs/bin/mugcommander.jar
+java -Xmx121m -server -XX:+DoEscapeAnalysis  -DGNOME_DESKTOP_SESSION_ID=$GNOME_DESKTOP_SESSION_ID -DKDE_FULL_SESSION=$KDE_FULL_SESSION -DKDE_SESSION_VERSION=$KDE_SESSION_VERSION -jar /usr/share/pagavcs/bin/mugcommander.jar
