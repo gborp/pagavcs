@@ -1,10 +1,12 @@
-pagavcs (1.4.2) karmic; urgency=low
+pagavcs (1.4.3) karmic; urgency=low
 
   [ Gábor Pápai ]
-  * mugCommander: find file: name pattern, find in archive, find text, case sensitive/insensitive mode, character encoding
-  * PagaVCS fix: more bulletproof socket-communication
+  * mugCommander: new: add start menu entry for mugCommander by the installer
+  * mugCommander: new: make file search cancellable
+  * mugCommander: new: add "Find File" to menu (file)
+  * mugCommander: fix: editor/viewer windows sometimes displays empty (until a resize event) and also remember editor/viewer window's positions and open in that size on next displaying
   
- -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 13 Mar 2010 10:19:23 +0100
+ -- Gábor Pápai <gabor.papai@gmail.com> Mon, 15 Mar 2010 11:12:30 +0100
 
 pagavcs (1.4.1) karmic; urgency=low
 
