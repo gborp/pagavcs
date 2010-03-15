@@ -106,7 +106,7 @@ public class PagaVcsIntegration {
 					synchronized (doPanelRefresh) {
 						doPanelRefresh.wait();
 					}
-					Thread.sleep(500);
+					Thread.sleep(100);
 					MainFrame mainFrame = WindowManager.getCurrentMainFrame();
 					if (mainFrame != null) {
 						FileTable activeTable = mainFrame.getActiveTable();

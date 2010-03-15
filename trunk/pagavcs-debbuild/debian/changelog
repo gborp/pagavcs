@@ -5,8 +5,13 @@ pagavcs (1.4.3) karmic; urgency=low
   * mugCommander: new: make file search cancellable
   * mugCommander: new: add "Find File" to menu (file)
   * mugCommander: fix: editor/viewer windows sometimes displays empty (until a resize event) and also remember editor/viewer window's positions and open in that size on next displaying
+  * mugCommander: new: add "Open Terminal" to context menu
+  * mugCommander: new: add cut/copy/paste to text viewer/editor's context menu
+  * mugCommander: fix: faster displaying SVN file emblems
+  * mugCommander: fix: a bit faster text viewer/editor startup
+  * mugCommander: fix: faster scrolling by mouse wheel in text viewer/editor
   
- -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 15 Mar 2010 11:12:30 +0100
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 15 Mar 2010 15:16:30 +0100
 
 pagavcs (1.4.1) karmic; urgency=low
 

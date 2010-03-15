@@ -16189,4 +16189,8 @@ recent_executed_files_quick_list.empty_message:RU:Не найдено недав
 
 FindFile.label:EN:Find File
 
-FindFile.tooltip:EN:Opens Find File dialog 
+FindFile.tooltip:EN:Opens Find File dialog
+
+OpenTerminal.label:EN:Open Terminal
+
+OpenTerminal.tooltip:EN:Opens terminal with current directory

@@ -167,12 +167,14 @@ public class EditorFrame extends JFrame implements ActionListener {
 
                 setTitle(editor.getTitle());
 
-                JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
+				JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS) {
                         @Override
                         public Insets getInsets() {
                             return new Insets(0, 0, 0, 0);
                         }
                     };
+
+				scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
                 // Catch Apple+W keystrokes under Mac OS X to try and close the window
                 if(OsFamilies.MAC_OS_X.isCurrent()) {

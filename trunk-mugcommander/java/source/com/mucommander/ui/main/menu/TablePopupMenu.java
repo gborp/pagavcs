@@ -13,6 +13,7 @@
 
 package com.mucommander.ui.main.menu;
 
+import hu.pagavcs.mug.OpenTerminalAction;
 import hu.pagavcs.mug.PagaVcsIntegration;
 
 import java.awt.event.KeyEvent;
@@ -77,8 +78,10 @@ public class TablePopupMenu extends JPopupMenu {
 
 		// 'Reveal in desktop' displayed only if clicked file is a local file
 		// and the OS is capable of doing this
-		if (DesktopManager.canOpenInFileManager(currentFolder))
+		if (DesktopManager.canOpenInFileManager(currentFolder)) {
 			addAction(com.mucommander.ui.action.impl.RevealInDesktopAction.Descriptor.ACTION_ID);
+			addAction(OpenTerminalAction.Descriptor.ACTION_ID);
+		}
 
 		add(new JSeparator());
 

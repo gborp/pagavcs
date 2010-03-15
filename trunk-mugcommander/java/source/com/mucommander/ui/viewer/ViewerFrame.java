@@ -149,12 +149,14 @@ public class ViewerFrame extends JFrame implements ActionListener {
 
                 setTitle(viewer.getTitle());
 
-                JScrollPane scrollPane = new JScrollPane(viewer, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
+				JScrollPane scrollPane = new JScrollPane(viewer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS) {
                         @Override
                         public Insets getInsets() {
                             return new Insets(0, 0, 0, 0);
                         }
                     };
+
+				scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
                 // Catch Apple+W keystrokes under Mac OS X to close the window
                 if(OsFamilies.MAC_OS_X.isCurrent()) {

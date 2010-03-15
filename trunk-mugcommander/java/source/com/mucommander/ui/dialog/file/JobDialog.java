@@ -18,6 +18,13 @@
 
 package com.mucommander.ui.dialog.file;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import com.mucommander.file.util.FileSet;
 import com.mucommander.text.Translator;
 import com.mucommander.ui.button.CollapseExpandButton;
@@ -26,8 +33,6 @@ import com.mucommander.ui.dialog.InformationDialog;
 import com.mucommander.ui.layout.AsyncPanel;
 import com.mucommander.ui.list.FileList;
 import com.mucommander.ui.main.MainFrame;
-
-import javax.swing.*;
 
 /**
  * This abstract dialog is to be sub-classed by job confirmation dialogs and provides helper methods for common
@@ -86,7 +91,9 @@ public abstract class JobDialog extends FocusDialog {
                 FileList fileList = new FileList(files, true);
                 fileList.setVisibleRowCount(NB_FILE_DETAILS_ROWS);
 
-                return new JScrollPane(fileList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				JScrollPane scrollPane = new JScrollPane(fileList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+				return scrollPane;
             }
         };
     }
