@@ -18,6 +18,16 @@
 
 package com.mucommander;
 
+import java.awt.GraphicsEnvironment;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 import com.mucommander.bookmark.file.BookmarkProtocolProvider;
 import com.mucommander.command.Command;
 import com.mucommander.command.CommandException;
@@ -43,11 +53,6 @@ import com.mucommander.ui.main.SplashScreen;
 import com.mucommander.ui.main.WindowManager;
 import com.mucommander.ui.main.commandbar.CommandBarIO;
 import com.mucommander.ui.main.toolbar.ToolBarIO;
-
-import java.awt.GraphicsEnvironment;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.logging.*;
 
 /**
  * muCommander launcher.
@@ -555,10 +560,6 @@ public class Launcher {
             // Loads the themes.
             printStartupMessage("Loading theme...");
             com.mucommander.ui.theme.ThemeManager.loadCurrentTheme();
-
-            // Starts Bonjour services discovery (only if enabled in prefs)
-            printStartupMessage("Starting Bonjour services discovery...");
-            com.mucommander.bonjour.BonjourDirectory.setActive(MuConfiguration.getVariable(MuConfiguration.ENABLE_BONJOUR_DISCOVERY, MuConfiguration.DEFAULT_ENABLE_BONJOUR_DISCOVERY));
 
             // Creates the initial main frame using any initial path specified by the command line.
             printStartupMessage("Initializing window...");

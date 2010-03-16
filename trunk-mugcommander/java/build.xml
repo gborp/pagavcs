@@ -53,19 +53,14 @@
     	<zipfileset dir="${build}" prefix="" />
 		<zipfileset src="${lib}/include/ant-bzip2.jar" />
 		<zipfileset src="${lib}/include/commons-codec.jar" />
-		<zipfileset src="${lib}/include/commons-collections.jar" />		
 		<zipfileset src="${lib}/include/commons-httpclient.jar" />		
 		<zipfileset src="${lib}/include/commons-logging.jar" />
 		<zipfileset src="${lib}/include/commons-logging-api.jar" />
 		<zipfileset src="${lib}/include/commons-net-ftp.jar" />
-		<zipfileset src="${lib}/include/hadoop-core.jar" />
 		<zipfileset src="${lib}/include/icu4j.jar" />
 		<zipfileset src="${lib}/include/j2ssh.jar" />
 		<zipfileset src="${lib}/include/J7Zip.jar" />
-		<zipfileset src="${lib}/include/jakarta-oro.jar" />
 		<zipfileset src="${lib}/include/jcifs.jar" />
-		<zipfileset src="${lib}/include/jets3t.jar" />
-		<zipfileset src="${lib}/include/jmdns.jar" />
 		<zipfileset src="${lib}/include/jna.jar" />
 		<zipfileset src="${lib}/include/yanfs.jar" />
     	<manifest>

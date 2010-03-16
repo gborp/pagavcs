@@ -18,9 +18,23 @@
 
 package com.mucommander.ui.main;
 
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Vector;
+import java.util.regex.PatternSyntaxException;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileSystemView;
+
 import com.mucommander.AppLogger;
-import com.mucommander.bonjour.BonjourMenu;
-import com.mucommander.bonjour.BonjourService;
 import com.mucommander.bookmark.Bookmark;
 import com.mucommander.bookmark.BookmarkListener;
 import com.mucommander.bookmark.BookmarkManager;
@@ -40,23 +54,19 @@ import com.mucommander.text.Translator;
 import com.mucommander.ui.action.MuAction;
 import com.mucommander.ui.action.impl.OpenLocationAction;
 import com.mucommander.ui.button.PopupButton;
-import com.mucommander.ui.dialog.server.*;
+import com.mucommander.ui.dialog.server.FTPPanel;
+import com.mucommander.ui.dialog.server.HTTPPanel;
+import com.mucommander.ui.dialog.server.NFSPanel;
+import com.mucommander.ui.dialog.server.SFTPPanel;
+import com.mucommander.ui.dialog.server.SMBPanel;
+import com.mucommander.ui.dialog.server.ServerConnectDialog;
+import com.mucommander.ui.dialog.server.ServerPanel;
 import com.mucommander.ui.event.LocationEvent;
 import com.mucommander.ui.event.LocationListener;
 import com.mucommander.ui.helper.MnemonicHelper;
 import com.mucommander.ui.icon.CustomFileIconProvider;
 import com.mucommander.ui.icon.FileIcons;
 import com.mucommander.ui.icon.IconManager;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.regex.PatternSyntaxException;
 
 
 /**
@@ -347,15 +357,6 @@ public class DrivePopupButton extends PopupButton implements LocationListener, B
             setMnemonic(popupMenu.add(action), mnemonicHelper);
         }
 
-        // Add Bonjour services menu
-        setMnemonic(popupMenu.add(new BonjourMenu() {
-            @Override
-            public MuAction getMenuItemAction(BonjourService bs) {
-                return new CustomOpenLocationAction(mainFrame, new Hashtable<String, Object>(), bs);
-            }
-        }) , mnemonicHelper);
-        popupMenu.add(new JSeparator());
-
         // Add 'connect to server' shortcuts
         setMnemonic(popupMenu.add(new ServerConnectAction("SMB...", SMBPanel.class)), mnemonicHelper);
         setMnemonic(popupMenu.add(new ServerConnectAction("FTP...", FTPPanel.class)), mnemonicHelper);
@@ -538,9 +539,6 @@ public class DrivePopupButton extends PopupButton implements LocationListener, B
             super(mainFrame, properties, file);
         }
 
-        public CustomOpenLocationAction(MainFrame mainFrame, Hashtable<String,Object> properties, BonjourService bs) {
-            super(mainFrame, properties, bs);
-        }
 
         ////////////////////////
         // Overridden methods //
