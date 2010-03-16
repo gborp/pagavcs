@@ -193,7 +193,9 @@ public class Manager {
 				result.getRepositoryPool().createRepository(repositoryUrl, true).testConnection();
 			} catch (SVNException ex) {
 				ex.printStackTrace();
-				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(ex.getErrorMessage().getErrorCode())) {
+
+				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
+				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode) || SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
 					throw new PagaException(PagaExceptionType.CONNECTION_ERROR);
 				}
 				result = null;
