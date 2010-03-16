@@ -18,7 +18,8 @@
 
 package com.mucommander.ui.action.impl;
 
-import com.mucommander.bonjour.BonjourService;
+import java.util.Hashtable;
+
 import com.mucommander.bookmark.Bookmark;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileProtocols;
@@ -26,8 +27,6 @@ import com.mucommander.file.FileURL;
 import com.mucommander.ui.action.MuAction;
 import com.mucommander.ui.main.FolderPanel;
 import com.mucommander.ui.main.MainFrame;
-
-import java.util.Hashtable;
 
 /**
  * This action opens a specified location in the current active FileTable. The location can be designated by either a
@@ -110,13 +109,7 @@ public class OpenLocationAction extends MuAction {
     }
 
 
-    /**
-     * Convenience constructor, same effect as calling {@link #OpenLocationAction(MainFrame, Hashtable, FileURL, String)} with
-     * {@link BonjourService#getURL()} and {@link BonjourService#getNameWithProtocol()} ()}.
-     */
-    public OpenLocationAction(MainFrame mainFrame, Hashtable<String,Object> properties, BonjourService bonjourService) {
-        this(mainFrame, properties, bonjourService.getURL(), bonjourService.getNameWithProtocol());
-    }
+
 
     /**
      * Returns the {@link FolderPanel} on which to change the current folder. This method returns the currently active
