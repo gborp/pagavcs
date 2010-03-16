@@ -18,7 +18,7 @@
 
 package com.mucommander.file.icon;
 
-import org.apache.commons.collections.map.ReferenceMap;
+import hu.pagavcs.mug.HardWeakMap;
 
 import javax.swing.Icon;
 
@@ -38,7 +38,7 @@ import javax.swing.Icon;
 public class IconCache {
 
    /** The actual hash map */
-    protected final ReferenceMap hashMap = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+	protected final HardWeakMap hashMap = new HardWeakMap();
 
     /**
      * Creates a new icon cache.

@@ -18,8 +18,9 @@
 
 package com.mucommander.file.util;
 
+import hu.pagavcs.mug.HardWeakMap;
+
 import com.mucommander.file.AbstractFile;
-import org.apache.commons.collections.map.ReferenceMap;
 
 /**
  * This class allows {@link AbstractFile} instances to be pooled, so that existing file instances can be reused,
@@ -38,7 +39,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 public class FilePool {
 
     /** The actual hash map */
-    protected final ReferenceMap hashMap = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
+    protected final HardWeakMap hashMap = new HardWeakMap();
 
     /**
      * Creates a new file pool.
