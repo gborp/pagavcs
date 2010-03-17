@@ -3,7 +3,7 @@ package hu.pagavcs.mug;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.ArchiveEntry;
 
-public class FindFileArchiveEntry extends ArchiveEntry {
+public class FindFileArchiveEntry extends ArchiveEntry implements RealFileProvider {
 
 	protected AbstractFile realFile;
 
@@ -12,7 +12,7 @@ public class FindFileArchiveEntry extends ArchiveEntry {
 		this.realFile = realFile;
 	}
 
-	protected AbstractFile getRealFile() {
+	public AbstractFile getRealFile() {
 		return realFile;
 	}
 }

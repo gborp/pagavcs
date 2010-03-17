@@ -16194,3 +16194,7 @@ FindFile.tooltip:EN:Opens Find File dialog
 OpenTerminal.label:EN:Open Terminal
 
 OpenTerminal.tooltip:EN:Opens terminal with current directory
+
+EditNatively.label:EN:Edit Natively
+
+EditNatively.tooltip:EN:Edit Natively the current file
