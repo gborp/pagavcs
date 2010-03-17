@@ -222,8 +222,13 @@ public class SvnHelper {
 		working.workStarted();
 		String strBase = propertyListToString(showPropertyChangesFromBase(working, wcFile, SVNRevision.BASE, SVNRevision.BASE));
 		String strWorking = propertyListToString(showPropertyChangesFromBase(working, wcFile, SVNRevision.WORKING, SVNRevision.WORKING));
-		File fileBase = File.createTempFile(wcFile.getName(), ".base");
-		File fileWorking = File.createTempFile(wcFile.getName(), ".working");
+
+		String prefix = wcFile.getName();
+		if (prefix.length() < 3) {
+			prefix = (prefix + "___").substring(0, 3);
+		}
+		File fileBase = File.createTempFile(prefix, ".base");
+		File fileWorking = File.createTempFile(prefix, ".working");
 		fileBase.deleteOnExit();
 		fileWorking.deleteOnExit();
 		Manager.saveStringToFile(fileBase, strBase);
