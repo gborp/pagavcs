@@ -13,10 +13,15 @@
 
 package com.mucommander.ui.main.menu;
 
+import hu.pagavcs.mug.ContextMenuExtension;
+import hu.pagavcs.mug.ContextMenuExtensionPositions;
 import hu.pagavcs.mug.OpenTerminalAction;
-import hu.pagavcs.mug.PagaVcsIntegration;
+import hu.pagavcs.mug.PagaVcsContextMenu;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -43,6 +48,33 @@ public class TablePopupMenu extends JPopupMenu {
 	/** Parent MainFrame instance */
 	private MainFrame mainFrame;
 
+	private static HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>> mapExtensions;
+
+	// TODO
+	static {
+		initExtensions();
+	}
+
+	// TODO read from config file (?)
+	public static void initExtensions() {
+		mapExtensions = new HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>>();
+
+		PagaVcsContextMenu extension = new PagaVcsContextMenu();
+		ArrayList<ContextMenuExtension> lst = new ArrayList<ContextMenuExtension>();
+		lst.add(extension);
+		mapExtensions.put(extension.getPosition(), lst);
+	}
+
+	private void addMenuExtensions(ContextMenuExtensionPositions pos, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked,
+	        FileSet markedFiles) {
+		List<ContextMenuExtension> lstExtensions = mapExtensions.get(pos);
+		if (lstExtensions != null) {
+			for (ContextMenuExtension li : lstExtensions) {
+				li.addMenu(this, currentFolder, clickedFile, parentFolderClicked, markedFiles);
+			}
+		}
+	}
+
 	/**
 	 * Creates a new TablePopupMenu.
 	 * 
@@ -61,7 +93,7 @@ public class TablePopupMenu extends JPopupMenu {
 	public TablePopupMenu(MainFrame mainFrame, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked, FileSet markedFiles) {
 		this.mainFrame = mainFrame;
 
-		PagaVcsIntegration.pagaVcsMenu(this, currentFolder, clickedFile, parentFolderClicked, markedFiles);
+		addMenuExtensions(ContextMenuExtensionPositions.TOP, currentFolder, clickedFile, parentFolderClicked, markedFiles);
 
 		// 'Open' displayed if a single file was clicked
 		if (clickedFile != null || parentFolderClicked) {
