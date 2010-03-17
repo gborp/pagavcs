@@ -86,6 +86,7 @@ public class ActionManager {
 		registerAction(new DeleteAction.Descriptor(), new DeleteAction.Factory());
 		registerAction(new DonateAction.Descriptor(), new DonateAction.Factory());
 		registerAction(new EditAction.Descriptor(), new EditAction.Factory());
+		registerAction(new EditNativelyAction.Descriptor(), new EditNativelyAction.Factory());
 		registerAction(new EditBookmarksAction.Descriptor(), new EditBookmarksAction.Factory());
 		registerAction(new EditCredentialsAction.Descriptor(), new EditCredentialsAction.Factory());
 		registerAction(new EmailAction.Descriptor(), new EmailAction.Factory());
