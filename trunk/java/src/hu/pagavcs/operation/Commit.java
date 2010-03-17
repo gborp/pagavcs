@@ -134,7 +134,7 @@ public class Commit {
 		boolean successOrExit = false;
 		while (!successOrExit) {
 			try {
-				commitClient.doCommit(lstCommit.toArray(new File[] {}), true, message, null, null, true, false, SVNDepth.UNKNOWN);
+				commitClient.doCommit(lstCommit.toArray(new File[] {}), true, message, null, null, true, false, SVNDepth.EMPTY);
 				successOrExit = true;
 			} catch (SVNCancelException ex) {
 				successOrExit = true;
