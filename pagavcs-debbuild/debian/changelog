@@ -1,7 +1,8 @@
 pagavcs (1.4.5) karmic; urgency=low
 
   [ Gábor Pápai ]
-  * strip down mugCommander, removing lots of rarely used library (like bonjur library, which is not too often used on Ubuntu). Later they may be included as plugins.
+  * mugCommander: strip down mugCommander, removing lots of rarely used libraries (like bonjour library). Later they may be included as plugins.
+  * PagaVCS: fix: Issue 45: [log] exception at show property changes (Prefix string too short)
 
  -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 16 Mar 2010 20:15:38 +0100
 
