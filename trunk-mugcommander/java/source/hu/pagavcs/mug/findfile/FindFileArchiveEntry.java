@@ -1,4 +1,5 @@
-package hu.pagavcs.mug;
+package hu.pagavcs.mug.findfile;
+
 
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.ArchiveEntry;

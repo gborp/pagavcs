@@ -13,8 +13,8 @@
 
 package com.mucommander.ui.action;
 
-import hu.pagavcs.mug.FindFileAction;
 import hu.pagavcs.mug.OpenTerminalAction;
+import hu.pagavcs.mug.findfile.FindFileAction;
 
 import java.util.Enumeration;
 import java.util.Hashtable;

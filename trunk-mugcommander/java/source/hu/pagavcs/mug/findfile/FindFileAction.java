@@ -1,4 +1,4 @@
-package hu.pagavcs.mug;
+package hu.pagavcs.mug.findfile;
 
 import java.awt.event.KeyEvent;
 import java.util.Hashtable;

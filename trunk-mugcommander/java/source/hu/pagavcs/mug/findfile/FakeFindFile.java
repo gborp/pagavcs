@@ -1,7 +1,7 @@
 /**
  * 
  */
-package hu.pagavcs.mug;
+package hu.pagavcs.mug.findfile;
 
 import java.io.IOException;
 import java.io.InputStream;

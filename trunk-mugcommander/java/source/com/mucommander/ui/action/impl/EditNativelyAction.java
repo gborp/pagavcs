@@ -1,6 +1,6 @@
 package com.mucommander.ui.action.impl;
 
-import hu.pagavcs.mug.RealFileProvider;
+import hu.pagavcs.mug.findfile.RealFileProvider;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;

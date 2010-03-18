@@ -1,5 +1,7 @@
 package hu.pagavcs.mug;
 
+import hu.pagavcs.mug.findfile.FindFileArchiveEntry;
+
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
