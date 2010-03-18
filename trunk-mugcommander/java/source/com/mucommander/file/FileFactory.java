@@ -13,7 +13,7 @@
 
 package com.mucommander.file;
 
-import hu.pagavcs.mug.FindFileFormatProvider;
+import hu.pagavcs.mug.findfile.FindFileFormatProvider;
 
 import java.io.IOException;
 import java.util.HashMap;

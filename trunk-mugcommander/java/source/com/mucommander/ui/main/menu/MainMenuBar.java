@@ -13,7 +13,7 @@
 
 package com.mucommander.ui.main.menu;
 
-import hu.pagavcs.mug.FindFileAction;
+import hu.pagavcs.mug.findfile.FindFileAction;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;

@@ -1,4 +1,4 @@
-package hu.pagavcs.mug;
+package hu.pagavcs.mug.findfile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
