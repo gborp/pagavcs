@@ -1,3 +1,13 @@
+pagavcs (1.4.6) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * mugCommander: add feature: edit natively (shift+f4): it opens the selected file in "gedit"
+  * mugCommander: show the real file path in a file's properties in search result
+  * mugCommander: add "Jump to real file" action to a file's context menu in search result
+  * mugCommander: FindFile dialog: add options: "Search only in selected dirs" and "Don't search in selected dirs"
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Fri, 19 Mar 2010 16:05:42 +0100
+
 pagavcs (1.4.5) karmic; urgency=low
 
   [ Gábor Pápai ]
