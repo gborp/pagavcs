@@ -15,6 +15,7 @@ package com.mucommander.ui.main.menu;
 
 import hu.pagavcs.mug.ContextMenuExtension;
 import hu.pagavcs.mug.ContextMenuExtensionPositions;
+import hu.pagavcs.mug.FindFileListContextMenu;
 import hu.pagavcs.mug.OpenTerminalAction;
 import hu.pagavcs.mug.PagaVcsContextMenu;
 
@@ -59,18 +60,24 @@ public class TablePopupMenu extends JPopupMenu {
 	public static void initExtensions() {
 		mapExtensions = new HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>>();
 
-		PagaVcsContextMenu extension = new PagaVcsContextMenu();
-		ArrayList<ContextMenuExtension> lst = new ArrayList<ContextMenuExtension>();
-		lst.add(extension);
-		mapExtensions.put(extension.getPosition(), lst);
+		PagaVcsContextMenu pagaVcsContextMenu = new PagaVcsContextMenu();
+		ArrayList<ContextMenuExtension> lstTop = new ArrayList<ContextMenuExtension>();
+		lstTop.add(pagaVcsContextMenu);
+		mapExtensions.put(pagaVcsContextMenu.getPosition(), lstTop);
+
+		FindFileListContextMenu findFileListContextMenu = new FindFileListContextMenu();
+		ArrayList<ContextMenuExtension> lstBottom = new ArrayList<ContextMenuExtension>();
+		lstBottom.add(findFileListContextMenu);
+		mapExtensions.put(findFileListContextMenu.getPosition(), lstBottom);
 	}
 
-	private void addMenuExtensions(ContextMenuExtensionPositions pos, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked,
+	private void addMenuExtensions(ContextMenuExtensionPositions pos, MainFrame mainFrame, AbstractFile currentFolder, AbstractFile clickedFile,
+	        boolean parentFolderClicked,
 	        FileSet markedFiles) {
 		List<ContextMenuExtension> lstExtensions = mapExtensions.get(pos);
 		if (lstExtensions != null) {
 			for (ContextMenuExtension li : lstExtensions) {
-				li.addMenu(this, currentFolder, clickedFile, parentFolderClicked, markedFiles);
+				li.addMenu(this, mainFrame, currentFolder, clickedFile, parentFolderClicked, markedFiles);
 			}
 		}
 	}
@@ -93,7 +100,7 @@ public class TablePopupMenu extends JPopupMenu {
 	public TablePopupMenu(MainFrame mainFrame, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked, FileSet markedFiles) {
 		this.mainFrame = mainFrame;
 
-		addMenuExtensions(ContextMenuExtensionPositions.TOP, currentFolder, clickedFile, parentFolderClicked, markedFiles);
+		addMenuExtensions(ContextMenuExtensionPositions.TOP, mainFrame, currentFolder, clickedFile, parentFolderClicked, markedFiles);
 
 		// 'Open' displayed if a single file was clicked
 		if (clickedFile != null || parentFolderClicked) {
@@ -139,6 +146,7 @@ public class TablePopupMenu extends JPopupMenu {
 		addAction(com.mucommander.ui.action.impl.ShowFilePropertiesAction.Descriptor.ACTION_ID);
 		addAction(com.mucommander.ui.action.impl.ChangePermissionsAction.Descriptor.ACTION_ID);
 		addAction(com.mucommander.ui.action.impl.ChangeDateAction.Descriptor.ACTION_ID);
+		addMenuExtensions(ContextMenuExtensionPositions.BOTTOM, mainFrame, currentFolder, clickedFile, parentFolderClicked, markedFiles);
 	}
 
 	/**

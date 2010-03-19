@@ -1,6 +1,6 @@
 package hu.pagavcs.mug;
 
-import hu.pagavcs.mug.findfile.FindFileArchiveEntry;
+import hu.pagavcs.mug.findfile.RealFileProvider;
 
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
@@ -21,6 +21,7 @@ import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.ArchiveEntry;
 import com.mucommander.file.util.FileSet;
+import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.main.menu.TablePopupMenu;
 
 public class PagaVcsContextMenu implements ContextMenuExtension {
@@ -33,7 +34,8 @@ public class PagaVcsContextMenu implements ContextMenuExtension {
 		return ContextMenuExtensionPositions.TOP;
 	}
 
-	public void addMenu(TablePopupMenu tablePopupMenu, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked, FileSet markedFiles) {
+	public void addMenu(TablePopupMenu tablePopupMenu, MainFrame mainFrame, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked,
+	        FileSet markedFiles) {
 		try {
 			ArrayList<String> lstFile = new ArrayList<String>();
 
@@ -113,8 +115,8 @@ public class PagaVcsContextMenu implements ContextMenuExtension {
 		if (file instanceof AbstractArchiveEntryFile) {
 			AbstractArchiveEntryFile a = ((AbstractArchiveEntryFile) file);
 			ArchiveEntry entry = a.getEntry();
-			if (entry instanceof FindFileArchiveEntry) {
-				AbstractFile realFile = ((FindFileArchiveEntry) entry).getRealFile();
+			if (entry instanceof RealFileProvider) {
+				AbstractFile realFile = ((RealFileProvider) entry).getRealFile();
 				return realFile;
 			}
 		}

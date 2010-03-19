@@ -18,7 +18,27 @@
 
 package com.mucommander.ui.dialog.file;
 
+import hu.pagavcs.mug.findfile.RealFileProvider;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
+import com.mucommander.file.ArchiveEntry;
 import com.mucommander.file.impl.local.LocalFile;
 import com.mucommander.file.util.FileSet;
 import com.mucommander.file.util.OSXFileUtils;
@@ -40,16 +60,6 @@ import com.mucommander.ui.layout.YBoxPanel;
 import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.text.FileLabel;
 import com.mucommander.ui.text.MultiLineLabel;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 
 /**
  * This dialog shows properties of a file or a group of files : number of files, file kind,
@@ -113,7 +123,19 @@ public class PropertiesDialog extends FocusDialog implements Runnable, ActionLis
         labelPanel.addRow(Translator.get("properties_dialog.contents")+":", counterLabel, 6);
 
         // Location (set here)
-        labelPanel.addRow(Translator.get("location")+":", new FileLabel(files.getBaseFolder(), true), 6);
+		AbstractFile baseFolder = files.getBaseFolder();
+
+		if (isSingleFile) {
+			AbstractFile ancestorSingleFile = singleFile.getAncestor();
+			if (ancestorSingleFile instanceof AbstractArchiveEntryFile) {
+
+				ArchiveEntry entry = ((AbstractArchiveEntryFile) ancestorSingleFile).getEntry();
+				if (entry instanceof RealFileProvider) {
+					baseFolder = ((RealFileProvider) entry).getRealFile().getParent();
+				}
+			}
+		}
+		labelPanel.addRow(Translator.get("location") + ":", new FileLabel(baseFolder, true), 6);
 
         // Combined size (set later)
         JPanel sizePanel;

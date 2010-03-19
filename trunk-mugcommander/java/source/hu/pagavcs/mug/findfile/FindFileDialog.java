@@ -5,11 +5,16 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -36,6 +41,10 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 	private JTextField             sfSearchTextEncoding;
 	private JCheckBox              cbCaseSensitive;
 	private JCheckBox              cbSearchInArchive;
+	private JCheckBox              cbIncludeExclude;
+	private JCheckBox              cbIncludeSelected;
+	private JCheckBox              cbExcludeSelected;
+	private JTextArea              taIncludeExclude;
 
 	private JButton                btnStartSearch;
 	private JButton                btnCancel;
@@ -58,18 +67,61 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 		final AbstractFile currentFolder = mainFrame.getActiveTable().getCurrentFolder();
 
+		final XAlignedComponentPanel compPanel = new XAlignedComponentPanel();
+
 		nameField = new JTextField("*");
 		cbSearchInArchive = new JCheckBox("Search in archive");
 		sfSearchText = new JTextField("");
 		cbCaseSensitive = new JCheckBox("Case sensitive");
 		sfSearchTextEncoding = new JTextField("UTF-8");
+		cbIncludeExclude = new JCheckBox("Include/Exclude");
+		cbIncludeSelected = new JCheckBox("Search only in selected dirs");
+		cbIncludeSelected.setVisible(false);
+		cbExcludeSelected = new JCheckBox("Don't search in selected dirs");
+		cbExcludeSelected.setVisible(false);
+		taIncludeExclude = new JTextArea();
+		taIncludeExclude.setToolTipText("example: -/home/moo/private/*");
+		taIncludeExclude.setVisible(false);
 
-		XAlignedComponentPanel compPanel = new XAlignedComponentPanel();
+		cbIncludeExclude.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				boolean select = e.getStateChange() == ItemEvent.SELECTED;
+				// taIncludeExclude.setVisible(true);
+				cbIncludeSelected.setVisible(select);
+				cbExcludeSelected.setVisible(select);
+				compPanel.revalidate();
+				compPanel.repaint();
+				pack();
+			}
+		});
+
+		cbIncludeSelected.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					cbExcludeSelected.setSelected(false);
+				}
+			}
+		});
+
+		cbExcludeSelected.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					cbIncludeSelected.setSelected(false);
+				}
+			}
+		});
 
 		compPanel.addRow("Search in:", new JLabel(currentFolder.getPath()), 10);
 
 		compPanel.addRow("Search for:", nameField, 10);
 		compPanel.addRow(cbSearchInArchive, 10);
+		compPanel.addRow(cbIncludeExclude, 10);
+		compPanel.addRow(cbIncludeSelected, 10);
+		compPanel.addRow(cbExcludeSelected, 10);
+		compPanel.addRow(taIncludeExclude, 10);
 		compPanel.addRow("Find text:", sfSearchText, 10);
 		compPanel.addRow(cbCaseSensitive, 10);
 		compPanel.addRow("Text encoding:", sfSearchTextEncoding, 10);
@@ -107,6 +159,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		showDialog();
 	}
 
+
 	private void cancelSearch() {
 		if (findInProgress == null) {
 			dispose();
@@ -127,6 +180,20 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 			final boolean caseSensitive = cbCaseSensitive.isSelected();
 			final boolean searchInArchive = cbSearchInArchive.isSelected();
 			final String findId = currentFolder + "|" + searchFileName + "|" + searchText + "|" + caseSensitive + "|" + searchInArchive + "|" + new Date();
+			final List<String> lstInclude = new ArrayList<String>();
+			final List<String> lstExclude = new ArrayList<String>();
+			if (cbIncludeExclude.isSelected()) {
+				if (cbIncludeSelected.isSelected()) {
+					for (AbstractFile f : mainFrame.getActiveTable().getSelectedFiles()) {
+						lstInclude.add(f.getAbsolutePath() + "*");
+					}
+				}
+				if (cbExcludeSelected.isSelected()) {
+					for (AbstractFile f : mainFrame.getActiveTable().getSelectedFiles()) {
+						lstExclude.add(f.getAbsolutePath() + "*");
+					}
+				}
+			}
 
 			findInProgress = findId;
 
@@ -137,7 +204,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 				public void run() {
 
 					FindManager.getInstance().startSearch(mainFrame, findId, currentFolder, searchFileName, searchText, searchTextEncoding, caseSensitive,
-					        searchInArchive);
+					        searchInArchive, lstInclude, lstExclude);
 
 					findInProgress = null;
 					if (FindManager.getInstance().isCancel(findId)) {
