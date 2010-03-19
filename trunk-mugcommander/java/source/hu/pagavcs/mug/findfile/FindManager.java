@@ -16,7 +16,9 @@ import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 
+import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
+import com.mucommander.file.ArchiveEntry;
 import com.mucommander.file.UnsupportedFileOperationException;
 import com.mucommander.ui.main.MainFrame;
 
@@ -74,7 +76,7 @@ public class FindManager {
 	}
 
 	public void startSearch(final MainFrame mainFrame, final String findId, final AbstractFile currentFolder, String searchFileName, String searchText,
-	        String searchTextEncoding, boolean caseSensitive, boolean searchInArchive) {
+	        String searchTextEncoding, boolean caseSensitive, boolean searchInArchive, List<String> lstInclude, List<String> lstExclude) {
 		try {
 			Charset searchEncoding = null;
 
@@ -84,8 +86,6 @@ public class FindManager {
 				searchFileName = "*";
 			}
 
-			searchFileName = searchFileName.replace(".", "\\.");
-			searchFileName = searchFileName.replace("*", ".*");
 
 			if (!searchText.isEmpty()) {
 
@@ -103,11 +103,18 @@ public class FindManager {
 
 			createResults(findId);
 
-			Pattern searchFileNamePattern = Pattern.compile(searchFileName);
-			// Matcher m = p.matcher(input);
-			// return m.matches();
+			Pattern searchFileNamePattern = getPatternFromSimplePattern(searchFileName);
+			List<Pattern> lstIncludePattern = new ArrayList<Pattern>();
+			for (String li : lstInclude) {
+				lstIncludePattern.add(getPatternFromSimplePattern(li));
+			}
+			List<Pattern> lstExcludePattern = new ArrayList<Pattern>();
+			for (String li : lstExclude) {
+				lstExcludePattern.add(getPatternFromSimplePattern(li));
+			}
 
-			search(findId, currentFolder, searchFileNamePattern, searchText, searchEncoding, caseSensitive, searchInArchive);
+			search(findId, currentFolder, searchFileNamePattern, searchText, searchEncoding, caseSensitive, searchInArchive, lstIncludePattern,
+			        lstExcludePattern);
 
 			if (!isCancel(findId)) {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -124,18 +131,47 @@ public class FindManager {
 	}
 
 	private void search(String findId, AbstractFile file, Pattern searchFileNamePattern, String searchText, Charset searchEncoding, boolean caseSensitive,
-	        boolean searchInArchive) {
+	        boolean searchInArchive, List<Pattern> lstIncludePattern, List<Pattern> lstExcludePattern) {
 		if (isCancel(findId)) {
 			return;
 		}
+
+		// prevent infinite cycle
+		if (file.isSymlink()) {
+			return;
+		}
+
 		if (file.isDirectory() || (searchInArchive && file.isBrowsable())) {
 			try {
 				for (AbstractFile child : file.ls()) {
-					search(findId, child, searchFileNamePattern, searchText, searchEncoding, caseSensitive, searchInArchive);
+					search(findId, child, searchFileNamePattern, searchText, searchEncoding, caseSensitive, searchInArchive, lstIncludePattern,
+					        lstExcludePattern);
 				}
 			} catch (UnsupportedFileOperationException ex) {} catch (IOException ex) {}
 		} else {
-			if (searchFileNamePattern.matcher(file.getName()).matches()) {
+
+			String absPath = file.getAbsolutePath();
+			boolean matchInclude = false;
+			if (lstIncludePattern.isEmpty()) {
+				matchInclude = true;
+			} else {
+				for (Pattern li : lstIncludePattern) {
+					if (li.matcher(absPath).matches()) {
+						matchInclude = true;
+						break;
+					}
+				}
+			}
+			if (matchInclude && !lstExcludePattern.isEmpty()) {
+				for (Pattern li : lstExcludePattern) {
+					if (li.matcher(absPath).matches()) {
+						matchInclude = false;
+						break;
+					}
+				}
+			}
+
+			if (matchInclude && searchFileNamePattern.matcher(file.getName()).matches()) {
 				if (searchText == null) {
 					FindManager.getInstance().addResult(findId, file);
 				} else {
@@ -199,6 +235,40 @@ public class FindManager {
 			FindManager.getInstance().addResult(findId, file);
 		}
 
+	}
+
+	private static Pattern getPatternFromSimplePattern(String simplePattern) {
+		StringBuilder sbPattern = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
+		for (char c : simplePattern.toCharArray()) {
+			if (c == '*') {
+				if (sb.length() > 0) {
+					sbPattern.append(Pattern.quote(sb.toString()));
+				}
+				sbPattern.append(".*");
+				sb = new StringBuilder();
+			} else {
+				sb.append(c);
+			}
+		}
+		if (sb.length() > 0) {
+			sbPattern.append(Pattern.quote(sb.toString()));
+		}
+
+		return Pattern.compile(sbPattern.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	}
+
+	public static AbstractFile getRealFile(AbstractFile file) {
+		file = file.getAncestor();
+		if (file instanceof AbstractArchiveEntryFile) {
+			AbstractArchiveEntryFile a = ((AbstractArchiveEntryFile) file);
+			ArchiveEntry entry = a.getEntry();
+			if (entry instanceof RealFileProvider) {
+				AbstractFile realFile = ((RealFileProvider) entry).getRealFile();
+				return realFile;
+			}
+		}
+		return file;
 	}
 
 }

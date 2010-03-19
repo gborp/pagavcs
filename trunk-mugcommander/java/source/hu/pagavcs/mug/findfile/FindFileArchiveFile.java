@@ -3,13 +3,13 @@ package hu.pagavcs.mug.findfile;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.mucommander.file.AbstractArchiveFile;
 import com.mucommander.file.AbstractFile;
-import com.mucommander.file.AbstractROArchiveFile;
 import com.mucommander.file.ArchiveEntry;
 import com.mucommander.file.ArchiveEntryIterator;
 import com.mucommander.file.UnsupportedFileOperationException;
 
-public class FindFileArchiveFile extends AbstractROArchiveFile {
+public class FindFileArchiveFile extends AbstractArchiveFile {
 
 	private final String findId;
 
@@ -49,5 +49,9 @@ public class FindFileArchiveFile extends AbstractROArchiveFile {
 		// exist
 		return ((FindFileArchiveEntry) entry).getRealFile().getInputStream();
 		// return FileFactory.getFile(entry.getPath(), true).getInputStream();
+	}
+
+	public boolean isWritable() {
+		return false;
 	}
 }
