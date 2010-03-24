@@ -1,12 +1,13 @@
-package hu.pagavcs.mug;
+package hu.pagavcs.mug.findfile;
 
-import hu.pagavcs.mug.findfile.FindManager;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JSeparator;
 
+import com.mucommander.extensions.ContextMenuExtension;
+import com.mucommander.extensions.ContextMenuExtensionPositions;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.util.FileSet;
 import com.mucommander.ui.main.MainFrame;

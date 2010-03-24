@@ -1,5 +1,4 @@
-package hu.pagavcs.mug;
-
+package com.mucommander.extensions;
 
 public enum ContextMenuExtensionPositions {
 	TOP, BOTTOM,
@@ -7,6 +6,8 @@ public enum ContextMenuExtensionPositions {
 	OPEN_BLOCK_TOP, OPEN_BLOCK_BOTTOM,
 
 	SELECT_BLOCK_TOP, SELECT_BLOCK_BOTTOM,
+
+	CAN_OPEN_IN_FILE_MANAGER,
 
 	DELETE_BLOCK_TOP, DELETE_BLOCK_BOTTOM,
 

@@ -36,6 +36,7 @@ import com.mucommander.commons.CommonsLogger;
 import com.mucommander.commons.log.SingleLineFormatter;
 import com.mucommander.conf.impl.MuConfiguration;
 import com.mucommander.extension.ExtensionManager;
+import com.mucommander.extensions.DynamicExtensionsManager;
 import com.mucommander.file.FileFactory;
 import com.mucommander.file.FileLogger;
 import com.mucommander.file.icon.impl.SwingFileIconProvider;
@@ -412,6 +413,8 @@ public class Launcher {
 
             // - Configuration init ---------------------------------------
             // ------------------------------------------------------------
+
+			DynamicExtensionsManager.getInstance().init();
 
             // Ensure that a graphics environment is available, exit otherwise.
             checkHeadless();

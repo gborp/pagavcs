@@ -13,7 +13,6 @@
 
 package com.mucommander.ui.action;
 
-import hu.pagavcs.mug.OpenTerminalAction;
 import hu.pagavcs.mug.findfile.FindFileAction;
 
 import java.util.Enumeration;
@@ -216,7 +215,6 @@ public class ActionManager {
 
 		// PagaVCS
 		registerAction(new FindFileAction.Descriptor(), new FindFileAction.Factory());
-		registerAction(new OpenTerminalAction.Descriptor(), new OpenTerminalAction.Factory());
 	}
 
 	/**
