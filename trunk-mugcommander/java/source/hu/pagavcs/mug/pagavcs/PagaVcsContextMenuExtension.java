@@ -1,4 +1,4 @@
-package hu.pagavcs.mug;
+package hu.pagavcs.mug.pagavcs;
 
 import hu.pagavcs.mug.findfile.RealFileProvider;
 
@@ -17,6 +17,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JSeparator;
 
+import com.mucommander.extensions.ContextMenuExtension;
+import com.mucommander.extensions.ContextMenuExtensionPositions;
 import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.ArchiveEntry;
@@ -24,7 +26,7 @@ import com.mucommander.file.util.FileSet;
 import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.main.menu.TablePopupMenu;
 
-public class PagaVcsContextMenu implements ContextMenuExtension {
+public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 
 	public int getPriority() {
 		return 0;

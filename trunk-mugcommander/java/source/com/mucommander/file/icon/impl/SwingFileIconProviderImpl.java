@@ -13,7 +13,6 @@
 
 package com.mucommander.file.icon.impl;
 
-import hu.pagavcs.mug.PagaVcsIntegration;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,6 +26,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
+import com.mucommander.extensions.DynamicExtensionsManager;
+import com.mucommander.extensions.FileEmblemExtension;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileLogger;
 import com.mucommander.file.FileProtocols;
@@ -261,6 +262,11 @@ class SwingFileIconProviderImpl extends LocalFileIconProvider implements Cacheab
 			// icon = getSymlinkIcon(icon);
 		}
 
-		return PagaVcsIntegration.getSvnDecoratedFileIcon(icon, (java.io.File) localFile.getUnderlyingFileObject());
+		for (FileEmblemExtension ext : DynamicExtensionsManager.getInstance().getLstFileEmblemExtensions()) {
+			icon = ext.getDecoratedFileIcon(icon, (java.io.File) localFile.getUnderlyingFileObject());
+		}
+
+		return icon;
 	}
+
 }
