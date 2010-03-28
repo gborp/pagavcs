@@ -9,7 +9,7 @@
 		<fileset dir="lib">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="../trunk-mugcommander/java/dist">
+		<fileset dir="../../trunk-mugcommander/java/dist">
 			<include name="*.jar" />
 		</fileset>
 	</path>
