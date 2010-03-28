@@ -1,10 +1,8 @@
 package com.mucommander.extensions;
 
 import hu.pagavcs.mug.findfile.FindFileListContextMenu;
-import hu.pagavcs.mug.openterminal.OpenTerminalExtensionFactory;
-import hu.pagavcs.mug.pagavcs.PagaVcsContextMenuExtensionFactory;
-import hu.pagavcs.mug.pagavcs.PagaVcsFileEmblemExtensionFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,15 +35,31 @@ public class DynamicExtensionsManager {
 		if (!inited) {
 
 			mapContextMenuExtensions = new HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>>();
-
-			addContextMenuExtension(new PagaVcsContextMenuExtensionFactory().getInstance());
-			addContextMenuExtension(new OpenTerminalExtensionFactory().getInstance());
-			addContextMenuExtension(new FindFileListContextMenu());
-
 			lstFileEmblemExtensions = new ArrayList<FileEmblemExtension>();
-			lstFileEmblemExtensions.add(new PagaVcsFileEmblemExtensionFactory().getInstance());
 
+			String cfgDir = System.getProperty("extensions.cfg.dir");
 
+			if (cfgDir == null) {
+				// TODO throw exception or something
+				System.out.println("extensions.cfg.dir variable is not set!");
+			} else {
+
+				for (String extClassName : new File(cfgDir, "extensions").list()) {
+					try {
+						Object instance = Class.forName(extClassName).newInstance();
+						if (instance instanceof ContextMenuExtensionFactory) {
+							addContextMenuExtension(((ContextMenuExtensionFactory) instance).getContextMenuExtension());
+						}
+
+						if (instance instanceof FileEmblemExtensionFactory) {
+							lstFileEmblemExtensions.add(((FileEmblemExtensionFactory) instance).getFileEmblemExtension());
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+			addContextMenuExtension(new FindFileListContextMenu());
 			inited = true;
 		}
 	}

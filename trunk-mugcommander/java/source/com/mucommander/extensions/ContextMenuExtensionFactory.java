@@ -2,5 +2,5 @@ package com.mucommander.extensions;
 
 public interface ContextMenuExtensionFactory {
 
-	ContextMenuExtension getInstance();
+	ContextMenuExtension getContextMenuExtension();
 }
