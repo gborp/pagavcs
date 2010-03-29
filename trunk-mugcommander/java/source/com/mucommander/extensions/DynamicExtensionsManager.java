@@ -43,6 +43,9 @@ public class DynamicExtensionsManager {
 				// TODO throw exception or something
 				System.out.println("extensions.cfg.dir variable is not set!");
 			} else {
+				// String classPath = System.getProperty("java.class.path",
+				// ".");
+				// System.out.println("ClassPath: " + classPath);
 
 				for (String extClassName : new File(cfgDir, "extensions").list()) {
 					try {
