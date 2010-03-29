@@ -127,11 +127,13 @@ public class Communication {
 		try {
 			serverSocket = ServerSocketFactory.getDefault().createServerSocket(PORT);
 		} catch (IOException ex) {
+			System.out.println("Port is not free, maybe PagaVCS is already running?");
 			System.exit(-5);
 		}
 
 		Manager.init();
 		fileStatusCache = FileStatusCache.getInstance();
+		System.out.println("PagaVCS started.");
 
 		while (!shutdown) {
 			try {
