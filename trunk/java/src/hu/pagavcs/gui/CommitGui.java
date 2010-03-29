@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -49,6 +50,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
@@ -72,31 +75,33 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class CommitGui implements Working, Refreshable {
 
-	private Frame                      frame;
-	private Table<CommitListItem>      tblCommit;
-	private TableModel<CommitListItem> tmdlCommit;
-	private Commit                     commit;
-	private JButton                    btnStop;
-	private TextArea                   taMessage;
-	private JButton                    btnCommit;
-	private Label                      lblUrl;
-	private ProgressBar                prgWorkinProgress;
-	private Label                      lblInfo;
-	private int                        noCommit;
-	private boolean                    preRealCommitProcess;
-	private JButton                    btnRefresh;
-	private JComboBox                  cboMessage;
-	private int                        logMinSize;
-	private Label                      lblWorkingCopy;
-	private JButton                    btnSelectAllNone;
-	private JButton                    btnSelectNonVersioned;
-	private JButton                    btnSelectAdded;
-	private JButton                    btnSelectDeleted;
-	private JButton                    btnSelectModified;
-	private JButton                    btnSelectFiles;
-	private JButton                    btnSelectDirectories;
-	private JButton                    btnCreatePatch;
-	private JButton                    btnSelectDeselectSelected;
+	private HashMap<File, List<CommitListItem>> mapDeletedHiddenFiles;
+
+	private Frame                               frame;
+	private Table<CommitListItem>               tblCommit;
+	private TableModel<CommitListItem>          tmdlCommit;
+	private Commit                              commit;
+	private JButton                             btnStop;
+	private TextArea                            taMessage;
+	private JButton                             btnCommit;
+	private Label                               lblUrl;
+	private ProgressBar                         prgWorkinProgress;
+	private Label                               lblInfo;
+	private int                                 noCommit;
+	private boolean                             preRealCommitProcess;
+	private JButton                             btnRefresh;
+	private JComboBox                           cboMessage;
+	private int                                 logMinSize;
+	private Label                               lblWorkingCopy;
+	private JButton                             btnSelectAllNone;
+	private JButton                             btnSelectNonVersioned;
+	private JButton                             btnSelectAdded;
+	private JButton                             btnSelectDeleted;
+	private JButton                             btnSelectModified;
+	private JButton                             btnSelectFiles;
+	private JButton                             btnSelectDirectories;
+	private JButton                             btnCreatePatch;
+	private JButton                             btnSelectDeselectSelected;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
@@ -119,6 +124,7 @@ public class CommitGui implements Working, Refreshable {
 			}
 
 		});
+		tblCommit.getModel().addTableModelListener(new SelectDeselectListener());
 		new StatusCellRendererForCommitListItem(tblCommit);
 		JScrollPane spCommitList = new JScrollPane(tblCommit);
 
@@ -291,6 +297,8 @@ public class CommitGui implements Working, Refreshable {
 					btnSelectFiles.setEnabled(false);
 					btnSelectDirectories.setEnabled(false);
 
+					mapDeletedHiddenFiles = new HashMap<File, List<CommitListItem>>();
+
 				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
 
 					MessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
@@ -391,7 +399,19 @@ public class CommitGui implements Working, Refreshable {
 		btnSelectModified.setEnabled(hasModified);
 		btnSelectFiles.setEnabled(hasFiles);
 		btnSelectDirectories.setEnabled(hasDirectories);
+	}
 
+	private boolean isParentDeleted(CommitListItem li) {
+		File parent = li.getPath().getParentFile();
+		while (parent != null && !mapDeletedHiddenFiles.containsKey(parent)) {
+			parent = parent.getParentFile();
+		}
+		if (mapDeletedHiddenFiles.containsKey(parent)) {
+			mapDeletedHiddenFiles.get(parent).add(li);
+			return true;
+		}
+
+		return false;
 	}
 
 	public void addItem(final File file, final ContentStatus contentStatus, final ContentStatus propertyStatus) throws Exception {
@@ -403,6 +423,7 @@ public class CommitGui implements Working, Refreshable {
 
 			protected void process() throws Exception {
 				tblCommit.hideMessage();
+
 				CommitListItem li = new CommitListItem();
 
 				if (contentStatus.equals(ContentStatus.MODIFIED) || contentStatus.equals(ContentStatus.ADDED) || contentStatus.equals(ContentStatus.DELETED)
@@ -414,9 +435,13 @@ public class CommitGui implements Working, Refreshable {
 				li.setPath(file);
 				li.setStatus(contentStatus);
 				li.setPropertyStatus(propertyStatus);
-
-				tmdlCommit.addLine(li);
-				tblCommit.followScrollToNewItems();
+				if (!isParentDeleted(li)) {
+					if (contentStatus.equals(ContentStatus.DELETED) && file.isDirectory()) {
+						mapDeletedHiddenFiles.put(file, new ArrayList<CommitListItem>());
+					}
+					tmdlCommit.addLine(li);
+					tblCommit.followScrollToNewItems();
+				}
 			}
 
 		}.run();
@@ -528,8 +553,6 @@ public class CommitGui implements Working, Refreshable {
 			ArrayList<File> lstCommit = new ArrayList<File>();
 			for (CommitListItem li : tmdlCommit.getAllData()) {
 				if (li.isSelected()) {
-					lstCommit.add(li.getPath());
-					noCommit++;
 
 					if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
 						// auto-add unversioned items
@@ -539,6 +562,18 @@ public class CommitGui implements Working, Refreshable {
 						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
 						MessagePane.showError(frame, "Cannot commit", "Cannot commit conflicted file! Please resolve the conflict first.");
 						return;
+					}
+
+					lstCommit.add(li.getPath());
+					noCommit++;
+					if (ContentStatus.DELETED.equals(li.getStatus())) {
+						List<CommitListItem> lstHiddenDeletedFiles = mapDeletedHiddenFiles.get(li);
+						if (lstHiddenDeletedFiles != null) {
+							for (CommitListItem liHidden : lstHiddenDeletedFiles) {
+								lstCommit.add(liHidden.getPath());
+								noCommit++;
+							}
+						}
 					}
 				}
 			}
@@ -1061,6 +1096,31 @@ public class CommitGui implements Working, Refreshable {
 
 		public String toString() {
 			return shortMessage;
+		}
+	}
+
+	private class SelectDeselectListener implements TableModelListener {
+
+		// private void checkStatusSelected(CommitListItem li) {
+		// if (ContentStatus.DELETED.equals(li.getStatus())) {
+		//				
+		// }
+		// }
+		//		
+		// private void checkStatusDeselected(CommitListItem li) {
+		//			
+		// }
+
+		public void tableChanged(TableModelEvent e) {
+		// if (e.getColumn() == 0) {
+		// for (CommitListItem li : getSelectedItems()) {
+		// if (li.isSelected()) {
+		// checkStatusSelected(li);
+		// } else {
+		// checkStatusDeselected(li);
+		// }
+		// }
+		// }
 		}
 	}
 }
