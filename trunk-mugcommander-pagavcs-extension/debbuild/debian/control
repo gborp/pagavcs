@@ -8,7 +8,7 @@ Homepage: http://pagavcs.googlecode.com
 
 Package: mugcommander-pagavcs-extensions
 Architecture: all
-Depends: sun-java6-jre | default-jre, pagavcs, mugcommander
+Depends: sun-java6-jre | default-jre, pagavcs (>= 1.4.7), mugcommander (>= 1.0.1)
 Description: PagaVCS extension for mugCommander
  It provides the ability to interact with PagaVCS from mugCommander
  It's written in Java.
