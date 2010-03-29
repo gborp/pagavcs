@@ -1,2 +1,2 @@
 debian/input/mugcommander-pagavcs-extensions.jar /usr/share/pagavcs/bin/extensions
-debian/input/cfg/* /usr/share/cfg/extentensions
+debian/input/cfg/* /usr/share/pagavcs/cfg/extentensions
