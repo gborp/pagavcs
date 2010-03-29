@@ -23,6 +23,7 @@ import hu.pagavcs.mug.MugHelper;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -116,6 +117,29 @@ class TextEditorImpl implements ThemeListener, ActionListener, EncodingListener 
         textArea.setSelectedTextColor(ThemeManager.getCurrentColor(Theme.EDITOR_SELECTED_FOREGROUND_COLOR));
         textArea.setSelectionColor(ThemeManager.getCurrentColor(Theme.EDITOR_SELECTED_BACKGROUND_COLOR));
         textArea.setFont(ThemeManager.getCurrentFont(Theme.EDITOR_FONT));
+		textArea.addKeyListener(new KeyAdapter() {
+
+			public void keyReleased(KeyEvent e) {
+				try {
+				if (e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK && e.getKeyCode() == KeyEvent.VK_D) {
+						Document doc = textArea.getDocument();
+						int startPos = textArea.getCaretPosition();
+						while (startPos > 0 && !doc.getText(startPos, 1).equals("\n")) {
+							startPos--;
+						}
+						int endPos = startPos;
+						while (endPos < doc.getLength() && !doc.getText(startPos, 1).equals("\n")) {
+							endPos++;
+						}
+						textArea.getDocument().remove(startPos, endPos - startPos);
+					}
+				} catch (BadLocationException ex) {
+					ex.printStackTrace();
+				}
+
+			}
+
+		});
 
 		MugHelper.addPopupMenu(textArea);
     }
