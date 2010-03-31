@@ -162,12 +162,13 @@ public class EditorFrame extends JFrame implements ActionListener {
                         showGenericEditErrorDialog();
 
                     dispose();
-                    return editor==null?new JPanel():editor;
+                    return editor==null?new JPanel():editor.getViewedComponent();
                 }
 
                 setTitle(editor.getTitle());
 
-				JScrollPane scrollPane = new JScrollPane(editor, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS) {
+				JScrollPane scrollPane = new JScrollPane(editor.getViewedComponent(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS) {
                         @Override
                         public Insets getInsets() {
                             return new Insets(0, 0, 0, 0);
@@ -194,7 +195,7 @@ public class EditorFrame extends JFrame implements ActionListener {
                 super.updateLayout();
 
                 // Request focus on the viewer when it is visible
-                FocusRequester.requestFocus(editor);
+                FocusRequester.requestFocus(editor.getViewedComponent());
             }
         };
 
