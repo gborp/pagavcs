@@ -20,6 +20,7 @@ package com.mucommander.ui.viewer.text;
 
 import hu.pagavcs.mug.MugHelper;
 
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,7 +76,6 @@ import com.mucommander.ui.viewer.EditorFrame;
  * @author Maxence Bernard, Mariusz Jakubowski, Nicolas Rinaudo
  */
 class TextEditorImpl implements ThemeListener, ActionListener, EncodingListener {
-    private boolean isEditable;
     private DocumentListener documentListener;
 
     private String searchString;
@@ -97,17 +97,22 @@ class TextEditorImpl implements ThemeListener, ActionListener, EncodingListener 
 
 
     ////////////////////
-    // Initialisation //
+    // Initialization //
     ////////////////////
     public TextEditorImpl(boolean isEditable) {
-        this.isEditable = isEditable;
 
         // Init text area
-        initTextArea();
+        initTextArea(isEditable);
     }
 
-    private void initTextArea() {
-        textArea = new JTextArea();
+    private void initTextArea(boolean isEditable) {
+        textArea = new JTextArea() {
+        	@Override
+            public Insets getInsets() {
+                return new Insets(4, 3, 4, 3);
+            }
+        };
+
         textArea.setEditable(isEditable);
 
         // Use theme colors and font
@@ -319,7 +324,7 @@ class TextEditorImpl implements ThemeListener, ActionListener, EncodingListener 
         copyItem = MenuToolkit.addMenuItem(menu, Translator.get("text_editor.copy"), menuItemMnemonicHelper, null, this);
 
         // These menu items are not available to text viewers
-        if(isEditable) {
+        if(textArea.isEditable()) {
             cutItem = MenuToolkit.addMenuItem(menu, Translator.get("text_editor.cut"), menuItemMnemonicHelper, null, this);
             pasteItem = MenuToolkit.addMenuItem(menu, Translator.get("text_editor.paste"), menuItemMnemonicHelper, null, this);
         }
@@ -370,7 +375,7 @@ class TextEditorImpl implements ThemeListener, ActionListener, EncodingListener 
     /////////////////////////////////////
 
     public void encodingChanged(Object source, String oldEncoding, String newEncoding) {
-        if(isEditable) {
+        if(textArea.isEditable()) {
             if(!((EditorFrame)frame).askSave())
                 return;         // Abort if the file could not be saved
         }
