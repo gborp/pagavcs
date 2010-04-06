@@ -18,6 +18,11 @@
 
 package com.mucommander.job;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.MessageDigest;
+
 import com.mucommander.AppLogger;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.util.FileSet;
@@ -27,11 +32,6 @@ import com.mucommander.ui.dialog.file.ProgressDialog;
 import com.mucommander.ui.icon.IconManager;
 import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.viewer.ViewerRegistrar;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.MessageDigest;
 
 /**
  * This job calculates a checksum for a list of files and stores the results in a checksum file.
@@ -128,7 +128,6 @@ public class CalculateChecksumJob extends TransferFileJob {
                 // Resets the digest before use
                 digest.reset();
 
-                in = null;
                 in = setCurrentInputStream(file.getInputStream());
 
                 // Determine the path relative to the base source folder

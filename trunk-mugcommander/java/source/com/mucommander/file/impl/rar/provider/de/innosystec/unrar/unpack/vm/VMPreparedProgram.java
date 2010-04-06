@@ -29,12 +29,15 @@ import java.util.Vector;
  */
 public class VMPreparedProgram 
 {
-	private List Cmd  = new ArrayList();
-	private List AltCmd  =new ArrayList();
+
+	private List<VMPreparedCommand> Cmd        = new ArrayList<VMPreparedCommand>();
+	private List<VMPreparedCommand> AltCmd     = new ArrayList<VMPreparedCommand>();
 	private int CmdCount;
 	
-	private Vector GlobalData = new Vector();
-	private Vector StaticData = new Vector(); // static data contained in DB operators
+	private Vector<Byte> GlobalData = new Vector<Byte>();
+	private Vector<Byte> StaticData = new Vector<Byte>(); // static data
+														  // contained in DB
+														  // operators
 	private int InitR[] = new int[7];
 
 	private int FilteredDataOffset;
@@ -47,23 +50,23 @@ public class VMPreparedProgram
 
 	
 
-	public List getAltCmd() {
+	public List<VMPreparedCommand> getAltCmd() {
 		return AltCmd;
 	}
 
 
 
-	public void setAltCmd(List altCmd) {
+	public void setAltCmd(List<VMPreparedCommand> altCmd) {
 		AltCmd = altCmd;
 	}
 
 
 
-	public List getCmd() {
+	public List<VMPreparedCommand> getCmd() {
 		return Cmd;
 	}
 
-	public void setCmd(List cmd) {
+	public void setCmd(List<VMPreparedCommand> cmd) {
 		Cmd = cmd;
 	}
 
@@ -97,11 +100,11 @@ public class VMPreparedProgram
 		FilteredDataSize = filteredDataSize;
 	}
 
-	public Vector getGlobalData() {
+	public Vector<Byte> getGlobalData() {
 		return GlobalData;
 	}
 
-	public void setGlobalData(Vector globalData) {
+	public void setGlobalData(Vector<Byte> globalData) {
 		GlobalData = globalData;
 	}
 
@@ -113,11 +116,11 @@ public class VMPreparedProgram
 		InitR = initR;
 	}
 
-	public Vector getStaticData() {
+	public Vector<Byte> getStaticData() {
 		return StaticData;
 	}
 
-	public void setStaticData(Vector staticData) {
+	public void setStaticData(Vector<Byte> staticData) {
 		StaticData = staticData;
 	}
 	

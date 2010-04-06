@@ -18,6 +18,32 @@
 
 package com.mucommander.ui.dialog.pref.general;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+
 import com.mucommander.AppLogger;
 import com.mucommander.conf.impl.MuConfiguration;
 import com.mucommander.extension.ClassFinder;
@@ -45,21 +71,6 @@ import com.mucommander.ui.layout.YBoxPanel;
 import com.mucommander.ui.main.WindowManager;
 import com.mucommander.ui.theme.Theme;
 import com.mucommander.ui.theme.ThemeManager;
-
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * 'Appearance' preferences panel.
@@ -555,8 +566,11 @@ class AppearancePanel extends PreferencesPanel implements ActionListener, Runnab
         lookAndFeels = UIManager.getInstalledLookAndFeels();
 
         // Sorts them.
-        Arrays.sort(lookAndFeels, new Comparator() {
-                public int compare(Object a, Object b) {return ((UIManager.LookAndFeelInfo)a).getName().compareTo(((UIManager.LookAndFeelInfo)b).getName());}
+		Arrays.sort(lookAndFeels, new Comparator<UIManager.LookAndFeelInfo>() {
+
+			public int compare(LookAndFeelInfo a, LookAndFeelInfo b) {
+				return a.getName().compareTo(b.getName());
+			}
                 public boolean equals(Object a) {return false;}
             });
     }

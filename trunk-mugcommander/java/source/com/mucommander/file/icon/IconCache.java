@@ -38,7 +38,7 @@ import javax.swing.Icon;
 public class IconCache {
 
    /** The actual hash map */
-	protected final HardWeakMap hashMap = new HardWeakMap();
+	protected final HardWeakMap<Object, Icon> hashMap = new HardWeakMap<Object, Icon>();
 
     /**
      * Creates a new icon cache.
@@ -56,7 +56,7 @@ public class IconCache {
      * such mapping existed
      */
     public synchronized Icon put(Object key, Icon value) {
-        return (Icon)hashMap.put(key, value);
+		return hashMap.put(key, value);
     }
 
     /**
@@ -68,7 +68,7 @@ public class IconCache {
      * <code>null</code> otherwise
      */
     public synchronized Icon get(Object key) {
-        return (Icon)hashMap.get(key);
+		return hashMap.get(key);
     }
 
     /**

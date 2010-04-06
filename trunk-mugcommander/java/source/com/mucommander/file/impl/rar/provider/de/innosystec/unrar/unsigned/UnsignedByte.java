@@ -46,6 +46,6 @@ public class UnsignedByte {
 	}
 	
 	public short add(byte value) {
-		return (short) (this.value + ((short) value & 0xff));
+		return (short) (this.value + (value & 0xff));
 	}
 }

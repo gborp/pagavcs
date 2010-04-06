@@ -107,8 +107,7 @@ public class RarCRC {
 			startCrc = (crcTab[pos]^temp);
 			System.out.println("--"+Integer.toHexString(startCrc));*/
 			
-			startCrc=(crcTab[((int)((int)startCrc ^
-                    (int)data[offset+i]))&0xff]^(startCrc>>>8));
+			startCrc = (crcTab[(startCrc ^ data[offset + i]) & 0xff] ^ (startCrc >>> 8));
 			
 			//System.out.println(Integer.toHexString(startCrc));
 			

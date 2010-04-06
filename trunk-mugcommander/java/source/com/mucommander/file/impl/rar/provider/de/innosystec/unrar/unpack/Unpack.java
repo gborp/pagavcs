@@ -17,6 +17,12 @@
  */
 package com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.exception.RarException;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack.decode.Compress;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack.ppm.BlockTypes;
@@ -25,12 +31,6 @@ import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack.ppm.Sub
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack.vm.BitInput;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack.vm.RarVM;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.unpack.vm.VMPreparedProgram;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * DOCUMENT ME
@@ -48,16 +48,16 @@ public final class Unpack extends Unpack20
 	private RarVM rarVM = new RarVM();
 
 	/* Filters code, one entry per filter */
-	private List filters = new ArrayList();
+	private List<UnpackFilter> filters          = new ArrayList<UnpackFilter>();
 
 	/* Filters stack, several entrances of same filter are possible */
-	private List prgStack = new ArrayList();
+	private List<UnpackFilter> prgStack         = new ArrayList<UnpackFilter>();
 
 	/*
 	 * lengths of preceding blocks, one length per filter. Used to reduce size
 	 * required to write block length if lengths are repeating
 	 */
-	private List oldFilterLengths = new ArrayList();
+	private List<Integer>      oldFilterLengths = new ArrayList<Integer>();
 
 	private int lastFilter;
 
@@ -67,7 +67,7 @@ public final class Unpack extends Unpack20
 
 	private BlockTypes unpBlockType;
 
-	private boolean externalWindow;
+	private boolean            externalWindow;
 
 	private long writtenFileSize;
 
@@ -362,7 +362,7 @@ public final class Unpack extends Unpack20
 		int WrittenBorder = wrPtr;
 		int WriteSize = (unpPtr - WrittenBorder) & Compress.MAXWINMASK;
 		for (int I = 0; I < prgStack.size(); I++) {
-			UnpackFilter flt = (UnpackFilter) prgStack.get(I);
+			UnpackFilter flt = prgStack.get(I);
 			if (flt == null) {
 				continue;
 			}
@@ -393,7 +393,7 @@ public final class Unpack extends Unpack20
 
 					}
 
-					VMPreparedProgram ParentPrg = ((UnpackFilter) filters.get(flt.getParentFilter())).getPrg();
+					VMPreparedProgram ParentPrg = filters.get(flt.getParentFilter()).getPrg();
 					VMPreparedProgram Prg = flt.getPrg();
 
 					if (ParentPrg.getGlobalData().size() > RarVM.VM_FIXEDGLOBALSIZE) {
@@ -443,7 +443,7 @@ public final class Unpack extends Unpack20
 
 					prgStack.set(I, null);
 					while (I + 1 < prgStack.size()) {
-						UnpackFilter NextFilter = (UnpackFilter) prgStack.get(I + 1);
+						UnpackFilter NextFilter = prgStack.get(I + 1);
 						if (NextFilter == null
 								|| NextFilter.getBlockStart() != BlockStart
 								|| NextFilter.getBlockLength() != FilteredDataSize
@@ -454,7 +454,7 @@ public final class Unpack extends Unpack20
 
 						rarVM.setMemory(0, FilteredData, 0, FilteredDataSize);// .SetMemory(0,FilteredData,FilteredDataSize);
 
-						VMPreparedProgram pPrg = ((UnpackFilter) filters.get(NextFilter.getParentFilter())).getPrg();
+						VMPreparedProgram pPrg = filters.get(NextFilter.getParentFilter()).getPrg();
 						VMPreparedProgram NextPrg = NextFilter.getPrg();
 
 						if (pPrg.getGlobalData().size() > RarVM.VM_FIXEDGLOBALSIZE) {
@@ -498,7 +498,7 @@ public final class Unpack extends Unpack20
 
 						FilteredData = new byte[FilteredDataSize];
 						for (int i = 0; i < FilteredDataSize; i++) {
-							FilteredData[i] = ((Byte) NextPrg.getGlobalData().get(FilteredDataOffset + i)).byteValue();
+							FilteredData[i] = NextPrg.getGlobalData().get(FilteredDataOffset + i).byteValue();
 						}
 
 						I++;
@@ -511,7 +511,7 @@ public final class Unpack extends Unpack20
 					WriteSize = (unpPtr - WrittenBorder) & Compress.MAXWINMASK;
 				} else {
 					for (int J = I; J < prgStack.size(); J++) {
-						UnpackFilter filt = (UnpackFilter) prgStack.get(J);
+						UnpackFilter filt = prgStack.get(J);
 						if (filt != null && filt.isNextWindow()) {
 							filt.setNextWindow(false);
 						}
@@ -762,7 +762,7 @@ public final class Unpack extends Unpack20
 			Length = getbits();
 			addbits(16);
 		}
-		List vmCode = new ArrayList();
+		List<Byte> vmCode = new ArrayList<Byte>();
 		for (int I = 0; I < Length; I++) {
 			if (inAddr >= readTop - 1 && !unpReadBuf() && I < Length - 1) {
 				return (false);
@@ -776,7 +776,7 @@ public final class Unpack extends Unpack20
 	private boolean readVMCodePPM() throws IOException, RarException
 	{
 		int FirstByte = ppm.decodeChar();
-		if ((int) FirstByte == -1) {
+		if (FirstByte == -1) {
 			return (false);
 		}
 		int Length = (FirstByte & 7) + 1;
@@ -797,7 +797,7 @@ public final class Unpack extends Unpack20
 			}
 			Length = B1 * 256 + B2;
 		}
-		List vmCode = new ArrayList();
+		List<Byte> vmCode = new ArrayList<Byte>();
 		for (int I = 0; I < Length; I++) {
 			int Ch = ppm.decodeChar();
 			if (Ch == -1) {
@@ -808,13 +808,13 @@ public final class Unpack extends Unpack20
 		return (addVMCode(FirstByte, vmCode, Length));
 	}
 
-	private boolean addVMCode(int firstByte, List vmCode, int length)
+	private boolean addVMCode(int firstByte, List<Byte> vmCode, int length)
 	{
 		BitInput Inp = new BitInput();
 		Inp.InitBitInput();
 		// memcpy(Inp.InBuf,Code,Min(BitInput::MAX_SIZE,CodeSize));
 		for (int i = 0; i < Math.min(BitInput.MAX_SIZE, vmCode.size()); i++) {
-			Inp.getInBuf()[i] = ((Byte) vmCode.get(i)).byteValue();
+			Inp.getInBuf()[i] = vmCode.get(i).byteValue();
 		}
 		rarVM.init();
 
@@ -854,7 +854,7 @@ public final class Unpack extends Unpack20
 			Filter.setExecCount(0);
 		} else // filter was used in the past
 		{
-			Filter = (UnpackFilter) filters.get(FiltPos);
+			Filter = filters.get(FiltPos);
 			StackFilter.setParentFilter(FiltPos);
 			Filter.setExecCount(Filter.getExecCount() + 1);// ->ExecCount++;
 		}
@@ -870,9 +870,7 @@ public final class Unpack extends Unpack20
 		if ((firstByte & 0x20) != 0) {
 			StackFilter.setBlockLength(RarVM.ReadData(Inp));
 		} else {
-			StackFilter
-			.setBlockLength(FiltPos < oldFilterLengths.size() ? 
-					((Integer) oldFilterLengths.get(FiltPos)).intValue() : 0);
+			StackFilter.setBlockLength(FiltPos < oldFilterLengths.size() ? oldFilterLengths.get(FiltPos).intValue() : 0);
 		}
 		StackFilter.setNextWindow((wrPtr != unpPtr)
 				&& ((wrPtr - unpPtr) & Compress.MAXWINMASK) <= BlockStart);
@@ -937,7 +935,7 @@ public final class Unpack extends Unpack20
 		}
 
 		// byte *GlobalData=&StackFilter->Prg.GlobalData[0];
-		Vector globalData = StackFilter.getPrg().getGlobalData();
+		Vector<Byte> globalData = StackFilter.getPrg().getGlobalData();
 		for (int I = 0; I < 7; I++) {
 			rarVM.setLowEndianValue(globalData, I * 4, StackFilter.getPrg()
 					.getInitR()[I]);
