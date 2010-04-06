@@ -13,6 +13,7 @@
 
 package com.mucommander.ui.action;
 
+import hu.pagavcs.mug.comparefiles.CompareFilesAction;
 import hu.pagavcs.mug.findfile.FindFileAction;
 
 import java.util.Enumeration;
@@ -215,6 +216,7 @@ public class ActionManager {
 
 		// PagaVCS
 		registerAction(new FindFileAction.Descriptor(), new FindFileAction.Factory());
+		registerAction(new CompareFilesAction.Descriptor(), new CompareFilesAction.Factory());
 	}
 
 	/**

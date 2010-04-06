@@ -16198,3 +16198,7 @@ OpenTerminal.tooltip:EN:Opens terminal with current directory
 EditNatively.label:EN:Edit Natively
 
 EditNatively.tooltip:EN:Edit Natively the current file
+
+CompareFiles.label:EN:Compare Files
+
+CompareFiles.tooltip:EN:Compare files by content

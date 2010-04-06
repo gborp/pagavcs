@@ -13,6 +13,7 @@
 
 package com.mucommander.ui.main.menu;
 
+import hu.pagavcs.mug.comparefiles.CompareFilesAction;
 import hu.pagavcs.mug.findfile.FindFileAction;
 
 import java.awt.Frame;
@@ -238,6 +239,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener, MenuListene
 		MenuToolkit.addMenuItem(fileMenu, ActionManager.getActionInstance(BatchRenameAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
 		MenuToolkit.addMenuItem(fileMenu, ActionManager.getActionInstance(SplitFileAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
 		MenuToolkit.addMenuItem(fileMenu, ActionManager.getActionInstance(CombineFilesAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
+		MenuToolkit.addMenuItem(fileMenu, ActionManager.getActionInstance(CompareFilesAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
 
 		fileMenu.add(new JSeparator());
 		MenuToolkit.addMenuItem(fileMenu, ActionManager.getActionInstance(ShowFilePropertiesAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
