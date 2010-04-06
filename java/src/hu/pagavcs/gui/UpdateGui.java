@@ -343,6 +343,7 @@ public class UpdateGui implements Working {
 		}
 	}
 
+	// TODO
 	private class ShowChanges extends ThreadAction {
 
 		public ShowChanges() {
@@ -535,7 +536,7 @@ public class UpdateGui implements Working {
 	public void setBandwidth(int bandwidth) {
 		totalReceived += bandwidth;
 		prgWorking.setStringPainted(true);
-		prgWorking.setString("" + ((int) (bandwidth / 1024)) + " kB/sec (total: " + ((int) (totalReceived / 1024)) + " kB)");
+		prgWorking.setString("" + (bandwidth / 1024) + " kB/sec (total: " + ((int) (totalReceived / 1024)) + " kB)");
 	}
 
 }

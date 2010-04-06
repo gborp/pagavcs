@@ -26,6 +26,6 @@ public class StatusCellRendererForUpdateListItem extends AbstractCellRendererCol
 	}
 
 	public Color getForegroundColor(UpdateListItem li) {
-		return Manager.getColorByContentStatus(((UpdateListItem) li).getStatus());
+		return Manager.getColorByContentStatus(li.getStatus());
 	}
 }

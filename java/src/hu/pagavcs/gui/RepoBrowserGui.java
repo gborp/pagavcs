@@ -10,7 +10,6 @@ import hu.pagavcs.gui.platform.Tree;
 import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.RepoBrowser.RepoBrowserStatus;
 
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -86,7 +85,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
-		Window frame = GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
+		GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
 	}
 
 	public void setStatus(RepoBrowserStatus status) {
