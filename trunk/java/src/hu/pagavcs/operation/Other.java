@@ -4,6 +4,7 @@ import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.SvnHelper;
+import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.BlameListItem;
 import hu.pagavcs.gui.OtherGui;
 import hu.pagavcs.gui.UpdateGui;
@@ -217,7 +218,7 @@ public class Other implements Cancelable {
 		return lstBlame;
 	}
 
-	public void doExport(String pathFrom, String pathExport) throws SVNException {
+	public void doExport(String pathFrom, String pathExport) throws SVNException, PagaException {
 
 		File filePathFrom = new File(pathFrom);
 		File filePathExport = new File(pathExport);
@@ -230,7 +231,12 @@ public class Other implements Cancelable {
 		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNUpdateClient updateClient = clientMgr.getUpdateClient();
 
-		updateClient.doExport(filePathFrom, filePathExport, SVNRevision.WORKING, SVNRevision.WORKING, null, false, SVNDepth.INFINITY);
+		if (filePathExport.isFile()) {
+			throw new PagaException(PagaExceptionType.NOT_DIRECTORY);
+		}
+		if (!filePathExport.exists() || gui.exportPathExistsOverride(pathExport)) {
+			updateClient.doExport(filePathFrom, filePathExport, SVNRevision.WORKING, SVNRevision.WORKING, null, true, SVNDepth.INFINITY);
+		}
 	}
 
 	public void doRepoBrowser(String wcFile) throws Exception {

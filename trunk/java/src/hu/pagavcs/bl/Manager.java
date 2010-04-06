@@ -202,9 +202,6 @@ public class Manager {
 				reTryLogin = true;
 			}
 		}
-		if (result == null) {
-			throw new PagaException(PagaExceptionType.LOGIN_FAILED);
-		}
 
 		return result;
 	}

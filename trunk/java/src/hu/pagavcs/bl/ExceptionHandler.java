@@ -75,6 +75,9 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 				case INVALID_PARAMETERS:
 					MessagePane.showError(null, "Invalid parameters", "Invalid parameters");
 					return;
+				case NOT_DIRECTORY:
+					MessagePane.showError(null, "Not directory", "Not directory");
+					return;
 			}
 		}
 

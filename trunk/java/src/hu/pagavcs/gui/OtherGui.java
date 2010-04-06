@@ -7,7 +7,9 @@ import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.ProgressBar;
+import hu.pagavcs.gui.platform.MessagePane.OPTIONS;
 import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Other.OtherStatus;
@@ -455,6 +457,12 @@ public class OtherGui implements Working, Cancelable {
 
 	public void setCancel(boolean cancel) throws Exception {
 		other.setCancel(true);
+	}
+
+	public boolean exportPathExistsOverride(String filePathExport) {
+		OPTIONS choice = MessagePane.showWarning(frame, "Directory exists", "Directory " + filePathExport
+		        + " is already exist,\ndo you really want to export there?");
+		return OPTIONS.OK.equals(choice);
 	}
 
 }
