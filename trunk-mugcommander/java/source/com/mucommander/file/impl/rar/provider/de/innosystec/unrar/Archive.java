@@ -62,16 +62,16 @@ public class Archive {
 	
     private final ComprDataIO dataIO;
 
-    private final List headers = new ArrayList();
+	private final List<BaseBlock>   headers  = new ArrayList<BaseBlock>();
     
     /** Contains FileHeader instances corresponding to the archive's entries, in the order they were found in the archive. */
-    private final Vector entries = new Vector(); // FileHeaders
+	private final Vector<BaseBlock> entries  = new Vector<BaseBlock>();   // FileHeaders
 
     /** Maps entry names to corresponding FileHeader instances */
-    private Hashtable nameMap = new Hashtable();
+	private Hashtable<String, BaseBlock> nameMap  = new Hashtable<String, BaseBlock>();
     
     /** Maps entry names to corresponding FileHeader indexes */
-    private Hashtable indexMap = new Hashtable();
+	private Hashtable<String, Integer>   indexMap = new Hashtable<String, Integer>();
     
     private MarkHeader markHead = null;
 
@@ -313,22 +313,24 @@ public class Archive {
     	nameMap.clear();
     	indexMap.clear();
 
-    	Iterator headersIterator = headers.iterator();
+		Iterator<BaseBlock> headersIterator = headers.iterator();
     	int index = 0;
     	BaseBlock block;
     	while (headersIterator.hasNext())
-    		if ((block = (BaseBlock) headersIterator.next()).getHeaderType() == UnrarHeadertype.FileHeaderCode) {
+			if ((block = headersIterator.next()).getHeaderType() == UnrarHeadertype.FileHeaderCode) {
     			FileHeader header = (FileHeader) block;
     			entries.add(header);
+				indexMap.put(header.getFileNameString(), Integer.valueOf(index++));
     			nameMap.put(header.getFileNameString(), header);
-    			indexMap.put(header.getFileNameString(), Integer.valueOf(index++));
     		}
     }
     
     /**
 	 * @return returns all file headers (entries) of the archive
 	 */
-	public List getFileHeaders() { return entries; }
+	public List<BaseBlock> getFileHeaders() {
+		return entries;
+	}
 	
 	/**
 	 * @param path - a path.
@@ -357,7 +359,7 @@ public class Archive {
 	 */
 	public void extractEntry(boolean isHeaderSolid, FileHeader header, InputStream in1, OutputStream os, InputStream in2) throws Exception {
 		if (isHeaderSolid) {
-			int headerIndex = ((Integer) indexMap.get(header.getFileNameString())).intValue();        	
+			int headerIndex = indexMap.get(header.getFileNameString()).intValue();
         	FileHeader entry = null;
         	for (int i = headerIndex - 1; i >= 0 ; --i)
         		if (!(entry = (FileHeader) entries.get(i)).isSolid())

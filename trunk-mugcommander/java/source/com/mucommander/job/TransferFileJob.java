@@ -19,6 +19,11 @@
 
 package com.mucommander.job;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import com.apple.eio.FileManager;
 import com.mucommander.AppLogger;
 import com.mucommander.file.AbstractFile;
@@ -26,17 +31,16 @@ import com.mucommander.file.FileOperation;
 import com.mucommander.file.FilePermissions;
 import com.mucommander.file.impl.local.LocalFile;
 import com.mucommander.file.util.FileSet;
-import com.mucommander.io.*;
+import com.mucommander.io.ByteCounter;
+import com.mucommander.io.ChecksumInputStream;
+import com.mucommander.io.CounterInputStream;
+import com.mucommander.io.FileTransferException;
+import com.mucommander.io.ThroughputLimitInputStream;
 import com.mucommander.io.security.MuProvider;
 import com.mucommander.runtime.OsFamilies;
 import com.mucommander.text.Translator;
 import com.mucommander.ui.dialog.file.ProgressDialog;
 import com.mucommander.ui.main.MainFrame;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 
 /**
@@ -611,7 +615,7 @@ public abstract class TransferFileJob extends FileJob {
                 nbFilesProcessed += getCurrentFileByteCounter().getByteCount()/(float)currentFileSize;
         }
 
-        return nbFilesProcessed/(float)nbFiles;
+		return nbFilesProcessed / nbFiles;
     }
 
     /**

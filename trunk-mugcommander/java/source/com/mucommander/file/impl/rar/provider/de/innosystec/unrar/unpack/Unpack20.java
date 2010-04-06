@@ -235,7 +235,7 @@ public abstract class Unpack20 extends Unpack15
 		Arrays.fill(dec.getDecodeNum(), 0);// memset(Dec->DecodeNum,0,Size*sizeof(*Dec->DecodeNum));
 
 		for (i = 0; i < size; i++) {
-			lenCount[(int) (lenTab[offset + i] & 0xF)]++;
+			lenCount[(lenTab[offset + i] & 0xF)]++;
 		}
 		lenCount[0] = 0;
 		for (tmpPos[0] = 0, dec.getDecodePos()[0] = 0, dec.getDecodeLen()[0] = 0, N = 0, i = 1; i < 16; i++) {

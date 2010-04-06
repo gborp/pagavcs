@@ -14,10 +14,7 @@
 package com.mucommander.file.icon.impl;
 
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.PrintStream;
 import java.net.URL;
 
@@ -157,29 +154,6 @@ class SwingFileIconProviderImpl extends LocalFileIconProvider implements Cacheab
 			if (fileSystemView != null)
 				errOut.setSilenced(false);
 		}
-	}
-
-	/**
-	 * Returns an icon symbolizing a symlink to the given target icon. The
-	 * returned icon uses the specified icon as its background and overlays a
-	 * 'link' icon on top of it.
-	 * 
-	 * @param targetFileIcon
-	 *            the icon representing the symlink's target
-	 * @return an icon symbolizing a symlink to the given target
-	 */
-	private static ImageIcon getSymlinkIcon(Icon targetFileIcon) {
-		BufferedImage bi = new BufferedImage(targetFileIcon.getIconWidth(), targetFileIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-
-		Graphics g = bi.getGraphics();
-		targetFileIcon.paintIcon(null, g, 0, 0);
-		SYMLINK_OVERLAY_ICON.paintIcon(null, g, 0, 0);
-
-		// FIXME debug
-		g.setColor(Color.GREEN);
-		g.fillRect(0, 0, 4, 4);
-
-		return new ImageIcon(bi);
 	}
 
 	/**

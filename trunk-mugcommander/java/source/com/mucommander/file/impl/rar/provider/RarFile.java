@@ -18,20 +18,25 @@
 
 package com.mucommander.file.impl.rar.provider;
 
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedOutputStream;
+import java.util.Collection;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileLogger;
 import com.mucommander.file.UnsupportedFileOperationException;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.Archive;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.exception.RarException;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.exception.RarExceptionType;
+import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.rarfile.BaseBlock;
 import com.mucommander.file.impl.rar.provider.de.innosystec.unrar.rarfile.FileHeader;
 import com.mucommander.io.FailSafePipedInputStream;
-
-import java.io.*;
-import java.util.Collection;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * 
@@ -71,7 +76,7 @@ public class RarFile {
      * @return
      * @throws IOException
      */
-    public Collection getEntries() {
+	public Collection<BaseBlock> getEntries() {
     	return archive.getFileHeaders();
     }
     

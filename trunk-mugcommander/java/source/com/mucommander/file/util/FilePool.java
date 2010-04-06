@@ -39,7 +39,7 @@ import com.mucommander.file.AbstractFile;
 public class FilePool {
 
     /** The actual hash map */
-    protected final HardWeakMap hashMap = new HardWeakMap();
+	protected final HardWeakMap<Object, AbstractFile> hashMap = new HardWeakMap<Object, AbstractFile>();
 
     /**
      * Creates a new file pool.
@@ -57,7 +57,7 @@ public class FilePool {
      * such mapping existed
      */
     public synchronized AbstractFile put(Object key, AbstractFile value) {
-        return (AbstractFile)hashMap.put(key, value);
+		return hashMap.put(key, value);
     }
 
     /**
@@ -69,7 +69,7 @@ public class FilePool {
      * <code>null</code> otherwise
      */
     public synchronized AbstractFile get(Object key) {
-        return (AbstractFile)hashMap.get(key);
+		return hashMap.get(key);
     }
 
     /**

@@ -148,13 +148,11 @@ public class PPMContext extends Pointer
 			StateRef firstState /* ref */)
 	{
 		PPMContext pc = getTempPPMContext(model.getSubAlloc().getHeap());
-		pc.setAddress(model.getSubAlloc().allocContext()); 
-		if (pc != null) { 
-			pc.setNumStats(1);
-			pc.setOneState(firstState);
-			pc.setSuffix(this);
-			pStats.setSuccessor(pc);
-		}
+		pc.setAddress(model.getSubAlloc().allocContext());
+		pc.setNumStats(1);
+		pc.setOneState(firstState);
+		pc.setSuffix(this);
+		pStats.setSuccessor(pc);
 		return pc.getAddress();
 	}
 

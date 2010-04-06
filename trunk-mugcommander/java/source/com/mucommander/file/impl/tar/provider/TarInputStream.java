@@ -18,11 +18,11 @@
 
 package com.mucommander.file.impl.tar.provider;
 
-import com.mucommander.io.BufferPool;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.mucommander.io.BufferPool;
 
 /**
  * The TarInputStream reads a UNIX tar archive as an InputStream.
@@ -334,7 +334,7 @@ public class TarInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         int num = read(oneBuf, 0, 1);
-        return num == -1 ? -1 : ((int) oneBuf[0]) & BYTE_MASK;
+		return num == -1 ? -1 : oneBuf[0] & BYTE_MASK;
     }
 
 

@@ -19,12 +19,12 @@
 
 package com.mucommander.file.util;
 
+import java.net.MalformedURLException;
+
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileFactory;
 import com.mucommander.file.FileLogger;
 import com.mucommander.file.FileURL;
-
-import java.net.MalformedURLException;
 
 /**
  * This class contains static helper methods that operate on file paths.
@@ -297,7 +297,7 @@ public class PathUtils {
             return path2==null;
 
         if(path2==null)
-            return path1==null;
+			return true;
         
         if(path1.equals(path2))
             return true;

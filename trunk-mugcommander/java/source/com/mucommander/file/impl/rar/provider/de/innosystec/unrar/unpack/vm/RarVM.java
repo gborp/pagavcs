@@ -122,7 +122,8 @@ public class RarVM extends BitInput {
 //		mem[offset + 2] = (byte) ((value >>> 16)&0xff);
 //		mem[offset + 3] = (byte) ((value >>> 24)&0xff);
 	}
-	public void setLowEndianValue(Vector mem, int offset, int value) {
+
+	public void setLowEndianValue(Vector<Byte> mem, int offset, int value) {
 		mem.set(offset + 0, Byte.valueOf((byte) (value&0xff))) ;
 		mem.set(offset + 1, Byte.valueOf((byte) ((value >>> 8)&0xff))); 
 		mem.set(offset + 2, Byte.valueOf((byte) ((value >>> 16)&0xff) )); 
@@ -151,7 +152,7 @@ public class RarVM extends BitInput {
 		if (globalSize != 0) {
 			for (int i = 0; i < globalSize; i++) // memcpy(Mem+VM_GLOBALMEMADDR,&Prg->GlobalData[0],GlobalSize);
 			{
-				mem[VM_GLOBALMEMADDR + i] = ((Byte) prg.getGlobalData().get(i)).byteValue();
+				mem[VM_GLOBALMEMADDR + i] = prg.getGlobalData().get(i).byteValue();
 			}
 
 		}
@@ -160,17 +161,17 @@ public class RarVM extends BitInput {
 		if (staticSize != 0) {
 			for (int i = 0; i < staticSize; i++) // memcpy(Mem+VM_GLOBALMEMADDR+GlobalSize,&Prg->StaticData[0],StaticSize);
 			{
-				mem[VM_GLOBALMEMADDR + (int) globalSize + i] = ((Byte) prg.getStaticData().get(i)).byteValue();
+				mem[VM_GLOBALMEMADDR + (int) globalSize + i] = prg.getStaticData().get(i).byteValue();
 			}
 
 		}
 		R[7] = VM_MEMSIZE;
 		flags = 0;
 
-		List preparedCode = prg.getAltCmd().size() != 0 ? prg.getAltCmd() : prg.getCmd();
+		List<VMPreparedCommand> preparedCode = prg.getAltCmd().size() != 0 ? prg.getAltCmd() : prg.getCmd();
 
 		if (!ExecuteCode(preparedCode, prg.getCmdCount())) {
-			((VMPreparedCommand) preparedCode.get(0)).setOpCode(VMCommands.VM_RET);
+			preparedCode.get(0).setOpCode(VMCommands.VM_RET);
 		}
 		int newBlockPos = getValue(false, mem, VM_GLOBALMEMADDR + 0x20)
 				& VM_MEMMASK;
@@ -217,14 +218,14 @@ public class RarVM extends BitInput {
 		return true;
 	}
 
-	private boolean ExecuteCode(List preparedCode, int cmdCount) {
+	private boolean ExecuteCode(List<VMPreparedCommand> preparedCode, int cmdCount) {
 
 		maxOpCount = 25000000;
 		this.codeSize = cmdCount;
 		this.IP = 0;
 		
 		while (true) {
-			VMPreparedCommand cmd = (VMPreparedCommand) preparedCode.get(IP);
+			VMPreparedCommand cmd = preparedCode.get(IP);
 			int op1 = getOperand(cmd.getOp1());
 			int op2 = getOperand(cmd.getOp2());
 			switch (cmd.getOpCode().getVMCommand()) {
@@ -297,7 +298,7 @@ public class RarVM extends BitInput {
 
 			case VMCommands.VM_ADDB_CODE:
 				setValue(true, mem, op1,
-						(int) ((long) getValue(true, mem, op1) & 0xFFffFFff
+ (int) (getValue(true, mem, op1) & 0xFFffFFff
 								+ (long) getValue(true, mem, op2) & 0xFFffFFff));
 				break;
 			case VMCommands.VM_ADDD_CODE:
@@ -305,13 +306,13 @@ public class RarVM extends BitInput {
 						false,
 						mem,
 						op1,
-						(int) ((long) getValue(false, mem, op1) & 0xFFffFFff
+ (int) (getValue(false, mem, op1) & 0xFFffFFff
 								+ (long) getValue(false, mem, op2) & 0xFFffFFff));
 				break;
 
 			case VMCommands.VM_SUB_CODE: {
 				int value1 = getValue(cmd.isByteMode(), mem, op1);
-				int result = (int) ((long) value1 & 0xffFFffFF
+					int result = (int) (value1 & 0xffFFffFF
 						- (long) getValue(cmd.isByteMode(), mem, op2) & 0xFFffFFff);
 				flags = (result == 0) ? VMFlags.VM_FZ.getFlag()
 						: (result > value1) ? 1 : 0 | (result & VMFlags.VM_FS
@@ -322,7 +323,7 @@ public class RarVM extends BitInput {
 
 			case VMCommands.VM_SUBB_CODE:
 				setValue(true, mem, op1,
-						(int) ((long) getValue(true, mem, op1) & 0xFFffFFff
+ (int) (getValue(true, mem, op1) & 0xFFffFFff
 								- (long) getValue(true, mem, op2) & 0xFFffFFff));
 				break;
 			case VMCommands.VM_SUBD_CODE:
@@ -330,7 +331,7 @@ public class RarVM extends BitInput {
 						false,
 						mem,
 						op1,
-						(int) ((long) getValue(false, mem, op1) & 0xFFffFFff
+ (int) (getValue(false, mem, op1) & 0xFFffFFff
 								- (long) getValue(false, mem, op2) & 0xFFffFFff));
 				break;
 
@@ -504,7 +505,7 @@ public class RarVM extends BitInput {
 			case VMCommands.VM_SAR_CODE: {
 				int value1 = getValue(cmd.isByteMode(), mem, op1);
 				int value2 = getValue(cmd.isByteMode(), mem, op2);
-				int result = ((int) value1) >> value2;
+					int result = value1 >> value2;
 				flags = (result == 0 ? VMFlags.VM_FZ.getFlag()
 						: (result & VMFlags.VM_FS.getFlag()))
 						| ((value1 >> (value2 - 1)) & VMFlags.VM_FC.getFlag());
@@ -560,7 +561,7 @@ public class RarVM extends BitInput {
 			}
 				break;
 			case VMCommands.VM_MUL_CODE: {
-				int result = (int) (((long) getValue(cmd.isByteMode(), mem, op1)
+					int result = (int) ((getValue(cmd.isByteMode(), mem, op1)
 						& 0xFFffFFff
 						* (long) getValue(cmd.isByteMode(), mem, op2) & 0xFFffFFff) & 0xFFffFFff);
 				setValue(cmd.isByteMode(), mem, op1, result);
@@ -577,7 +578,7 @@ public class RarVM extends BitInput {
 			case VMCommands.VM_ADC_CODE: {
 				int value1 = getValue(cmd.isByteMode(), mem, op1);
 				int FC = (flags & VMFlags.VM_FC.getFlag());
-				int result = (int) ((long) value1 & 0xFFffFFff
+					int result = (int) (value1 & 0xFFffFFff
 						+ (long) getValue(cmd.isByteMode(), mem, op2)
 						& 0xFFffFFff + (long) FC & 0xFFffFFff);
 				if (cmd.isByteMode()) {
@@ -593,7 +594,7 @@ public class RarVM extends BitInput {
 			case VMCommands.VM_SBB_CODE: {
 				int value1 = getValue(cmd.isByteMode(), mem, op1);
 				int FC = (flags & VMFlags.VM_FC.getFlag());
-				int result = (int) ((long) value1 & 0xFFffFFff
+					int result = (int) (value1 & 0xFFffFFff
 						- (long) getValue(cmd.isByteMode(), mem, op2)
 						& 0xFFffFFff - (long) FC & 0xFFffFFff);
 				if (cmd.isByteMode()) {
@@ -670,7 +671,7 @@ public class RarVM extends BitInput {
 			// it is a part of VM code, not a filter parameter.
 
 			if ((dataFlag & 0x8000) != 0) {
-				long dataSize = (long) ((long) ReadData(this) & 0xffFFffFF + 1);
+				long dataSize = ((long) ReadData(this) & 0xffFFffFF + 1);
 				for (int i = 0; inAddr < codeSize && i < dataSize; i++) {
 					prg.getStaticData().add(
 							Byte.valueOf((byte) (fgetbits() >> 8)));
@@ -799,11 +800,11 @@ public class RarVM extends BitInput {
 	}
 
 	private void optimize(VMPreparedProgram prg) {
-		List commands = prg.getCmd();
+		List<VMPreparedCommand> commands = prg.getCmd();
 
 		int nbCommands = commands.size();
 		for (int j=0; j < nbCommands; ++j) {
-			VMPreparedCommand cmd = (VMPreparedCommand) commands.get(j);
+			VMPreparedCommand cmd = commands.get(j);
 			switch (cmd.getOpCode().getVMCommand()) {
 			case VMCommands.VM_MOV_CODE:
 				cmd.setOpCode(cmd.isByteMode() ? VMCommands.VM_MOVB
@@ -820,7 +821,7 @@ public class RarVM extends BitInput {
 			boolean flagsRequired = false;
 
 			for (int i = commands.indexOf(cmd) + 1; i < commands.size(); i++) {
-				int flags = VMCmdFlags.VM_CmdFlags[((VMPreparedCommand) commands.get(i)).getOpCode()
+				int flags = VMCmdFlags.VM_CmdFlags[commands.get(i).getOpCode()
 						.getVMCommand()];
 				if ((flags & (VMCmdFlags.VMCF_JUMP | VMCmdFlags.VMCF_PROC | VMCmdFlags.VMCF_USEFLAGS)) != 0) {
 					flagsRequired = true;
@@ -1002,7 +1003,7 @@ public class RarVM extends BitInput {
 		        int channels=R[0]&0xFFffFFff;
 		        int srcPos=0;
 		        int border=(dataSize*2) &0xFFffFFff;
-		        setValue(false,mem,VM_GLOBALMEMADDR+0x20,(int)dataSize);
+				setValue(false, mem, VM_GLOBALMEMADDR + 0x20, dataSize);
 		        if (dataSize>=VM_GLOBALMEMADDR/2){
 		          break;
 		        }
@@ -1034,40 +1035,35 @@ public class RarVM extends BitInput {
 		        {
 		          long prevByte=0;
 
-		          for (int i=curChannel;i<dataSize;i+=channels)
-		          {
-		            long predicted;
-		            int upperPos=i-width;
-		            if (upperPos>=3)
-		            {
-		              int upperDataPos=destDataPos+upperPos;
-		              int  upperByte=mem[(int)upperDataPos]&0xff;
-		              int upperLeftByte=mem[upperDataPos-3]&0xff;
-		              predicted=prevByte+upperByte-upperLeftByte;
-		              int pa=Math.abs((int)(predicted-prevByte));
-		              int pb=Math.abs((int)(predicted-upperByte));
-		              int pc=Math.abs((int)(predicted-upperLeftByte));
-		              if (pa<=pb && pa<=pc){
-		                predicted=prevByte;
-		              }
-		              else{
-		                if (pb<=pc){
-		                  predicted=upperByte;
-		                }
-		                else{
-		                  predicted=upperLeftByte;
-		                }
-		              }
-		            }
-		            else{
-		              predicted=prevByte;
-		            }
-		            
-		            prevByte=(predicted-mem[srcPos++]&0xff)&0xff;
-		            mem[destDataPos+i]=(byte)(prevByte&0xff);
-		           
-		          }
-		        }
+					for (int i = curChannel; i < dataSize; i += channels) {
+						long predicted;
+						int upperPos = i - width;
+						if (upperPos >= 3) {
+							int upperDataPos = destDataPos + upperPos;
+							int upperByte = mem[upperDataPos] & 0xff;
+							int upperLeftByte = mem[upperDataPos - 3] & 0xff;
+							predicted = prevByte + upperByte - upperLeftByte;
+							int pa = Math.abs((int) (predicted - prevByte));
+							int pb = Math.abs((int) (predicted - upperByte));
+							int pc = Math.abs((int) (predicted - upperLeftByte));
+							if (pa <= pb && pa <= pc) {
+								predicted = prevByte;
+							} else {
+								if (pb <= pc) {
+									predicted = upperByte;
+								} else {
+									predicted = upperLeftByte;
+								}
+							}
+						} else {
+							predicted = prevByte;
+						}
+
+						prevByte = (predicted - mem[srcPos++] & 0xff) & 0xff;
+						mem[destDataPos + i] = (byte) (prevByte & 0xff);
+
+					}
+				}
 		        for (int i=posR,border=dataSize-2;i<border;i+=3)
 		        {
 		          byte G=mem[destDataPos+i+1];
@@ -1190,10 +1186,10 @@ public class RarVM extends BitInput {
 	private int filterItanium_GetBits(int curPos, int bitPos, int bitCount) {
 		 int inAddr=bitPos/8;
 		  int inBit=bitPos&7;
-		  int bitField=(int)(mem[curPos+inAddr++]&0xff);
-		  bitField|=(int) ((mem[curPos+inAddr++]&0xff) << 8);
-		  bitField|=(int) ((mem[curPos+inAddr++]&0xff) << 16);
-		  bitField|=(int) ((mem[curPos+inAddr]&0xff) << 24);
+		int bitField = (mem[curPos + inAddr++] & 0xff);
+		bitField |= ((mem[curPos + inAddr++] & 0xff) << 8);
+		bitField |= ((mem[curPos + inAddr++] & 0xff) << 16);
+		bitField |= ((mem[curPos + inAddr] & 0xff) << 24);
 		  bitField >>>= inBit;
 		  return(bitField & (0xffffffff>>>(32-bitCount)));
 	}
