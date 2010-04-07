@@ -1,3 +1,17 @@
+mugcommander (1.0.2) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * new feature: Compare files by content (using "meld" utility)
+  * merged from muCommander: svn#3598 - Transformed enum-style NotificationTypes interface into enum.
+  * merged from muCommander: svn#3599 - minor changes at TextEditorImpl class
+  * merged from muCommander: svn#3601 - Improved natural file ordering (#346).
+  * merged from muCommander: svn#3605 - A couple minor changes.
+  * merged from muCommander: svn#3606 - fixed #345 (regression caused by #167); - fixed spinning dial icon that kept spinning when the destination was invalid.
+  * merged from muCommander: svn#3607 - The text-area at TextEditorImpl is no longer wrapped by a JPanel at FileEditor & FileViewer classes, and it's inserted as-is to the scrollpane at EditorFrame & ViewerFrame. In order to access the text-area an abstract method getViewedComponent was added to FileEditor & FileViewer classes.
+  * merged from muCommander: svn#3607 - Change ImageViewer such that it would support the previous change at FileViewer and be more symmetric to TextViewer class.
+
+ -- Gábor Pápai <gabor.papai@gmail.com>    Tue, 06 Apr 2010 20:01:13 +0200
+
 mugcommander (1.0.1) karmic; urgency=low
 
   [ Gábor Pápai ]
