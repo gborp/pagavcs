@@ -1,3 +1,10 @@
+mugcommander (1.0.3) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * new feature: more extensions support (eg.: for Bonjour extension)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 08 Apr 2010 19:19:21 +0200
+
 mugcommander (1.0.2) karmic; urgency=low
 
   [ Gábor Pápai ]
@@ -10,7 +17,7 @@ mugcommander (1.0.2) karmic; urgency=low
   * merged from muCommander: svn#3607 - The text-area at TextEditorImpl is no longer wrapped by a JPanel at FileEditor & FileViewer classes, and it's inserted as-is to the scrollpane at EditorFrame & ViewerFrame. In order to access the text-area an abstract method getViewedComponent was added to FileEditor & FileViewer classes.
   * merged from muCommander: svn#3607 - Change ImageViewer such that it would support the previous change at FileViewer and be more symmetric to TextViewer class.
 
- -- Gábor Pápai <gabor.papai@gmail.com>    Tue, 06 Apr 2010 20:01:13 +0200
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 06 Apr 2010 20:01:13 +0200
 
 mugcommander (1.0.1) karmic; urgency=low
 
