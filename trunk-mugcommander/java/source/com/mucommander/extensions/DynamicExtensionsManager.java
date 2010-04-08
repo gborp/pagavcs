@@ -14,6 +14,9 @@ public class DynamicExtensionsManager {
 
 	private HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>> mapContextMenuExtensions;
 	private List<FileEmblemExtension>                                          lstFileEmblemExtensions;
+	private List<DrivePopupMenuExtension>                                      lstDrivePopupMenuExtensions;
+	private List<MainMenuBarExtension>                                         lstMainMenuBarExtensions;
+	private List<ServiceExtension>                                             lstServiceExtensions;
 
 	public static DynamicExtensionsManager getInstance() {
 		if (singleton == null) {
@@ -36,6 +39,9 @@ public class DynamicExtensionsManager {
 
 			mapContextMenuExtensions = new HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>>();
 			lstFileEmblemExtensions = new ArrayList<FileEmblemExtension>();
+			lstDrivePopupMenuExtensions = new ArrayList<DrivePopupMenuExtension>();
+			lstMainMenuBarExtensions = new ArrayList<MainMenuBarExtension>();
+			lstServiceExtensions = new ArrayList<ServiceExtension>();
 
 			String cfgDir = System.getProperty("extensions.cfg.dir");
 
@@ -43,10 +49,6 @@ public class DynamicExtensionsManager {
 				// TODO throw exception or something
 				System.out.println("extensions.cfg.dir variable is not set!");
 			} else {
-				// String classPath = System.getProperty("java.class.path",
-				// ".");
-				// System.out.println("ClassPath: " + classPath);
-
 				for (String extClassName : new File(cfgDir, "extensions").list()) {
 					try {
 						Object instance = Class.forName(extClassName).newInstance();
@@ -56,6 +58,18 @@ public class DynamicExtensionsManager {
 
 						if (instance instanceof FileEmblemExtensionFactory) {
 							lstFileEmblemExtensions.add(((FileEmblemExtensionFactory) instance).getFileEmblemExtension());
+						}
+
+						if (instance instanceof DrivePopupMenuExtensionFactory) {
+							lstDrivePopupMenuExtensions.add(((DrivePopupMenuExtensionFactory) instance).getDrivePopupMenuExtension());
+						}
+
+						if (instance instanceof MainMenuBarExtensionFactory) {
+							lstMainMenuBarExtensions.add(((MainMenuBarExtensionFactory) instance).getMainMenuBarExtension());
+						}
+
+						if (instance instanceof ServiceExtensionFactory) {
+							lstServiceExtensions.add(((ServiceExtensionFactory) instance).getServiceExtension());
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -67,12 +81,26 @@ public class DynamicExtensionsManager {
 		}
 	}
 
+
+
 	public HashMap<ContextMenuExtensionPositions, List<ContextMenuExtension>> getMapContextMenuExtensions() {
 		return this.mapContextMenuExtensions;
 	}
 
 	public List<FileEmblemExtension> getLstFileEmblemExtensions() {
 		return this.lstFileEmblemExtensions;
+	}
+
+	public List<DrivePopupMenuExtension> getLstDrivePopupMenuExtensions() {
+		return this.lstDrivePopupMenuExtensions;
+	}
+
+	public List<ServiceExtension> getLstServiceExtensions() {
+		return this.lstServiceExtensions;
+	}
+
+	public List<MainMenuBarExtension> getLstMainMenuBarExtensions() {
+		return this.lstMainMenuBarExtensions;
 	}
 
 }

@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.WeakHashMap;
 
@@ -38,6 +39,8 @@ import com.mucommander.bookmark.Bookmark;
 import com.mucommander.bookmark.BookmarkManager;
 import com.mucommander.conf.impl.MuConfiguration;
 import com.mucommander.desktop.DesktopManager;
+import com.mucommander.extensions.DynamicExtensionsManager;
+import com.mucommander.extensions.MainMenuBarExtension;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.impl.local.LocalFile;
 import com.mucommander.runtime.OsFamilies;
@@ -369,6 +372,15 @@ public class MainMenuBar extends JMenuBar implements ActionListener, MenuListene
 		        menuItemMnemonicHelper2);
 		MenuToolkit.addMenuItem(quickListMenu, ActionManager.getActionInstance(ShowBookmarksQLAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper2);
 		goMenu.add(quickListMenu);
+
+		// main menu bar extensions
+		List<MainMenuBarExtension> lstExt = DynamicExtensionsManager.getInstance().getLstMainMenuBarExtensions();
+		if (!lstExt.isEmpty()) {
+			goMenu.add(new JSeparator());
+			for (MainMenuBarExtension ext : lstExt) {
+				goMenu.add(ext.getMainMenuBarItem(menuItemMnemonicHelper, mainFrame));
+			}
+		}
 
 		// Volumes will be added when the menu is selected
 		goMenu.add(new JSeparator());
