@@ -41,6 +41,8 @@ import com.mucommander.bookmark.BookmarkManager;
 import com.mucommander.conf.ConfigurationEvent;
 import com.mucommander.conf.ConfigurationListener;
 import com.mucommander.conf.impl.MuConfiguration;
+import com.mucommander.extensions.DrivePopupMenuExtension;
+import com.mucommander.extensions.DynamicExtensionsManager;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileFactory;
 import com.mucommander.file.FileProtocols;
@@ -296,7 +298,7 @@ public class DrivePopupButton extends PopupButton implements LocationListener, B
         ArrayList<JMenuItem> itemsV = new ArrayList<JMenuItem>();
 
         for(int i=0; i<nbVolumes; i++) {
-            action = new CustomOpenLocationAction(mainFrame, new Hashtable<String, Object>(), volumes[i]);
+			action = new CustomOpenLocationAction(folderPanel, mainFrame, new Hashtable<String, Object>(), volumes[i]);
             volumeName = volumes[i].getName();
 
             // If several volumes have the same filename, use the volume's path for the action's label instead of the
@@ -339,7 +341,7 @@ public class DrivePopupButton extends PopupButton implements LocationListener, B
         if(nbBookmarks>0) {
             for(int i=0; i<nbBookmarks; i++) {
                 b = bookmarks.elementAt(i);
-                item = popupMenu.add(new CustomOpenLocationAction(mainFrame, new Hashtable<String, Object>(), b));
+				item = popupMenu.add(new CustomOpenLocationAction(folderPanel, mainFrame, new Hashtable<String, Object>(), b));
                 setMnemonic(item, mnemonicHelper);
             }
         }
@@ -352,10 +354,16 @@ public class DrivePopupButton extends PopupButton implements LocationListener, B
 
         // Add 'Network shares' shortcut
         if(FileFactory.isRegisteredProtocol(FileProtocols.SMB)) {
-            action = new CustomOpenLocationAction(mainFrame, new Hashtable<String, Object>(), new Bookmark(Translator.get("drive_popup.network_shares"), "smb:///"));
+			action = new CustomOpenLocationAction(folderPanel, mainFrame, new Hashtable<String, Object>(), new Bookmark(Translator
+			        .get("drive_popup.network_shares"), "smb:///"));
             action.setIcon(IconManager.getIcon(IconManager.FILE_ICON_SET, CustomFileIconProvider.NETWORK_ICON_NAME));
             setMnemonic(popupMenu.add(action), mnemonicHelper);
         }
+
+		// Add extension shortcuts (eg.: bonjour)
+		for (DrivePopupMenuExtension extension : DynamicExtensionsManager.getInstance().getLstDrivePopupMenuExtensions()) {
+			setMnemonic(popupMenu.add(extension.getDrivePopupMenuItem(folderPanel, mainFrame)), mnemonicHelper);
+		}
 
         // Add 'connect to server' shortcuts
         setMnemonic(popupMenu.add(new ServerConnectAction("SMB...", SMBPanel.class)), mnemonicHelper);
@@ -529,22 +537,31 @@ public class DrivePopupButton extends PopupButton implements LocationListener, B
      * This modified {@link OpenLocationAction} changes the current folder on the {@link FolderPanel} that contains
      * this button, instead of the currently active {@link FolderPanel}.  
      */
-    private class CustomOpenLocationAction extends OpenLocationAction {
+	public static class CustomOpenLocationAction extends OpenLocationAction {
 
-        public CustomOpenLocationAction(MainFrame mainFrame, Hashtable<String,Object> properties, Bookmark bookmark) {
+		private final FolderPanel folderPanel;
+
+		public CustomOpenLocationAction(FolderPanel folderPanel, MainFrame mainFrame, Hashtable<String, Object> properties, Bookmark bookmark) {
             super(mainFrame, properties, bookmark);
+			this.folderPanel = folderPanel;
         }
 
-        public CustomOpenLocationAction(MainFrame mainFrame, Hashtable<String,Object> properties, AbstractFile file) {
+		public CustomOpenLocationAction(FolderPanel folderPanel, MainFrame mainFrame, Hashtable<String, Object> properties, AbstractFile file) {
             super(mainFrame, properties, file);
+			this.folderPanel = folderPanel;
         }
+
+		public CustomOpenLocationAction(FolderPanel folderPanel, MainFrame mainFrame, Hashtable<String, Object> hashtable, FileURL url, String nameWithProtocol) {
+			super(mainFrame, hashtable, url, nameWithProtocol);
+			this.folderPanel = folderPanel;
+		}
 
 
         ////////////////////////
         // Overridden methods //
         ////////////////////////
 
-        @Override
+		@Override
         protected FolderPanel getFolderPanel() {
             return folderPanel;
         }

@@ -37,6 +37,7 @@ import com.mucommander.commons.log.SingleLineFormatter;
 import com.mucommander.conf.impl.MuConfiguration;
 import com.mucommander.extension.ExtensionManager;
 import com.mucommander.extensions.DynamicExtensionsManager;
+import com.mucommander.extensions.ServiceExtension;
 import com.mucommander.file.FileFactory;
 import com.mucommander.file.FileLogger;
 import com.mucommander.file.icon.impl.SwingFileIconProvider;
@@ -563,6 +564,11 @@ public class Launcher {
             // Loads the themes.
             printStartupMessage("Loading theme...");
             com.mucommander.ui.theme.ThemeManager.loadCurrentTheme();
+
+			// Starts service extension
+			for (ServiceExtension ext : DynamicExtensionsManager.getInstance().getLstServiceExtensions()) {
+				ext.startService(useSplash, splashScreen);
+			}
 
             // Creates the initial main frame using any initial path specified by the command line.
             printStartupMessage("Initializing window...");
