@@ -94,10 +94,20 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 					String label = br.readLine();
 					br.readLine();
 					br.readLine();
-					br.readLine();
+					String hints = br.readLine();
 					String command = br.readLine();
 
-					menuPagaVcs.add(new PagaVcsAction(label, command + " " + fileParamsString + "\n"));
+					if (hints.contains("s")) {
+						menuPagaVcs.add(new JSeparator());
+					}
+
+					PagaVcsAction action = new PagaVcsAction(label, command + " " + fileParamsString + "\n");
+					if (hints.contains("p")) {
+						tablePopupMenu.add(action);
+					} else {
+						menuPagaVcs.add(action);
+					}
+
 					hasMenuItem = true;
 				}
 			}
