@@ -15,3 +15,6 @@ cp rules debian/
 sudo ./rules
 rm -r debian/input/*
 rmdir debian/input
+sudo rm -r debian/mugcommander-bonjour-extensions/*
+sudo rmdir debian/mugcommander-bonjour-extensions
+
