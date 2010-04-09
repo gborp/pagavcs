@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 # PagaVCS is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -95,6 +97,7 @@ class PagaVCS(nautilus.MenuProvider):
 		sendRequest(command+' '+strFiles)
 	
 	def _get_all_items(self, toolbar, strFiles):
+		lstItems = []
 		if (not toolbar):
 			folderitem = nautilus.MenuItem('Nautilus::pagavcs','PagaVCS','PagaVCS subversion client')
 			folderitem.set_property('icon', 'pagavcs-logo')
@@ -102,7 +105,6 @@ class PagaVCS(nautilus.MenuProvider):
 			folderitem.set_submenu(submenu)
 			actionNamePostfix = ''
 		else:
-			lstItems = []
 			actionNamePostfix = '-tb'
 		
 		
@@ -118,24 +120,27 @@ class PagaVCS(nautilus.MenuProvider):
 				continue
 			
 			if (toolbar):
-				if (menuItems[i+4] != 't'):
+				if (menuItems[i+4].find('t') != -1):
 					i = i + 6
 					continue
+			elif (menuItems[i+4].find('s') != -1):
+				item = nautilus.MenuItem('pagavcsseparator%d'%i, '––––––––––','')
+				submenu.append_item(item)
 			
 			item = nautilus.MenuItem(menuItems[i]+actionNamePostfix, menuItems[i+1], menuItems[i+2])
 			item.set_property('icon', menuItems[i+3])
 			
 			item.connect('activate', self._do_command, strFiles, menuItems[i+5])
-			if (not toolbar):
+			if (not toolbar and menuItems[i+4].find('p') == -1):
 				submenu.append_item(item)
 			else:
 				lstItems.append(item)
 			i = i + 6
 		
 		if (not toolbar):
-			return folderitem,
-		else:
-			return lstItems
+			lstItems.append(folderitem)
+			
+		return lstItems
 	
 	
 	def get_file_items(self, window, files):

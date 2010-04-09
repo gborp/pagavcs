@@ -249,7 +249,7 @@ public class Communication {
 			sb.append("Update\n");
 			sb.append("Update\n");
 			sb.append("pagavcs-update\n");
-			sb.append("t\n");
+			sb.append("tp\n");
 			sb.append("update\n");
 		}
 		if (hasSvned) {
@@ -257,7 +257,7 @@ public class Communication {
 			sb.append("Commit\n");
 			sb.append("Commit\n");
 			sb.append("pagavcs-commit\n");
-			sb.append("t\n");
+			sb.append("tp\n");
 			sb.append("commit\n");
 		}
 		if (hasSvned) {
@@ -273,7 +273,7 @@ public class Communication {
 			sb.append("Ignore\n");
 			sb.append("Ignore\n");
 			sb.append("pagavcs-ignore\n");
-			sb.append("\n");
+			sb.append("s\n");
 			sb.append("ignore\n");
 		}
 		if (hasSvned) {
@@ -337,7 +337,7 @@ public class Communication {
 		sb.append("Settings\n");
 		sb.append("Settings\n");
 		sb.append("pagavcs-settings\n");
-		sb.append("\n");
+		sb.append("s\n");
 		sb.append("settings\n");
 
 		sb.append("--end--\n");
