@@ -1,18 +1,13 @@
 package hu.pagavcs.mug.pagavcs;
 
-
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -28,9 +23,7 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 
 	private static PagaVcsFileEmblemExtension singleton;
 
-	private Object                     doPanelRefresh;
-	private boolean                    initialized;
-	private HashMap<String, ImageIcon> mapPagaVcsIcon;
+	private Object                            doPanelRefresh;
 
 	private PagaVcsFileEmblemExtension() {
 		doPanelRefresh = new Object();
@@ -60,8 +53,6 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 			String status = null;
 			synchronized (CustomFileIconProvider.class) {
 
-				initPagaVcsIcon(8, 8);
-
 				Socket socket = PagaVcsIntegration.getSocket();
 				String strOut = "getfileinfonl " + file.getPath() + "\n";
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -80,7 +71,7 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 						doPanelRefresh.notifyAll();
 					}
 				} else {
-					ImageIcon overlayIcon = mapPagaVcsIcon.get(status.substring("pagavcs-".length()));
+					ImageIcon overlayIcon = PagaVcsIntegration.getIcon("emblems/" + status.substring("pagavcs-".length()));
 
 					if (overlayIcon != null) {
 						BufferedImage bi = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -125,37 +116,6 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 
 		}
 
-	}
-
-	private void initOnePagaVcsIcon(String name, int width, int height) throws UnknownHostException, IOException, ClassNotFoundException {
-		String strOut = "getemblem " + name + " " + width + " " + height + "\n";
-
-		Socket socket = PagaVcsIntegration.getSocket();
-
-		BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		outToClient.write(strOut);
-		outToClient.flush();
-		ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-		ImageIcon imageIcon = (ImageIcon) input.readObject();
-
-		mapPagaVcsIcon.put(name, imageIcon);
-	}
-
-	private void initPagaVcsIcon(int width, int height) throws UnknownHostException, IOException, ClassNotFoundException {
-		if (!initialized) {
-			mapPagaVcsIcon = new HashMap<String, ImageIcon>();
-			initOnePagaVcsIcon("added", width, height);
-			initOnePagaVcsIcon("conflict", width, height);
-			initOnePagaVcsIcon("deleted", width, height);
-			initOnePagaVcsIcon("locked", width, height);
-			initOnePagaVcsIcon("modified", width, height);
-			initOnePagaVcsIcon("normal", width, height);
-			initOnePagaVcsIcon("obstructed", width, height);
-			initOnePagaVcsIcon("readonly", width, height);
-			initOnePagaVcsIcon("svn", width, height);
-			initOnePagaVcsIcon("unversioned", width, height);
-			initialized = true;
-		}
 	}
 
 }
