@@ -112,7 +112,7 @@ public class Communication {
 		Integer width = Integer.valueOf(args[1]);
 		Integer height = Integer.valueOf(args[2]);
 
-		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(Communication.class.getResource("/hu/pagavcs/resources/emblems/" + name + ".png")));
+		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(Communication.class.getResource("/hu/pagavcs/resources/" + name + ".png")));
 		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
 
 		ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
