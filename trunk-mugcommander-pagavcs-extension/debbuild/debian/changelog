@@ -1,3 +1,11 @@
+mugcommander-pagavcs-extensions (1.0.1) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * support separators and placing actions to the toplevel (not inside the submenu) in the context menu
+  * support icons for the context menu actions. the icons are provided by the PagaVCS server
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 10 Apr 2010 11:49:13 +0200
+
 mugcommander-pagavcs-extensions (1.0.0) karmic; urgency=low
 
   [ Gábor Pápai ]
