@@ -56,7 +56,15 @@ public class Log implements Cancelable {
 	private SVNURL           rootUrl;
 
 	public Log(String path) throws SVNException, BackingStoreException {
-		this.path = path;
+		this(path, true);
+	}
+
+	public Log(String pathOrUrl, boolean isPath) throws SVNException, BackingStoreException {
+		if (isPath) {
+			this.path = pathOrUrl;
+		} else {
+			this.rootUrl = SVNURL.parseURIDecoded(pathOrUrl);
+		}
 		setCancel(false);
 	}
 
@@ -65,8 +73,11 @@ public class Log implements Cancelable {
 		gui.display();
 		gui.setStatus(ShowLogStatus.INIT);
 		gui.setUrlLabel(getRootUrl().toDecodedString());
-		gui.setLogRootsFiles(Arrays.asList(new File(path)));
-		gui.setSvnRepoRootUrl(Manager.getSvnRootUrlByFile(new File(path)));
+		if (path != null) {
+			gui.setLogRootsFiles(Arrays.asList(new File(path)));
+		}
+		gui.setSvnRepoRootUrl(getRootUrl());
+		// Manager.getSvnRootUrlByFile(new File(path)));
 
 		doShowLog(SVNRevision.HEAD, LIMIT);
 	}
@@ -79,7 +90,12 @@ public class Log implements Cancelable {
 	 */
 	public void doShowLog(SVNRevision startRevision, long limit) throws Exception {
 		gui.workStarted();
-		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+		SVNClientManager mgrSvn;
+		if (path != null) {
+			mgrSvn = Manager.getSVNClientManager(new File(path));
+		} else {
+			mgrSvn = Manager.getSVNClientManager(getRootUrl());
+		}
 		SVNLogClient logClient = mgrSvn.getLogClient();
 		logClient.setEventHandler(new LogEventHandler());
 		gui.setStatus(ShowLogStatus.STARTED);
@@ -90,10 +106,24 @@ public class Log implements Cancelable {
 		boolean discoverChangedPaths = true;
 		boolean includeMergedRevisions = false;
 		String[] revisionProperties = null;
-		ISVNLogEntryHandler handler = new LogEntryHandler();
+		final ISVNLogEntryHandler handler = new LogEntryHandler();
 		try {
-			CacheLog.getInstance().doLog(logClient, new File(path), startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths,
-			        includeMergedRevisions, limit, revisionProperties, handler);
+			if (path != null) {
+				CacheLog.getInstance().doLog(logClient, new File(path), startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths,
+				        includeMergedRevisions, limit, revisionProperties, handler);
+			} else {
+
+				ISVNLogEntryHandler wrapCacheItems = new ISVNLogEntryHandler() {
+
+					public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
+
+						handler.handleLogEntry(logEntry);
+					}
+				};
+
+				logClient.doLog(getRootUrl(), new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths,
+				        includeMergedRevisions, limit, revisionProperties, wrapCacheItems);
+			}
 
 			gui.setStatus(ShowLogStatus.COMPLETED);
 		} catch (SVNCancelException ex) {
