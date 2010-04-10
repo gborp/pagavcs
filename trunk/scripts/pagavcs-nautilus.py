@@ -120,12 +120,12 @@ class PagaVCS(nautilus.MenuProvider):
 				continue
 			
 			if (toolbar):
-				if (menuItems[i+4].find('t') != -1):
+				if (menuItems[i+4].find('t') == -1):
 					i = i + 6
 					continue
-			elif (menuItems[i+4].find('s') != -1):
-				item = nautilus.MenuItem('pagavcsseparator%d'%i, '––––––––––','')
-				submenu.append_item(item)
+			#elif (menuItems[i+4].find('s') != -1):
+			#	item = nautilus.MenuItem('pagavcsseparator%d'%i, '––––––––––','')
+			#	submenu.append_item(item)
 			
 			item = nautilus.MenuItem(menuItems[i]+actionNamePostfix, menuItems[i+1], menuItems[i+2])
 			item.set_property('icon', menuItems[i+3])
