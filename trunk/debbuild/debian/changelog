@@ -1,3 +1,12 @@
+pagavcs (1.4.8) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * move update and commit actions from the PagaVCS submenu to upper level in nautilus context menu
+  * support separators in context menu (in mugCommander extension, but not in the nautilus context menu)
+  * support icon providing for context menu (for mugCommander extension)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 10 Apr 2010 11:49:13 +0200
+
 pagavcs (1.4.7) karmic; urgency=low
 
   [ Gábor Pápai ]
