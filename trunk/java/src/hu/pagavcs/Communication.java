@@ -10,6 +10,7 @@ import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.Log;
+import hu.pagavcs.operation.MergeOperation;
 import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Revert;
@@ -326,6 +327,14 @@ public class Communication {
 			sb.append("resolve\n");
 		}
 		if (hasSvned) {
+			sb.append("NautilusPython::merge_file_item\n");
+			sb.append("Merge\n");
+			sb.append("Merge\n");
+			sb.append("pagavcs-merge\n");
+			sb.append("t\n");
+			sb.append("merge\n");
+		}
+		if (hasSvned) {
 			sb.append("NautilusPython::other_file_item\n");
 			sb.append("Other\n");
 			sb.append("Other\n");
@@ -414,6 +423,10 @@ public class Communication {
 					warningIfMultiSelection();
 					Delete delete = new Delete(lstArg.get(0));
 					delete.execute();
+				} else if ("merge".equals(command)) {
+					warningIfMultiSelection();
+					MergeOperation merge = new MergeOperation(lstArg.get(0));
+					merge.execute();
 				} else if ("other".equals(command)) {
 					warningIfMultiSelection();
 					Other other = new Other(lstArg.get(0));

@@ -20,11 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -58,11 +55,6 @@ public class OtherGui implements Working, Cancelable {
 	private EditField   sfNewPath;
 	private JCheckBox   cbMove;
 	private EditField   sfWorkingCopy;
-	private JComboBox   cboUrlMergeFrom;
-	private JCheckBox   cbReverseMerge;
-	private JButton     btnShowLogFrom;
-	private EditField   sfRevisionRange;
-	private JButton     btnMergeRevisions;
 	private JButton     btnShowLog;
 	private JButton     btnSwitch;
 	private EditField   sfSwitchToUrl;
@@ -113,13 +105,6 @@ public class OtherGui implements Working, Cancelable {
 				}).start();
 			}
 		});
-		cboUrlMergeFrom = new JComboBox();
-		cboUrlMergeFrom.setEditable(true);
-		sfRevisionRange = new EditField();
-		sfRevisionRange.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
-		cbReverseMerge = new JCheckBox("Reverse merge");
-		btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
-		btnMergeRevisions = new JButton(new MergeAction());
 
 		sfSwitchToUrl = new EditField();
 		sfSwitchToRevision = new EditField();
@@ -153,15 +138,6 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(sfNewPath, cc.xywh(3, 7, 2, 1));
 		pnlMain.add(cbMove, cc.xywh(3, 9, 1, 1));
 		pnlMain.add(btnCopyMoveRename, cc.xywh(4, 9, 1, 1));
-
-		pnlMain.add(new JSeparator(), cc.xywh(1, 10, 4, 1));
-		pnlMain.add(new JLabel("Url to merge from:"), cc.xywh(1, 11, 1, 1));
-		pnlMain.add(cboUrlMergeFrom, cc.xywh(3, 11, 2, 1));
-		pnlMain.add(new JLabel("Revision range to merge:"), cc.xywh(1, 13, 1, 1));
-		pnlMain.add(sfRevisionRange, cc.xywh(3, 13, 2, 1));
-		pnlMain.add(cbReverseMerge, cc.xywh(3, 15, 1, 1));
-		pnlMain.add(btnShowLogFrom, cc.xywh(4, 15, 1, 1));
-		pnlMain.add(btnMergeRevisions, cc.xywh(4, 17, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 18, 4, 1));
 		pnlMain.add(new JLabel("To url:"), cc.xywh(1, 19, 1, 1));
@@ -210,26 +186,10 @@ public class OtherGui implements Working, Cancelable {
 		sfRepo.setText(text);
 	}
 
-	public void setUrlHistory(String[] urlHistory) {
-		ComboBoxModel modelUrl = new DefaultComboBoxModel(urlHistory);
-		cboUrlMergeFrom.setModel(modelUrl);
-	}
-
 	private void copyMoveRename() throws Exception {
 		try {
 			prgBusy.startProgress();
 			other.copyMoveRename(sfWorkingCopy.getText(), sfNewPath.getText().trim(), cbMove.isSelected());
-		} finally {
-			prgBusy.stopProgress();
-		}
-	}
-
-	private void doMerge() throws Exception {
-		try {
-			prgBusy.startProgress();
-			String url = cboUrlMergeFrom.getSelectedItem().toString().trim();
-			other.storeUrlForHistory(url);
-			other.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), url, sfRevisionRange.getText().trim(), cbReverseMerge.isSelected());
 		} finally {
 			prgBusy.stopProgress();
 		}
@@ -354,18 +314,6 @@ public class OtherGui implements Working, Cancelable {
 
 	}
 
-	private class MergeAction extends ThreadAction {
-
-		public MergeAction() {
-			super("Merge revisions");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			doMerge();
-		}
-
-	}
-
 	private class SwitchAction extends ThreadAction {
 
 		public SwitchAction() {
@@ -433,20 +381,6 @@ public class OtherGui implements Working, Cancelable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			other.doShowLog(sfWorkingCopy.getText());
-		}
-
-	}
-
-	private class ShowLogMergeFromAction extends ThreadAction {
-
-		public ShowLogMergeFromAction() {
-			super("Show log (from)");
-			setEnabled(false);
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			String url = cboUrlMergeFrom.getSelectedItem().toString().trim();
-			// TODO ShowLogMergeFromAction
 		}
 
 	}
