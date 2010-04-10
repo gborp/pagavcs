@@ -14,6 +14,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JSeparator;
 
@@ -93,7 +95,7 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 				} else {
 					String label = br.readLine();
 					br.readLine();
-					br.readLine();
+					String iconName = br.readLine();
 					String hints = br.readLine();
 					String command = br.readLine();
 
@@ -101,7 +103,8 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 						menuPagaVcs.add(new JSeparator());
 					}
 
-					PagaVcsAction action = new PagaVcsAction(label, command + " " + fileParamsString + "\n");
+					ImageIcon icon = PagaVcsIntegration.getIcon("actions/" + iconName);
+					PagaVcsAction action = new PagaVcsAction(label, icon, command + " " + fileParamsString + "\n");
 					if (hints.contains("p")) {
 						tablePopupMenu.add(action);
 					} else {
@@ -119,6 +122,8 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 		} catch (UnknownHostException ex) {
 			ex.printStackTrace();
 		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (ClassNotFoundException ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -139,8 +144,8 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 
 		private final String command;
 
-		public PagaVcsAction(String label, String command) {
-			super(label);
+		public PagaVcsAction(String label, Icon icon, String command) {
+			super(label, icon);
 			this.command = command;
 		}
 
