@@ -221,7 +221,7 @@ public class Commit {
 	public void add(File wcFile) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient wcClient = mgrSvn.getWCClient();
-		wcClient.doAdd(wcFile, false, false, true, SVNDepth.INFINITY, false, false, true);
+		wcClient.doAdd(wcFile, true, false, true, SVNDepth.EMPTY, false, false, true);
 		Manager.invalidate(wcFile);
 	}
 
