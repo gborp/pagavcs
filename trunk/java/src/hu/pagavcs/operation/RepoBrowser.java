@@ -53,18 +53,26 @@ public class RepoBrowser implements Cancelable {
 		gui.display();
 		gui.setStatus(RepoBrowserStatus.INIT);
 		File wcFile = new File(path);
-		gui.setWorkingCopy(path);
-		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		SVNWCClient wcClient = mgrSvn.getWCClient();
+
 		gui.setStatus(RepoBrowserStatus.START);
+		SVNClientManager mgrSvn = null;
 		try {
-			SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
-			repo = mgrSvn.getRepositoryPool().createRepository(svnInfo.getURL(), true);
-			gui.setURL(svnInfo.getURL().toDecodedString());
-			gui.setStatus(RepoBrowserStatus.COMPLETED);
-		} catch (SVNException ex) {
-			Manager.handle(ex);
-			gui.setStatus(RepoBrowserStatus.FAILED);
+			mgrSvn = Manager.getSVNClientManager(new File(path));
+		} catch (SVNException ex) {}
+
+		if (mgrSvn != null) {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+
+			try {
+				SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
+				repo = mgrSvn.getRepositoryPool().createRepository(svnInfo.getURL(), true);
+				gui.setURL(svnInfo.getURL().toDecodedString());
+				gui.setWorkingCopy(path);
+				gui.setStatus(RepoBrowserStatus.COMPLETED);
+			} catch (SVNException ex) {
+				Manager.handle(ex);
+				gui.setStatus(RepoBrowserStatus.FAILED);
+			}
 		}
 	}
 
@@ -90,17 +98,20 @@ public class RepoBrowser implements Cancelable {
 	}
 
 	public List<SVNDirEntry> getDirEntryChain(String url) throws SVNException, PagaException {
-		SVNURL svnUrl = SVNURL.parseURIDecoded(url);
-		String relativePath = getRelativePath(repo, svnUrl.getPath());
-		return getDirEntryChain2(relativePath);
+		SVNURL svnUrl2 = SVNURL.parseURIDecoded(url);
+		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl2);
+		repo = mgrSvn.getRepositoryPool().createRepository(svnUrl2, true);
+
+		String relativePath = getRelativePath(repo, svnUrl2.getPath());
+		return getDirEntryChain2(repo, relativePath);
 	}
 
-	private List<SVNDirEntry> getDirEntryChain2(String relativePath) throws SVNException, PagaException {
+	private List<SVNDirEntry> getDirEntryChain2(SVNRepository repo2, String relativePath) throws SVNException, PagaException {
 		ArrayList<SVNDirEntry> lstResult = new ArrayList<SVNDirEntry>();
-		SVNDirEntry result = repo.info(relativePath, SVNRevision.HEAD.getNumber());
+		SVNDirEntry result = repo2.info(relativePath, SVNRevision.HEAD.getNumber());
 		String parentRelativePath = SVNPathUtil.removeTail(relativePath);
 		if (!parentRelativePath.equals(relativePath) && !parentRelativePath.isEmpty()) {
-			lstResult.addAll(getDirEntryChain2(parentRelativePath));
+			lstResult.addAll(getDirEntryChain2(repo2, parentRelativePath));
 		}
 		lstResult.add(result);
 		return lstResult;

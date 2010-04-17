@@ -4,6 +4,8 @@ import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.Tree;
@@ -11,6 +13,10 @@ import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.RepoBrowser.RepoBrowserStatus;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -55,7 +61,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	private RepoBrowser repoBrowser;
 	private Label       lblWorkingCopy;
-	private Label       lblUrl;
+	private EditField   sfUrl;
 	private Label       lblStatus;
 	private JTree       tree;
 	private String      rootUrl;
@@ -69,14 +75,39 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 		lblWorkingCopy = new Label();
-		lblUrl = new Label();
+		sfUrl = new EditField();
+		sfUrl.addFocusListener(new FocusListener() {
+
+			public void focusLost(FocusEvent e) {
+				try {
+					urlChanged();
+				} catch (Exception ex) {
+					Manager.handle(ex);
+				}
+			}
+
+			public void focusGained(FocusEvent e) {}
+		});
+		sfUrl.addKeyListener(new KeyAdapter() {
+
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == '\n') {
+					try {
+						urlChanged();
+					} catch (Exception ex) {
+						Manager.handle(ex);
+					}
+				}
+			}
+		});
+
 		lblStatus = new Label();
 		tree = new Tree();
 		tree.addTreeWillExpandListener(this);
 		tree.addMouseListener(new PopupupMouseListener());
 
 		pnlMain.add(new JLabel("Url:"), cc.xywh(1, 1, 1, 1));
-		pnlMain.add(lblUrl, cc.xywh(3, 1, 1, 1));
+		pnlMain.add(sfUrl, cc.xywh(3, 1, 1, 1));
 
 		pnlMain.add(new JLabel("Working copy:"), cc.xywh(1, 3, 1, 1));
 		pnlMain.add(lblWorkingCopy, cc.xywh(3, 3, 1, 1));
@@ -86,6 +117,36 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
 		GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
+	}
+
+	private class UrlChangedAction extends ThreadAction {
+
+		public UrlChangedAction() {
+			super("Url changed");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			if ((rootUrl == null || !rootUrl.equals(sfUrl.getText())) && !sfUrl.getText().trim().isEmpty()) {
+				rootUrl = sfUrl.getText();
+
+				final List<SVNDirEntry> lstDirChain = repoBrowser.getDirEntryChain(rootUrl);
+
+				new OnSwing() {
+
+					protected void process() throws Exception {
+						DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root Node");
+						addRootNode(rootNode, rootUrl, lstDirChain);
+						tree.setRootVisible(false);
+						tree.setModel(new DefaultTreeModel(rootNode));
+					}
+				}.run();
+			}
+		}
+
+	}
+
+	public void urlChanged() throws Exception {
+		new UrlChangedAction().actionPerformed(null);
 	}
 
 	public void setStatus(RepoBrowserStatus status) {
@@ -109,18 +170,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 	}
 
 	public void setURL(final String url) throws Exception {
-		new OnSwing() {
-
-			protected void process() throws Exception {
-				lblUrl.setText(url);
-				rootUrl = url;
-
-				DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root Node");
-				addRootNode(rootNode, url);
-				tree.setRootVisible(false);
-				tree.setModel(new DefaultTreeModel(rootNode));
-			}
-		}.run();
+		sfUrl.setText(url);
+		urlChanged();
 	}
 
 	private DefaultMutableTreeNode addNode(DefaultMutableTreeNode parentNode, SVNDirEntry dirEntry) {
@@ -138,13 +189,14 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		return node;
 	}
 
-	private void addRootNode(DefaultMutableTreeNode parentNode, String url) throws SVNException, PagaException {
+	private void addRootNode(DefaultMutableTreeNode parentNode, String url, List<SVNDirEntry> lstDirChain) throws SVNException, PagaException {
 
 		// SVNDirEntry info = repoBrowser.getDirEntry(url);
+
 		ArrayList<DefaultMutableTreeNode> lstPath = new ArrayList<DefaultMutableTreeNode>();
 		lstPath.add(parentNode);
 
-		for (SVNDirEntry li : repoBrowser.getDirEntryChain(url)) {
+		for (SVNDirEntry li : lstDirChain) {
 			parentNode = addNode(parentNode, li);
 			lstPath.add(parentNode);
 		}
