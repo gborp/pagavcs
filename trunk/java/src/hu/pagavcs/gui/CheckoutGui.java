@@ -2,8 +2,10 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.Checkout;
 
 import java.awt.event.ActionEvent;
@@ -40,6 +42,7 @@ public class CheckoutGui {
 	private EditField sfDir;
 	private EditField sfRevision;
 	private JButton   btnCheckout;
+	private Frame     frame;
 
 	public CheckoutGui(Checkout checkout) {
 		this.checkout = checkout;
@@ -53,10 +56,15 @@ public class CheckoutGui {
 		Label lblUrl = new Label("Url:");
 		cboUrl = new JComboBox();
 		cboUrl.setEditable(true);
+		if (checkout.getUrl() != null) {
+			cboUrl.setSelectedItem(checkout.getUrl());
+		}
 
 		Label lblDir = new Label("Dir:");
 		sfDir = new EditField(20);
-		sfDir.setText(checkout.getPath());
+		if (checkout.getPath() != null) {
+			sfDir.setText(checkout.getPath());
+		}
 		Label lblRevison = new Label("Revision (empty for head):");
 		sfRevision = new EditField(20);
 		btnCheckout = new JButton("Checkout");
@@ -83,7 +91,7 @@ public class CheckoutGui {
 		pnlMain.add(sfRevision, cc.xywh(3, 5, 2, 1));
 		pnlMain.add(btnCheckout, cc.xy(4, 7));
 
-		GuiHelper.createAndShowFrame(pnlMain, "Checkout Settings");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Checkout Settings");
 	}
 
 	public void setUrlHistory(String[] urlHistory) {
@@ -100,10 +108,12 @@ public class CheckoutGui {
 		checkout.storeUrlForHistory(url);
 
 		if (dir.isEmpty()) {
-			throw new RuntimeException("Dir can't be empty");
+			MessagePane.showError(frame, "Error", "Directory must be set");
+			return;
 		}
 		if (url.isEmpty()) {
-			throw new RuntimeException("Url can't be empty");
+			MessagePane.showError(frame, "Error", "Url must be set");
+			return;
 		}
 		long numberRevision = Checkout.HEAD_REVISION;
 		if (!revision.isEmpty()) {

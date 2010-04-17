@@ -40,11 +40,17 @@ public class Checkout implements Cancelable {
 	}
 
 	private String      path;
+	private String      url;
 	private CheckoutGui gui;
 	private boolean     cancel;
 
 	public Checkout(String path) throws BackingStoreException {
 		this.path = path;
+	}
+
+	public Checkout(String path, String url) throws BackingStoreException {
+		this.path = path;
+		this.url = url;
 	}
 
 	public void execute() throws SVNException, BackingStoreException {
@@ -53,6 +59,10 @@ public class Checkout implements Cancelable {
 		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
 
 		// TODO check if directory is under version control
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 	public String getPath() {
