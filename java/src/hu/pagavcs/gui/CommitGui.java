@@ -1101,23 +1101,68 @@ public class CommitGui implements Working, Refreshable {
 
 	private class SelectDeselectListener implements TableModelListener {
 
+		private boolean checkAddedSelected(CommitListItem li) {
+			File parent = li.getPath().getParentFile();
+			boolean changed = false;
+			for (CommitListItem li2 : tblCommit.getModel().getAllData()) {
+				if (parent.equals(li2.getPath())) {
+					if (ContentStatus.DELETED.equals(li2.getStatus())) {
+						li.setSelected(false);
+						changed = true;
+						break;
+					} else if (ContentStatus.IGNORED.equals(li2.getStatus())) {
+						li.setSelected(false);
+						changed = true;
+						break;
+					} else if (ContentStatus.ADDED.equals(li2.getStatus()) && !li2.isSelected()) {
+						li2.setSelected(true);
+						checkStatusSelected(li2);
+						changed = true;
+						break;
+					}
+				}
+			}
+
+			return changed;
+		}
+
+		private boolean checkAddedDeSelected(CommitListItem li) {
+			boolean changed = false;
+			for (CommitListItem li2 : tblCommit.getModel().getAllData()) {
+				if (li.getPath().equals(li2.getPath().getParentFile())) {
+					if (li2.isSelected()) {
+						li2.setSelected(false);
+						checkAddedDeSelected(li2);
+						changed = true;
+					}
+				}
+			}
+
+			return changed;
+		}
+
 		private boolean checkStatusSelected(CommitListItem li) {
 			boolean changed = false;
 			if (ContentStatus.MISSING.equals(li.getStatus())) {
 				li.setSelected(false);
 				changed = true;
+			} else if (ContentStatus.ADDED.equals(li.getStatus())) {
+				changed = checkAddedSelected(li);
 			}
 			return changed;
 		}
 
 		private boolean checkStatusDeselected(CommitListItem li) {
 			boolean changed = false;
-
+			if (ContentStatus.ADDED.equals(li.getStatus())) {
+				changed = checkAddedDeSelected(li);
+			}
 			return changed;
 		}
 
 		public void tableChanged(TableModelEvent e) {
 			if (e.getColumn() == 0) {
+
 				boolean changed = false;
 				for (CommitListItem li : getSelectedItems()) {
 					if (li.isSelected()) {
@@ -1127,7 +1172,9 @@ public class CommitGui implements Working, Refreshable {
 					}
 				}
 
-				tblCommit.repaint();
+				if (changed) {
+					tblCommit.repaint();
+				}
 			}
 		}
 	}
