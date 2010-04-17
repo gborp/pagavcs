@@ -12,6 +12,7 @@ import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.MergeOperation;
 import hu.pagavcs.operation.Other;
+import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Settings;
@@ -269,6 +270,14 @@ public class Communication {
 			sb.append("t\n");
 			sb.append("log\n");
 		}
+
+		sb.append("NautilusPython::repo_browser_item\n");
+		sb.append("Repo Browser\n");
+		sb.append("Repo Browser\n");
+		sb.append("pagavcs-drive\n");
+		sb.append("\n");
+		sb.append("repobrowser\n");
+
 		if (hasSvned) {
 			sb.append("NautilusPython::ignore_file_item\n");
 			sb.append("Ignore\n");
@@ -442,6 +451,10 @@ public class Communication {
 					warningIfMultiSelection();
 					ResolveConflict resolve = new ResolveConflict(null, lstArg.get(0), false);
 					resolve.execute();
+				} else if ("repobrowser".equals(command)) {
+					warningIfMultiSelection();
+					RepoBrowser repoBrowser = new RepoBrowser(lstArg.get(0));
+					repoBrowser.execute();
 				} else if ("stop".equals(command)) {
 					System.exit(0);
 				} else if ("ping".equals(command)) {
