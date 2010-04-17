@@ -1101,26 +1101,34 @@ public class CommitGui implements Working, Refreshable {
 
 	private class SelectDeselectListener implements TableModelListener {
 
-		// private void checkStatusSelected(CommitListItem li) {
-		// if (ContentStatus.DELETED.equals(li.getStatus())) {
-		//				
-		// }
-		// }
-		//		
-		// private void checkStatusDeselected(CommitListItem li) {
-		//			
-		// }
+		private boolean checkStatusSelected(CommitListItem li) {
+			boolean changed = false;
+			if (ContentStatus.MISSING.equals(li.getStatus())) {
+				li.setSelected(false);
+				changed = true;
+			}
+			return changed;
+		}
+
+		private boolean checkStatusDeselected(CommitListItem li) {
+			boolean changed = false;
+
+			return changed;
+		}
 
 		public void tableChanged(TableModelEvent e) {
-		// if (e.getColumn() == 0) {
-		// for (CommitListItem li : getSelectedItems()) {
-		// if (li.isSelected()) {
-		// checkStatusSelected(li);
-		// } else {
-		// checkStatusDeselected(li);
-		// }
-		// }
-		// }
+			if (e.getColumn() == 0) {
+				boolean changed = false;
+				for (CommitListItem li : getSelectedItems()) {
+					if (li.isSelected()) {
+						changed |= checkStatusSelected(li);
+					} else {
+						changed |= checkStatusDeselected(li);
+					}
+				}
+
+				tblCommit.repaint();
+			}
 		}
 	}
 }
