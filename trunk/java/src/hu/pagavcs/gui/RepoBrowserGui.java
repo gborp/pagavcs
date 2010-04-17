@@ -9,6 +9,7 @@ import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.Tree;
+import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.RepoBrowser.RepoBrowserStatus;
 
@@ -138,6 +139,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 						addRootNode(rootNode, rootUrl, lstDirChain);
 						tree.setRootVisible(false);
 						tree.setModel(new DefaultTreeModel(rootNode));
+						tree.requestFocus();
 					}
 				}.run();
 			}
@@ -300,6 +302,42 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	}
 
+	private class CreateFolderAction extends ThreadAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public CreateFolderAction(PopupupMouseListener popupupMouseListener) {
+			super("Create folder");
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			TreeNode li = popupupMouseListener.getSelected();
+
+			// TODO
+			// Checkout checkout = new Checkout(repoBrowser.getPath(),
+			// li.getSvnDirEntry().getURL().toDecodedString());
+			// checkout.execute();
+		}
+	}
+
+	private class CheckoutAction extends ThreadAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public CheckoutAction(PopupupMouseListener popupupMouseListener) {
+			super("Checkout");
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			TreeNode li = popupupMouseListener.getSelected();
+
+			Checkout checkout = new Checkout(repoBrowser.getPath(), li.getSvnDirEntry().getURL().toDecodedString());
+			checkout.execute();
+		}
+	}
+
 	private class CopyUrlToClipboard extends AbstractAction {
 
 		private final PopupupMouseListener popupupMouseListener;
@@ -310,7 +348,6 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			popupupMouseListener.hidePopup();
 			TreeNode li = popupupMouseListener.getSelected();
 			Manager.setClipboard(li.getSvnDirEntry().getURL().toDecodedString());
 		}
@@ -318,28 +355,21 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu ppVisible;
 		private JPopupMenu ppAll;
 		private TreeNode   selected;
 
 		public PopupupMouseListener() {
 			ppAll = new JPopupMenu();
 			ppAll.add(new CopyUrlToClipboard(this));
+			ppAll.add(new CheckoutAction(this));
+			// ppAll.add(new CreateFolderAction(this));
 		}
 
 		public TreeNode getSelected() {
 			return selected;
 		}
 
-		private void hidePopup() {
-			if (ppVisible != null) {
-				ppVisible.setVisible(false);
-				ppVisible = null;
-			}
-		}
-
 		private void showPopup(MouseEvent e) {
-			hidePopup();
 
 			int x = e.getX();
 			int y = e.getY();
@@ -353,7 +383,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 			selected = (TreeNode) node.getUserObject();
-			ppVisible = ppAll;
+			JPopupMenu ppVisible = ppAll;
 			ppVisible.setInvoker(tree);
 			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
 			ppVisible.setVisible(true);

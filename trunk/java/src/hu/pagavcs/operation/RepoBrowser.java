@@ -52,19 +52,18 @@ public class RepoBrowser implements Cancelable {
 		gui = new RepoBrowserGui(this);
 		gui.display();
 		gui.setStatus(RepoBrowserStatus.INIT);
-		File wcFile = new File(path);
 
 		gui.setStatus(RepoBrowserStatus.START);
 		SVNClientManager mgrSvn = null;
 		try {
 			mgrSvn = Manager.getSVNClientManager(new File(path));
-		} catch (SVNException ex) {}
+		} catch (Exception ex) {}
 
 		if (mgrSvn != null) {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 
 			try {
-				SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
+				SVNInfo svnInfo = wcClient.doInfo(new File(path), SVNRevision.WORKING);
 				repo = mgrSvn.getRepositoryPool().createRepository(svnInfo.getURL(), true);
 				gui.setURL(svnInfo.getURL().toDecodedString());
 				gui.setWorkingCopy(path);
@@ -74,6 +73,10 @@ public class RepoBrowser implements Cancelable {
 				gui.setStatus(RepoBrowserStatus.FAILED);
 			}
 		}
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 	public void setCancel(boolean cancel) {
