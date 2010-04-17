@@ -541,9 +541,8 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			int minimumLogSize = Math.max(logMinSize, 1);
-			if (taMessage.getText().trim().length() < minimumLogSize) {
-				MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + minimumLogSize + "!");
+			if (taMessage.getText().trim().length() < logMinSize) {
+				MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
 				return;
 			}
 
