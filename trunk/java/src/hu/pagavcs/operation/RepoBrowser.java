@@ -105,9 +105,8 @@ public class RepoBrowser implements Cancelable {
 		SVNURL svnUrl2 = SVNURL.parseURIDecoded(url);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl2);
 		repo = mgrSvn.getRepositoryPool().createRepository(svnUrl2, true);
-
-		String relativePath = getRelativePath(repo, svnUrl2.getPath());
-		return getDirEntryChain2(repo, relativePath);
+		repo.setLocation(repo.getRepositoryRoot(false), false);
+		return getDirEntryChain2(repo, "");
 	}
 
 	private List<SVNDirEntry> getDirEntryChain2(SVNRepository repo2, String relativePath) throws SVNException, PagaException {
