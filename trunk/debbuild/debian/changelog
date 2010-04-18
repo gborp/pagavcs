@@ -1,3 +1,17 @@
+pagavcs (1.4.10) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * #49 [commit] freeze if a "missing" item is checked
+  * #50 [commit] don't allow to check an "added" item, if it's parent is not checked
+  * [commit] allow 0 length commit message
+  * [repo browser] own menu item for repo browser
+  * [repo browser] repo browser for non-checkoutted repo too
+  * [repo browser] add checkout menu item to its tree context menu
+  * [repo browser] add create folder menu item to its tree context menu
+  * [repo browser] browse repo from its root
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 18 Apr 2010 10:49:09 +0200
+
 pagavcs (1.4.9) karmic; urgency=low
 
   [ Gábor Pápai ]
