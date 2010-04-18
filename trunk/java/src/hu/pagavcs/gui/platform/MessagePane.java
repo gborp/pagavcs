@@ -91,7 +91,7 @@ public class MessagePane {
 				protected void process() throws Exception {
 					dialog.setVisible(false);
 				}
-			};
+			}.run();
 		}
 	}
 }
