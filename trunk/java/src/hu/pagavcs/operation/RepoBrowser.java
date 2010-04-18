@@ -3,7 +3,7 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.PagaException;
-import hu.pagavcs.gui.RepoBrowserGui;
+import hu.pagavcs.gui.repobrowser.RepoBrowserGui;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
+import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNInfo;
@@ -127,5 +128,23 @@ public class RepoBrowser implements Cancelable {
 		ArrayList<SVNDirEntry> entries = new ArrayList<SVNDirEntry>();
 		repo.getDir(relativePath, SVNRevision.HEAD.getNumber(), false, entries);
 		return entries;
+	}
+
+	public void createFolder(SVNDirEntry svnDirEntry, String folderName, String logMessage) throws SVNException {
+		ISVNEditor editor = repo.getCommitEditor(logMessage, null /* locks */, false /* keepLocks */, null /* mediator */);
+		try {
+			editor.openRoot(SVNRepository.INVALID_REVISION);
+
+			editor.addDir(svnDirEntry.getRelativePath() + "/" + folderName, null, -1);
+			editor.closeDir();
+			editor.closeDir();
+
+			// SVNCommitInfo info =
+			editor.closeEdit();
+		} catch (SVNException svne) {
+			editor.abortEdit();
+			throw svne;
+		}
+
 	}
 }

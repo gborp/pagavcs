@@ -1,11 +1,14 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.repobrowser;
 
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
+import hu.pagavcs.bl.OnSwingWait;
 import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.Working;
 import hu.pagavcs.gui.platform.EditField;
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.Tree;
@@ -66,6 +69,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 	private Label       lblStatus;
 	private JTree       tree;
 	private String      rootUrl;
+	private Frame       frame;
 
 	public RepoBrowserGui(RepoBrowser repoBrowser) {
 		this.repoBrowser = repoBrowser;
@@ -117,7 +121,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
-		GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
 	}
 
 	private class UrlChangedAction extends ThreadAction {
@@ -302,9 +306,39 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	}
 
+	private class RefreshNodeAction extends ThreadAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public RefreshNodeAction(PopupupMouseListener popupupMouseListener) {
+			super("Refresh");
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					TreeNode li = popupupMouseListener.getSelected();
+					li.setLoaded(false);
+					TreePath path = popupupMouseListener.getSelectedPath();
+					tree.collapsePath(path);
+					tree.expandPath(path);
+
+					((DefaultTreeModel) tree.getModel()).nodeStructureChanged((javax.swing.tree.TreeNode) path.getLastPathComponent());
+
+				}
+			}.run();
+
+		}
+	}
+
 	private class CreateFolderAction extends ThreadAction {
 
 		private final PopupupMouseListener popupupMouseListener;
+		private boolean                    doCreate;
+		private String                     folderName;
+		private String                     logMessage;
 
 		public CreateFolderAction(PopupupMouseListener popupupMouseListener) {
 			super("Create folder");
@@ -312,12 +346,26 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			TreeNode li = popupupMouseListener.getSelected();
+			doCreate = false;
+			new OnSwingWait<Object, Object>() {
 
-			// TODO
-			// Checkout checkout = new Checkout(repoBrowser.getPath(),
-			// li.getSvnDirEntry().getURL().toDecodedString());
-			// checkout.execute();
+				protected Object process() throws Exception {
+					CreateFolderDialog dialog = new CreateFolderDialog();
+					dialog.display(frame);
+					if (dialog.isDoCreate()) {
+						doCreate = true;
+						folderName = dialog.getFolderName();
+						logMessage = dialog.getLogMessage();
+					}
+					return null;
+				}
+			}.run();
+
+			if (doCreate) {
+				TreeNode li = popupupMouseListener.getSelected();
+				repoBrowser.createFolder(li.getSvnDirEntry(), folderName, logMessage);
+				new RefreshNodeAction(popupupMouseListener).actionProcess(null);
+			}
 		}
 	}
 
@@ -357,16 +405,22 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 		private JPopupMenu ppAll;
 		private TreeNode   selected;
+		private TreePath   path;
 
 		public PopupupMouseListener() {
 			ppAll = new JPopupMenu();
+			ppAll.add(new RefreshNodeAction(this));
 			ppAll.add(new CopyUrlToClipboard(this));
 			ppAll.add(new CheckoutAction(this));
-			// ppAll.add(new CreateFolderAction(this));
+			ppAll.add(new CreateFolderAction(this));
 		}
 
 		public TreeNode getSelected() {
 			return selected;
+		}
+
+		public TreePath getSelectedPath() {
+			return path;
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -374,7 +428,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 			int x = e.getX();
 			int y = e.getY();
 			JTree tree = (JTree) e.getSource();
-			TreePath path = tree.getPathForLocation(x, y);
+			path = tree.getPathForLocation(x, y);
 			if (path == null) {
 				return;
 			}

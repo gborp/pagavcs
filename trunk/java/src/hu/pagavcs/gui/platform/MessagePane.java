@@ -1,6 +1,7 @@
 package hu.pagavcs.gui.platform;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
 
 import java.awt.Window;
@@ -85,7 +86,12 @@ public class MessagePane {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			optionChoosed = OPTIONS.OK;
-			dialog.setVisible(false);
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					dialog.setVisible(false);
+				}
+			};
 		}
 	}
 }
