@@ -177,16 +177,16 @@ public class CommitGui implements Working, Refreshable {
 		btnSelectDirectories = new JButton(new SelectDirectoriesAction());
 		btnSelectDeselectSelected = new JButton(new SelectDeselectSelectedAction());
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p"));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p,4dlu,p"));
 		pnlCheck.add(new JLabel("Check:"), cc.xy(1, 1));
 		pnlCheck.add(btnSelectAllNone, cc.xy(3, 1));
 		pnlCheck.add(btnSelectNonVersioned, cc.xy(5, 1));
 		pnlCheck.add(btnSelectAdded, cc.xy(7, 1));
 		pnlCheck.add(btnSelectDeleted, cc.xy(9, 1));
-		pnlCheck.add(btnSelectModified, cc.xy(11, 1));
-		pnlCheck.add(btnSelectFiles, cc.xy(13, 1));
-		pnlCheck.add(btnSelectDirectories, cc.xy(15, 1));
-		pnlCheck.add(btnSelectDeselectSelected, cc.xy(17, 1));
+		pnlCheck.add(btnSelectModified, cc.xy(3, 3));
+		pnlCheck.add(btnSelectFiles, cc.xy(5, 3));
+		pnlCheck.add(btnSelectDirectories, cc.xy(7, 3));
+		pnlCheck.add(btnSelectDeselectSelected, cc.xy(9, 3));
 
 		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
@@ -1028,7 +1028,7 @@ public class CommitGui implements Working, Refreshable {
 	private class SelectDirectoriesAction extends AbstractSelectAction {
 
 		public SelectDirectoriesAction() {
-			super("+Directories");
+			super("+Dirs");
 		}
 
 		public boolean doSelect(CommitListItem li) {
