@@ -28,5 +28,4 @@ public class StatusCellRendererForCommitListItem extends AbstractCellRendererCol
 	public Color getForegroundColor(CommitListItem li) {
 		return Manager.getColorByContentStatus(li.getStatus());
 	}
-
 }
