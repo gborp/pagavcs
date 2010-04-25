@@ -1,3 +1,18 @@
+pagavcs (1.4.12) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * all frames and dialogs are closable by pressing the Escape key
+  * [delete gui] add ability to delete more files at once
+  * [delete gui] add Close button
+  * [checkout gui] add Close button
+  * [cleanup gui] add Close button
+  * [ignore gui] add Close button
+  * [unignore gui] add Close button
+  * [commit gui] narrower frame size
+  * [commit gui] fix occasional content/property status icon problem
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 25 Apr 2010 08:05:59 +0200
+
 pagavcs (1.4.11) karmic; urgency=low
 
   [ Gábor Pápai ]
