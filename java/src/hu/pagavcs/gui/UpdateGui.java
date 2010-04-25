@@ -502,21 +502,26 @@ public class UpdateGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			switch (type) {
-				case Stop:
-					update.setCancel(true);
-					setType(StopExitActionType.Cancelled);
-					break;
-				case Cancelled:
-					exit();
-					break;
-				case Failed:
-					exit();
-					break;
-				case Finished:
-					exit();
-					break;
-			}
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					switch (type) {
+						case Stop:
+							update.setCancel(true);
+							setType(StopExitActionType.Cancelled);
+							break;
+						case Cancelled:
+							exit();
+							break;
+						case Failed:
+							exit();
+							break;
+						case Finished:
+							exit();
+							break;
+					}
+				}
+			};
 		}
 
 		private void exit() {

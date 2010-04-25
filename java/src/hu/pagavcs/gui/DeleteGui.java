@@ -1,16 +1,19 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.action.CloseAction;
 import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.Delete.DeleteStatus;
 
-import java.awt.BorderLayout;
-import java.awt.Window;
-
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.tmatesoft.svn.core.SVNException;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -27,22 +30,31 @@ import org.tmatesoft.svn.core.SVNException;
  */
 public class DeleteGui {
 
-	private Delete delete;
-	private Label  lblStatus;
-	private Window window;
+	private Delete  delete;
+	private Label   lblStatus;
+	private Frame   frame;
+	private JButton btnClose;
 
 	public DeleteGui(Delete delete) {
 		this.delete = delete;
 	}
 
 	public void display() throws SVNException {
-		JPanel pnlMain = new JPanel(new BorderLayout());
-		Label lblWorkingCopy = new Label("Path: " + delete.getPath());
-		lblStatus = new Label(" ");
-		pnlMain.add(lblWorkingCopy, BorderLayout.NORTH);
-		pnlMain.add(lblStatus, BorderLayout.SOUTH);
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu:g,p,4dlu,p"));
+		CellConstraints cc = new CellConstraints();
+		frame = GuiHelper.createFrame(pnlMain, "Delete", null);
 
-		window = GuiHelper.createAndShowFrame(pnlMain, "Delete");
+		Label lblWorkingCopy = new Label("Path:");
+		Label sfWorkingCopy = new Label(delete.getPath());
+		btnClose = new JButton(new CloseAction(frame));
+		lblStatus = new Label(" ");
+
+		pnlMain.add(lblWorkingCopy, cc.xy(1, 1));
+		pnlMain.add(sfWorkingCopy, cc.xy(3, 1));
+		pnlMain.add(btnClose, cc.xywh(1, 3, 3, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		pnlMain.add(lblStatus, cc.xywh(1, 5, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+
+		frame.execute();
 	}
 
 	public void setStatus(DeleteStatus status) {
@@ -52,8 +64,8 @@ public class DeleteGui {
 	}
 
 	public void close() {
-		window.setVisible(false);
-		window.dispose();
+		frame.setVisible(false);
+		frame.dispose();
 	}
 
 }
