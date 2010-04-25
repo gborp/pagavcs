@@ -45,7 +45,13 @@ public class DeleteGui {
 		frame = GuiHelper.createFrame(pnlMain, "Delete", null);
 
 		Label lblWorkingCopy = new Label("Path:");
-		Label sfWorkingCopy = new Label(delete.getPath());
+		String wcText;
+		if (delete.getPath().size() == 1) {
+			wcText = delete.getPath().get(0);
+		} else {
+			wcText = "<Multiple files are selected>";
+		}
+		Label sfWorkingCopy = new Label(wcText);
 		btnClose = new JButton(new CloseAction(frame));
 		lblStatus = new Label(" ");
 
