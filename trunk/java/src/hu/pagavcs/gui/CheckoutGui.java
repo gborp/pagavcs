@@ -6,6 +6,7 @@ import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
+import hu.pagavcs.gui.platform.action.CloseAction;
 import hu.pagavcs.operation.Checkout;
 
 import java.awt.event.ActionEvent;
@@ -51,7 +52,9 @@ public class CheckoutGui {
 	public void display() throws SVNException {
 
 		CellConstraints cc = new CellConstraints();
-		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p"));
+
+		frame = GuiHelper.createFrame(pnlMain, "Checkout Settings", null);
 
 		Label lblUrl = new Label("Url:");
 		cboUrl = new JComboBox();
@@ -83,6 +86,8 @@ public class CheckoutGui {
 				}).start();
 			}
 		});
+		JButton btnClose = new JButton(new CloseAction(frame));
+
 		pnlMain.add(lblUrl, cc.xy(1, 1));
 		pnlMain.add(cboUrl, cc.xywh(3, 1, 2, 1));
 		pnlMain.add(lblDir, cc.xy(1, 3));
@@ -90,8 +95,9 @@ public class CheckoutGui {
 		pnlMain.add(lblRevison, cc.xy(1, 5));
 		pnlMain.add(sfRevision, cc.xywh(3, 5, 2, 1));
 		pnlMain.add(btnCheckout, cc.xy(4, 7));
+		pnlMain.add(btnClose, cc.xy(4, 9));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Checkout Settings");
+		frame.execute();
 	}
 
 	public void setUrlHistory(String[] urlHistory) {
