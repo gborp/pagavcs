@@ -521,7 +521,7 @@ public class UpdateGui implements Working {
 							break;
 					}
 				}
-			};
+			}.run();
 		}
 
 		private void exit() {
