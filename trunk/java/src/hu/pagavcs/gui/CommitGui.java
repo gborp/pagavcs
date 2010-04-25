@@ -138,6 +138,7 @@ public class CommitGui implements Working, Refreshable {
 		lblUrl = new Label();
 		lblWorkingCopy = new Label();
 		cboMessage = new JComboBox();
+		cboMessage.setPreferredSize(new Dimension(1, (int) cboMessage.getPreferredSize().getHeight()));
 		cboMessage.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
