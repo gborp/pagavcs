@@ -99,11 +99,16 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 		if (getRowCount() < 1) {
 			return Object.class;
 		}
-		Object value = getValueAt(0, c);
-		if (value == null) {
-			return Object.class;
+
+		int rowCount = getRowCount();
+		int row = 0;
+		while (row < rowCount && getValueAt(row, c) == null) {
+			row++;
 		}
-		return value.getClass();
+		if (row < rowCount) {
+			return getValueAt(row, c).getClass();
+		}
+		return Object.class;
 	}
 
 }
