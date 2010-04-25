@@ -429,8 +429,7 @@ public class Communication {
 					Cleanup cleanup = new Cleanup(lstArg.get(0));
 					cleanup.execute();
 				} else if ("delete".equals(command)) {
-					warningIfMultiSelection();
-					Delete delete = new Delete(lstArg.get(0));
+					Delete delete = new Delete(lstArg);
 					delete.execute();
 				} else if ("merge".equals(command)) {
 					warningIfMultiSelection();

@@ -4,6 +4,8 @@ import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.DeleteGui;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import org.tmatesoft.svn.core.SVNErrorCode;
@@ -30,13 +32,17 @@ public class Delete {
 		INIT, START, COMPLETED, FAILED
 	}
 
-	private String    path;
-	private DeleteGui gui;
-	private boolean   autoClose;
-	private boolean   ignoreIfFileError;
+	private List<String> lstPath;
+	private DeleteGui    gui;
+	private boolean      autoClose;
+	private boolean      ignoreIfFileError;
 
 	public Delete(String path) throws BackingStoreException, SVNException {
-		this.path = path;
+		this(Collections.singletonList(path));
+	}
+
+	public Delete(List<String> lstPath) throws BackingStoreException, SVNException {
+		this.lstPath = lstPath;
 	}
 
 	public void execute() throws SVNException {
@@ -45,20 +51,24 @@ public class Delete {
 		gui.setStatus(DeleteStatus.INIT);
 		gui.setStatus(DeleteStatus.START);
 		try {
-			File wcFile = new File(path);
-			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-			SVNWCClient wcClient = mgrSvn.getWCClient();
 
-			try {
-				wcClient.doDelete(wcFile, true, true, false);
-			} catch (SVNException ex) {
-				if (ignoreIfFileError && SVNErrorCode.BAD_FILENAME.equals(ex.getErrorMessage().getErrorCode())) {
-					// ignore exception
-				} else {
-					throw ex;
+			for (String path : lstPath) {
+				File wcFile = new File(path);
+				SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+				SVNWCClient wcClient = mgrSvn.getWCClient();
+
+				try {
+					wcClient.doDelete(wcFile, true, true, false);
+				} catch (SVNException ex) {
+					if (ignoreIfFileError && SVNErrorCode.BAD_FILENAME.equals(ex.getErrorMessage().getErrorCode())) {
+						// ignore exception
+					} else {
+						throw ex;
+					}
 				}
+				Manager.invalidate(wcFile);
 			}
-			Manager.invalidate(wcFile);
+
 			gui.setStatus(DeleteStatus.COMPLETED);
 			if (autoClose) {
 				gui.close();
@@ -70,8 +80,8 @@ public class Delete {
 
 	}
 
-	public String getPath() {
-		return path;
+	public List<String> getPath() {
+		return lstPath;
 	}
 
 	public void setAutoClose(boolean autoClose) {
