@@ -1,5 +1,6 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.ListItem;
 import hu.pagavcs.operation.ContentStatus;
 
@@ -23,9 +24,10 @@ public class LogDetailListItem implements ListItem {
 	private String        path;
 	private ContentStatus action;
 	private String        copyFromPath;
-	private Long          revision;
+	private Long          copyRevision;
 	private SVNNodeKind   kind;
 	private boolean       inScope;
+	private long          revision;
 
 	public String[] getColumnNames() {
 		return new String[] { "Path", "Action", "Copy from path", "Revision" };
@@ -35,11 +37,11 @@ public class LogDetailListItem implements ListItem {
 		if (index == 0) {
 			return getPath();
 		} else if (index == 1) {
-			return getAction();
+			return GuiHelper.getContentStatusIcon(getAction());
 		} else if (index == 2) {
 			return getCopyFromPath();
 		} else if (index == 3) {
-			return getRevision();
+			return getCopyRevision();
 		}
 		throw new RuntimeException("not implemented");
 	}
@@ -66,12 +68,12 @@ public class LogDetailListItem implements ListItem {
 		this.action = action;
 	}
 
-	public Long getRevision() {
-		return this.revision;
+	public Long getCopyRevision() {
+		return this.copyRevision;
 	}
 
-	public void setRevision(Long revision) {
-		this.revision = revision;
+	public void setCopyRevision(Long revision) {
+		this.copyRevision = revision;
 	}
 
 	public String getCopyFromPath() {
@@ -96,6 +98,14 @@ public class LogDetailListItem implements ListItem {
 
 	public void setInScope(boolean inScope) {
 		this.inScope = inScope;
+	}
+
+	public long getRevision() {
+		return this.revision;
+	}
+
+	public void setRevision(long revision) {
+		this.revision = revision;
 	}
 
 }
