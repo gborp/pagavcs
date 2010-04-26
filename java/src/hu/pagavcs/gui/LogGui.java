@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -110,6 +111,7 @@ public class LogGui implements Working {
 		SettingsStore settingsStore = Manager.getSettings();
 		tmdlLog = new TableModel<LogListItem>(new LogListItem());
 		tblLog = new Table<LogListItem>(tmdlLog);
+		tblLog.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		sorterLog = new TableRowSorter<TableModel<LogListItem>>(tmdlLog);
 		sorterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
 
@@ -391,29 +393,37 @@ public class LogGui implements Working {
 	}
 
 	public void refreshDetailView() {
-		int selectedRow = tblLog.getSelectedRow();
-		if (selectedRow == -1) {
+		List<LogListItem> lstSelected = getSelectedLogItems();
+		if (lstSelected.isEmpty()) {
 			return;
 		}
-
 		tblDetailLog.getSelectionModel().clearSelection();
-		LogListItem liLog = getSelectedLogItem();
-		taMessage.setText(liLog.getMessage());
 		tmdlLogDetail.clear();
+		if (lstSelected.size() == 1) {
+			taMessage.setText(lstSelected.get(0).getMessage());
+			taMessage.setEnabled(true);
+		} else {
+			taMessage.setText(null);
+			taMessage.setEnabled(false);
+		}
+
 		boolean hasOutOfScope = false;
 		ArrayList<LogDetailListItem> lstResult = new ArrayList<LogDetailListItem>();
-		for (SVNLogEntryPath liEntryPath : liLog.getChanges().values()) {
-			LogDetailListItem liDetail = new LogDetailListItem();
-			liDetail.setPath(liEntryPath.getPath());
-			liDetail.setAction(getContentStatusByTypeChar(liEntryPath.getType()));
-			liDetail.setCopyFromPath(liEntryPath.getCopyPath());
-			liDetail.setRevision(liEntryPath.getCopyRevision() != -1 ? liEntryPath.getCopyRevision() : null);
-			liDetail.setKind(liEntryPath.getKind());
-			liDetail.setInScope(isInScope(liEntryPath.getPath()));
-			lstResult.add(liDetail);
+		for (LogListItem liLog : getSelectedLogItems()) {
+			for (SVNLogEntryPath liEntryPath : liLog.getChanges().values()) {
+				LogDetailListItem liDetail = new LogDetailListItem();
+				liDetail.setPath(liEntryPath.getPath());
+				liDetail.setAction(getContentStatusByTypeChar(liEntryPath.getType()));
+				liDetail.setCopyFromPath(liEntryPath.getCopyPath());
+				liDetail.setCopyRevision(liEntryPath.getCopyRevision() != -1 ? liEntryPath.getCopyRevision() : null);
+				liDetail.setKind(liEntryPath.getKind());
+				liDetail.setInScope(isInScope(liEntryPath.getPath()));
+				liDetail.setRevision(liLog.getRevision());
+				lstResult.add(liDetail);
 
-			if (!liDetail.isInScope()) {
-				hasOutOfScope = true;
+				if (!liDetail.isInScope()) {
+					hasOutOfScope = true;
+				}
 			}
 		}
 
@@ -435,8 +445,13 @@ public class LogGui implements Working {
 		tmdlLogDetail.addLines(lstResult);
 	}
 
-	private LogListItem getSelectedLogItem() {
-		return tmdlLog.getRow(tblLog.convertRowIndexToModel(tblLog.getSelectedRow()));
+	private List<LogListItem> getSelectedLogItems() {
+		ArrayList<LogListItem> lstResult = new ArrayList<LogListItem>();
+		for (int row : tblLog.getSelectedRows()) {
+
+			lstResult.add(tmdlLog.getRow(tblLog.convertRowIndexToModel(row)));
+		}
+		return lstResult;
 	}
 
 	private List<LogDetailListItem> getSelectedDetailLogItems() {
@@ -455,14 +470,13 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogListItem liLog = getSelectedLogItem();
 			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
 				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-					log.showDirChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
+					log.showDirChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
 				} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-					log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
+					log.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
 				} else {
-					log.showChanges(liDetail.getPath(), liLog.getRevision(), liDetail.getAction());
+					log.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
 				}
 			}
 		}
@@ -475,7 +489,6 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogListItem liLog = getSelectedLogItem();
 			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
 				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
 					throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
@@ -484,7 +497,7 @@ public class LogGui implements Working {
 					if (ContentStatus.DELETED.equals(cs)) {
 						MessagePane.showError(frame, "Cannot save", "File is deleted in this revision.");
 					}
-					log.showFile(liDetail.getPath(), liLog.getRevision());
+					log.showFile(liDetail.getPath(), liDetail.getRevision());
 				}
 			}
 		}
@@ -497,7 +510,6 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogListItem liLog = getSelectedLogItem();
 			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
 				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
 					throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
@@ -519,7 +531,7 @@ public class LogGui implements Working {
 
 					if (choosed == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
-						log.saveRevisionTo(liDetail.getPath(), liLog.getRevision(), file);
+						log.saveRevisionTo(liDetail.getPath(), liDetail.getRevision(), file);
 					}
 				}
 			}
@@ -533,9 +545,8 @@ public class LogGui implements Working {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			LogListItem liLog = getSelectedLogItem();
 			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				log.revertChanges(liDetail.getPath(), liLog.getRevision());
+				log.revertChanges(liDetail.getPath(), liDetail.getRevision());
 			}
 		}
 	}

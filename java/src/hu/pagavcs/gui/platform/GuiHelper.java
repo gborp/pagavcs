@@ -2,8 +2,11 @@ package hu.pagavcs.gui.platform;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.WindowPreferencesSaverOnClose;
+import hu.pagavcs.gui.CommitListItem;
+import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -12,9 +15,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -48,6 +53,52 @@ import com.jgoodies.forms.layout.FormLayout;
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
 public class GuiHelper {
+
+	private static HashMap<ContentStatus, ImageIcon> mapContentStatusIcon;
+	private static HashMap<ContentStatus, ImageIcon> mapPropertyContentStatusIcon;
+
+	static {
+		initIcons();
+	}
+
+	private static ImageIcon loadEmblem(String name) {
+
+		Integer width = 12;
+		Integer height = 12;
+
+		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CommitListItem.class.getResource("/hu/pagavcs/resources/emblems/" + name + ".png")));
+		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+
+		return imageIcon;
+	}
+
+	private static void initIcons() {
+		mapContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
+		mapContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
+		mapContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
+		mapContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
+		mapContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
+		mapContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
+		mapContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
+		mapContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
+
+		mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
+		mapPropertyContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
+		mapPropertyContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
+		mapPropertyContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
+		mapPropertyContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
+		mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
+		mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
+		mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
+	}
+
+	public static ImageIcon getContentStatusIcon(ContentStatus contentStatus) {
+		return mapContentStatusIcon.get(contentStatus);
+	}
+
+	public static ImageIcon getPropertyContentStatusIcon(ContentStatus contentStatus) {
+		return mapPropertyContentStatusIcon.get(contentStatus);
+	}
 
 	public static void addPopupMenu(JLabel component) {
 		JPopupMenu contextMenu = new JPopupMenu();

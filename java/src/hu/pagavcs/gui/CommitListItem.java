@@ -1,14 +1,10 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.ListItem;
 import hu.pagavcs.operation.ContentStatus;
 
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.io.File;
-import java.util.HashMap;
-
-import javax.swing.ImageIcon;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -25,18 +21,10 @@ import javax.swing.ImageIcon;
  */
 public class CommitListItem implements ListItem {
 
-	private boolean                                  selected;
-	private File                                     path;
-	private ContentStatus                            status;
-	private ContentStatus                            propertyStatus;
-	private static HashMap<ContentStatus, ImageIcon> mapContentStatusIcon;
-	private static HashMap<ContentStatus, ImageIcon> mapPropertyContentStatusIcon;
-
-	public CommitListItem() {
-		if (mapContentStatusIcon == null) {
-			initIcons();
-		}
-	}
+	private boolean       selected;
+	private File          path;
+	private ContentStatus status;
+	private ContentStatus propertyStatus;
 
 	public String[] getColumnNames() {
 		return new String[] { "Selected", "Path", "Status", "PropertyStatus" };
@@ -48,9 +36,9 @@ public class CommitListItem implements ListItem {
 		} else if (index == 1) {
 			return getPath();
 		} else if (index == 2) {
-			return mapContentStatusIcon.get(getStatus());
+			return GuiHelper.getContentStatusIcon(getStatus());
 		} else if (index == 3) {
-			return mapPropertyContentStatusIcon.get(getPropertyStatus());
+			return GuiHelper.getPropertyContentStatusIcon(getPropertyStatus());
 		}
 		throw new RuntimeException("not implemented");
 	}
@@ -93,37 +81,6 @@ public class CommitListItem implements ListItem {
 
 	public ContentStatus getPropertyStatus() {
 		return propertyStatus;
-	}
-
-	private void initIcons() {
-		mapContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
-		mapContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
-		mapContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
-		mapContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
-		mapContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
-		mapContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
-		mapContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
-		mapContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
-
-		mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
-		mapPropertyContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
-		mapPropertyContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
-		mapPropertyContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
-		mapPropertyContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
-		mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
-		mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
-		mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
-	}
-
-	private ImageIcon loadEmblem(String name) {
-
-		Integer width = 8;
-		Integer height = 8;
-
-		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CommitListItem.class.getResource("/hu/pagavcs/resources/emblems/" + name + ".png")));
-		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
-
-		return imageIcon;
 	}
 
 }
