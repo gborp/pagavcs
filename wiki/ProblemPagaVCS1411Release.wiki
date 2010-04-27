@@ -1,4 +1,4 @@
-Problem with PagaVCS 1.4.11 release
+#summary Problem with PagaVCS 1.4.11 release
 INFO who has installed the faulty 1.4.11:
 the install problem is FIXED, so please
 - if you have installed the wrong 1.4.11, then execute this command in terminal:
