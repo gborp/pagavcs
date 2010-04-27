@@ -459,7 +459,7 @@ public class UpdateGui implements Working {
 				ppVisible = ppConflicted;
 			} else if (ContentStatus.ADDED.equals(status) || ContentStatus.DELETED.equals(status) || ContentStatus.EXISTS.equals(status)
 			        || ContentStatus.EXTERNAL.equals(status) || ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status)
-			        || ContentStatus.UPDATE.equals(status)) {
+			        || ContentStatus.UPDATE.equals(status) || ContentStatus.MERGED.equals(status)) {
 				ppVisible = ppUpdated;
 			} else {
 				ppVisible = ppCompleted;
