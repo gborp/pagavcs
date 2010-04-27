@@ -1,3 +1,14 @@
+pagavcs (1.4.13) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [log-gui] multi selectable log entries
+  * [log-gui] icons in the detail
+  * Issue 57 [update gui] "show changes" for merged items too
+  * [log gui] add copy selected/all lines actions to log and detail log tables
+  * bigger icons in the commit and log gui
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 27 Apr 2010 18:58:48 +0200
+
 pagavcs (1.4.12) karmic; urgency=low
 
   [ Gábor Pápai ]
