@@ -13,6 +13,7 @@ import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.NullCellRenderer;
 import hu.pagavcs.gui.platform.ProgressBar;
+import hu.pagavcs.gui.platform.StringHelper;
 import hu.pagavcs.gui.platform.Table;
 import hu.pagavcs.gui.platform.TableModel;
 import hu.pagavcs.gui.platform.TextArea;
@@ -39,6 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -112,6 +114,7 @@ public class LogGui implements Working {
 		tmdlLog = new TableModel<LogListItem>(new LogListItem());
 		tblLog = new Table<LogListItem>(tmdlLog);
 		tblLog.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		tblLog.addMouseListener(new PopupupMouseListener());
 		sorterLog = new TableRowSorter<TableModel<LogListItem>>(tmdlLog);
 		sorterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
 
@@ -463,6 +466,28 @@ public class LogGui implements Working {
 		return lstResult;
 	}
 
+	private class DetailCompareWithWorkingCopyAction extends ThreadAction {
+
+		public DetailCompareWithWorkingCopyAction() {
+			super("Compare with working copy");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
+				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
+					// log.showDirChanges(liDetail.getPath(),
+					// liDetail.getRevision(), liDetail.getAction());
+				} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
+					// log.showChanges(liDetail.getPath(),
+					// liDetail.getRevision(), liDetail.getAction());
+				} else {
+					// log.showChanges(liDetail.getPath(),
+					// liDetail.getRevision(), liDetail.getAction());
+				}
+			}
+		}
+	}
+
 	private class DetailShowChangesAction extends ThreadAction {
 
 		public DetailShowChangesAction() {
@@ -612,7 +637,11 @@ public class LogGui implements Working {
 			ppModified.add(new DetailShowChangesAction());
 			ppModified.add(new ShowFileAction());
 			ppModified.add(new SaveRevisionToAction());
+			// TODO
+			// ppModified.add(new DetailCompareWithWorkingCopyAction());
 			ppModified.add(new DetailRevertChangesFromThisRevisionAction());
+			ppModified.add(new CopyDetailLineToClipboard());
+			ppModified.add(new CopyDetailAllToClipboard());
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -662,6 +691,131 @@ public class LogGui implements Working {
 			}
 
 		}
+	}
+
+	private void copyLogListItemsToClipboard(List<LogListItem> lstLogListItem) {
+		StringBuilder result = new StringBuilder();
+		long maxRevisionNumber = -1;
+		int maxDateLength = -1;
+		for (LogListItem li : lstLogListItem) {
+			long revisionNumber = li.getRevision();
+			if (revisionNumber > maxRevisionNumber) {
+				maxRevisionNumber = revisionNumber;
+			}
+			if (li.getDate().length() > maxDateLength) {
+				maxDateLength = li.getDate().length();
+			}
+		}
+		int revisionPadding = 10 - Long.toString(maxRevisionNumber).length();
+		int datePadding = 10 - maxDateLength;
+		for (LogListItem li : lstLogListItem) {
+			String message = li.getMessage();
+			message = message.replace('\n', ' ');
+			String revision = Long.toString(li.getRevision());
+			revision = "          ".substring(revisionPadding + revision.length()) + revision;
+			String date = li.getDate() + "          ".substring(datePadding + li.getDate().length());
+
+			result.append(revision + " " + li.getActions() + " " + li.getAuthor() + " " + date + " " + message + "\n");
+		}
+		Manager.setClipboard(result.toString());
+	}
+
+	private void copyLogDetailListItemsToClipboard(List<LogDetailListItem> lstDetailLogListItem) {
+		StringBuilder result = new StringBuilder();
+		for (LogDetailListItem li : lstDetailLogListItem) {
+
+			result.append(li.getPath() + " " + li.getAction() + " " + StringHelper.toNullAware(li.getCopyFromPath()) + " "
+			        + StringHelper.toNullAware(li.getCopyRevision()) + "\n");
+		}
+		Manager.setClipboard(result.toString());
+	}
+
+	private class CopyDetailAllToClipboard extends AbstractAction {
+
+		public CopyDetailAllToClipboard() {
+			super("Copy all to clipboard");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			copyLogDetailListItemsToClipboard(tmdlLogDetail.getAllData());
+		}
+	}
+
+	private class CopyDetailLineToClipboard extends AbstractAction {
+
+		public CopyDetailLineToClipboard() {
+			super("Copy selected lines to clipboard");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			copyLogDetailListItemsToClipboard(getSelectedDetailLogItems());
+		}
+	}
+
+	private class CopyAllToClipboard extends AbstractAction {
+
+		public CopyAllToClipboard() {
+			super("Copy all to clipboard");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			copyLogListItemsToClipboard(tmdlLog.getAllData());
+		}
+	}
+
+	private class CopyLineToClipboard extends AbstractAction {
+
+		public CopyLineToClipboard() {
+			super("Copy selected lines to clipboard");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			copyLogListItemsToClipboard(getSelectedLogItems());
+		}
+	}
+
+	private class PopupupMouseListener extends MouseAdapter {
+
+		private JPopupMenu pp;
+
+		public PopupupMouseListener() {
+			pp = new JPopupMenu();
+			pp.add(new CopyLineToClipboard());
+			pp.add(new CopyAllToClipboard());
+		}
+
+		private void showPopup(MouseEvent e) {
+			Point p = new Point(e.getX(), e.getY());
+			int row = tblLog.rowAtPoint(p);
+			if (row == -1) {
+				return;
+			}
+
+			int index = tblLog.convertRowIndexToModel(row);
+			LogListItem selected = tmdlLog.getRow(index);
+			if (!getSelectedLogItems().contains(selected)) {
+				tblLog.getSelectionModel().setSelectionInterval(index, index);
+			}
+
+			JPopupMenu ppVisible = pp;
+			ppVisible.setInvoker(tblLog);
+			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+			ppVisible.setVisible(true);
+			e.consume();
+		}
+
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
 	}
 
 }
