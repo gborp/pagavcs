@@ -1,3 +1,14 @@
+pagavcs (1.4.14) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [commit gui] no icon for "missing" status
+  * [commit gui] add tooltip for content- and property status cells
+  * [gui] add tooltip for table headers
+  * [core] update SVNkit to 1.3.3
+  * [core] add jna.jar to the classpath ("SVNKit uses JNA library to optionally perform certain low-level file system operations using native OS calls. In particular, JNA is used to improve performance of operations related to symbolic links.")
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 02 May 2010 20:18:29 +0200
+
 pagavcs (1.4.13) karmic; urgency=low
 
   [ Gábor Pápai ]
