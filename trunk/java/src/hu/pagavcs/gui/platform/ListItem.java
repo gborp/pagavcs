@@ -23,4 +23,6 @@ public interface ListItem {
 
 	void setValue(int index, Object value);
 
+	String getTooltip(int column);
+
 }

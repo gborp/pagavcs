@@ -50,6 +50,10 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 		return columnNames[column];
 	}
 
+	public String getColumnDescription(int column) {
+		return getColumnName(column);
+	}
+
 	public Object getValueAt(final int rowIndex, final int columnIndex) {
 		final L li = lstData.get(rowIndex);
 		return li.getValue(columnIndex);
@@ -109,6 +113,10 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 			return getValueAt(row, c).getClass();
 		}
 		return Object.class;
+	}
+
+	public String getCellToolTip(int column, int row) {
+		return getRow(row).getTooltip(column);
 	}
 
 }
