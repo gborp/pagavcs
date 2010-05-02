@@ -43,6 +43,15 @@ public class CommitListItem implements ListItem {
 		throw new RuntimeException("not implemented");
 	}
 
+	public String getTooltip(int column) {
+		if (column == 2) {
+			return getStatus().toString();
+		} else if (column == 3) {
+			return getPropertyStatus().toString();
+		}
+		return null;
+	}
+
 	public boolean isColumnEditable(int columnIndex) {
 		return columnIndex == 0;
 	}
