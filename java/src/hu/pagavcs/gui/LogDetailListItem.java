@@ -46,6 +46,10 @@ public class LogDetailListItem implements ListItem {
 		throw new RuntimeException("not implemented");
 	}
 
+	public String getTooltip(int column) {
+		return null;
+	}
+
 	public boolean isColumnEditable(int columnIndex) {
 		return false;
 	}

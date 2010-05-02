@@ -5,6 +5,7 @@ import hu.pagavcs.bl.OnSwing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.JTable;
@@ -13,6 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
@@ -122,6 +124,34 @@ public class Table<L extends ListItem> extends JTable {
 		revalidate();
 		scrollRectToVisible(getCellRect(getRowCount() - 1, 0, true));
 		repaint();
+	}
+
+	public String getToolTipText(MouseEvent e) {
+		java.awt.Point p = e.getPoint();
+		int rowIndex = rowAtPoint(p);
+		int colIndex = columnAtPoint(p);
+		if (rowIndex == -1 || colIndex == -1) {
+			return null;
+		}
+		int realRowIndex = convertRowIndexToModel(rowIndex);
+		int realColumnIndex = convertColumnIndexToModel(colIndex);
+
+		return tableModel.getCellToolTip(realColumnIndex, realRowIndex);
+	}
+
+	protected JTableHeader createDefaultTableHeader() {
+		return new JTableHeader(columnModel) {
+
+			public String getToolTipText(MouseEvent e) {
+				java.awt.Point p = e.getPoint();
+				int index = columnModel.getColumnIndexAtX(p.x);
+				if (index == -1) {
+					return null;
+				}
+				int realIndex = columnModel.getColumn(index).getModelIndex();
+				return tableModel.getColumnDescription(realIndex);
+			}
+		};
 	}
 
 }
