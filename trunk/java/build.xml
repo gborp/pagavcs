@@ -55,6 +55,7 @@
     	<zipfileset src="${lib}/jcalendar-1.3.3.jar" />
     	<zipfileset src="${lib}/forms-1.2.1.jar" />
     	<zipfileset src="${lib}/trilead.jar" />
+    	<zipfileset src="${lib}/jna.jar" />
     	<manifest>
     	   <attribute name="Main-Class" value="hu.pagavcs.Main"/>
     	</manifest>
