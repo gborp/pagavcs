@@ -81,6 +81,7 @@ public class GuiHelper {
 		mapContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
 		mapContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
 		mapContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
+		mapContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
 
 		mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
 		mapPropertyContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
@@ -90,6 +91,7 @@ public class GuiHelper {
 		mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
 		mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
 		mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
+		mapPropertyContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
 	}
 
 	public static ImageIcon getContentStatusIcon(ContentStatus contentStatus) {
