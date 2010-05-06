@@ -225,6 +225,27 @@ public class Communication {
 		running.delete();
 	}
 
+	private void makeMenuItem(StringBuilder sb, String label, String tooltip, String icon, String mode, String command) {
+		sb.append("NautilusPython::PagaVCS::");
+		sb.append(command);
+		sb.append('\n');
+
+		sb.append(label);
+		sb.append('\n');
+
+		sb.append(tooltip);
+		sb.append('\n');
+
+		sb.append(icon);
+		sb.append('\n');
+
+		sb.append(mode);
+		sb.append('\n');
+
+		sb.append(command);
+		sb.append('\n');
+	}
+
 	private String getMenuItems(List<String> lstArg) throws SVNException {
 
 		boolean hasSvned = false;
@@ -245,118 +266,49 @@ public class Communication {
 			}
 		}
 
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(512);
 		if (hasSvned) {
-			sb.append("NautilusPython::update_file_item\n");
-			sb.append("Update\n");
-			sb.append("Update\n");
-			sb.append("pagavcs-update\n");
-			sb.append("tp\n");
-			sb.append("update\n");
+			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp", "update");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::commit_file_item\n");
-			sb.append("Commit\n");
-			sb.append("Commit\n");
-			sb.append("pagavcs-commit\n");
-			sb.append("tp\n");
-			sb.append("commit\n");
+			makeMenuItem(sb, "Commit", "Commit", "pagavcs-commit", "tp", "commit");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::log_file_item\n");
-			sb.append("Log\n");
-			sb.append("Log\n");
-			sb.append("pagavcs-log\n");
-			sb.append("t\n");
-			sb.append("log\n");
+			makeMenuItem(sb, "Log", "Log", "pagavcs-log", "t", "log");
 		}
 
-		sb.append("NautilusPython::repo_browser_item\n");
-		sb.append("Repo Browser\n");
-		sb.append("Repo Browser\n");
-		sb.append("pagavcs-drive\n");
-		sb.append("\n");
-		sb.append("repobrowser\n");
+		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "", "repobrowser");
 
 		if (hasSvned) {
-			sb.append("NautilusPython::ignore_file_item\n");
-			sb.append("Ignore\n");
-			sb.append("Ignore\n");
-			sb.append("pagavcs-ignore\n");
-			sb.append("s\n");
-			sb.append("ignore\n");
+			makeMenuItem(sb, "Ignore", "Ignore", "pagavcs-ignore", "s", "ignore");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::unignore_file_item\n");
-			sb.append("Unignore\n");
-			sb.append("Unignore\n");
-			sb.append("pagavcs-unignore\n");
-			sb.append("\n");
-			sb.append("unignore\n");
+			makeMenuItem(sb, "Unignore", "Unignore", "pagavcs-unignore", "", "unignore");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::delete_file_item\n");
-			sb.append("Delete\n");
-			sb.append("Delete\n");
-			sb.append("pagavcs-delete\n");
-			sb.append("\n");
-			sb.append("delete\n");
+			makeMenuItem(sb, "Delete", "Delete", "pagavcs-delete", "", "delete");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::revert_file_item\n");
-			sb.append("Revert\n");
-			sb.append("Revert\n");
-			sb.append("pagavcs-revert\n");
-			sb.append("\n");
-			sb.append("revert\n");
+			makeMenuItem(sb, "Revert", "Revert", "pagavcs-revert", "", "revert");
 		}
 		if (!hasSvned) {
-			sb.append("NautilusPython::checkout_file_item\n");
-			sb.append("Checkout\n");
-			sb.append("Checkout\n");
-			sb.append("pagavcs-checkout\n");
-			sb.append("\n");
-			sb.append("checkout\n");
+			makeMenuItem(sb, "Checkout", "Checkout", "pagavcs-checkout", "t", "checkout");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::cleanup_file_item\n");
-			sb.append("Cleanup\n");
-			sb.append("Cleanup\n");
-			sb.append("pagavcs-cleanup\n");
-			sb.append("t\n");
-			sb.append("cleanup\n");
+			makeMenuItem(sb, "Cleanup", "Cleanup", "pagavcs-cleanup", "t", "cleanup");
 		}
 		if (hasConflicted && !hasNotConflicted) {
 			// TODO also include use theirs and use mine option
-			sb.append("NautilusPython::resolve_file_item\n");
-			sb.append("Resolve\n");
-			sb.append("Resolve\n");
-			sb.append("pagavcs-resolve\n");
-			sb.append("\n");
-			sb.append("resolve\n");
+			makeMenuItem(sb, "Resolve", "Resolve", "pagavcs-resolve", "", "resolve");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::merge_file_item\n");
-			sb.append("Merge\n");
-			sb.append("Merge\n");
-			sb.append("pagavcs-merge\n");
-			sb.append("t\n");
-			sb.append("merge\n");
+			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", "merge");
 		}
 		if (hasSvned) {
-			sb.append("NautilusPython::other_file_item\n");
-			sb.append("Other\n");
-			sb.append("Other\n");
-			sb.append("pagavcs-other\n");
-			sb.append("t\n");
-			sb.append("other\n");
+			makeMenuItem(sb, "Other", "Other", "pagavcs-other", "t", "other");
 		}
-		sb.append("NautilusPython::settings_file_item\n");
-		sb.append("Settings\n");
-		sb.append("Settings\n");
-		sb.append("pagavcs-settings\n");
-		sb.append("s\n");
-		sb.append("settings\n");
+
+		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s", "settings");
 
 		sb.append("--end--\n");
 
