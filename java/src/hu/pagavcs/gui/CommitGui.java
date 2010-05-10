@@ -35,6 +35,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -221,11 +223,21 @@ public class CommitGui implements Working, Refreshable {
 	}
 
 	public synchronized void workStarted() throws Exception {
-		prgWorkinProgress.startProgress();
+		new OnSwing() {
+
+			protected void process() throws Exception {
+				prgWorkinProgress.startProgress();
+			}
+		}.run();
 	}
 
 	public synchronized void workEnded() throws Exception {
-		prgWorkinProgress.stopProgress();
+		new OnSwing() {
+
+			protected void process() throws Exception {
+				prgWorkinProgress.stopProgress();
+			}
+		}.run();
 	}
 
 	public void setUrlLabel(String urlLabel) {
@@ -483,6 +495,9 @@ public class CommitGui implements Working, Refreshable {
 		new ResolveConflict(this, file.getPath(), false).execute();
 	}
 
+	/**
+	 * @return Creates a new list of select list items
+	 */
 	private List<CommitListItem> getSelectedItems() {
 		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
 		for (int row : tblCommit.getSelectedRows()) {
@@ -542,6 +557,7 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
 			if (taMessage.getText().trim().length() < logMinSize) {
 				MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
 				return;
@@ -587,6 +603,7 @@ public class CommitGui implements Working, Refreshable {
 			prgWorkinProgress.setValue(0);
 			prgWorkinProgress.setIndeterminate(true);
 			preRealCommitProcess = true;
+			workEnded();
 			commit.doCommit(lstCommit, taMessage.getText());
 		}
 	}
@@ -627,10 +644,12 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
 			for (CommitListItem li : getSelectedItems()) {
 				commit.add(li.getPath());
 			}
 			refresh();
+			workEnded();
 		}
 	}
 
@@ -641,6 +660,7 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
 			for (CommitListItem li : getSelectedItems()) {
 				commit.ignore(li.getPath());
 				// the callback from Commit doesn't work, because it knows only
@@ -649,6 +669,7 @@ public class CommitGui implements Working, Refreshable {
 				// changeToIgnore(li.getPath());
 			}
 			refresh();
+			workEnded();
 		}
 	}
 
@@ -659,11 +680,13 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
 			for (CommitListItem li : getSelectedItems()) {
 				commit.delete(li.getPath());
 				// changeToDeleted(li.getPath());
 			}
 			refresh();
+			workEnded();
 		}
 	}
 
@@ -687,10 +710,21 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			for (CommitListItem li : getSelectedItems()) {
+			workStarted();
+			List<CommitListItem> lstFiles = getSelectedItems();
+
+			Collections.sort(lstFiles, new Comparator<CommitListItem>() {
+
+				public int compare(CommitListItem o1, CommitListItem o2) {
+					return o2.getPath().getAbsolutePath().compareTo(o1.getPath().getAbsolutePath());
+				}
+			});
+
+			for (CommitListItem li : lstFiles) {
 				commit.revertChanges(li.getPath());
 			}
 			refresh();
+			workEnded();
 		}
 	}
 
@@ -714,9 +748,11 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
 			for (CommitListItem li : getSelectedItems()) {
 				commit.revertPropertyChanges(li.getPath());
 			}
+			workEnded();
 			refresh();
 		}
 	}
@@ -728,6 +764,7 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
 			try {
 				for (CommitListItem li : getSelectedItems()) {
 					new Log(li.getPath().getPath()).execute();
@@ -735,6 +772,7 @@ public class CommitGui implements Working, Refreshable {
 			} catch (Exception ex) {
 				Manager.handle(ex);
 			}
+			workEnded();
 		}
 	}
 
