@@ -79,6 +79,10 @@ public class FileStatusCache {
 		if (status == null) {
 			return STATUS.NONE;
 		}
+		if (file.isDirectory()) {
+			result = STATUS.SVNED;
+		}
+
 		SVNStatusType contentStatus = status.getContentsStatus();
 		if (contentStatus.equals(SVNStatusType.STATUS_ADDED)) {
 			result = STATUS.IGNORED;
@@ -97,9 +101,6 @@ public class FileStatusCache {
 		} else if (contentStatus.equals(SVNStatusType.STATUS_UNVERSIONED)) {
 			result = STATUS.UNVERSIONED;
 		} else {
-			result = STATUS.SVNED;
-		}
-		if (!result.equals(STATUS.IGNORED) && file.isDirectory()) {
 			result = STATUS.SVNED;
 		}
 		if (status.isLocked()) {
@@ -184,7 +185,7 @@ public class FileStatusCache {
 			StatusSlot slot = mapCache.get(file);
 			if (slot != null) {
 				if (file.lastModified() != slot.lastModified || file.length() != slot.fileSize
-				        || ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD)) {
+				        || ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD / 20000)) {
 					mapCache.remove(file);
 				} else {
 					return slot.status;
