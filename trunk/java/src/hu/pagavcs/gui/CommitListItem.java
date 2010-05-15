@@ -27,26 +27,26 @@ public class CommitListItem implements ListItem {
 	private ContentStatus propertyStatus;
 
 	public String[] getColumnNames() {
-		return new String[] { "Selected", "Path", "Status", "PropertyStatus" };
+		return new String[] { "Selected", "Status", "PropertyStatus", "Path" };
 	}
 
 	public Object getValue(int index) {
 		if (index == 0) {
 			return isSelected();
 		} else if (index == 1) {
-			return getPath();
-		} else if (index == 2) {
 			return GuiHelper.getContentStatusIcon(getStatus());
-		} else if (index == 3) {
+		} else if (index == 2) {
 			return GuiHelper.getPropertyContentStatusIcon(getPropertyStatus());
+		} else if (index == 3) {
+			return getPath();
 		}
 		throw new RuntimeException("not implemented");
 	}
 
 	public String getTooltip(int column) {
-		if (column == 2) {
+		if (column == 1) {
 			return getStatus().toString();
-		} else if (column == 3) {
+		} else if (column == 2) {
 			return getPropertyStatus().toString();
 		}
 		return null;
