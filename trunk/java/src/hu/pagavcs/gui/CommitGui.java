@@ -313,7 +313,6 @@ public class CommitGui implements Working, Refreshable {
 					mapDeletedHiddenFiles = new HashMap<File, List<CommitListItem>>();
 
 				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
-
 					MessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
 					frame.setVisible(false);
 					frame.dispose();
@@ -321,6 +320,14 @@ public class CommitGui implements Working, Refreshable {
 					MessagePane.showError(frame, "Failed!", "Commit failed!");
 					frame.setVisible(false);
 					frame.dispose();
+				} else if (CommitStatus.CANCEL.equals(status)) {
+					MessagePane.showInfo(frame, "Cancelled!", "Commit cancelled!");
+
+					tblCommit.setEnabled(true);
+					btnCommit.setEnabled(true);
+					prgWorkinProgress.setValue(0);
+					prgWorkinProgress.setIndeterminate(false);
+					preRealCommitProcess = false;
 				}
 			}
 
