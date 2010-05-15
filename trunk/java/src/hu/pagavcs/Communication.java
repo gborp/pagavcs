@@ -3,7 +3,6 @@ package hu.pagavcs;
 import hu.pagavcs.bl.FileStatusCache;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.FileStatusCache.STATUS;
-import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Commit;
@@ -14,6 +13,8 @@ import hu.pagavcs.operation.MergeOperation;
 import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.ResolveConflict;
+import hu.pagavcs.operation.ResolveConflictUsingMine;
+import hu.pagavcs.operation.ResolveConflictUsingTheirs;
 import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Settings;
 import hu.pagavcs.operation.Unignore;
@@ -56,6 +57,26 @@ public class Communication {
 
 	private static final int     PORT                          = 12905;
 	private static final String  SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
+
+	private static final String  COMMAND_UPDATE                = "update";
+	private static final String  COMMAND_LOG                   = "log";
+	private static final String  COMMAND_COMMIT                = "commit";
+	private static final String  COMMAND_IGNORE                = "ignore";
+	private static final String  COMMAND_UNIGNORE              = "unignore";
+	private static final String  COMMAND_REVERT                = "revert";
+	private static final String  COMMAND_CLEANUP               = "cleanup";
+	private static final String  COMMAND_DELETE                = "delete";
+	private static final String  COMMAND_MERGE                 = "merge";
+	private static final String  COMMAND_OTHER                 = "other";
+	private static final String  COMMAND_CHECKOUT              = "checkout";
+	private static final String  COMMAND_SETTINGS              = "settings";
+	private static final String  COMMAND_RESOLVE               = "resolve";
+	private static final String  COMMAND_RESOLVEUSINGMINE      = "resolveusingmine";
+	private static final String  COMMAND_RESOLVEUSINGTHEIRS    = "resolveusingtheirs";
+	private static final String  COMMAND_REPOBROWSER           = "repobrowser";
+	private static final String  COMMAND_STOP                  = "stop";
+	private static final String  COMMAND_PING                  = "ping";
+
 	private static Communication singleton;
 	private boolean              shutdown;
 	private File                 running;
@@ -268,47 +289,48 @@ public class Communication {
 
 		StringBuilder sb = new StringBuilder(512);
 		if (hasSvned) {
-			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp", "update");
+			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp", COMMAND_UPDATE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Commit", "Commit", "pagavcs-commit", "tp", "commit");
+			makeMenuItem(sb, "Commit", "Commit", "pagavcs-commit", "tp", COMMAND_COMMIT);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Log", "Log", "pagavcs-log", "t", "log");
+			makeMenuItem(sb, "Log", "Log", "pagavcs-log", "t", COMMAND_LOG);
 		}
 
-		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "", "repobrowser");
+		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "", COMMAND_REPOBROWSER);
 
 		if (hasSvned) {
-			makeMenuItem(sb, "Ignore", "Ignore", "pagavcs-ignore", "s", "ignore");
+			makeMenuItem(sb, "Ignore", "Ignore", "pagavcs-ignore", "s", COMMAND_IGNORE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Unignore", "Unignore", "pagavcs-unignore", "", "unignore");
+			makeMenuItem(sb, "Unignore", "Unignore", "pagavcs-unignore", "", COMMAND_UNIGNORE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Delete", "Delete", "pagavcs-delete", "", "delete");
+			makeMenuItem(sb, "Delete", "Delete", "pagavcs-delete", "", COMMAND_DELETE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Revert", "Revert", "pagavcs-revert", "", "revert");
+			makeMenuItem(sb, "Revert", "Revert", "pagavcs-revert", "", COMMAND_REVERT);
 		}
 		if (!hasSvned) {
-			makeMenuItem(sb, "Checkout", "Checkout", "pagavcs-checkout", "t", "checkout");
+			makeMenuItem(sb, "Checkout", "Checkout", "pagavcs-checkout", "t", COMMAND_CHECKOUT);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Cleanup", "Cleanup", "pagavcs-cleanup", "t", "cleanup");
+			makeMenuItem(sb, "Cleanup", "Cleanup", "pagavcs-cleanup", "t", COMMAND_CLEANUP);
 		}
 		if (hasConflicted && !hasNotConflicted) {
-			// TODO also include use theirs and use mine option
-			makeMenuItem(sb, "Resolve", "Resolve", "pagavcs-resolve", "", "resolve");
+			makeMenuItem(sb, "Resolve using mine", "Resolve using mine", "pagavcs-resolve", "", COMMAND_RESOLVEUSINGMINE);
+			makeMenuItem(sb, "Resolve using theirs", "Resolve using theirs", "pagavcs-resolve", "", COMMAND_RESOLVEUSINGTHEIRS);
+			makeMenuItem(sb, "Resolve", "Resolve", "pagavcs-resolve", "", COMMAND_RESOLVE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", "merge");
+			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", COMMAND_MERGE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Other", "Other", "pagavcs-other", "t", "other");
+			makeMenuItem(sb, "Other", "Other", "pagavcs-other", "t", COMMAND_OTHER);
 		}
 
-		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s", "settings");
+		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s", COMMAND_SETTINGS);
 
 		sb.append("--end--\n");
 
@@ -344,71 +366,82 @@ public class Communication {
 			this.lstArg = lstArg;
 		}
 
-		private void warningIfMultiSelection() {
-			if (lstArg.size() > 1) {
-				MessagePane.showWarning(null, "Only on first selected", "THe operation is executed only on the first selected element.");
-			}
-		}
-
 		public void run() {
 			try {
 
-				if ("update".equals(command)) {
+				if (COMMAND_UPDATE.equals(command)) {
 					Update update = new Update(lstArg);
 					update.execute();
-				} else if ("log".equals(command)) {
-					warningIfMultiSelection();
-					Log showlog = new Log(lstArg.get(0));
-					showlog.execute();
-				} else if ("commit".equals(command)) {
-					warningIfMultiSelection();
-					Commit commit = new Commit(lstArg.get(0));
-					commit.execute();
-				} else if ("ignore".equals(command)) {
-					warningIfMultiSelection();
-					Ignore ignore = new Ignore(lstArg.get(0));
-					ignore.execute();
-				} else if ("unignore".equals(command)) {
-					warningIfMultiSelection();
-					Unignore unignore = new Unignore(lstArg.get(0));
-					unignore.execute();
-				} else if ("revert".equals(command)) {
-					warningIfMultiSelection();
-					Revert revert = new Revert(lstArg.get(0));
-					revert.execute();
-				} else if ("cleanup".equals(command)) {
-					warningIfMultiSelection();
-					Cleanup cleanup = new Cleanup(lstArg.get(0));
-					cleanup.execute();
-				} else if ("delete".equals(command)) {
+				} else if (COMMAND_LOG.equals(command)) {
+					for (String path : lstArg) {
+						Log showlog = new Log(path);
+						showlog.execute();
+					}
+				} else if (COMMAND_COMMIT.equals(command)) {
+					for (String path : lstArg) {
+						Commit commit = new Commit(path);
+						commit.execute();
+					}
+				} else if (COMMAND_IGNORE.equals(command)) {
+					for (String path : lstArg) {
+						Ignore ignore = new Ignore(path);
+						ignore.execute();
+					}
+				} else if (COMMAND_UNIGNORE.equals(command)) {
+					for (String path : lstArg) {
+						Unignore unignore = new Unignore(path);
+						unignore.execute();
+					}
+				} else if (COMMAND_REVERT.equals(command)) {
+					for (String path : lstArg) {
+						Revert revert = new Revert(path);
+						revert.execute();
+					}
+				} else if (COMMAND_CLEANUP.equals(command)) {
+					for (String path : lstArg) {
+						Cleanup cleanup = new Cleanup(path);
+						cleanup.execute();
+					}
+				} else if (COMMAND_DELETE.equals(command)) {
 					Delete delete = new Delete(lstArg);
 					delete.execute();
-				} else if ("merge".equals(command)) {
-					warningIfMultiSelection();
-					MergeOperation merge = new MergeOperation(lstArg.get(0));
-					merge.execute();
-				} else if ("other".equals(command)) {
-					warningIfMultiSelection();
-					Other other = new Other(lstArg.get(0));
-					other.execute();
-				} else if ("checkout".equals(command)) {
-					warningIfMultiSelection();
-					Checkout checkout = new Checkout(lstArg.get(0));
-					checkout.execute();
-				} else if ("settings".equals(command)) {
+				} else if (COMMAND_MERGE.equals(command)) {
+					for (String path : lstArg) {
+						MergeOperation merge = new MergeOperation(path);
+						merge.execute();
+					}
+				} else if (COMMAND_OTHER.equals(command)) {
+					for (String path : lstArg) {
+						Other other = new Other(path);
+						other.execute();
+					}
+				} else if (COMMAND_CHECKOUT.equals(command)) {
+					for (String path : lstArg) {
+						Checkout checkout = new Checkout(path);
+						checkout.execute();
+					}
+				} else if (COMMAND_SETTINGS.equals(command)) {
 					Settings settings = new Settings();
 					settings.execute();
-				} else if ("resolve".equals(command)) {
-					warningIfMultiSelection();
-					ResolveConflict resolve = new ResolveConflict(null, lstArg.get(0), false);
-					resolve.execute();
-				} else if ("repobrowser".equals(command)) {
-					warningIfMultiSelection();
-					RepoBrowser repoBrowser = new RepoBrowser(lstArg.get(0));
-					repoBrowser.execute();
-				} else if ("stop".equals(command)) {
+				} else if (COMMAND_RESOLVE.equals(command)) {
+					for (String path : lstArg) {
+						ResolveConflict resolve = new ResolveConflict(null, path, false);
+						resolve.execute();
+					}
+				} else if (COMMAND_RESOLVEUSINGMINE.equals(command)) {
+					ResolveConflictUsingMine resolveUsingMine = new ResolveConflictUsingMine(lstArg);
+					resolveUsingMine.execute();
+				} else if (COMMAND_RESOLVEUSINGTHEIRS.equals(command)) {
+					ResolveConflictUsingTheirs resolveUsingTheirs = new ResolveConflictUsingTheirs(lstArg);
+					resolveUsingTheirs.execute();
+				} else if (COMMAND_REPOBROWSER.equals(command)) {
+					for (String path : lstArg) {
+						RepoBrowser repoBrowser = new RepoBrowser(path);
+						repoBrowser.execute();
+					}
+				} else if (COMMAND_STOP.equals(command)) {
 					System.exit(0);
-				} else if ("ping".equals(command)) {
+				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
 				} else {
 					throw new RuntimeException("unimplemented command");
