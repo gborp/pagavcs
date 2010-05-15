@@ -181,15 +181,18 @@ public class LogGui implements Working {
 		sfFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 			public void changedUpdate(DocumentEvent e) {
-				sorterLog.modelStructureChanged();
+				sorterLog.sort();
+				tblLog.resizeColumns();
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-				sorterLog.modelStructureChanged();
+				sorterLog.sort();
+				tblLog.resizeColumns();
 			}
 
 			public void insertUpdate(DocumentEvent e) {
-				sorterLog.modelStructureChanged();
+				sorterLog.sort();
+				tblLog.resizeColumns();
 			}
 		});
 		lblUrl = new Label();
