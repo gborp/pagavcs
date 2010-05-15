@@ -1,3 +1,16 @@
+pagavcs (1.4.15) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [nautilus, mugCommander integration] status emblem for directories too
+  * [gui] fix tables resizing
+  * [commit] reverting a directory tree in the right order
+  * [commit gui] don't lock the gui if the user choosed "no" to "Working copy is locked, do cleanup?" or "An update is need, do update now?"
+  * [commit gui] move the "path" column to the right of the table
+  * [context menu] add resolve confilct using mine / theirs
+  * [context menu] all operations supports performing on multiply selected item
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 15 May 2010 15:06:02 +0200
+
 pagavcs (1.4.14) karmic; urgency=low
 
   [ Gábor Pápai ]
