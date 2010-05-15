@@ -6,6 +6,7 @@ import hu.pagavcs.bl.OnSwing;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.JTable;
@@ -47,27 +48,27 @@ public class Table<L extends ListItem> extends JTable {
 		tableModel.addTableModelListener(new TableModelListener() {
 
 			public void tableChanged(TableModelEvent e) {
-				if (e.getType() == TableModelEvent.INSERT) {
-					new Thread(new Runnable() {
+				// if (e.getType() == TableModelEvent.INSERT) {
+				new Thread(new Runnable() {
 
-						public void run() {
-							try {
-								Thread.sleep(200);
-								new OnSwing(true) {
+					public void run() {
+						try {
+							Thread.sleep(200);
+							new OnSwing(true) {
 
-									protected void process() throws Exception {
-										resizeColumns();
-									}
+								protected void process() throws Exception {
+									resizeColumns();
+								}
 
-								}.run();
-							} catch (Exception ex) {
-								Manager.handle(ex);
-							}
+							}.run();
+						} catch (Exception ex) {
+							Manager.handle(ex);
 						}
+					}
 
-					}).start();
+				}).start();
 
-				}
+				// }
 			}
 		});
 	}
@@ -101,21 +102,32 @@ public class Table<L extends ListItem> extends JTable {
 
 	public void resizeColumns() {
 		int columnCount = getColumnCount();
-		for (int i = 0; i < columnCount; i++) {
-			DefaultTableColumnModel colModel = (DefaultTableColumnModel) getColumnModel();
-			TableColumn col = colModel.getColumn(i);
-			int width = 0;
 
-			TableCellRenderer renderer = getCellRenderer(0, i);
-			for (L li : tableModel.getAllData()) {
-				Component comp = renderer.getTableCellRendererComponent(this, li.getValue(i), false, false, 0, i);
-				width = Math.max(width, comp.getPreferredSize().width);
-			}
-			width += 12;
-			col.setMinWidth(width);
-			col.setPreferredWidth(width);
-			if (i != columnCount - 1) {
-				col.setMaxWidth(width);
+		DefaultTableColumnModel colModel = (DefaultTableColumnModel) getColumnModel();
+
+		int rowCount = getRowCount();
+		ArrayList<L> lstRows = new ArrayList<L>(rowCount);
+		for (int i = 0; i < rowCount; i++) {
+			lstRows.add(tableModel.getRow(convertRowIndexToModel(i)));
+		}
+
+		if (!lstRows.isEmpty()) {
+			for (int i = 0; i < columnCount; i++) {
+
+				TableColumn col = colModel.getColumn(i);
+				int width = 0;
+
+				TableCellRenderer renderer = getCellRenderer(0, i);
+				for (L li : lstRows) {
+					Component comp = renderer.getTableCellRendererComponent(this, li.getValue(i), false, false, 0, i);
+					width = Math.max(width, comp.getPreferredSize().width);
+				}
+				width += 12;
+				col.setMinWidth(width);
+				col.setPreferredWidth(width);
+				if (i != columnCount - 1) {
+					col.setMaxWidth(width);
+				}
 			}
 		}
 	}
