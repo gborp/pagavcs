@@ -24,8 +24,6 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNAnnotateHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNCopyClient;
-import org.tmatesoft.svn.core.wc.SVNCopySource;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNLogClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -106,14 +104,6 @@ public class Other implements Cancelable {
 
 	public boolean isCancel() {
 		return cancel;
-	}
-
-	public void copyMoveRename(String oldPath, String newPath, boolean copy) throws SVNException {
-		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNCopyClient copyClient = clientMgr.getCopyClient();
-		SVNCopySource[] source = new SVNCopySource[] { new SVNCopySource(SVNRevision.UNDEFINED, SVNRevision.UNDEFINED, new File(oldPath)) };
-		File dest = new File(newPath);
-		copyClient.doCopy(source, dest, !copy, true, true);
 	}
 
 	public void doSwitch(String wc, String toUrl, String toRevision) throws Exception {
