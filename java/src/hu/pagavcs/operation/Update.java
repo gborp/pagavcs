@@ -139,7 +139,7 @@ public class Update implements Cancelable {
 
 	public void setCancel(boolean cancel) throws Exception {
 		if (cancel) {
-			gui.addItem("", null, ContentStatus.CANCEL);
+			gui.addItem("", null, ContentStatus.CANCEL, -1);
 		}
 		this.cancel = cancel;
 	}

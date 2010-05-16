@@ -52,21 +52,21 @@ public class UpdateEventHandler implements ISVNEventHandler {
 
 			String fileName = event.getFile() != null ? event.getFile().getAbsolutePath() : null;
 			if (SVNEventAction.UPDATE_NONE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.NONE);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.NONE, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_ADD.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.ADDED);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.ADDED, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_DELETE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.DELETED);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.DELETED, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_EXISTS.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.EXISTS);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.EXISTS, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_EXTERNAL.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.EXTERNAL);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.EXTERNAL, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_REPLACE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.REPLACED);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.REPLACED, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_UPDATE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.UPDATE);
+				gui.addItem(fileName, updateContentStatus, ContentStatus.UPDATE, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_COMPLETED.equals(action)) {
-				gui.addItem(event.getFile() + " - Revision number: " + event.getRevision(), updateContentStatus, ContentStatus.COMPLETED);
+				gui.addItem(event.getFile() + " - Revision number: " + event.getRevision(), updateContentStatus, ContentStatus.COMPLETED, -1);
 			}
 
 			// TODO SVNEventAction.MERGE_COMPLETE
