@@ -224,7 +224,7 @@ public class FileStatusCache {
 			slot.lastModified = file.lastModified();
 			slot.fileSize = file.length();
 			if (file.isDirectory() && new File(file, ".svn").exists()) {
-				slot.status = STATUS.SVNED;
+				slot.status = STATUS.NORMAL;
 			} else {
 				slot.status = STATUS.NONE;
 			}
