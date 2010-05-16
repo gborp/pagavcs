@@ -6,6 +6,7 @@ import hu.pagavcs.bl.FileStatusCache.STATUS;
 import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Commit;
+import hu.pagavcs.operation.CopyMoveRename;
 import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.Log;
@@ -67,6 +68,7 @@ public class Communication {
 	private static final String  COMMAND_CLEANUP               = "cleanup";
 	private static final String  COMMAND_DELETE                = "delete";
 	private static final String  COMMAND_MERGE                 = "merge";
+	private static final String  COMMAND_COPYMOVERENAME        = "copymoverename";
 	private static final String  COMMAND_OTHER                 = "other";
 	private static final String  COMMAND_CHECKOUT              = "checkout";
 	private static final String  COMMAND_SETTINGS              = "settings";
@@ -307,6 +309,7 @@ public class Communication {
 			makeMenuItem(sb, "Unignore", "Unignore", "pagavcs-unignore", "", COMMAND_UNIGNORE);
 		}
 		if (hasSvned) {
+			makeMenuItem(sb, "Copy-move-rename", "Copy-move-rename", "pagavcs-rename", "", COMMAND_COPYMOVERENAME);
 			makeMenuItem(sb, "Delete", "Delete", "pagavcs-delete", "", COMMAND_DELETE);
 		}
 		if (hasSvned) {
@@ -401,6 +404,11 @@ public class Communication {
 					for (String path : lstArg) {
 						Cleanup cleanup = new Cleanup(path);
 						cleanup.execute();
+					}
+				} else if (COMMAND_COPYMOVERENAME.equals(command)) {
+					for (String path : lstArg) {
+						CopyMoveRename copyMoveReaname = new CopyMoveRename(path);
+						copyMoveReaname.execute();
 					}
 				} else if (COMMAND_DELETE.equals(command)) {
 					Delete delete = new Delete(lstArg);
