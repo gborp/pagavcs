@@ -1221,6 +1221,17 @@ public class CommitGui implements Working, Refreshable {
 					tblCommit.repaint();
 				}
 			}
+
+			int selectedCount = 0;
+			for (CommitListItem li : tblCommit.getModel().getAllData()) {
+				if (li.isSelected()) {
+					selectedCount++;
+				}
+			}
+
+			prgWorkinProgress.setStringPainted(true);
+			prgWorkinProgress.setString("Selected items: " + selectedCount);
+
 		}
 	}
 }
