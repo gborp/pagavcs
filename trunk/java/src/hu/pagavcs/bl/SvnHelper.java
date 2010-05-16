@@ -8,6 +8,7 @@ import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.UpdateEventHandler;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,6 +154,82 @@ public class SvnHelper {
 
 		} finally {
 			Manager.releaseBaseFile(wcFile);
+		}
+	}
+
+	public static void showChangesBetweenRevisions(Working working, String path, SVNRevision previousRevision, SVNRevision revision, ContentStatus contentStatus)
+	        throws Exception {
+
+		FileOutputStream outNewRevision = null;
+		FileOutputStream outOldRevision = null;
+		File fileNew = null;
+		File fileOld = null;
+		try {
+			working.workStarted();
+
+			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+
+			String fileName = path.substring(path.lastIndexOf('/') + 1);
+
+			String fileNameNew = "r" + revision.toString() + "-" + fileName;
+			String fileNameOld = "r" + previousRevision.toString() + "-" + fileName;
+			String tempPrefix = Manager.getTempDir();
+
+			fileNew = new File(tempPrefix + fileNameNew);
+			fileOld = new File(tempPrefix + fileNameOld);
+			fileNew.delete();
+			fileOld.delete();
+			outNewRevision = new FileOutputStream(tempPrefix + fileNameNew);
+			outOldRevision = new FileOutputStream(tempPrefix + fileNameOld);
+
+			// FIXME it doesn't work for DELETED currently
+			if (!contentStatus.equals(ContentStatus.DELETED)) {
+				wcClient.doGetFileContents(new File(path), revision, revision, false, outNewRevision);
+				if (!contentStatus.equals(ContentStatus.ADDED)) {
+					wcClient.doGetFileContents(new File(path), previousRevision, previousRevision, false, outOldRevision);
+				}
+			} else {
+				SVNURL svnUrl = Manager.getSvnUrlByFile(new File(path));
+				wcClient.doGetFileContents(svnUrl, previousRevision, previousRevision, false, outOldRevision);
+			}
+
+			fileNew.setReadOnly();
+			fileNew.deleteOnExit();
+			fileOld.setReadOnly();
+			fileOld.deleteOnExit();
+
+			ProcessBuilder processBuilder;
+			if (contentStatus.equals(ContentStatus.DELETED)) {
+				processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameOld);
+			} else if (contentStatus.equals(ContentStatus.ADDED)) {
+				processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameNew);
+			} else {
+				processBuilder = new ProcessBuilder("meld", "-L " + fileNameOld, tempPrefix + fileNameOld, "-L " + fileNameNew, tempPrefix + fileNameNew);
+			}
+			Process process = processBuilder.start();
+			working.workEnded();
+			process.waitFor();
+		} catch (Exception e) {
+			try {
+				working.workEnded();
+			} catch (Exception e1) {
+				Manager.handle(e1);
+			}
+			throw e;
+		} finally {
+			if (outNewRevision != null) {
+				outNewRevision.close();
+			}
+			if (outOldRevision != null) {
+				outOldRevision.close();
+			}
+			if (fileNew != null) {
+				fileNew.delete();
+			}
+			if (fileOld != null) {
+				fileOld.delete();
+			}
 		}
 	}
 

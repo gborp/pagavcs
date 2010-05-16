@@ -22,6 +22,9 @@ public class UpdateListItem implements ListItem {
 	private ContentStatus       status;
 	private String              path;
 	private UpdateContentStatus contentStatus;
+	// hidden columns
+	private long                previousRevision;
+	private ContentStatus       svnContentStatus;
 
 	public String[] getColumnNames() {
 		return new String[] { "Status", "Path" };
@@ -70,5 +73,21 @@ public class UpdateListItem implements ListItem {
 
 	public UpdateContentStatus getContentStatus() {
 		return contentStatus;
+	}
+
+	public void setPreviousRevision(long previousRevision) {
+		this.previousRevision = previousRevision;
+	}
+
+	public long getPreviousRevision() {
+		return previousRevision;
+	}
+
+	public void setSvnContentStatus(ContentStatus svnContentStatus) {
+		this.svnContentStatus = svnContentStatus;
+	}
+
+	public ContentStatus getSvnContentStatus() {
+		return svnContentStatus;
 	}
 }
