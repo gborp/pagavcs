@@ -18,6 +18,7 @@ import hu.pagavcs.operation.ResolveConflictUsingMine;
 import hu.pagavcs.operation.ResolveConflictUsingTheirs;
 import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Settings;
+import hu.pagavcs.operation.ShowChangesOperation;
 import hu.pagavcs.operation.Unignore;
 import hu.pagavcs.operation.Update;
 
@@ -62,6 +63,7 @@ public class Communication {
 	private static final String  COMMAND_UPDATE                = "update";
 	private static final String  COMMAND_LOG                   = "log";
 	private static final String  COMMAND_COMMIT                = "commit";
+	private static final String  COMMAND_SHOWLOCALCHANGES      = "showlocalchanges";
 	private static final String  COMMAND_IGNORE                = "ignore";
 	private static final String  COMMAND_UNIGNORE              = "unignore";
 	private static final String  COMMAND_REVERT                = "revert";
@@ -274,6 +276,10 @@ public class Communication {
 		boolean hasSvned = false;
 		boolean hasConflicted = false;
 		boolean hasNotConflicted = false;
+		boolean hasModified = false;
+		boolean hasNotModified = false;
+		boolean hasFile = false;
+		boolean hasDir = false;
 		for (String fileName : lstArg) {
 			File file = new File(fileName);
 			STATUS status = fileStatusCache.getStatus(file);
@@ -287,11 +293,26 @@ public class Communication {
 			} else {
 				hasNotConflicted = true;
 			}
+			if (status.equals(STATUS.MODIFIED)) {
+				hasModified = true;
+			} else {
+				hasNotModified = true;
+			}
+			if (file.isDirectory()) {
+				hasDir = true;
+			} else {
+				hasFile = true;
+			}
 		}
 
 		StringBuilder sb = new StringBuilder(512);
+		boolean showShowChanges = false;
+		if (hasSvned && !hasDir && hasFile && hasModified && !hasNotModified) {
+			makeMenuItem(sb, "Show changes", "Show local changes", "pagavcs-difficon", "", COMMAND_SHOWLOCALCHANGES);
+			showShowChanges = true;
+		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp", COMMAND_UPDATE);
+			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp" + (showShowChanges ? "s" : ""), COMMAND_UPDATE);
 		}
 		if (hasSvned) {
 			makeMenuItem(sb, "Commit", "Commit", "pagavcs-commit", "tp", COMMAND_COMMIT);
@@ -385,6 +406,9 @@ public class Communication {
 						Commit commit = new Commit(path);
 						commit.execute();
 					}
+				} else if (COMMAND_SHOWLOCALCHANGES.equals(command)) {
+					ShowChangesOperation showChanges = new ShowChangesOperation(lstArg);
+					showChanges.execute();
 				} else if (COMMAND_IGNORE.equals(command)) {
 					for (String path : lstArg) {
 						Ignore ignore = new Ignore(path);
