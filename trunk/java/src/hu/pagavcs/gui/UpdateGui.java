@@ -38,6 +38,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -155,10 +156,11 @@ public class UpdateGui implements Working {
 	}
 
 	public void setStatus(ContentStatus status) throws Exception {
-		addItem("", null, status);
+		addItem("", null, status, -1);
 	}
 
-	public void addItem(final String path, final UpdateContentStatus updateContentStatus, final ContentStatus status) throws Exception {
+	public void addItem(final String path, final UpdateContentStatus updateContentStatus, final ContentStatus status, final long previousRevision)
+	        throws Exception {
 
 		new OnSwing() {
 
@@ -200,6 +202,8 @@ public class UpdateGui implements Working {
 				li.setStatus(effectiveStatus);
 				li.setPath(path);
 				li.setContentStatus(updateContentStatus);
+				li.setPreviousRevision(previousRevision);
+				li.setSvnContentStatus(status);
 				quNewItems.add(li);
 				doRevalidateTable();
 
@@ -343,7 +347,6 @@ public class UpdateGui implements Working {
 		}
 	}
 
-	// TODO
 	private class ShowChanges extends ThreadAction {
 
 		public ShowChanges() {
@@ -352,7 +355,9 @@ public class UpdateGui implements Working {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			UpdateListItem li = getSelectedUpdateListItem();
-			SvnHelper.showChangesFromBase(UpdateGui.this, new File(li.getPath()));
+
+			SvnHelper.showChangesBetweenRevisions(UpdateGui.this, li.getPath(), SVNRevision.create(li.getPreviousRevision()), SVNRevision.WORKING, li
+			        .getSvnContentStatus());
 		}
 	}
 
@@ -422,6 +427,8 @@ public class UpdateGui implements Working {
 		private JPopupMenu ppCompleted;
 		private JPopupMenu ppConflicted;
 		private JPopupMenu ppUpdated;
+		private JPopupMenu ppDeleted;
+		private JPopupMenu ppDirectory;
 
 		public PopupupMouseListener() {
 			ppCompleted = new JPopupMenu();
@@ -432,13 +439,24 @@ public class UpdateGui implements Working {
 			ppUpdated.add(new CopyLineToClipboard());
 			ppUpdated.add(new CopyAllToClipboard());
 			ppUpdated.add(new ShowLog());
-			// TODO ShowChanges
-			// ppUpdated.add(new ShowChanges());
+			ppUpdated.add(new ShowChanges());
+
+			// FIXME it doesn't work for DELETED currently
+			ppDeleted = new JPopupMenu();
+			ppDeleted.add(new CopyLineToClipboard());
+			ppDeleted.add(new CopyAllToClipboard());
+			ppDeleted.add(new ShowLog());
+
+			ppDirectory = new JPopupMenu();
+			ppDirectory.add(new CopyLineToClipboard());
+			ppDirectory.add(new CopyAllToClipboard());
+			ppDirectory.add(new ShowLog());
 
 			ppConflicted = new JPopupMenu();
 			ppConflicted.add(new CopyLineToClipboard());
 			ppConflicted.add(new CopyAllToClipboard());
 			ppConflicted.add(new ShowLog());
+			ppConflicted.add(new ShowChanges());
 			ppConflicted.add(new ResolveConflictUsingTheirsAction());
 			ppConflicted.add(new ResolveConflictUsingMineAction());
 			ppConflicted.add(new ResolveConflictAction());
@@ -455,14 +473,21 @@ public class UpdateGui implements Working {
 			UpdateListItem selected = getSelectedUpdateListItem();
 			ContentStatus status = selected.getStatus();
 
-			if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
-				ppVisible = ppConflicted;
-			} else if (ContentStatus.ADDED.equals(status) || ContentStatus.DELETED.equals(status) || ContentStatus.EXISTS.equals(status)
-			        || ContentStatus.EXTERNAL.equals(status) || ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status)
-			        || ContentStatus.UPDATE.equals(status) || ContentStatus.MERGED.equals(status)) {
-				ppVisible = ppUpdated;
+			File selectedFile = new File(selected.getPath());
+			if (selectedFile.exists() && selectedFile.isDirectory()) {
+				ppVisible = ppDirectory;
 			} else {
-				ppVisible = ppCompleted;
+				if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
+					ppVisible = ppConflicted;
+				} else if (ContentStatus.ADDED.equals(status) || ContentStatus.EXISTS.equals(status) || ContentStatus.EXTERNAL.equals(status)
+				        || ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status) || ContentStatus.UPDATE.equals(status)
+				        || ContentStatus.MERGED.equals(status)) {
+					ppVisible = ppUpdated;
+				} else if (ContentStatus.DELETED.equals(status)) {
+					ppVisible = ppDeleted;
+				} else {
+					ppVisible = ppCompleted;
+				}
 			}
 			ppVisible.setInvoker(tblUpdate);
 			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
