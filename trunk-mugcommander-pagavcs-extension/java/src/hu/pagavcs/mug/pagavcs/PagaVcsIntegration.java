@@ -89,7 +89,7 @@ public class PagaVcsIntegration {
 			initOnePagaVcsIcon("actions/pagavcs-createpatch", actionWidth, actionHeight);
 			initOnePagaVcsIcon("actions/pagavcs-dbus", actionWidth, actionHeight);
 			initOnePagaVcsIcon("actions/pagavcs-delete", actionWidth, actionHeight);
-			initOnePagaVcsIcon("actions/pagavcs-diff", actionWidth, actionHeight);
+			initOnePagaVcsIcon("actions/pagavcs-difficon", actionWidth, actionHeight);
 			initOnePagaVcsIcon("actions/pagavcs-drive", actionWidth, actionHeight);
 			initOnePagaVcsIcon("actions/pagavcs-emblems", actionWidth, actionHeight);
 			initOnePagaVcsIcon("actions/pagavcs-export", actionWidth, actionHeight);
