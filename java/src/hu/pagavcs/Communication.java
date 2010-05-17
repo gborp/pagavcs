@@ -34,6 +34,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -266,6 +267,10 @@ public class Communication {
 					}
 				}
 
+			} catch (SocketTimeoutException ex) {
+				shutdown = true;
+			} catch (IOException ex) {
+				shutdown = true;
 			} catch (Exception ex) {
 				Manager.handle(ex);
 			}
