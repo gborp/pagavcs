@@ -2,6 +2,7 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.gui.platform.ListItem;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.tmatesoft.svn.core.SVNLogEntryPath;
@@ -24,7 +25,7 @@ public class LogListItem implements ListItem {
 	private long                         revision;
 	private String                       actions;
 	private String                       author;
-	private String                       date;
+	private Date                         date;
 	private String                       message;
 	private Map<String, SVNLogEntryPath> mapChanges;
 
@@ -40,7 +41,7 @@ public class LogListItem implements ListItem {
 		} else if (index == 2) {
 			return getAuthor();
 		} else if (index == 3) {
-			return getDate();
+			return getDateAsString();
 		} else if (index == 4) {
 			return getMessage();
 		}
@@ -81,11 +82,15 @@ public class LogListItem implements ListItem {
 		this.author = author;
 	}
 
-	public String getDate() {
+	public Date getDate() {
 		return this.date;
 	}
 
-	public void setDate(String date) {
+	public String getDateAsString() {
+		return this.date.toLocaleString();
+	}
+
+	public void setDate(Date date) {
 		this.date = date;
 	}
 
