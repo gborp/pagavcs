@@ -27,10 +27,14 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -98,7 +102,7 @@ public class LogGui implements Working {
 	private JDateChooser                            calTo;
 	private EditField                               sfFilter;
 	private boolean                                 shuttingDown;
-	private TableRowSorter<TableModel<LogListItem>> sorterLog;
+	private TableRowSorter<TableModel<LogListItem>> filterLog;
 	private List<SVNURL>                            lstLogRoot;
 	private SVNURL                                  svnRepoRootUrl;
 	private Frame                                   frame;
@@ -115,8 +119,8 @@ public class LogGui implements Working {
 		tblLog = new Table<LogListItem>(tmdlLog);
 		tblLog.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		tblLog.addMouseListener(new PopupupMouseListener());
-		sorterLog = new TableRowSorter<TableModel<LogListItem>>(tmdlLog);
-		sorterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
+		filterLog = new TableRowSorter<TableModel<LogListItem>>(tmdlLog);
+		filterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
 
 			private boolean nullSafeContains(String where, String what) {
 				if (where == null) {
@@ -126,18 +130,34 @@ public class LogGui implements Working {
 			}
 
 			public boolean include(javax.swing.RowFilter.Entry<? extends TableModel<LogListItem>, ? extends Integer> entry) {
-				String filter = sfFilter.getText();
-				if (filter.isEmpty()) {
+				String textFilter = sfFilter.getText();
+				Date dateFromFilter = calFrom.getDate();
+				Date dateToFilter = calTo.getDate();
+
+				if (textFilter.isEmpty() && dateFromFilter == null && dateToFilter == null) {
 					return true;
 				}
+
 				LogListItem row = entry.getModel().getRow(entry.getIdentifier());
 
-				return nullSafeContains(row.getMessage(), filter) || nullSafeContains(row.getAuthor(), filter)
-				        || nullSafeContains(Long.toString(row.getRevision()), filter);
+				if (!textFilter.isEmpty() && !nullSafeContains(row.getMessage(), textFilter) && !nullSafeContains(row.getAuthor(), textFilter)
+				        && !nullSafeContains(Long.toString(row.getRevision()), textFilter)) {
+					return false;
+				}
+
+				if (dateFromFilter != null && row.getDate().compareTo(dateFromFilter) <= 0) {
+					return false;
+				}
+
+				if (dateToFilter != null && row.getDate().compareTo(dateToFilter) >= 0) {
+					return false;
+				}
+
+				return true;
 			}
 
 		});
-		tblLog.setRowSorter(sorterLog);
+		tblLog.setRowSorter(filterLog);
 		new NullCellRenderer<LogListItem>(tblLog);
 		tblLog.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
@@ -173,26 +193,83 @@ public class LogGui implements Working {
 		}
 
 		calFrom = new JDateChooser();
-		calFrom.setEnabled(false);
+		calFrom.getCalendarButton().setToolTipText("Right click to clear");
+		calFrom.getCalendarButton().addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showPopup(e);
+				}
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showPopup(e);
+				}
+			}
+
+			public void showPopup(MouseEvent e) {
+				calFrom.setDate(null);
+				filterChanged();
+			}
+
+		});
+		calFrom.addPropertyChangeListener("date", new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent evt) {
+				filterChanged();
+			}
+		});
 		calTo = new JDateChooser();
-		calTo.setEnabled(false);
+		calTo.addFocusListener(new FocusListener() {
+
+			public void focusLost(FocusEvent e) {
+				filterChanged();
+			}
+
+			public void focusGained(FocusEvent e) {}
+		});
+		calTo.getCalendarButton().setToolTipText("Right click to clear");
+		calTo.getCalendarButton().addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showPopup(e);
+				}
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showPopup(e);
+				}
+			}
+
+			public void showPopup(MouseEvent e) {
+				calTo.setDate(null);
+				filterChanged();
+			}
+
+		});
+		calTo.addPropertyChangeListener("date", new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent evt) {
+				filterChanged();
+			}
+		});
 		sfFilter = new EditField(20);
 		sfFilter.setToolTipText("Type your filter text here");
 		sfFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 			public void changedUpdate(DocumentEvent e) {
-				sorterLog.sort();
-				tblLog.resizeColumns();
+				filterChanged();
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-				sorterLog.sort();
-				tblLog.resizeColumns();
+				filterChanged();
 			}
 
 			public void insertUpdate(DocumentEvent e) {
-				sorterLog.sort();
-				tblLog.resizeColumns();
+				filterChanged();
 			}
 		});
 		lblUrl = new Label();
@@ -245,6 +322,11 @@ public class LogGui implements Working {
 		});
 	}
 
+	private void filterChanged() {
+		filterLog.sort();
+		tblLog.resizeColumns();
+	}
+
 	public void setUrlLabel(String urlLabel) {
 		lblUrl.setText(urlLabel);
 	}
@@ -269,7 +351,7 @@ public class LogGui implements Working {
 		LogListItem li = new LogListItem();
 		li.setRevision(revision);
 		li.setAuthor(author);
-		li.setDate(date.toLocaleString());
+		li.setDate(date);
 		li.setMessage(message);
 		li.setChanges(mapChanges);
 
@@ -705,8 +787,9 @@ public class LogGui implements Working {
 			if (revisionNumber > maxRevisionNumber) {
 				maxRevisionNumber = revisionNumber;
 			}
-			if (li.getDate().length() > maxDateLength) {
-				maxDateLength = li.getDate().length();
+
+			if (li.getDateAsString().length() > maxDateLength) {
+				maxDateLength = li.getDateAsString().length();
 			}
 		}
 		int revisionPadding = 10 - Long.toString(maxRevisionNumber).length();
@@ -716,7 +799,7 @@ public class LogGui implements Working {
 			message = message.replace('\n', ' ');
 			String revision = Long.toString(li.getRevision());
 			revision = "          ".substring(revisionPadding + revision.length()) + revision;
-			String date = li.getDate() + "          ".substring(datePadding + li.getDate().length());
+			String date = li.getDateAsString() + "          ".substring(datePadding + li.getDateAsString().length());
 
 			result.append(revision + " " + li.getActions() + " " + li.getAuthor() + " " + date + " " + message + "\n");
 		}
