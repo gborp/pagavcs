@@ -24,6 +24,7 @@ import hu.pagavcs.operation.Update;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,6 +34,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,14 +135,35 @@ public class Communication {
 	}
 
 	private void outCommEmblem(Socket socket, String arg) throws IOException {
-		String[] args = arg.split(" ");
 
-		String name = args[0];
-		Integer width = Integer.valueOf(args[1]);
-		Integer height = Integer.valueOf(args[2]);
+		String name = null;
+		Integer width = null;
+		Integer height = null;
+		ImageIcon imageIcon = null;
 
-		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(Communication.class.getResource("/hu/pagavcs/resources/" + name + ".png")));
-		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+		try {
+			String[] args = arg.split(" ");
+
+			name = args[0];
+			width = Integer.valueOf(args[1]);
+			height = Integer.valueOf(args[2]);
+
+			URL url = Communication.class.getResource("/hu/pagavcs/resources/" + name + ".png");
+			if (url != null) {
+				ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(url));
+				imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+			}
+		} catch (Throwable t) {}
+
+		if (imageIcon == null) {
+			if (width == null) {
+				width = 8;
+			}
+			if (height == null) {
+				height = 8;
+			}
+			imageIcon = new ImageIcon(new BufferedImage(width, height, BufferedImage.TRANSLUCENT));
+		}
 
 		ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
 		objOut.writeObject(imageIcon);
