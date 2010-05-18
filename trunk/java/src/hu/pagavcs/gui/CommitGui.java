@@ -832,11 +832,10 @@ public class CommitGui implements Working, Refreshable {
 
 		private void showPopup(MouseEvent e) {
 			Point p = new Point(e.getX(), e.getY());
-			int rowAtPoint = tblCommit.rowAtPoint(p);
-			if (rowAtPoint == -1) {
+			int row = tblCommit.rowAtPoint(p);
+			if (row == -1) {
 				return;
 			}
-			int row = tblCommit.convertRowIndexToModel(rowAtPoint);
 
 			boolean isSelected = false;
 			for (int rowLi : tblCommit.getSelectedRows()) {
@@ -915,11 +914,10 @@ public class CommitGui implements Working, Refreshable {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				Point p = new Point(e.getX(), e.getY());
-				int rowAtPoint = tblCommit.rowAtPoint(p);
-				if (rowAtPoint == -1) {
+				int row = tblCommit.rowAtPoint(p);
+				if (row == -1) {
 					return;
 				}
-				int row = tblCommit.convertRowIndexToModel(rowAtPoint);
 				CommitListItem selected = tmdlCommit.getRow(row);
 				ContentStatus status = selected.getStatus();
 				// ContentStatus propertyStatus = selected.getPropertyStatus();

@@ -737,7 +737,7 @@ public class LogGui implements Working {
 			}
 
 			tblDetailLog.getSelectionModel().setSelectionInterval(row, row);
-			LogDetailListItem selected = tmdlLogDetail.getRow(tblDetailLog.convertRowIndexToModel(row));
+			LogDetailListItem selected = tmdlLogDetail.getRow(row);
 
 			if (selected.getAction().equals(ContentStatus.MODIFIED)) {
 				JPopupMenu ppVisible = ppModified;
@@ -877,10 +877,9 @@ public class LogGui implements Working {
 				return;
 			}
 
-			int index = tblLog.convertRowIndexToModel(row);
-			LogListItem selected = tmdlLog.getRow(index);
+			LogListItem selected = tmdlLog.getRow(row);
 			if (!getSelectedLogItems().contains(selected)) {
-				tblLog.getSelectionModel().setSelectionInterval(index, index);
+				tblLog.getSelectionModel().setSelectionInterval(row, row);
 			}
 
 			JPopupMenu ppVisible = pp;
