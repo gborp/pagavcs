@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
 Build-Depends: debhelper (>= 5), sun-java6-jdk | default-jdk
-Standards-Version: 3.8.3
+Standards-Version: 3.8.4
 Homepage: http://pagavcs.googlecode.com
 
 Package: pagavcs

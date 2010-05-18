@@ -468,8 +468,7 @@ public class UpdateGui implements Working {
 			if (row == -1) {
 				return;
 			}
-			int rowIndex = tblUpdate.convertRowIndexToModel(row);
-			tblUpdate.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+			tblUpdate.getSelectionModel().setSelectionInterval(row, row);
 			UpdateListItem selected = getSelectedUpdateListItem();
 			ContentStatus status = selected.getStatus();
 
