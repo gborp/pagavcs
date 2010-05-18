@@ -44,6 +44,7 @@ import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -53,6 +54,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
@@ -96,15 +99,8 @@ public class CommitGui implements Working, Refreshable {
 	private JComboBox                           cboMessage;
 	private int                                 logMinSize;
 	private Label                               lblWorkingCopy;
-	private JButton                             btnSelectAllNone;
-	private JButton                             btnSelectNonVersioned;
-	private JButton                             btnSelectAdded;
-	private JButton                             btnSelectDeleted;
-	private JButton                             btnSelectModified;
-	private JButton                             btnSelectFiles;
-	private JButton                             btnSelectDirectories;
+	private JCheckBox                           btnSelectAllNone;
 	private JButton                             btnCreatePatch;
-	private JButton                             btnSelectDeselectSelected;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
@@ -118,16 +114,13 @@ public class CommitGui implements Working, Refreshable {
 		tblCommit.addMouseListener(new PopupupMouseListener());
 		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(tmdlCommit));
 		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		tblCommit.addKeyListener(new KeyAdapter() {
+		tblCommit.addKeyListener(new SelectDeselectSelectedKeyListener());
 
-			public void keyTyped(KeyEvent e) {
-				if (e.getKeyChar() == ' ') {
-					btnSelectDeselectSelected.doClick();
-				}
-			}
+		SelectDeselectListener selectDeselectListener = new SelectDeselectListener();
+		tblCommit.getModel().addTableModelListener(selectDeselectListener);
 
-		});
-		tblCommit.getModel().addTableModelListener(new SelectDeselectListener());
+		tblCommit.getSelectionModel().addListSelectionListener(selectDeselectListener);
+
 		new StatusCellRendererForCommitListItem(tblCommit);
 		JScrollPane spCommitList = new JScrollPane(tblCommit);
 
@@ -172,25 +165,11 @@ public class CommitGui implements Working, Refreshable {
 		btnRefresh = new JButton(new RefreshAction());
 		btnRefresh.setEnabled(false);
 
-		btnSelectAllNone = new JButton(new SelectAllNoneAction());
-		btnSelectNonVersioned = new JButton(new SelectNonVersionedAction());
-		btnSelectAdded = new JButton(new SelectAddedAction());
-		btnSelectDeleted = new JButton(new SelectDeletedAction());
-		btnSelectModified = new JButton(new SelectModifiedAction());
-		btnSelectFiles = new JButton(new SelectFilesAction());
-		btnSelectDirectories = new JButton(new SelectDirectoriesAction());
-		btnSelectDeselectSelected = new JButton(new SelectDeselectSelectedAction());
+		btnSelectAllNone = new JCheckBox(new SelectAllNoneAction());
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p", "p,4dlu,p"));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p", "p"));
 		pnlCheck.add(new JLabel("Check:"), cc.xy(1, 1));
 		pnlCheck.add(btnSelectAllNone, cc.xy(3, 1));
-		pnlCheck.add(btnSelectNonVersioned, cc.xy(5, 1));
-		pnlCheck.add(btnSelectAdded, cc.xy(7, 1));
-		pnlCheck.add(btnSelectDeleted, cc.xy(9, 1));
-		pnlCheck.add(btnSelectModified, cc.xy(3, 3));
-		pnlCheck.add(btnSelectFiles, cc.xy(5, 3));
-		pnlCheck.add(btnSelectDirectories, cc.xy(7, 3));
-		pnlCheck.add(btnSelectDeselectSelected, cc.xy(9, 3));
 
 		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
@@ -288,7 +267,8 @@ public class CommitGui implements Working, Refreshable {
 					}
 
 					workEnded();
-					refreshSelectButtons();
+
+					btnSelectAllNone.setEnabled(true);
 
 					prgWorkinProgress.setIndeterminate(false);
 					btnStop.setEnabled(false);
@@ -304,12 +284,6 @@ public class CommitGui implements Working, Refreshable {
 					tblCommit.showMessage("Working...", Manager.ICON_INFORMATION);
 
 					btnSelectAllNone.setEnabled(false);
-					btnSelectNonVersioned.setEnabled(false);
-					btnSelectAdded.setEnabled(false);
-					btnSelectDeleted.setEnabled(false);
-					btnSelectModified.setEnabled(false);
-					btnSelectFiles.setEnabled(false);
-					btnSelectDirectories.setEnabled(false);
 
 					mapDeletedHiddenFiles = new HashMap<File, List<CommitListItem>>();
 
@@ -359,16 +333,36 @@ public class CommitGui implements Working, Refreshable {
 
 			protected void process() throws Exception {
 				workStarted();
-				tmdlCommit.clear();
 				btnStop.setEnabled(true);
 				btnCommit.setEnabled(false);
 				btnRefresh.setEnabled(false);
+
+				final HashMap<File, Boolean> mapOldSelectionState = new HashMap<File, Boolean>();
+				for (CommitListItem li : tmdlCommit.getAllData()) {
+					mapOldSelectionState.put(li.getPath(), li.isSelected());
+				}
+
+				tmdlCommit.clear();
+
 				new Thread(new Runnable() {
 
 					public void run() {
 						try {
 							commit.refresh();
 							workEnded();
+
+							new OnSwing() {
+
+								protected void process() throws Exception {
+									for (CommitListItem li : tmdlCommit.getAllData()) {
+										Boolean oldSelectionState = mapOldSelectionState.get(li.getPath());
+										if (oldSelectionState != null) {
+											li.setSelected(oldSelectionState);
+										}
+									}
+									tblCommit.repaint();
+								}
+							}.run();
 						} catch (Exception e) {
 							Manager.handle(e);
 						}
@@ -378,48 +372,6 @@ public class CommitGui implements Working, Refreshable {
 
 		}.run();
 
-	}
-
-	private void refreshSelectButtons() {
-
-		List<CommitListItem> list = tmdlCommit.getAllData();
-
-		boolean hasNonVersioned = false;
-		boolean hasAdded = false;
-		boolean hasDeleted = false;
-		boolean hasModified = false;
-		boolean hasFiles = false;
-		boolean hasDirectories = false;
-
-		for (CommitListItem li : list) {
-			ContentStatus contentStatus = li.getStatus();
-			File file = li.getPath();
-
-			if (contentStatus.equals(ContentStatus.UNVERSIONED)) {
-				hasNonVersioned = true;
-			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				hasAdded = true;
-			} else if (contentStatus.equals(ContentStatus.DELETED)) {
-				hasDeleted = true;
-			} else if (contentStatus.equals(ContentStatus.MODIFIED)) {
-				hasModified = true;
-			}
-
-			if (file.isFile()) {
-				hasFiles = true;
-			} else if (file.isDirectory()) {
-				hasDirectories = true;
-			}
-
-		}
-
-		btnSelectAllNone.setEnabled(true);
-		btnSelectNonVersioned.setEnabled(hasNonVersioned);
-		btnSelectAdded.setEnabled(hasAdded);
-		btnSelectDeleted.setEnabled(hasDeleted);
-		btnSelectModified.setEnabled(hasModified);
-		btnSelectFiles.setEnabled(hasFiles);
-		btnSelectDirectories.setEnabled(hasDirectories);
 	}
 
 	private boolean isParentDeleted(CommitListItem li) {
@@ -507,9 +459,19 @@ public class CommitGui implements Working, Refreshable {
 	 * @return Creates a new list of select list items
 	 */
 	private List<CommitListItem> getSelectedItems() {
-		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>();
-		for (int row : tblCommit.getSelectedRows()) {
+		int[] selectedRows = tblCommit.getSelectedRows();
+		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>(selectedRows.length);
+		for (int row : selectedRows) {
 			lstResult.add(tmdlCommit.getRow(tblCommit.convertRowIndexToModel(row)));
+		}
+		return lstResult;
+	}
+
+	private List<Integer> getSelectedItemIndeces() {
+		int[] selectedRows = tblCommit.getSelectedRows();
+		ArrayList<Integer> lstResult = new ArrayList<Integer>(selectedRows.length);
+		for (int row : selectedRows) {
+			lstResult.add(tblCommit.convertRowIndexToModel(row));
 		}
 		return lstResult;
 	}
@@ -676,6 +638,7 @@ public class CommitGui implements Working, Refreshable {
 			}
 
 			for (CommitListItem li : getSelectedItems()) {
+				li.setSelected(true);
 				commit.add(li.getPath(), addRecursively);
 			}
 			refresh();
@@ -712,6 +675,7 @@ public class CommitGui implements Working, Refreshable {
 		public void actionProcess(ActionEvent e) throws Exception {
 			workStarted();
 			for (CommitListItem li : getSelectedItems()) {
+				li.setSelected(true);
 				commit.delete(li.getPath());
 				// changeToDeleted(li.getPath());
 			}
@@ -751,6 +715,7 @@ public class CommitGui implements Working, Refreshable {
 			});
 
 			for (CommitListItem li : lstFiles) {
+				li.setSelected(false);
 				commit.revertChanges(li.getPath());
 			}
 			refresh();
@@ -951,35 +916,20 @@ public class CommitGui implements Working, Refreshable {
 		}
 	}
 
-	private abstract class AbstractSelectAction extends ThreadAction {
+	private class SelectAllNoneAction extends ThreadAction {
 
-		private boolean hasSelected;
-
-		public AbstractSelectAction(String string) {
-			super(string);
+		public SelectAllNoneAction() {
+			super("Select / deselect all");
 		}
-
-		public boolean hasSelected() {
-			return hasSelected;
-		}
-
-		public abstract boolean doSelect(CommitListItem li);
-
-		public abstract boolean doUnSelect(CommitListItem li);
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			hasSelected = false;
-			for (CommitListItem li : tmdlCommit.getAllData()) {
-				if (li.isSelected()) {
-					hasSelected = true;
-					break;
-				}
-			}
+
+			boolean selected = btnSelectAllNone.isSelected();
 
 			for (CommitListItem li : tmdlCommit.getAllData()) {
-				if (doSelect(li)) {
+				if (selected) {
 					li.setSelected(true);
-				} else if (doUnSelect(li)) {
+				} else {
 					li.setSelected(false);
 				}
 			}
@@ -990,155 +940,33 @@ public class CommitGui implements Working, Refreshable {
 				}
 
 			}.run();
-
 		}
+
 	}
 
-	private class SelectAllNoneAction extends AbstractSelectAction {
+	private class SelectDeselectSelectedKeyListener extends KeyAdapter {
 
-		public SelectAllNoneAction() {
-			super("-+All");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			if (!hasSelected()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			if (hasSelected()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-	}
-
-	private class SelectNonVersionedAction extends AbstractSelectAction {
-
-		public SelectNonVersionedAction() {
-			super("+Non-versioned");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return li.getStatus().equals(ContentStatus.UNVERSIONED);
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-	}
-
-	private class SelectAddedAction extends AbstractSelectAction {
-
-		public SelectAddedAction() {
-			super("+Added");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return li.getStatus().equals(ContentStatus.ADDED);
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-	}
-
-	private class SelectDeletedAction extends AbstractSelectAction {
-
-		public SelectDeletedAction() {
-			super("+Deleted");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return li.getStatus().equals(ContentStatus.DELETED);
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-	}
-
-	private class SelectModifiedAction extends AbstractSelectAction {
-
-		public SelectModifiedAction() {
-			super("+Modified");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return li.getStatus().equals(ContentStatus.MODIFIED);
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-	}
-
-	private class SelectFilesAction extends AbstractSelectAction {
-
-		public SelectFilesAction() {
-			super("+Files");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return li.getPath().isFile();
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-	}
-
-	private class SelectDirectoriesAction extends AbstractSelectAction {
-
-		public SelectDirectoriesAction() {
-			super("+Dirs");
-		}
-
-		public boolean doSelect(CommitListItem li) {
-			return li.getPath().isDirectory();
-		}
-
-		public boolean doUnSelect(CommitListItem li) {
-			return false;
-		}
-	}
-
-	private class SelectDeselectSelectedAction extends ThreadAction {
-
-		public SelectDeselectSelectedAction() {
-			super("-+Selected");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-
-			boolean hasSelected = false;
-			for (CommitListItem li : getSelectedItems()) {
-				if (li.isSelected()) {
-					hasSelected = true;
-					break;
+		public void keyTyped(KeyEvent e) {
+			if (e.getKeyChar() == ' ') {
+				boolean hasSelected = false;
+				for (CommitListItem li : getSelectedItems()) {
+					if (li.isSelected()) {
+						hasSelected = true;
+						break;
+					}
 				}
-			}
-			boolean selectThem;
-			if (hasSelected) {
-				selectThem = false;
-			} else {
-				selectThem = true;
-			}
-			for (CommitListItem li : getSelectedItems()) {
-				li.setSelected(selectThem);
-			}
-
-			new OnSwing() {
-
-				protected void process() throws Exception {
-					tblCommit.repaint();
+				boolean selectThem;
+				if (hasSelected) {
+					selectThem = false;
+				} else {
+					selectThem = true;
+				}
+				for (CommitListItem li : getSelectedItems()) {
+					li.setSelected(selectThem);
 				}
 
-			}.run();
+				tblCommit.repaint();
+			}
 		}
 
 	}
@@ -1165,7 +993,16 @@ public class CommitGui implements Working, Refreshable {
 		}
 	}
 
-	private class SelectDeselectListener implements TableModelListener {
+	private class SelectDeselectListener implements TableModelListener, ListSelectionListener {
+
+		private List<Integer> lstLastSelectedItems;
+		private boolean       suppressListSelectionListener;
+
+		public void valueChanged(ListSelectionEvent e) {
+			if (!e.getValueIsAdjusting() && !suppressListSelectionListener) {
+				lstLastSelectedItems = getSelectedItemIndeces();
+			}
+		}
 
 		private boolean checkAddedSelected(CommitListItem li) {
 			File parent = li.getPath().getParentFile();
@@ -1227,7 +1064,21 @@ public class CommitGui implements Working, Refreshable {
 		}
 
 		public void tableChanged(TableModelEvent e) {
+
 			if (e.getColumn() == 0) {
+				suppressListSelectionListener = true;
+
+				if (lstLastSelectedItems != null) {
+
+					boolean newSelectionState = tmdlCommit.getRow(tblCommit.convertRowIndexToModel(tblCommit.getSelectedRow())).isSelected();
+
+					for (Integer index : lstLastSelectedItems) {
+						CommitListItem li = tmdlCommit.getRow(index);
+						li.setSelected(newSelectionState);
+						tblCommit.getSelectionModel().addSelectionInterval(index, index);
+					}
+					tblCommit.repaint();
+				}
 
 				boolean changed = false;
 				for (CommitListItem li : getSelectedItems()) {
@@ -1252,7 +1103,7 @@ public class CommitGui implements Working, Refreshable {
 
 			prgWorkinProgress.setStringPainted(true);
 			prgWorkinProgress.setString("Selected items: " + selectedCount);
-
+			suppressListSelectionListener = false;
 		}
 	}
 }
