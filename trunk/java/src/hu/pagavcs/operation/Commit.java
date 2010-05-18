@@ -218,10 +218,11 @@ public class Commit {
 		SvnHelper.showPropertyChangesFromBase(gui, wcFile);
 	}
 
-	public void add(File wcFile) throws SVNException {
+	public void add(File wcFile, boolean addRecursively) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		SVNWCClient wcClient = mgrSvn.getWCClient();
-		wcClient.doAdd(wcFile, true, false, true, SVNDepth.EMPTY, false, false, true);
+		SVNDepth svnDepth = addRecursively ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+		wcClient.doAdd(wcFile, true, false, true, svnDepth, false, false, true);
 		Manager.invalidate(wcFile);
 	}
 

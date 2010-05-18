@@ -47,6 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -579,7 +580,7 @@ public class CommitGui implements Working, Refreshable {
 
 					if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
 						// auto-add unversioned items
-						commit.add(li.getPath());
+						commit.add(li.getPath(), false);
 					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
 						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
 						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
@@ -652,8 +653,30 @@ public class CommitGui implements Working, Refreshable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			workStarted();
+
+			boolean hasDirectory = false;
 			for (CommitListItem li : getSelectedItems()) {
-				commit.add(li.getPath());
+				if (li.getPath().isDirectory()) {
+					hasDirectory = true;
+					break;
+				}
+			}
+
+			boolean addRecursively = false;
+			if (hasDirectory) {
+				int answer = JOptionPane.showConfirmDialog(frame, "Do you want to add recursively?");
+				if (answer == JOptionPane.CANCEL_OPTION) {
+					workEnded();
+					return;
+				} else {
+					if (answer == JOptionPane.YES_OPTION) {
+						addRecursively = true;
+					}
+				}
+			}
+
+			for (CommitListItem li : getSelectedItems()) {
+				commit.add(li.getPath(), addRecursively);
 			}
 			refresh();
 			workEnded();
