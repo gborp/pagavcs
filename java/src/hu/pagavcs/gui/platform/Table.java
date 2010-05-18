@@ -145,10 +145,8 @@ public class Table<L extends ListItem> extends JTable {
 		if (rowIndex == -1 || colIndex == -1) {
 			return null;
 		}
-		int realRowIndex = convertRowIndexToModel(rowIndex);
-		int realColumnIndex = convertColumnIndexToModel(colIndex);
 
-		return tableModel.getCellToolTip(realColumnIndex, realRowIndex);
+		return tableModel.getCellToolTip(colIndex, rowIndex);
 	}
 
 	protected JTableHeader createDefaultTableHeader() {
