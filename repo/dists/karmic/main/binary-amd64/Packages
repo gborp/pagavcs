@@ -1,0 +1,89 @@
+Package: mugcommander
+Version: 1.0.3
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 4592
+Depends: sun-java6-jre | default-jre
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/m/mugcommander/mugcommander_1.0.3_all.deb
+Size: 4219638
+SHA256: 5731b98e5bc8faa3eade6f3f9d029904e6db6ff83a5324b7bbf50cdf3ba6e3a6
+SHA1: c2cbb67ea186b3c17cdf54dcdb7515fac2bde3ce
+MD5sum: 2501ff84ddfefdb2a69489bed6261327
+Description: File Browser
+ Total Commander styled file browser, forked from the muCommander
+
+Package: mugcommander-bonjour-extensions
+Version: 1.0.1
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 12
+Depends: sun-java6-jre | default-jre, mugcommander (>= 1.0.3)
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/m/mugcommander-bonjour-extensions/mugcommander-bonjour-extensions_1.0.1_all.deb
+Size: 1232
+SHA256: 0bb63cc6d82666c9912d3419aadf7df582c76dcea2b5cfdc1f4702e98e9f72cb
+SHA1: b42c124d92fe4b386ae6d7d37f99c2fbd6093f97
+MD5sum: b1095a3ddfae00ee2910b911db42225f
+Description: Bonjour extension for mugCommander
+ It provides the ability to interact with Bonjour from mugCommander
+ It's written in Java.
+
+Package: mugcommander-gnome-extensions
+Version: 1.0.0
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 24
+Depends: sun-java6-jre | default-jre, mugcommander (>= 1.0.3), xdg-utils, gedit, meld
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/m/mugcommander-gnome-extensions/mugcommander-gnome-extensions_1.0.0_all.deb
+Size: 9288
+SHA256: d3fb774576b07409625ba893f7e6909c4746d1d55231aeaf122c16b2d31e819a
+SHA1: 912cc1d527819df012d69940e5057a9864043d89
+MD5sum: 99c6fc3fce0178578e7d2eed1421f4fa
+Description: PagaVCS extension for mugCommander
+ It provides the ability to interact with Gnome from mugCommander
+ It's written in Java.
+
+Package: mugcommander-pagavcs-extensions
+Version: 1.0.2
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 28
+Depends: sun-java6-jre | default-jre, pagavcs (>= 1.4.8), mugcommander (>= 1.0.1)
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/m/mugcommander-pagavcs-extensions/mugcommander-pagavcs-extensions_1.0.2_all.deb
+Size: 12526
+SHA256: 66f5eac335f7b0fef9848acb34e9d3350c677fc08b40c229525d23976c97e8e8
+SHA1: 230d70f66f5500bf12ff321705e9ab9ab10a6553
+MD5sum: e210943d12c500ffc686bd911ffa0f4d
+Description: PagaVCS extension for mugCommander
+ It provides the ability to interact with PagaVCS from mugCommander
+ It's written in Java.
+
+Package: pagavcs
+Version: 1.4.17
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 5160
+Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme, zenity, wiggle, gedit
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/p/pagavcs/pagavcs_1.4.17_all.deb
+Size: 3883412
+SHA256: 26c303a8e8629496ec5fbba7dac0b8ddc845e3e51661ce0212ff267eca83a342
+SHA1: d3113ac5152d09bec0db9b3145ebb4c40e577108
+MD5sum: 7aab48b0df845a14d9ddb1353b53e649
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
+ It's written in Java and Python (Nautilus-integration).
+

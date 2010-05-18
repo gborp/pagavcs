@@ -1,0 +1,29 @@
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: karmic
+Date: Tue, 18 May 2010 06:37:59 UTC
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+MD5Sum:
+ 9fa3fd7f0f81a0b3312ee9d1507629af 3360 main/binary-amd64/Packages
+ 17ee1dbcd72a16126e92d3a8beae8b6d 1177 main/binary-amd64/Packages.gz
+ 2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
+ 9fa3fd7f0f81a0b3312ee9d1507629af 3360 main/binary-i386/Packages
+ 17ee1dbcd72a16126e92d3a8beae8b6d 1177 main/binary-i386/Packages.gz
+ 059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
+SHA1:
+ b2e882b469b70a2a064a115f05b725bae9cdb227 3360 main/binary-amd64/Packages
+ 01c7e7f542177932960631875548b4caf9a2c213 1177 main/binary-amd64/Packages.gz
+ 3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
+ b2e882b469b70a2a064a115f05b725bae9cdb227 3360 main/binary-i386/Packages
+ 01c7e7f542177932960631875548b4caf9a2c213 1177 main/binary-i386/Packages.gz
+ f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
+SHA256:
+ e55dfcabc3bab4da53501b85d8f91ddce5518c8b5c93739c0d45350f77136f3f 3360 main/binary-amd64/Packages
+ 2c0cbbcfedc07bf6d49fb7b75bbbb7091a4c915a534e19f8aef6924d8e9088f5 1177 main/binary-amd64/Packages.gz
+ 994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
+ e55dfcabc3bab4da53501b85d8f91ddce5518c8b5c93739c0d45350f77136f3f 3360 main/binary-i386/Packages
+ 2c0cbbcfedc07bf6d49fb7b75bbbb7091a4c915a534e19f8aef6924d8e9088f5 1177 main/binary-i386/Packages.gz
+ 6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release

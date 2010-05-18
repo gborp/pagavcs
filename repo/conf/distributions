@@ -1,0 +1,8 @@
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: karmic
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+SignWith: gabor.papai@gmail.com
