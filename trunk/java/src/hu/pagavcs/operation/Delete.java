@@ -60,7 +60,8 @@ public class Delete {
 				try {
 					wcClient.doDelete(wcFile, true, true, false);
 				} catch (SVNException ex) {
-					if (ignoreIfFileError && SVNErrorCode.BAD_FILENAME.equals(ex.getErrorMessage().getErrorCode())) {
+					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
+					if (ignoreIfFileError && (SVNErrorCode.BAD_FILENAME.equals(errorCode) || SVNErrorCode.WC_NOT_DIRECTORY.equals(errorCode))) {
 						// ignore exception
 					} else {
 						throw ex;
