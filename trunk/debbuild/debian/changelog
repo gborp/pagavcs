@@ -1,3 +1,13 @@
+pagavcs (1.4.18) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * fix row-column popup menus if the table is sorted or rearranged
+  * Issue 66: [commit gui] the the "add" feature for a directory should include an option to add all children of it
+  * [delete] don't show exception if to be deleted file is not in working copy directory
+  * [commit gui] more intiutive handling: get rid of the many selection buttons, mark selected/deselected group of files, the "refresh" doesn't cause to forget which files were selected and which ones not
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 19 May 2010 00:00:01 +0200
+
 pagavcs (1.4.17) karmic; urgency=low
 
   [ Gábor Pápai ]
