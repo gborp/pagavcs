@@ -100,6 +100,7 @@ public class CommitGui implements Working, Refreshable {
 	private int                                 logMinSize;
 	private Label                               lblWorkingCopy;
 	private JCheckBox                           btnSelectAllNone;
+	private Label                               lblSelectedInfo;
 	private JButton                             btnCreatePatch;
 
 	public CommitGui(Commit commit) {
@@ -166,14 +167,15 @@ public class CommitGui implements Working, Refreshable {
 		btnRefresh.setEnabled(false);
 
 		btnSelectAllNone = new JCheckBox(new SelectAllNoneAction());
+		lblSelectedInfo = new Label();
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu,p", "p"));
-		pnlCheck.add(new JLabel("Check:"), cc.xy(1, 1));
-		pnlCheck.add(btnSelectAllNone, cc.xy(3, 1));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu:g,p", "p"));
+		pnlCheck.add(btnSelectAllNone, cc.xy(1, 1));
+		pnlCheck.add(lblSelectedInfo, cc.xy(3, 1));
 
 		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
-		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 7, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlBottom.add(btnRefresh, cc.xy(1, 3));
 		pnlBottom.add(prgWorkinProgress, cc.xy(3, 3));
 		pnlBottom.add(btnCreatePatch, cc.xy(5, 3));
@@ -239,6 +241,17 @@ public class CommitGui implements Working, Refreshable {
 		cboMessage.setModel(modelUrl);
 	}
 
+	public void refreshSelectedInfo() {
+		int selectedCount = 0;
+		List<CommitListItem> lstAllData = tblCommit.getModel().getAllData();
+		for (CommitListItem li : lstAllData) {
+			if (li.isSelected()) {
+				selectedCount++;
+			}
+		}
+		lblSelectedInfo.setText(selectedCount + "/" + lstAllData.size() + " selected");
+	}
+
 	public void setStatus(final CommitStatus status, final String message) throws Exception {
 		new OnSwing() {
 
@@ -265,6 +278,8 @@ public class CommitGui implements Working, Refreshable {
 							}
 						}
 					}
+
+					refreshSelectedInfo();
 
 					workEnded();
 
@@ -1070,14 +1085,17 @@ public class CommitGui implements Working, Refreshable {
 
 				if (lstLastSelectedItems != null) {
 
-					boolean newSelectionState = tmdlCommit.getRow(tblCommit.convertRowIndexToModel(tblCommit.getSelectedRow())).isSelected();
+					int selectedRowIndex = tblCommit.convertRowIndexToModel(tblCommit.getSelectedRow());
+					if (lstLastSelectedItems.contains(selectedRowIndex)) {
+						boolean newSelectionState = tmdlCommit.getRow(selectedRowIndex).isSelected();
 
-					for (Integer index : lstLastSelectedItems) {
-						CommitListItem li = tmdlCommit.getRow(index);
-						li.setSelected(newSelectionState);
-						tblCommit.getSelectionModel().addSelectionInterval(index, index);
+						for (Integer index : lstLastSelectedItems) {
+							CommitListItem li = tmdlCommit.getRow(index);
+							li.setSelected(newSelectionState);
+							tblCommit.getSelectionModel().addSelectionInterval(index, index);
+						}
+						tblCommit.repaint();
 					}
-					tblCommit.repaint();
 				}
 
 				boolean changed = false;
@@ -1094,16 +1112,10 @@ public class CommitGui implements Working, Refreshable {
 				}
 			}
 
-			int selectedCount = 0;
-			for (CommitListItem li : tblCommit.getModel().getAllData()) {
-				if (li.isSelected()) {
-					selectedCount++;
-				}
-			}
+			refreshSelectedInfo();
 
-			prgWorkinProgress.setStringPainted(true);
-			prgWorkinProgress.setString("Selected items: " + selectedCount);
 			suppressListSelectionListener = false;
 		}
 	}
+
 }
