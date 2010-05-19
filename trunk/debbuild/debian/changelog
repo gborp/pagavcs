@@ -1,3 +1,10 @@
+pagavcs (1.4.19) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [commit gui] more user friendly
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 19 May 2010 18:51:45 +0200
+
 pagavcs (1.4.18) karmic; urgency=low
 
   [ Gábor Pápai ]
