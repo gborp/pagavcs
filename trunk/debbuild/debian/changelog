@@ -1,3 +1,10 @@
+pagavcs (1.4.20) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [update gui] show changes or resolve window (for conflicted) on double clicking on an item
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 20 May 2010 22:34:36 +0200
+
 pagavcs (1.4.19) karmic; urgency=low
 
   [ Gábor Pápai ]
