@@ -462,6 +462,28 @@ public class UpdateGui implements Working {
 			ppConflicted.add(new ResolveConflictAction());
 		}
 
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				Point p = new Point(e.getX(), e.getY());
+				int row = tblUpdate.rowAtPoint(p);
+				if (row == -1) {
+					return;
+				}
+				tblUpdate.getSelectionModel().setSelectionInterval(row, row);
+				UpdateListItem selected = getSelectedUpdateListItem();
+				// ContentStatus status = selected.getStatus();
+
+				File selectedFile = new File(selected.getPath());
+				if (!selectedFile.isDirectory()) {
+					if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
+						new ResolveConflictAction().actionPerformed(null);
+					} else {
+						new ShowChanges().actionPerformed(null);
+					}
+				}
+			}
+		}
+
 		public void showPopup(MouseEvent e) {
 			Point p = new Point(e.getX(), e.getY());
 			int row = tblUpdate.rowAtPoint(p);
