@@ -52,19 +52,19 @@ Description: PagaVCS extension for mugCommander
  It's written in Java.
 
 Package: mugcommander-pagavcs-extensions
-Version: 1.0.2
+Version: 1.0.3
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
 Installed-Size: 28
-Depends: sun-java6-jre | default-jre, pagavcs (>= 1.4.8), mugcommander (>= 1.0.1)
+Depends: sun-java6-jre | default-jre, pagavcs (>= 1.4.16), mugcommander (>= 1.0.3)
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/m/mugcommander-pagavcs-extensions/mugcommander-pagavcs-extensions_1.0.2_all.deb
-Size: 12526
-SHA256: 66f5eac335f7b0fef9848acb34e9d3350c677fc08b40c229525d23976c97e8e8
-SHA1: 230d70f66f5500bf12ff321705e9ab9ab10a6553
-MD5sum: e210943d12c500ffc686bd911ffa0f4d
+Filename: pool/main/m/mugcommander-pagavcs-extensions/mugcommander-pagavcs-extensions_1.0.3_all.deb
+Size: 12558
+SHA256: 598a539e93c22da94181eb2b773fa788e2e40338cc1ce046fb6e911c4f6c4627
+SHA1: 4668a475196972b8413193cab6c9e841985501e1
+MD5sum: 0d9706f3eaceace7252242dd3b5203ce
 Description: PagaVCS extension for mugCommander
  It provides the ability to interact with PagaVCS from mugCommander
  It's written in Java.
