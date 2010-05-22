@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
-START_SERVER_CMD="java -Xmx99m -server -jar /usr/share/pagavcs/bin/pagavcs.jar"
+START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
 function startserver {
 
 	# check default java
