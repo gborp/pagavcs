@@ -14,6 +14,11 @@
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
 START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
+
+CONFIG_FILE="${HOME}/.pagavcs/config.properties"
+
+DEFAULT_PORT=12905
+
 function startserver {
 
 	# check default java
@@ -70,7 +75,16 @@ then
 	exit
 fi
 
-exec 5<>/dev/tcp/localhost/12905
+
+PORT=12905
+
+if [ -f "$CONFIG_FILE" ]; then
+	CFG_PORT_KEY="port"
+	DELIMETER="\="
+	PORT=`sed '/^\#/d' $CONFIG_FILE | grep "${CFG_PORT_KEY}\="  | tail -n 1 | sed 's/^.*=//;s/^[[:space:]]*//;s/[[:space:]]*$//'`	
+fi
+
+exec 5<>/dev/tcp/localhost/${PORT}
 
 # don't wakeup server for stop command
 if [ "$1" == "stop" ];
@@ -92,7 +106,7 @@ if [ ! -f /tmp/pagavcs/server-running-indicator ];
 then
 	#echo server not running, start a new PagaVCS server
 	startserver
-	exec 5<>/dev/tcp/localhost/12905
+	exec 5<>/dev/tcp/localhost/${PORT}
 fi
 
 for x in "$@"; do
@@ -111,7 +125,7 @@ if [ $RETVAL != 0 ];
 then
 	rm -f /tmp/pagavcs/server-running-indicator
 	startserver
-	exec 5<>/dev/tcp/localhost/12905
+	exec 5<>/dev/tcp/localhost/${PORT}
 	for x in "$@"; do
 		echo -n '"'  >&5 2> /dev/null
 		echo -n $x   >&5 2> /dev/null
