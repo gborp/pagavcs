@@ -634,8 +634,18 @@ public class CommitGui implements Working, Refreshable {
 			boolean hasDirectory = false;
 			for (CommitListItem li : getSelectedItems()) {
 				if (li.getPath().isDirectory()) {
-					hasDirectory = true;
-					break;
+					boolean hasDirChildren = false;
+					for (File children : li.getPath().listFiles()) {
+						if (children.isDirectory()) {
+							hasDirChildren = true;
+							break;
+						}
+					}
+
+					if (hasDirChildren) {
+						hasDirectory = true;
+						break;
+					}
 				}
 			}
 
