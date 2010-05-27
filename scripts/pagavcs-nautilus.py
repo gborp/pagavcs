@@ -18,11 +18,11 @@ import urllib
 
 import gtk
 import nautilus
-#import gconf
 
 import gobject
 import gnomevfs
 import os
+import re
 import sys
 import traceback
 import socket
@@ -31,17 +31,65 @@ import threading
 EXECUTABLE = '/usr/bin/pagavcs'
 SEPARATOR = unicode(u'\u2015'*10)
 server_creating = False
+DEFAULT_PORT=12905
+PORT=-1
 
 
 def sendRequest(request):
-	global server_creating
+	global server_creating,PORT,DEFAULT_PORT
 	if (server_creating):
 		#print ("DEBUG server is under creating")
 		return ""
+	if (PORT<0):
+		try:
+			stream = open(os.path.expanduser('~/.pagavcs/config.properties'))
+			otherchar = re.compile(r"(?<!\\)(\s*\=)|(?<!\\)(\s*\:)")
+			bspacere = re.compile(r"\\(?!\s$)")
+			otherchar2 = re.compile(r"(\s*\=)|(\s*\:)")
+			lines = stream.readlines()
+			i = iter(lines)
+			for line in i:
+				line = line.strip()
+				if not line: continue
+				if line[0] == '#': continue
+				escaped=False
+				sepidx = -1
+				flag = 0
+				m = otherchar.search(line)
+				if m:
+					first, last = m.span()
+					start, end = 0, first
+					flag = 1
+					wspacere = re.compile(r'(?<![\\\=\:])(\s)')        
+				else:
+					if otherchar2.search(line):
+						wspacere = re.compile(r'(?<![\\])(\s)')        
+					start, end = 0, len(line)
+				first, last = m.span()
+				sepidx = last - 1
+				
+				while line[-1] == '\\':
+					nextline = i.next()
+					nextline = nextline.strip()
+					line = line[:-1] + nextline
+				
+				if sepidx != -1:
+					key, value = line[:sepidx], line[sepidx+1:]
+				else:
+						key,value = line,''
+				
+				if (key == "port"):
+					PORT=int(value)
+		except (IOError,ValueError):
+			print()
+
+	if (PORT<0):
+		PORT=DEFAULT_PORT
+	
 	try:
 		clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		clientsocket.settimeout(None)
-		clientsocket.connect(("localhost", 12905))                     
+		clientsocket.connect(("localhost", PORT))
 		#print ('sendrequest: '+request)
 		clientsocket.sendall(request+'\n')
 	except (socket.timeout, socket.error):

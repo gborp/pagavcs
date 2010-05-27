@@ -16,6 +16,8 @@
 START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
 
 CONFIG_FILE="${HOME}/.pagavcs/config.properties"
+CFG_PORT_KEY="port"
+DELIMETER="\="
 
 DEFAULT_PORT=12905
 
@@ -79,9 +81,7 @@ fi
 PORT=12905
 
 if [ -f "$CONFIG_FILE" ]; then
-	CFG_PORT_KEY="port"
-	DELIMETER="\="
-	PORT=`sed '/^\#/d' $CONFIG_FILE | grep "${CFG_PORT_KEY}\="  | tail -n 1 | sed 's/^.*=//;s/^[[:space:]]*//;s/[[:space:]]*$//'`	
+	PORT=`sed '/^\#/d' $CONFIG_FILE | grep "${CFG_PORT_KEY}\="  | tail -n 1 | sed 's/^.*=//;s/^[[:space:]]*//;s/[[:space:]]*$//'`
 fi
 
 exec 5<>/dev/tcp/localhost/${PORT}
