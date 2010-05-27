@@ -28,6 +28,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
@@ -38,6 +40,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.net.ServerSocketFactory;
 import javax.swing.ImageIcon;
@@ -60,7 +63,7 @@ import org.tmatesoft.svn.core.SVNException;
 
 public class Communication {
 
-	private static final int     PORT                          = 12905;
+	private static final int     DEFAULT_PORT                  = 12905;
 	private static final String  SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
 
 	private static final String  COMMAND_UPDATE                = "update";
@@ -83,6 +86,7 @@ public class Communication {
 	private static final String  COMMAND_REPOBROWSER           = "repobrowser";
 	private static final String  COMMAND_STOP                  = "stop";
 	private static final String  COMMAND_PING                  = "ping";
+	private static final String  CFG_COMMUNICATION_PORT_KEY    = "port";
 
 	private static Communication singleton;
 	private boolean              shutdown;
@@ -131,7 +135,6 @@ public class Communication {
 	private void outComm(Socket socket, String strOut) throws IOException {
 		BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		outToClient.write(strOut);
-		// outToClient.flush();
 		outToClient.close();
 	}
 
@@ -175,8 +178,29 @@ public class Communication {
 		String tempDir = Manager.getTempDir();
 		running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
 		running.createNewFile();
+
+		int port = DEFAULT_PORT;
+		File cfgFile = new File(System.getProperty("user.home"), ".pagavcs/config.properties");
 		try {
-			serverSocket = ServerSocketFactory.getDefault().createServerSocket(PORT);
+			if (cfgFile.exists()) {
+				Properties prop = new Properties();
+				FileReader reader = new FileReader(cfgFile);
+				prop.load(reader);
+				reader.close();
+				if (prop.containsKey(CFG_COMMUNICATION_PORT_KEY)) {
+					port = Integer.valueOf((String) prop.get(CFG_COMMUNICATION_PORT_KEY));
+				}
+			}
+		} catch (Exception ex) {}
+
+		Properties prop = new Properties();
+		prop.put(CFG_COMMUNICATION_PORT_KEY, Integer.toString(port));
+		FileWriter writer = new FileWriter(cfgFile);
+		prop.store(writer, null);
+		writer.close();
+
+		try {
+			serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
 		} catch (IOException ex) {
 			System.out.println("Port is not free, maybe PagaVCS is already running?");
 			System.exit(-5);
