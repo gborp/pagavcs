@@ -1,3 +1,11 @@
+pagavcs (1.4.21) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [commit gui] ask "add recursively?" only if the directory has at least one subdirectory
+  * use configuration file: ~/.pagavcs/config.properties, so the communication port can be changed from the default 12905
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 27 May 2010 21:19:13 +0200
+
 pagavcs (1.4.20) karmic; urgency=low
 
   [ Gábor Pápai ]
