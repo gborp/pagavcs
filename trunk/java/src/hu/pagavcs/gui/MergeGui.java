@@ -77,7 +77,7 @@ public class MergeGui {
 		pnlMain.add(btnShowLogFrom, cc.xywh(4, 11, 1, 1));
 		pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge", "/hu/pagavcs/resources/other-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings", "/hu/pagavcs/resources/other-app-icon.png");
 		frame.setTitlePrefix(backend.getPath());
 	}
 
