@@ -101,7 +101,7 @@ def sendRequest(request):
 
 	data = ""
 	try:
-		data = clientsocket.recv(1024)
+		data = clientsocket.recv(8192)
 	except (socket.timeout, socket.error):
 		#print ("DEBUG comm timeout or error")
 		#traceback.print_exc(file=sys.stdout)
