@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +85,7 @@ public class Manager {
 
 	private static BandwidthMeter   bandwidthMeter;
 
-	public static void init() throws BackingStoreException {
+	public static void init() throws BackingStoreException, GeneralSecurityException, IOException {
 		if (!inited) {
 			bandwidthMeter = new BandwidthMeter();
 			SVNDebugLog.setDefaultLog(bandwidthMeter);
