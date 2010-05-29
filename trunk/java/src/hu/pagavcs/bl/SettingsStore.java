@@ -1,6 +1,8 @@
 package hu.pagavcs.bl;
 
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,12 +61,12 @@ public class SettingsStore {
 		return singleton;
 	}
 
-	public void save() throws SVNException, BackingStoreException {
-		storeMap(KEY_USERNAME, mapUsername);
-		storeMap(KEY_PASSWORD, mapPassword);
+	public void save() throws SVNException, BackingStoreException, GeneralSecurityException {
+		storeMap(KEY_USERNAME, mapUsername, false);
+		storeMap(KEY_PASSWORD, mapPassword, true);
 		storeList(KEY_COMMIT_MESSAGES, lstCommitMessages);
 		storeList(KEY_REPO_URL, lstRepoUrl);
-		storeMap(KEY_WINDOW_BOUNDS, mapWindowBounds);
+		storeMap(KEY_WINDOW_BOUNDS, mapWindowBounds, false);
 		storeInteger(KEY_GUI_LOG_SEPARATOR_DETAIL, guiLogSeparatorDetail);
 		storeInteger(KEY_GUI_LOG_SEPARATOR_MAIN, guiLogSeparatorMain);
 		storeBoolean(KEY_LOGIN_REMEMBER_USERNAME, rememberUsername);
@@ -73,12 +75,12 @@ public class SettingsStore {
 		prefs.flush();
 	}
 
-	public void load() throws BackingStoreException {
-		mapUsername = loadMap(KEY_USERNAME);
-		mapPassword = loadMap(KEY_PASSWORD);
+	public void load() throws BackingStoreException, GeneralSecurityException, IOException {
+		mapUsername = loadMap(KEY_USERNAME, false);
+		mapPassword = loadMap(KEY_PASSWORD, true);
 		lstCommitMessages = loadList(KEY_COMMIT_MESSAGES);
 		lstRepoUrl = loadList(KEY_REPO_URL);
-		mapWindowBounds = loadMap(KEY_WINDOW_BOUNDS);
+		mapWindowBounds = loadMap(KEY_WINDOW_BOUNDS, false);
 		guiLogSeparatorDetail = loadInteger(KEY_GUI_LOG_SEPARATOR_DETAIL);
 		guiLogSeparatorMain = loadInteger(KEY_GUI_LOG_SEPARATOR_MAIN);
 		rememberUsername = loadBoolean(KEY_LOGIN_REMEMBER_USERNAME);
@@ -111,20 +113,28 @@ public class SettingsStore {
 		}
 	}
 
-	private Map<String, String> loadMap(String mapName) throws BackingStoreException {
+	private Map<String, String> loadMap(String mapName, boolean encoded) throws BackingStoreException, GeneralSecurityException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		Preferences node = prefs.node(mapName);
 		for (String key : node.keys()) {
-			result.put(key, node.get(key, null));
+			String value = node.get(key, null);
+			if (encoded) {
+				value = Crypter.decrypt(value);
+			}
+			result.put(key, value);
 		}
 		return result;
 	}
 
-	private void storeMap(String mapName, Map<String, String> data) throws BackingStoreException {
+	private void storeMap(String mapName, Map<String, String> data, boolean encoded) throws BackingStoreException, GeneralSecurityException {
 		Preferences node = prefs.node(mapName);
 		node.clear();
 		for (Entry<String, String> entry : data.entrySet()) {
-			node.put(entry.getKey(), entry.getValue());
+			String value = entry.getValue();
+			if (encoded) {
+				value = Crypter.encrypt(value);
+			}
+			node.put(entry.getKey(), value);
 		}
 	}
 

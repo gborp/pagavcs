@@ -181,9 +181,7 @@ public class Log implements Cancelable {
 			}
 			throw e;
 		} finally {
-			if (fileNew != null) {
-				fileNew.delete();
-			}
+			fileNew.delete();
 		}
 	}
 
