@@ -60,7 +60,6 @@ public class OtherGui implements Working, Cancelable {
 	private JButton     btnBlame;
 	private EditField   sfExportTo;
 	private JButton     btnExportTo;
-	private JButton     btnRepoBrowser;
 	private JButton     btnUpdateToRevision;
 	private EditField   sfUpdateTo;
 	private JButton     btnApplyPatch;
@@ -71,7 +70,7 @@ public class OtherGui implements Working, Cancelable {
 
 	public void display() throws SVNException {
 		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p",
-		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p");
+		        "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,4dlu,p,10dlu,p,10dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -96,8 +95,6 @@ public class OtherGui implements Working, Cancelable {
 
 		sfUpdateTo = new EditField();
 		btnUpdateToRevision = new JButton(new UpdateToRevisionAction());
-
-		btnRepoBrowser = new JButton(new RepoBrowserAction());
 
 		btnApplyPatch = new JButton(new ApplyPatchAction());
 
@@ -133,12 +130,11 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(btnUpdateToRevision, cc.xywh(4, 23, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 24, 4, 1));
-		pnlMain.add(btnRepoBrowser, cc.xywh(4, 25, 1, 1));
-		pnlMain.add(btnApplyPatch, cc.xywh(4, 27, 1, 1));
+		pnlMain.add(btnApplyPatch, cc.xywh(4, 25, 1, 1));
 
-		pnlMain.add(new JSeparator(), cc.xywh(1, 28, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 29, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 29, 1, 1));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 26, 4, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 27, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 27, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Other", "/hu/pagavcs/resources/other-app-icon.png");
 		frame.setTitlePrefix(other.getPath());
