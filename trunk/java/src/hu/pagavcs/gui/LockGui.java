@@ -5,7 +5,7 @@ import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.action.CloseAction;
 import hu.pagavcs.operation.GeneralStatus;
-import hu.pagavcs.operation.Unignore;
+import hu.pagavcs.operation.LockOperation;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -29,23 +29,23 @@ import com.jgoodies.forms.layout.FormLayout;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class UnignoreGui {
+public class LockGui {
 
-	private Unignore unignore;
-	private JLabel   lblStatus;
-	private Frame    frame;
+	private LockOperation operation;
+	private JLabel        lblStatus;
+	private Frame         frame;
 
-	public UnignoreGui(Unignore unignore) {
-		this.unignore = unignore;
+	public LockGui(LockOperation ignore) {
+		this.operation = ignore;
 	}
 
 	public void display() throws SVNException {
 		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu:g,p,4dlu,p"));
 		CellConstraints cc = new CellConstraints();
-		frame = GuiHelper.createFrame(pnlMain, "Unignore", null);
+		frame = GuiHelper.createFrame(pnlMain, "Lock", null);
 
 		Label lblWorkingCopy = new Label("Path:");
-		Label sfWorkingCopy = new Label(unignore.getPath());
+		Label sfWorkingCopy = new Label(operation.getPath());
 		JButton btnClose = new JButton(new CloseAction(frame));
 		lblStatus = new Label(" ");
 

@@ -1,18 +1,14 @@
 package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Manager;
-import hu.pagavcs.gui.IgnoreGui;
+import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.gui.LockGui;
 
 import java.io.File;
 import java.util.prefs.BackingStoreException;
 
-import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNProperty;
-import org.tmatesoft.svn.core.SVNPropertyValue;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNPropertyData;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 /**
@@ -28,33 +24,25 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Ignore {
+public class LockOperation {
 
-	private String    path;
-	private IgnoreGui gui;
+	private String  path;
+	private LockGui gui;
 
-	public Ignore(String path) throws BackingStoreException {
+	public LockOperation(String path) throws BackingStoreException {
 		this.path = path;
 	}
 
-	public void execute() throws SVNException {
-		gui = new IgnoreGui(this);
+	public void execute() throws SVNException, PagaException {
+		gui = new LockGui(this);
 		gui.display();
 		gui.setStatus(GeneralStatus.INIT);
 		gui.setStatus(GeneralStatus.START);
 		try {
 			File wcFile = new File(path);
-			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+			SVNClientManager mgrSvn = Manager.getSVNClientManager(wcFile);
 			SVNWCClient wcClient = mgrSvn.getWCClient();
-			File dir = wcFile.getParentFile().getAbsoluteFile();
-			SVNPropertyData property = wcClient.doGetProperty(dir, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
-			String alreadyIgnoredItems = "";
-			if (property != null) {
-				alreadyIgnoredItems = property.getValue().getString();
-			}
-
-			wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY,
-			        null, null);
+			wcClient.doLock(new File[] { wcFile }, true, "Lock");
 			Manager.invalidate(wcFile);
 			gui.setStatus(GeneralStatus.COMPLETED);
 		} catch (SVNException ex) {

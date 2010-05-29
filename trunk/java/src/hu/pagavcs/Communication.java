@@ -9,6 +9,7 @@ import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.CopyMoveRename;
 import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.Ignore;
+import hu.pagavcs.operation.LockOperation;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.MergeOperation;
 import hu.pagavcs.operation.Other;
@@ -20,6 +21,7 @@ import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Settings;
 import hu.pagavcs.operation.ShowChangesOperation;
 import hu.pagavcs.operation.Unignore;
+import hu.pagavcs.operation.UnlockOperation;
 import hu.pagavcs.operation.Update;
 
 import java.awt.Image;
@@ -74,6 +76,8 @@ public class Communication {
 	private static final String  COMMAND_UNIGNORE              = "unignore";
 	private static final String  COMMAND_REVERT                = "revert";
 	private static final String  COMMAND_CLEANUP               = "cleanup";
+	private static final String  COMMAND_LOCK                  = "lock";
+	private static final String  COMMAND_UNLOCK                = "unlock";
 	private static final String  COMMAND_DELETE                = "delete";
 	private static final String  COMMAND_MERGE                 = "merge";
 	private static final String  COMMAND_COPYMOVERENAME        = "copymoverename";
@@ -393,6 +397,8 @@ public class Communication {
 		}
 		if (hasSvned) {
 			makeMenuItem(sb, "Cleanup", "Cleanup", "pagavcs-cleanup", "t", COMMAND_CLEANUP);
+			makeMenuItem(sb, "Get lock", "Get lock", "pagavcs-lock", "", COMMAND_LOCK);
+			makeMenuItem(sb, "Release lock", "Release lock", "pagavcs-unlock", "", COMMAND_UNLOCK);
 		}
 		if (hasConflicted && !hasNotConflicted) {
 			makeMenuItem(sb, "Resolve using mine", "Resolve using mine", "pagavcs-resolve", "", COMMAND_RESOLVEUSINGMINE);
@@ -480,6 +486,16 @@ public class Communication {
 					for (String path : lstArg) {
 						Cleanup cleanup = new Cleanup(path);
 						cleanup.execute();
+					}
+				} else if (COMMAND_LOCK.equals(command)) {
+					for (String path : lstArg) {
+						LockOperation lockOperation = new LockOperation(path);
+						lockOperation.execute();
+					}
+				} else if (COMMAND_UNLOCK.equals(command)) {
+					for (String path : lstArg) {
+						UnlockOperation unlockOperation = new UnlockOperation(path);
+						unlockOperation.execute();
 					}
 				} else if (COMMAND_COPYMOVERENAME.equals(command)) {
 					for (String path : lstArg) {

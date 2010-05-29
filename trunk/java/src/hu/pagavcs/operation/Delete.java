@@ -28,10 +28,6 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class Delete {
 
-	public enum DeleteStatus {
-		INIT, START, COMPLETED, FAILED
-	}
-
 	private List<String> lstPath;
 	private DeleteGui    gui;
 	private boolean      autoClose;
@@ -48,8 +44,8 @@ public class Delete {
 	public void execute() throws SVNException {
 		gui = new DeleteGui(this);
 		gui.display();
-		gui.setStatus(DeleteStatus.INIT);
-		gui.setStatus(DeleteStatus.START);
+		gui.setStatus(GeneralStatus.INIT);
+		gui.setStatus(GeneralStatus.START);
 		try {
 
 			for (String path : lstPath) {
@@ -70,13 +66,13 @@ public class Delete {
 				Manager.invalidate(wcFile);
 			}
 
-			gui.setStatus(DeleteStatus.COMPLETED);
+			gui.setStatus(GeneralStatus.COMPLETED);
 			if (autoClose) {
 				gui.close();
 			}
 		} catch (SVNException ex) {
 			Manager.handle(ex);
-			gui.setStatus(DeleteStatus.FAILED);
+			gui.setStatus(GeneralStatus.FAILED);
 		}
 
 	}

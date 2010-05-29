@@ -5,7 +5,7 @@ import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.action.CloseAction;
 import hu.pagavcs.operation.Delete;
-import hu.pagavcs.operation.Delete.DeleteStatus;
+import hu.pagavcs.operation.GeneralStatus;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -63,7 +63,7 @@ public class DeleteGui {
 		frame.execute();
 	}
 
-	public void setStatus(DeleteStatus status) {
+	public void setStatus(GeneralStatus status) {
 		if (lblStatus != null) {
 			lblStatus.setText("Status: " + status.toString());
 		}
