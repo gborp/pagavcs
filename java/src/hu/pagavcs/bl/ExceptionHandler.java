@@ -56,6 +56,17 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 				MessagePane.showError(null, "Not under version control", errorString);
 				return;
 			}
+
+			SVNErrorCode rootErrorCode = errorMessage.getRootErrorMessage().getErrorCode();
+
+			if (rootErrorCode == SVNErrorCode.RA_DAV_REQUEST_FAILED) {
+				MessagePane.showError(null, "Locking is not supperted by the host", errorString);
+				return;
+			} else if (rootErrorCode == SVNErrorCode.RA_NOT_AUTHORIZED) {
+				MessagePane.showError(null, "Authorization failed", errorString);
+				return;
+			}
+
 			System.out.println("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"
 			        + errorCode.getDescription() + "\n");
 		}
