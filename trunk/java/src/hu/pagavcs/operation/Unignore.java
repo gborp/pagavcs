@@ -2,7 +2,6 @@ package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.UnignoreGui;
-import hu.pagavcs.operation.Delete.DeleteStatus;
 
 import java.io.File;
 import java.util.prefs.BackingStoreException;
@@ -42,8 +41,8 @@ public class Unignore {
 
 		gui = new UnignoreGui(this);
 		gui.display();
-		gui.setStatus(DeleteStatus.INIT);
-		gui.setStatus(DeleteStatus.START);
+		gui.setStatus(GeneralStatus.INIT);
+		gui.setStatus(GeneralStatus.START);
 		try {
 			File wcFile = new File(path);
 			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
@@ -64,10 +63,10 @@ public class Unignore {
 				wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(newIgnoredItems.toString()), false, SVNDepth.EMPTY, null, null);
 			}
 			Manager.invalidate(wcFile);
-			gui.setStatus(DeleteStatus.COMPLETED);
+			gui.setStatus(GeneralStatus.COMPLETED);
 		} catch (SVNException ex) {
 			Manager.handle(ex);
-			gui.setStatus(DeleteStatus.FAILED);
+			gui.setStatus(GeneralStatus.FAILED);
 		}
 
 	}
