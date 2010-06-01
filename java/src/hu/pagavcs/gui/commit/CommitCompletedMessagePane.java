@@ -45,7 +45,7 @@ public class CommitCompletedMessagePane extends MessagePane {
 		lblMessage.setIcon(icon);
 		JButton btnOk = new JButton(new OkAction());
 
-		cbAutoCopyToClipboard = new JCheckBox("Auto copy to clipboard");
+		cbAutoCopyToClipboard = new JCheckBox("Copy to clipboard");
 		cbAutoCopyToClipboard.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
