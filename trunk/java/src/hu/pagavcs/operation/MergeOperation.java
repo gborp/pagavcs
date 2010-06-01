@@ -33,23 +33,47 @@ public class MergeOperation implements Cancelable {
 	private String   path;
 	private MergeGui gui;
 	private boolean  cancel;
+	private String   prefillMergeFromRevision;
+	private String   prefillMergeFromUrl;
+	private Boolean  prefillCommitToo;
 
 	public MergeOperation(String path) throws BackingStoreException, SVNException {
 		this.path = path;
+	}
+
+	public void setPrefillCommitNumber(String prefillMergeFromRevision) {
+		this.prefillMergeFromRevision = prefillMergeFromRevision;
+	}
+
+	public void setPrefillMergeFromUrl(String prefillMergeFromUrl) {
+		this.prefillMergeFromUrl = prefillMergeFromUrl;
+	}
+
+	public void setPrefillCommitToo(Boolean prefillCommitToo) {
+		this.prefillCommitToo = prefillCommitToo;
 	}
 
 	public void execute() throws SVNException, BackingStoreException, PagaException {
 		gui = new MergeGui(this);
 		gui.display();
 		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
+
+		if (prefillMergeFromRevision != null) {
+			gui.setPrefillMergeFromRevision(prefillMergeFromRevision);
+		}
+		if (prefillMergeFromUrl != null) {
+			gui.setPrefillMergeFromUrl(prefillMergeFromUrl);
+		}
+		if (prefillCommitToo != null) {
+			gui.setPrefillCommitToo(prefillCommitToo);
+		}
+
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
 		SVNWCClient wcClient = mgrSvn.getWCClient();
 		try {
 			SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
-
 			gui.setURL(svnInfo.getURL().toDecodedString());
-
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 		}
@@ -83,4 +107,5 @@ public class MergeOperation implements Cancelable {
 	public void storeUrlForHistory(String url) {
 		SvnHelper.storeUrlForHistory(url);
 	}
+
 }

@@ -36,6 +36,7 @@ public class MergeGui {
 	private JButton        btnShowLogFrom;
 	private JButton        btnMergeRevisions;
 	private Frame          frame;
+	private JCheckBox      cbCommitToo;
 
 	public MergeGui(MergeOperation backend) {
 		this.backend = backend;
@@ -61,6 +62,9 @@ public class MergeGui {
 		cbReverseMerge = new JCheckBox("Reverse merge");
 		btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
 		btnMergeRevisions = new JButton(new MergeAction());
+		cbCommitToo = new JCheckBox("Commit too");
+		// TODO enable if it's ready
+		cbCommitToo.setVisible(false);
 
 		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
 		pnlMain.add(sfWorkingCopy, cc.xywh(3, 1, 2, 1));
@@ -75,6 +79,7 @@ public class MergeGui {
 		pnlMain.add(sfRevisionRange, cc.xywh(3, 9, 2, 1));
 		pnlMain.add(cbReverseMerge, cc.xywh(3, 11, 1, 1));
 		pnlMain.add(btnShowLogFrom, cc.xywh(4, 11, 1, 1));
+		pnlMain.add(cbCommitToo, cc.xywh(3, 13, 1, 1));
 		pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings", "/hu/pagavcs/resources/other-app-icon.png");
@@ -83,6 +88,18 @@ public class MergeGui {
 
 	public void setURL(String text) {
 		sfRepo.setText(text);
+	}
+
+	public void setPrefillMergeFromRevision(String prefillMergeFromRevision) {
+		sfRevisionRange.setText(prefillMergeFromRevision);
+	}
+
+	public void setPrefillMergeFromUrl(String prefillMergeFromUrl) {
+		cboUrlMergeFrom.setSelectedItem(prefillMergeFromUrl);
+	}
+
+	public void setPrefillCommitToo(Boolean prefillCommitToo) {
+		cbCommitToo.setSelected(prefillCommitToo);
 	}
 
 	public void setUrlHistory(String[] urlHistory) {
@@ -116,7 +133,7 @@ public class MergeGui {
 	private class MergeAction extends ThreadAction {
 
 		public MergeAction() {
-			super("Merge revisions");
+			super("Merge");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {

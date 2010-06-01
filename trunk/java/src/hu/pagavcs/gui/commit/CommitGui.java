@@ -2,6 +2,8 @@ package hu.pagavcs.gui.commit;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
+import hu.pagavcs.bl.PagaException;
+import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.gui.CommitListItem;
 import hu.pagavcs.gui.Refreshable;
@@ -18,6 +20,7 @@ import hu.pagavcs.gui.platform.TextArea;
 import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
+import hu.pagavcs.operation.MergeOperation;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Commit.CommitStatus;
 import hu.pagavcs.operation.Commit.CommittedItemStatus;
@@ -44,6 +47,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.prefs.BackingStoreException;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -88,6 +92,7 @@ public class CommitGui implements Working, Refreshable {
 	private HashMap<File, List<CommitListItem>> mapDeletedHiddenFiles;
 
 	private Frame                               frame;
+	private String                              path;
 	private Table<CommitListItem>               tblCommit;
 	private TableModel<CommitListItem>          tmdlCommit;
 	private Commit                              commit;
@@ -106,6 +111,8 @@ public class CommitGui implements Working, Refreshable {
 	private JCheckBox                           btnSelectAllNone;
 	private Label                               lblSelectedInfo;
 	private JButton                             btnCreatePatch;
+	private JCheckBox                           cbHelpMerge;
+	private String                              url;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
@@ -172,10 +179,12 @@ public class CommitGui implements Working, Refreshable {
 
 		btnSelectAllNone = new JCheckBox(new SelectAllNoneAction());
 		lblSelectedInfo = new Label();
+		cbHelpMerge = new JCheckBox("Merge too");
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu:g,p", "p"));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu:g,p,4dlu,p", "p"));
 		pnlCheck.add(btnSelectAllNone, cc.xy(1, 1));
 		pnlCheck.add(lblSelectedInfo, cc.xy(3, 1));
+		pnlCheck.add(cbHelpMerge, cc.xy(5, 1));
 
 		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
 
@@ -226,11 +235,13 @@ public class CommitGui implements Working, Refreshable {
 		}.run();
 	}
 
-	public void setUrlLabel(String urlLabel) {
-		lblUrl.setText(urlLabel);
+	public void setUrlLabel(String url) {
+		this.url = url;
+		lblUrl.setText(url);
 	}
 
 	public void setPath(String path) {
+		this.path = path;
 		lblWorkingCopy.setText(path);
 		frame.setTitlePrefix(path);
 	}
@@ -308,9 +319,7 @@ public class CommitGui implements Working, Refreshable {
 					mapDeletedHiddenFiles = new HashMap<File, List<CommitListItem>>();
 
 				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
-					CommitCompletedMessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
-					frame.setVisible(false);
-					frame.dispose();
+					commitCompleted(message);
 				} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
 					MessagePane.showError(frame, "Failed!", "Commit failed!");
 					frame.setVisible(false);
@@ -328,6 +337,38 @@ public class CommitGui implements Working, Refreshable {
 			}
 
 		}.run();
+	}
+
+	private void commitCompleted(String message) throws BackingStoreException, SVNException, PagaException {
+		CommitCompletedMessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
+
+		String mergeToDir = SettingsStore.getInstance().getLastHelpMergeToDir();
+		JFileChooser jc = new JFileChooser();
+		if (mergeToDir != null && new File(mergeToDir).isDirectory()) {
+			jc.setCurrentDirectory(new File(mergeToDir));
+		} else {
+			File defaultDir = new File(path);
+			if (!defaultDir.isDirectory()) {
+				defaultDir = defaultDir.getParentFile();
+			}
+			jc.setCurrentDirectory(defaultDir);
+		}
+		jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jc.setAcceptAllFileFilterUsed(false);
+		int option = jc.showOpenDialog(frame);
+		frame.setVisible(false);
+		frame.dispose();
+
+		if (option == JFileChooser.APPROVE_OPTION) {
+			String selectedDir = jc.getSelectedFile().getAbsolutePath();
+			SettingsStore.getInstance().setLastHelpMergeToDir(selectedDir);
+			MergeOperation mergeOperation = new MergeOperation(selectedDir);
+			mergeOperation.setPrefillCommitNumber(message);
+			mergeOperation.setPrefillMergeFromUrl(url);
+			mergeOperation.setPrefillCommitToo(true);
+			mergeOperation.execute();
+		}
+
 	}
 
 	private String getCommitNotifyMessage(String revision) {
