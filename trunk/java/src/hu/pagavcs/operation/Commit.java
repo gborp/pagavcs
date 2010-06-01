@@ -2,7 +2,7 @@ package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.SvnHelper;
-import hu.pagavcs.gui.CommitGui;
+import hu.pagavcs.gui.commit.CommitGui;
 
 import java.io.File;
 import java.io.OutputStream;

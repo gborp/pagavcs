@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -23,13 +24,13 @@ public class MessagePane {
 		OK, CANCEL
 	}
 
-	private final Window       parent;
-	private final String       title;
-	private final String       message;
-	private OPTIONS            optionChoosed;
-	private JDialog            dialog;
-	private final Icon         icon;
-	private final ModalityType modalityType;
+	protected final Window       parent;
+	protected final String       title;
+	protected final String       message;
+	protected OPTIONS            optionChoosed;
+	protected JDialog            dialog;
+	protected final Icon         icon;
+	protected final ModalityType modalityType;
 
 	public static OPTIONS showError(Window parent, String title, String message) {
 		return execute(parent, Manager.ICON_ERROR, title, message, ModalityType.DOCUMENT_MODAL);
@@ -43,7 +44,7 @@ public class MessagePane {
 		return execute(parent, Manager.ICON_INFORMATION, title, message, ModalityType.DOCUMENT_MODAL);
 	}
 
-	private static OPTIONS execute(Window parent, Icon icon, String title, String message, ModalityType modalityType) {
+	protected static OPTIONS execute(Window parent, Icon icon, String title, String message, ModalityType modalityType) {
 		return new MessagePane(parent, icon, title, message, modalityType).execute();
 	}
 
@@ -55,7 +56,7 @@ public class MessagePane {
 		this.modalityType = modalityType;
 	}
 
-	public OPTIONS execute() {
+	public JComponent getDisplayComponent() {
 		JPanel panel = new JPanel(new FormLayout("p:g", "p:g,4dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
@@ -67,7 +68,11 @@ public class MessagePane {
 		panel.add(lblMessage, cc.xywh(1, 1, 1, 1));
 		panel.add(btnOk, cc.xywh(1, 3, 1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
 
-		dialog = GuiHelper.createDialog(parent, panel, title);
+		return panel;
+	}
+
+	public OPTIONS execute() {
+		dialog = GuiHelper.createDialog(parent, getDisplayComponent(), title);
 		dialog.setModalityType(modalityType);
 		dialog.setVisible(true);
 		dialog.dispose();
@@ -78,7 +83,7 @@ public class MessagePane {
 		return optionChoosed;
 	}
 
-	private class OkAction extends ThreadAction {
+	protected class OkAction extends ThreadAction {
 
 		public OkAction() {
 			super("Ok");

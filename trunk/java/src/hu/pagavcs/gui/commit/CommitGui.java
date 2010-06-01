@@ -1,8 +1,12 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.commit;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.CommitListItem;
+import hu.pagavcs.gui.Refreshable;
+import hu.pagavcs.gui.StatusCellRendererForCommitListItem;
+import hu.pagavcs.gui.Working;
 import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
@@ -303,7 +307,7 @@ public class CommitGui implements Working, Refreshable {
 					mapDeletedHiddenFiles = new HashMap<File, List<CommitListItem>>();
 
 				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
-					MessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
+					CommitCompletedMessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
 					frame.setVisible(false);
 					frame.dispose();
 				} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
