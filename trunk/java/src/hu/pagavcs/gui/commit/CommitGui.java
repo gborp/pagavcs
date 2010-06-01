@@ -293,6 +293,7 @@ public class CommitGui implements Working, Refreshable {
 					btnStop.setEnabled(false);
 					btnCommit.setEnabled(true);
 					btnCreatePatch.setEnabled(true);
+					btnCreatePatch.setEnabled(true);
 					btnRefresh.setEnabled(true);
 					if (tmdlCommit.getAllData().isEmpty()) {
 						tblCommit.showMessage("There is nothing to commit", Manager.ICON_WARNING);
@@ -319,6 +320,7 @@ public class CommitGui implements Working, Refreshable {
 
 					tblCommit.setEnabled(true);
 					btnCommit.setEnabled(true);
+					btnCreatePatch.setEnabled(true);
 					prgWorkinProgress.setValue(0);
 					prgWorkinProgress.setIndeterminate(false);
 					preRealCommitProcess = false;
@@ -354,6 +356,7 @@ public class CommitGui implements Working, Refreshable {
 				workStarted();
 				btnStop.setEnabled(true);
 				btnCommit.setEnabled(false);
+				btnCreatePatch.setEnabled(false);
 				btnRefresh.setEnabled(false);
 
 				final HashMap<File, Boolean> mapOldSelectionState = new HashMap<File, Boolean>();
@@ -589,6 +592,7 @@ public class CommitGui implements Working, Refreshable {
 
 			tblCommit.setEnabled(false);
 			btnCommit.setEnabled(false);
+			btnCreatePatch.setEnabled(false);
 			prgWorkinProgress.setValue(0);
 			prgWorkinProgress.setIndeterminate(true);
 			preRealCommitProcess = true;
