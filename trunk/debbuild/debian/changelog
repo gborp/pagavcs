@@ -1,3 +1,19 @@
+pagavcs (1.4.22) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 73: [merge gui] "merge settings" and "merge process" windows are the same size
+  * Issue 75: store passwords in an encoded form
+  * Issue 71: [context menu] separate context menu item for "repo browser"
+  * [python integration] fix context menu is not displayed because it's too complex bug
+  * Issue 64:[context menu] Add "get lock / release lock" operation
+  * the package "patchutils" is needed for the "apply patch" functionality, add it to the depends section of the deb
+  * Issue 74: [settings] add settings: auto copy to clipboard the "revision string" after commit shown in the commit completed dialog
+  * Issue 76: help somehow the commit-merge-commit workflow
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 01 Jun 2010 22:06:38 +0200
+
+pagavcs (1.4.20) karmic; urgency=low
+
 pagavcs (1.4.21) karmic; urgency=low
 
   [ Gábor Pápai ]
