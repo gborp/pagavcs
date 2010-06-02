@@ -1,3 +1,10 @@
+pagavcs (1.4.23) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Bugfix release: don't fail if config file's directory is not existing.
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 01 Jun 2010 23:06:38 +0200
+
 pagavcs (1.4.22) karmic; urgency=low
 
   [ Gábor Pápai ]

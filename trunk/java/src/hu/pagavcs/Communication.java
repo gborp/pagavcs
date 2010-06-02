@@ -197,11 +197,19 @@ public class Communication {
 			}
 		} catch (Exception ex) {}
 
-		Properties prop = new Properties();
-		prop.put(CFG_COMMUNICATION_PORT_KEY, Integer.toString(port));
-		FileWriter writer = new FileWriter(cfgFile);
-		prop.store(writer, null);
-		writer.close();
+		try {
+			if (!cfgFile.getParentFile().isDirectory()) {
+				cfgFile.getParentFile().mkdir();
+			}
+
+			Properties prop = new Properties();
+			prop.put(CFG_COMMUNICATION_PORT_KEY, Integer.toString(port));
+			FileWriter writer = new FileWriter(cfgFile);
+			prop.store(writer, null);
+			writer.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
 		try {
 			serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);

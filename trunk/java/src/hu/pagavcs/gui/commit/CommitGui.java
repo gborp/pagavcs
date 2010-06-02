@@ -342,33 +342,34 @@ public class CommitGui implements Working, Refreshable {
 	private void commitCompleted(String message) throws BackingStoreException, SVNException, PagaException {
 		CommitCompletedMessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
 
-		String mergeToDir = SettingsStore.getInstance().getLastHelpMergeToDir();
-		JFileChooser jc = new JFileChooser();
-		if (mergeToDir != null && new File(mergeToDir).isDirectory()) {
-			jc.setCurrentDirectory(new File(mergeToDir));
-		} else {
-			File defaultDir = new File(path);
-			if (!defaultDir.isDirectory()) {
-				defaultDir = defaultDir.getParentFile();
+		if (cbHelpMerge.isSelected()) {
+			String mergeToDir = SettingsStore.getInstance().getLastHelpMergeToDir();
+			JFileChooser jc = new JFileChooser();
+			if (mergeToDir != null && new File(mergeToDir).isDirectory()) {
+				jc.setCurrentDirectory(new File(mergeToDir));
+			} else {
+				File defaultDir = new File(path);
+				if (!defaultDir.isDirectory()) {
+					defaultDir = defaultDir.getParentFile();
+				}
+				jc.setCurrentDirectory(defaultDir);
 			}
-			jc.setCurrentDirectory(defaultDir);
-		}
-		jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jc.setAcceptAllFileFilterUsed(false);
-		int option = jc.showOpenDialog(frame);
-		frame.setVisible(false);
-		frame.dispose();
+			jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			jc.setAcceptAllFileFilterUsed(false);
+			int option = jc.showOpenDialog(frame);
+			frame.setVisible(false);
+			frame.dispose();
 
-		if (option == JFileChooser.APPROVE_OPTION) {
-			String selectedDir = jc.getSelectedFile().getAbsolutePath();
-			SettingsStore.getInstance().setLastHelpMergeToDir(selectedDir);
-			MergeOperation mergeOperation = new MergeOperation(selectedDir);
-			mergeOperation.setPrefillCommitNumber(message);
-			mergeOperation.setPrefillMergeFromUrl(url);
-			mergeOperation.setPrefillCommitToo(true);
-			mergeOperation.execute();
+			if (option == JFileChooser.APPROVE_OPTION) {
+				String selectedDir = jc.getSelectedFile().getAbsolutePath();
+				SettingsStore.getInstance().setLastHelpMergeToDir(selectedDir);
+				MergeOperation mergeOperation = new MergeOperation(selectedDir);
+				mergeOperation.setPrefillCommitNumber(message);
+				mergeOperation.setPrefillMergeFromUrl(url);
+				mergeOperation.setPrefillCommitToo(true);
+				mergeOperation.execute();
+			}
 		}
-
 	}
 
 	private String getCommitNotifyMessage(String revision) {
