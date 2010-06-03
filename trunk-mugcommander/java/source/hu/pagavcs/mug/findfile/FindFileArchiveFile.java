@@ -2,14 +2,16 @@ package hu.pagavcs.mug.findfile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import com.mucommander.file.AbstractArchiveFile;
 import com.mucommander.file.AbstractFile;
+import com.mucommander.file.AbstractRWArchiveFile;
 import com.mucommander.file.ArchiveEntry;
 import com.mucommander.file.ArchiveEntryIterator;
+import com.mucommander.file.FileOperation;
 import com.mucommander.file.UnsupportedFileOperationException;
 
-public class FindFileArchiveFile extends AbstractArchiveFile {
+public class FindFileArchiveFile extends AbstractRWArchiveFile {
 
 	private final String findId;
 
@@ -54,4 +56,26 @@ public class FindFileArchiveFile extends AbstractArchiveFile {
 	public boolean isWritable() {
 		return false;
 	}
+
+	public OutputStream addEntry(ArchiveEntry entry) throws IOException, UnsupportedFileOperationException {
+		throw new UnsupportedFileOperationException(FileOperation.WRITE_FILE);
+	}
+
+	public void mkfile() throws IOException, UnsupportedFileOperationException {
+		throw new UnsupportedFileOperationException(FileOperation.WRITE_FILE);
+	}
+
+	public void mkdir() throws IOException, UnsupportedFileOperationException {
+		throw new UnsupportedFileOperationException(FileOperation.WRITE_FILE);
+	}
+
+	public void deleteEntry(ArchiveEntry entry) throws IOException, UnsupportedFileOperationException {
+		((FindFileArchiveEntry) entry).getRealFile().delete();
+		// Remove the entry from the entries tree
+		removeFromEntriesTree(entry);
+	}
+
+	public void optimizeArchive() throws IOException, UnsupportedFileOperationException {}
+
+	public void updateEntry(ArchiveEntry entry) throws IOException, UnsupportedFileOperationException {}
 }
