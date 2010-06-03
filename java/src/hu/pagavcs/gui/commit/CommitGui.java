@@ -369,6 +369,9 @@ public class CommitGui implements Working, Refreshable {
 				mergeOperation.setPrefillCommitToo(true);
 				mergeOperation.execute();
 			}
+		} else {
+			frame.setVisible(false);
+			frame.dispose();
 		}
 	}
 
