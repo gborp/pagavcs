@@ -20,6 +20,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class MessagePane {
 
+	private static final String TAG_HTML_START = "<html>";
+	private static final String TAG_HTML_END   = "</html>";
+
 	public enum OPTIONS {
 		OK, CANCEL
 	}
@@ -56,11 +59,19 @@ public class MessagePane {
 		this.modalityType = modalityType;
 	}
 
+	private static String convertMultilineTextToHtml(String str) {
+		if ((str != null) && !str.isEmpty() && !str.startsWith(TAG_HTML_START)) {
+			str = TAG_HTML_START + str.replaceAll("\n", "<br>") + TAG_HTML_END;
+		}
+
+		return str;
+	}
+
 	public JComponent getDisplayComponent() {
 		JPanel panel = new JPanel(new FormLayout("p:g", "p:g,4dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
-		Label lblMessage = new Label(message);
+		Label lblMessage = new Label(convertMultilineTextToHtml(message));
 		lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMessage.setIcon(icon);
 		JButton btnOk = new JButton(new OkAction());
