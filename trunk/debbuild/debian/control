@@ -12,3 +12,4 @@ Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme,
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
  It's written in Java and Python (Nautilus-integration).
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
