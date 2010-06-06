@@ -1,3 +1,12 @@
+pagavcs (1.4.25) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [commit gui] better recognition when update is needed
+  * [commit gui] ask user if he still wants to commit after updating
+  * Display the full SVNkit error message if (unhandled) exception occurs
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 06 Jun 2010 18:49:48 +0200
+
 pagavcs (1.4.24) karmic; urgency=low
 
   [ Gábor Pápai ]
