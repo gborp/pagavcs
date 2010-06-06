@@ -20,3 +20,6 @@ cp ../icons/hicolor/scalable/actions/* debian/input/icons/hicolor/scalable/actio
 cp ../icons/hicolor/scalable/apps/* debian/input/icons/hicolor/scalable/apps
 cp ../icons/hicolor/scalable/emblems/* debian/input/icons/hicolor/scalable/emblems
 sudo ./rules
+
+user=`whoami`
+sudo chown -R $user *
