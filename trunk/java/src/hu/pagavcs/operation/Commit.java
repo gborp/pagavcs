@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import org.tmatesoft.svn.core.SVNCancelException;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNErrorCode;
+import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNPropertyValue;
@@ -125,6 +126,18 @@ public class Commit {
 		return cancel;
 	}
 
+	private boolean doTryUpdateing(SVNException ex) {
+		SVNErrorMessage errMsg = ex.getErrorMessage();
+		while (errMsg != null && !SVNErrorCode.FS_TXN_OUT_OF_DATE.equals(errMsg.getErrorCode()) && !SVNErrorCode.FS_CONFLICT.equals(errMsg.getErrorCode())) {
+			errMsg = errMsg.getChildErrorMessage();
+		}
+		if (errMsg != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public void doCommit(ArrayList<File> lstCommit, String message) throws Exception {
 		gui.setStatus(CommitStatus.COMMIT_STARTED, null);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
@@ -152,17 +165,25 @@ public class Commit {
 						gui.setStatus(CommitStatus.CANCEL, null);
 						successOrExit = true;
 					}
-				} else if (SVNErrorCode.FS_TXN_OUT_OF_DATE.equals(errorCode)) {
+				} else if (doTryUpdateing(ex)) {
 					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Update is needed",
 					        JOptionPane.YES_NO_OPTION);
 					if (choosed == JOptionPane.YES_OPTION) {
 						Update update = new Update(Arrays.asList(path));
 						update.execute();
+
+						int choosedContinue = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "It's updated, do you still want to commit?",
+						        "Still commit?", JOptionPane.YES_NO_OPTION);
+						if (choosedContinue == JOptionPane.NO_OPTION) {
+							gui.setStatus(CommitStatus.CANCEL, null);
+							successOrExit = true;
+						}
 					} else {
 						gui.setStatus(CommitStatus.CANCEL, null);
 						successOrExit = true;
 					}
 				} else {
+					gui.setStatus(CommitStatus.CANCEL, null);
 					throw ex;
 				}
 
