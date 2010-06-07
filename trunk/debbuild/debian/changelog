@@ -1,3 +1,10 @@
+pagavcs (1.4.26) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * release fix
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 06 Jun 2010 22:49:48 +0200
+
 pagavcs (1.4.25) karmic; urgency=low
 
   [ Gábor Pápai ]
