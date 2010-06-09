@@ -557,7 +557,10 @@ public class CommitGui implements Working, Refreshable {
 					lstCommit.add(li.getPath());
 					noCommit++;
 
-					if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
+					if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
+						// auto-add unversioned items
+						commit.add(li.getPath(), false);
+					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
 						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
 						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
 						MessagePane.showError(frame, "Cannot create patch", "Cannot create patch from conflicted file! Please resolve the conflict first.");
@@ -584,6 +587,7 @@ public class CommitGui implements Working, Refreshable {
 				OutputStream out = new FileOutputStream(file);
 				commit.createPatch(lstCommit.toArray(new File[0]), out);
 			}
+			MessagePane.showInfo(frame, "Patch created", "Patch created");
 		}
 	}
 
