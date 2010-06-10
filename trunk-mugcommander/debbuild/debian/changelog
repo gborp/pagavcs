@@ -1,3 +1,10 @@
+mugcommander (1.0.4) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * the real file can be deleted in the search results
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 10 Jun 2010 07:31:43 +0200
+
 mugcommander (1.0.3) karmic; urgency=low
 
   [ Gábor Pápai ]
