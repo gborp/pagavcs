@@ -1,3 +1,11 @@
+pagavcs (1.4.27) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [merge gui] do dryRun before real merge if more than one commit number is specified, and notice if a conflicted file would be updated by a later revision number, abort the merge process
+  * [update gui] resolving conflict should change the list item in the table immediately
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 16 Jun 2010 20:06:31 +0200
+
 pagavcs (1.4.26) karmic; urgency=low
 
   [ Gábor Pápai ]
