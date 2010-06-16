@@ -142,6 +142,10 @@ public class UpdateGui implements Working {
 		numberOfPathUpdated = 0;
 	}
 
+	public Frame getFrame() {
+		return frame;
+	}
+
 	public void setWorkingCopy(String workingCopy) {
 		lblWorkingCopy.setText(workingCopy);
 		frame.setTitlePrefix(workingCopy);
@@ -264,8 +268,9 @@ public class UpdateGui implements Working {
 		}
 
 		public void refresh() throws Exception {
-			li.setContentStatus(UpdateContentStatus.RESOLVED);
-			tblUpdate.repaint();
+			li.setContentStatus(null);
+			li.setStatus(ContentStatus.RESOLVED);
+			tmdlUpdate.fireTableDataChanged();
 		}
 
 	}
@@ -372,7 +377,8 @@ public class UpdateGui implements Working {
 				UpdateListItem li = getSelectedUpdateListItem();
 				Manager.resolveConflictUsingTheirs(li.getPath());
 				li.setContentStatus(null);
-				tblUpdate.repaint();
+				li.setStatus(ContentStatus.RESOLVED);
+				tmdlUpdate.fireTableDataChanged();
 			} catch (SVNException e1) {
 				Manager.handle(e1);
 			}
@@ -391,7 +397,8 @@ public class UpdateGui implements Working {
 				UpdateListItem li = getSelectedUpdateListItem();
 				Manager.resolveConflictUsingMine(li.getPath());
 				li.setContentStatus(null);
-				tblUpdate.repaint();
+				li.setStatus(ContentStatus.RESOLVED);
+				tmdlUpdate.fireTableDataChanged();
 			} catch (SVNException e1) {
 				Manager.handle(e1);
 			}
