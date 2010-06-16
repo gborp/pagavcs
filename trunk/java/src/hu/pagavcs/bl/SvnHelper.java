@@ -3,8 +3,10 @@ package hu.pagavcs.bl;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.UpdateGui;
 import hu.pagavcs.gui.Working;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.ContentStatus;
+import hu.pagavcs.operation.MergeDryRunEventHandler;
 import hu.pagavcs.operation.UpdateEventHandler;
 
 import java.io.File;
@@ -91,21 +93,67 @@ public class SvnHelper {
 			SVNDepth depth = SVNDepth.INFINITY;
 			boolean useAncestry = true;
 			boolean force = false;
-			boolean dryRun = false;
 			boolean recordOnly = false;
 			Collection<SVNRevisionRange> rangesToMerge = getRevisionRanges(revisionRange, reverseMerge);
 
-			diffClient.setEventHandler(new UpdateEventHandler(cancelable, updateGui));
 			updateGui.setStatus(ContentStatus.STARTED);
 
-			boolean successOrExit = false;
-			while (!successOrExit) {
+			MergeDryRunEventHandler mergeDryRunEventHandler = new MergeDryRunEventHandler(cancelable);
+			diffClient.setEventHandler(mergeDryRunEventHandler);
+
+			boolean success = false;
+			boolean exit = false;
+
+			if (rangesToMerge.size() > 1) {
+				while (!success && !exit) {
+					try {
+						diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, true,
+						        recordOnly);
+						success = true;
+					} catch (SVNCancelException ex) {
+						exit = true;
+					} catch (SVNException ex) {
+						if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
+							int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
+							        JOptionPane.YES_NO_OPTION);
+							if (choosed == JOptionPane.YES_OPTION) {
+								Cleanup cleanup = new Cleanup(pathTo);
+								cleanup.setAutoClose(true);
+								cleanup.execute();
+							} else {
+								cancelable.setCancel(true);
+								exit = true;
+							}
+						} else {
+							throw ex;
+						}
+					}
+				}
+
+				List<File> multiConflictedFiles = mergeDryRunEventHandler.getMultiConflictedFiles();
+				if (!multiConflictedFiles.isEmpty()) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("Cannot perform multi merge,\nbecause the following files are conflicted and in a later revision would be updated:\n");
+					for (File file : multiConflictedFiles) {
+						sb.append(file.getPath());
+						sb.append('\n');
+					}
+					sb.append("Please do the merge revision by revision.\n");
+					MessagePane.showError(updateGui.getFrame(), "Cannot perform multi merge", sb.toString());
+					cancelable.setCancel(true);
+					exit = true;
+				}
+			}
+
+			diffClient.setEventHandler(new UpdateEventHandler(cancelable, updateGui));
+			success = false;
+			while (!success && !exit) {
 				try {
-					diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, dryRun,
+					diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, false,
 					        recordOnly);
-					successOrExit = true;
+					success = true;
 				} catch (SVNCancelException ex) {
-					successOrExit = true;
+					exit = true;
 				} catch (SVNException ex) {
 					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
 						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
@@ -116,13 +164,14 @@ public class SvnHelper {
 							cleanup.execute();
 						} else {
 							cancelable.setCancel(true);
-							successOrExit = true;
+							exit = true;
 						}
 					} else {
 						throw ex;
 					}
 				}
 			}
+
 			updateGui.setStatus(ContentStatus.COMPLETED);
 		} catch (Exception ex) {
 			updateGui.setStatus(ContentStatus.FAILED);

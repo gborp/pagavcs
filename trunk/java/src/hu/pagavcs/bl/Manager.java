@@ -330,6 +330,8 @@ public class Manager {
 				return Color.RED;
 			case UNVERSIONED:
 				return Color.BLACK;
+			case RESOLVED:
+				return Color.decode("923700");
 			default:
 				return null;
 		}
