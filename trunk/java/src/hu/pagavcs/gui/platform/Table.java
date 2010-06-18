@@ -146,7 +146,7 @@ public class Table<L extends ListItem> extends JTable {
 			return null;
 		}
 
-		return tableModel.getCellToolTip(colIndex, rowIndex);
+		return tableModel.getCellToolTip(convertColumnIndexToModel(colIndex), convertRowIndexToModel(rowIndex));
 	}
 
 	protected JTableHeader createDefaultTableHeader() {
