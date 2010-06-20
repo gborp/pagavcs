@@ -42,7 +42,7 @@ public class SettingsGui {
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("p,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p,4dlu,p:g");
+		FormLayout layout = new FormLayout("p,p:g,p", "p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p:g");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 

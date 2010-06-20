@@ -78,6 +78,7 @@ public class UpdateGui implements Working {
 	private Label                                 lblInfo;
 	private List<File>                            lstPath;
 	private long                                  totalReceived;
+	private JPanel                                pnlMain;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -90,8 +91,8 @@ public class UpdateGui implements Working {
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("r:p,4dlu,p,4dlu,1dlu:g, p,4dlu, p", "p,4dlu,p,4dlu,fill:10dlu:g,4dlu,p");
-		JPanel pnlMain = new JPanel(layout);
+		FormLayout layout = new FormLayout("r:p,2dlu,p,2dlu,1dlu:g, p,2dlu, p", "p,2dlu,p,2dlu,fill:4dlu:g,2dlu,p");
+		pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
 		lblWorkingCopy = new Label();

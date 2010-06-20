@@ -60,7 +60,7 @@ public class BlameGui {
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("1dlu:g, p, p", "fill:10dlu:g,p");
+		FormLayout layout = new FormLayout("1dlu:g, p, p", "fill:4dlu:g,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
