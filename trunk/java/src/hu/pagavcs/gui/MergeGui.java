@@ -43,7 +43,7 @@ public class MergeGui {
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 4dlu,p:g, p", "p,4dlu,p,4dlu,p,10dlu,p,4dlu,p,4dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 

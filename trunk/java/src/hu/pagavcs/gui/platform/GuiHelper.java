@@ -5,6 +5,7 @@ import hu.pagavcs.bl.WindowPreferencesSaverOnClose;
 import hu.pagavcs.gui.CommitListItem;
 import hu.pagavcs.operation.ContentStatus;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -275,7 +276,7 @@ public class GuiHelper {
 	}
 
 	private static JComponent addBorder(JComponent pnlMain) {
-		JPanel pnlBorder = new JPanel(new FormLayout("10dlu,fill:p:g,10dlu", "10dlu,fill:p:g,10dlu"));
+		JPanel pnlBorder = new JPanel(new FormLayout("2dlu,fill:p:g,2dlu", "2dlu,fill:p:g,2dlu"));
 
 		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
 
@@ -315,5 +316,19 @@ public class GuiHelper {
 			}
 		});
 		inputMap.put(KeyStroke.getKeyStroke("control Y"), "Redo");
+	}
+
+	/**
+	 * @param color1
+	 * @param color2
+	 * @param mix
+	 *            0.0: fully color1, 1.1: fully color2
+	 * @return
+	 */
+	public static Color getColorMix(Color color1, Color color2, float mix) {
+		int red = (int) ((1 - mix) * color1.getRed() + mix * color2.getRed());
+		int green = (int) ((1 - mix) * color1.getGreen() + mix * color2.getGreen());
+		int blue = (int) ((1 - mix) * color1.getBlue() + mix * color2.getBlue());
+		return new Color(red, green, blue, color1.getAlpha());
 	}
 }

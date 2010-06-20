@@ -37,7 +37,7 @@ public class CommitCompletedMessagePane extends MessagePane {
 	}
 
 	public JComponent getDisplayComponent() {
-		JPanel panel = new JPanel(new FormLayout("p:g", "p:g,4dlu,p,4dlu,p"));
+		JPanel panel = new JPanel(new FormLayout("p:g", "p:g,2dlu,p,2dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
 		Label lblMessage = new Label(message);

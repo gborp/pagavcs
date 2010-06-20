@@ -41,7 +41,7 @@ public class CleanupGui {
 
 	public void display() throws SVNException {
 
-		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu:g,p,4dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu,p:g", "p,2dlu:g,p,2dlu,p"));
 		CellConstraints cc = new CellConstraints();
 		frame = GuiHelper.createFrame(pnlMain, "Cleanup", null);
 
