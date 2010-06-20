@@ -96,7 +96,7 @@ public class ResolveConflictGui {
 					return;
 				}
 
-				FormLayout layout = new FormLayout("p,1dlu:g,p,4dlu,p", "p,4dlu,fill:10dlu:g,4dlu,p");
+				FormLayout layout = new FormLayout("p,1dlu:g,p,2dlu,p", "p,2dlu,fill:4dlu:g,2dlu,p");
 				JPanel pnlMain = new JPanel(layout);
 				CellConstraints cc = new CellConstraints();
 

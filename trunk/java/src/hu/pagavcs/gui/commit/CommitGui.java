@@ -158,7 +158,7 @@ public class CommitGui implements Working, Refreshable {
 			}
 		});
 
-		JPanel pnlTop = new JPanel(new FormLayout("r:p,4dlu,p:g", "p,4dlu,p,4dlu,p,4dlu"));
+		JPanel pnlTop = new JPanel(new FormLayout("r:p,2dlu,p:g", "p,2dlu,p,2dlu,p,2dlu"));
 		pnlTop.add(new JLabel("Commit to:"), cc.xy(1, 1));
 		pnlTop.add(lblUrl, cc.xy(3, 1));
 		pnlTop.add(new JLabel("Working copy:"), cc.xy(1, 3));
@@ -181,12 +181,12 @@ public class CommitGui implements Working, Refreshable {
 		lblSelectedInfo = new Label();
 		cbHelpMerge = new JCheckBox("Merge too");
 
-		JPanel pnlCheck = new JPanel(new FormLayout("p,4dlu:g,p,4dlu,p", "p"));
+		JPanel pnlCheck = new JPanel(new FormLayout("p,2dlu:g,p,2dlu,p", "p"));
 		pnlCheck.add(btnSelectAllNone, cc.xy(1, 1));
 		pnlCheck.add(lblSelectedInfo, cc.xy(3, 1));
 		pnlCheck.add(cbHelpMerge, cc.xy(5, 1));
 
-		JPanel pnlBottom = new JPanel(new FormLayout("p,4dlu, p:g, 4dlu,p, 4dlu,p, 4dlu,p", "p,4dlu,p"));
+		JPanel pnlBottom = new JPanel(new FormLayout("p,2dlu, p:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
 
 		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlBottom.add(btnRefresh, cc.xy(1, 3));

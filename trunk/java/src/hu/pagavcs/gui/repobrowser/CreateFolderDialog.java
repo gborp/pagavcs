@@ -43,7 +43,7 @@ class CreateFolderDialog {
 	public CreateFolderDialog() {}
 
 	public void display(Window parent) {
-		JPanel pnlMain = new JPanel(new FormLayout("p,4dlu,p:g,p,4dlu,p", "p,4dlu,p,4dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("p,2dlu,p:g,p,2dlu,p", "p,2dlu,p,2dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
 		Label lblUsername = new Label("New folder name:");

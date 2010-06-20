@@ -76,7 +76,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 4dlu,p:g,p", "p,4dlu,p,4dlu,p:g,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g,p", "p,2dlu,p,2dlu,p:g,2dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 		lblWorkingCopy = new Label();

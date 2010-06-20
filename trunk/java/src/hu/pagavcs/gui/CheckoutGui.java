@@ -52,7 +52,7 @@ public class CheckoutGui {
 	public void display() throws SVNException {
 
 		CellConstraints cc = new CellConstraints();
-		JPanel pnlMain = new JPanel(new FormLayout("r:p,4dlu,p:g,p", "p,4dlu,p,4dlu,p,4dlu,p,4dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu,p:g,p", "p,2dlu,p,2dlu,p,2dlu,p,2dlu,p"));
 
 		frame = GuiHelper.createFrame(pnlMain, "Checkout Settings", null);
 
