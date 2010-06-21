@@ -69,6 +69,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -454,7 +455,8 @@ public class CommitGui implements Working, Refreshable {
 		return false;
 	}
 
-	public void addItem(final File file, final ContentStatus contentStatus, final ContentStatus propertyStatus) throws Exception {
+	public void addItem(final File file, final ContentStatus contentStatus, final ContentStatus propertyStatus, final String contentStatusRemark,
+	        final SVNNodeKind nodeKind) throws Exception {
 		if ((contentStatus.equals(ContentStatus.NORMAL) || contentStatus.equals(ContentStatus.NONE))
 		        && (propertyStatus.equals(ContentStatus.NORMAL) || propertyStatus.equals(ContentStatus.NONE))) {
 			return;
@@ -475,6 +477,8 @@ public class CommitGui implements Working, Refreshable {
 				li.setPath(file);
 				li.setStatus(contentStatus);
 				li.setPropertyStatus(propertyStatus);
+				li.setStatusRemark(contentStatusRemark);
+				li.setNodeKind(nodeKind);
 				if (!isParentDeleted(li)) {
 					if (contentStatus.equals(ContentStatus.DELETED) && file.isDirectory()) {
 						mapDeletedHiddenFiles.put(file, new ArrayList<CommitListItem>());
@@ -894,6 +898,26 @@ public class CommitGui implements Working, Refreshable {
 		}
 	}
 
+	private class CreateMissingDirAction extends ThreadAction {
+
+		public CreateMissingDirAction() {
+			super("Create missing directory");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
+			List<CommitListItem> lstFiles = getSelectedItems();
+
+			for (CommitListItem li : lstFiles) {
+				if (ContentStatus.MISSING.equals(li.getStatus())) {
+					li.getPath().mkdirs();
+				}
+			}
+			refresh();
+			workEnded();
+		}
+	}
+
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppVisible;
@@ -921,10 +945,17 @@ public class CommitGui implements Working, Refreshable {
 			HashSet<ContentStatus> setUsedStatus = new HashSet<ContentStatus>();
 			HashSet<ContentStatus> setUsedPropertyStatus = new HashSet<ContentStatus>();
 			int[] selectedRows = tblCommit.getSelectedRows();
+			// boolean hasFiles = false;
+			// boolean hasDirs = false;
 			for (int rowLi : selectedRows) {
 				CommitListItem li = tmdlCommit.getRow(tblCommit.convertRowIndexToModel(rowLi));
 				setUsedStatus.add(li.getStatus());
 				setUsedPropertyStatus.add(li.getPropertyStatus());
+				// if (SVNNodeKind.DIR.equals(li.getNodeKind())) {
+				// hasDirs = true;
+				// } else if (SVNNodeKind.FILE.equals(li.getNodeKind())) {
+				// hasFiles = true;
+				// }
 			}
 
 			JPopupMenu ppMixed = new JPopupMenu();
@@ -937,6 +968,10 @@ public class CommitGui implements Working, Refreshable {
 			if (setUsedStatus.contains(ContentStatus.MODIFIED) && !setUsedStatus.contains(ContentStatus.UNVERSIONED)
 			        && !setUsedStatus.contains(ContentStatus.ADDED)) {
 				ppMixed.add(new ShowLog());
+			}
+
+			if (setUsedStatus.contains(ContentStatus.MISSING)) {
+				ppMixed.add(new CreateMissingDirAction());
 			}
 
 			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED) || setUsedStatus.contains(ContentStatus.MISSING) || setUsedStatus
@@ -993,6 +1028,8 @@ public class CommitGui implements Working, Refreshable {
 				// ContentStatus propertyStatus = selected.getPropertyStatus();
 				if (status.equals(ContentStatus.MODIFIED)) {
 					new ShowChangesAction(this).actionPerformed(null);
+				} else if (selected.getPropertyStatus().equals(ContentStatus.MODIFIED)) {
+					new ShowPropertyChangesAction().actionPerformed(null);
 				}
 			}
 		}

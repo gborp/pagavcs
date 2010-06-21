@@ -1,5 +1,6 @@
 package hu.pagavcs.gui;
 
+import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.Frame;
@@ -36,7 +37,7 @@ public class MergeGui {
 	private JButton        btnShowLogFrom;
 	private JButton        btnMergeRevisions;
 	private Frame          frame;
-	private JCheckBox      cbCommitToo;
+	private JCheckBox      cbIgnoreEolStyle;
 
 	public MergeGui(MergeOperation backend) {
 		this.backend = backend;
@@ -62,9 +63,12 @@ public class MergeGui {
 		cbReverseMerge = new JCheckBox("Reverse merge");
 		btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
 		btnMergeRevisions = new JButton(new MergeAction());
-		cbCommitToo = new JCheckBox("Commit too");
-		// TODO enable if it's ready
-		cbCommitToo.setVisible(false);
+		cbIgnoreEolStyle = new JCheckBox("Ignore EOL style");
+		cbIgnoreEolStyle.setToolTipText("Ignore end-of-line style (eg. windows or unix style)");
+
+		if (!Boolean.FALSE.equals(SettingsStore.getInstance().getAutoCopyCommitRevisionToClipboard())) {
+			cbIgnoreEolStyle.setSelected(true);
+		}
 
 		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
 		pnlMain.add(sfWorkingCopy, cc.xywh(3, 1, 2, 1));
@@ -79,7 +83,7 @@ public class MergeGui {
 		pnlMain.add(sfRevisionRange, cc.xywh(3, 9, 2, 1));
 		pnlMain.add(cbReverseMerge, cc.xywh(3, 11, 1, 1));
 		pnlMain.add(btnShowLogFrom, cc.xywh(4, 11, 1, 1));
-		pnlMain.add(cbCommitToo, cc.xywh(3, 13, 1, 1));
+		pnlMain.add(cbIgnoreEolStyle, cc.xywh(3, 13, 1, 1));
 		pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings", "/hu/pagavcs/resources/other-app-icon.png");
@@ -99,7 +103,7 @@ public class MergeGui {
 	}
 
 	public void setPrefillCommitToo(Boolean prefillCommitToo) {
-		cbCommitToo.setSelected(prefillCommitToo);
+		cbIgnoreEolStyle.setSelected(prefillCommitToo);
 	}
 
 	public void setUrlHistory(String[] urlHistory) {
@@ -139,7 +143,11 @@ public class MergeGui {
 		public void actionProcess(ActionEvent e) throws Exception {
 			String url = cboUrlMergeFrom.getSelectedItem().toString().trim();
 			backend.storeUrlForHistory(url);
-			backend.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), url, sfRevisionRange.getText().trim(), cbReverseMerge.isSelected());
+
+			SettingsStore.getInstance().setMergeIgnoreEol(cbIgnoreEolStyle.isSelected());
+
+			backend.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), url, sfRevisionRange.getText().trim(), cbReverseMerge.isSelected(), cbIgnoreEolStyle
+			        .isSelected());
 		}
 
 	}

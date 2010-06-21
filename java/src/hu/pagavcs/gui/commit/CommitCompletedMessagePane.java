@@ -14,8 +14,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -46,17 +44,7 @@ public class CommitCompletedMessagePane extends MessagePane {
 		JButton btnOk = new JButton(new OkAction());
 
 		cbAutoCopyToClipboard = new JCheckBox("Copy to clipboard");
-		cbAutoCopyToClipboard.addChangeListener(new ChangeListener() {
-
-			public void stateChanged(ChangeEvent e) {
-				if (cbAutoCopyToClipboard.isSelected()) {
-					Manager.setClipboard(message);
-				}
-			}
-		});
-
 		if (Boolean.TRUE.equals(SettingsStore.getInstance().getAutoCopyCommitRevisionToClipboard())) {
-			Manager.setClipboard(message);
 			cbAutoCopyToClipboard.setSelected(true);
 		}
 
@@ -71,6 +59,9 @@ public class CommitCompletedMessagePane extends MessagePane {
 		OPTIONS result = super.execute();
 
 		SettingsStore.getInstance().setAutoCopyCommitRevisionToClipboard(cbAutoCopyToClipboard.isSelected());
+		if (cbAutoCopyToClipboard.isSelected()) {
+			Manager.setClipboard(message);
+		}
 
 		return result;
 	}
