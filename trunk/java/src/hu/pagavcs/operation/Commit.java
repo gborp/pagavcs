@@ -3,6 +3,7 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.commit.CommitGui;
+import hu.pagavcs.gui.platform.StringHelper;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -33,6 +34,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
+import org.tmatesoft.svn.core.wc.SVNTreeConflictDescription;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 /**
@@ -336,9 +338,35 @@ public class Commit {
 			} else {
 				throw new RuntimeException("not implemented: " + svnContentStatus);
 			}
+			String conlictResult = null;
+			SVNTreeConflictDescription treeConflict = status.getTreeConflict();
+			if (treeConflict != null) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("TREE CONFLICT\n");
+				sb.append("Svn conflict action: ");
+				sb.append(treeConflict.getConflictAction().getName());
+				sb.append('\n');
+				sb.append("Conflict reason: ");
+				sb.append(treeConflict.getConflictReason().getName());
+				sb.append('\n');
+				sb.append("Operation: ");
+				sb.append(treeConflict.getOperation());
+				sb.append('\n');
+				sb.append("Local " + treeConflict.getNodeKind().toString() + ": ");
+				sb.append(treeConflict.getMergeFiles().getLocalFile());
+				sb.append('\n');
+				sb.append("Left: ");
+				sb.append(treeConflict.getSourceLeftVersion().toString());
+				sb.append('\n');
+				sb.append("Right: ");
+				sb.append(treeConflict.getSourceRightVersion().toString());
+				sb.append('\n');
+
+				conlictResult = StringHelper.convertMultilineTextToHtml(sb.toString());
+			}
 
 			try {
-				gui.addItem(status.getFile(), contentStatus, propertyStatus);
+				gui.addItem(status.getFile(), contentStatus, propertyStatus, conlictResult, status.getKind());
 			} catch (SVNException e) {
 				throw e;
 			} catch (Exception e) {

@@ -44,6 +44,7 @@ public class SettingsStore {
 	private static final String  KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES     = "commit-completed-message-templates";
 	private static final String  KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD = "auto-copy-commit-revision-to-clipboard";
 	private static final String  KEY_LAST_HELP_MERGE_TO_DIR                 = "last-help-merge-to-dir";
+	private static final String  KEY_MERGE_IGNORE_EOL                       = "merge-ignore-eol";
 
 	private Map<String, String>  mapUsername                                = new HashMap<String, String>();
 	private Map<String, String>  mapPassword                                = new HashMap<String, String>();
@@ -56,6 +57,7 @@ public class SettingsStore {
 	private Boolean              rememberPassword;
 	private String               commitCompletedMessageTemplates;
 	private Boolean              autoCopyCommitRevisionToClipboard;
+	private Boolean              mergeIgnoreEol;
 	private String               lastHelpMergeToDir;
 
 	public static SettingsStore getInstance() {
@@ -78,6 +80,7 @@ public class SettingsStore {
 		storeString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES, commitCompletedMessageTemplates);
 		storeBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD, autoCopyCommitRevisionToClipboard);
 		storeString(KEY_LAST_HELP_MERGE_TO_DIR, lastHelpMergeToDir);
+		storeBoolean(KEY_MERGE_IGNORE_EOL, mergeIgnoreEol);
 		prefs.flush();
 	}
 
@@ -94,6 +97,7 @@ public class SettingsStore {
 		commitCompletedMessageTemplates = loadString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES);
 		autoCopyCommitRevisionToClipboard = loadBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD);
 		lastHelpMergeToDir = loadString(KEY_LAST_HELP_MERGE_TO_DIR);
+		mergeIgnoreEol = loadBoolean(KEY_MERGE_IGNORE_EOL);
 	}
 
 	private List<String> loadList(String listName) throws BackingStoreException {
@@ -334,5 +338,13 @@ public class SettingsStore {
 
 	public void setLastHelpMergeToDir(String lastHelpMergeToDir) {
 		this.lastHelpMergeToDir = lastHelpMergeToDir;
+	}
+
+	public Boolean getMergeIgnoreEol() {
+		return this.mergeIgnoreEol;
+	}
+
+	public void setMergeIgnoreEol(Boolean mergeIgnoreEol) {
+		this.mergeIgnoreEol = mergeIgnoreEol;
 	}
 }

@@ -15,12 +15,23 @@ package hu.pagavcs.gui.platform;
  */
 public class StringHelper {
 
+	private static final String TAG_HTML_START = "<html>";
+	private static final String TAG_HTML_END   = "</html>";
+
 	public static String toNullAware(String str) {
 		return str == null ? "" : str;
 	}
 
 	public static String toNullAware(Long str) {
 		return str == null ? "" : str.toString();
+	}
+
+	public static String convertMultilineTextToHtml(String str) {
+		if ((str != null) && !str.isEmpty() && !str.startsWith(TAG_HTML_START)) {
+			str = TAG_HTML_START + str.replaceAll("\n", "<br>") + TAG_HTML_END;
+		}
+
+		return str;
 	}
 
 }
