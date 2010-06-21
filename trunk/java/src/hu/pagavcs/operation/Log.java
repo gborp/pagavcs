@@ -298,7 +298,7 @@ public class Log implements Cancelable {
 		String pathWc = getRootUrl().getPath();
 		String pathRevertWc = path + pathRevert.substring(pathWc.length());
 
-		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), Long.toString(revision), true);
+		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), Long.toString(revision), true, false);
 	}
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {

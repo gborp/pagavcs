@@ -28,6 +28,7 @@ import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNPropertyHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
+import org.tmatesoft.svn.core.wc.SVNDiffOptions;
 import org.tmatesoft.svn.core.wc.SVNPropertyData;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNRevisionRange;
@@ -80,7 +81,8 @@ public class SvnHelper {
 		return rangesToMerge;
 	}
 
-	public static void doMerge(Cancelable cancelable, String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge) throws Exception {
+	public static void doMerge(Cancelable cancelable, String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge,
+	        boolean ignoreEolStyle) throws Exception {
 
 		cancelable.setCancel(false);
 		UpdateGui updateGui = new UpdateGui(cancelable, "Merge");
@@ -90,9 +92,10 @@ public class SvnHelper {
 			updateGui.setStatus(ContentStatus.INIT);
 			SVNClientManager clientMgr = Manager.getSVNClientManager(new File(pathTo));
 			SVNDiffClient diffClient = clientMgr.getDiffClient();
+			diffClient.setMergeOptions(new SVNDiffOptions(false, false, ignoreEolStyle));
 			SVNDepth depth = SVNDepth.INFINITY;
 			boolean useAncestry = true;
-			boolean force = false;
+			boolean force = true;
 			boolean recordOnly = false;
 			Collection<SVNRevisionRange> rangesToMerge = getRevisionRanges(revisionRange, reverseMerge);
 

@@ -6,6 +6,8 @@ import hu.pagavcs.operation.ContentStatus;
 
 import java.io.File;
 
+import org.tmatesoft.svn.core.SVNNodeKind;
+
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -25,6 +27,8 @@ public class CommitListItem implements ListItem {
 	private File          path;
 	private ContentStatus status;
 	private ContentStatus propertyStatus;
+	private String        statusRemark;
+	private SVNNodeKind   nodeKind;
 
 	public String[] getColumnNames() {
 		return new String[] { "Selected", "Status", "PropertyStatus", "Path" };
@@ -45,9 +49,17 @@ public class CommitListItem implements ListItem {
 
 	public String getTooltip(int column) {
 		if (column == 1) {
-			return getStatus().toString();
+			if (statusRemark != null) {
+				return statusRemark;
+			} else {
+				return getStatus().toString();
+			}
 		} else if (column == 2) {
 			return getPropertyStatus().toString();
+		} else if (column == 3) {
+			if (statusRemark != null) {
+				return statusRemark;
+			}
 		}
 		return null;
 	}
@@ -90,6 +102,22 @@ public class CommitListItem implements ListItem {
 
 	public ContentStatus getPropertyStatus() {
 		return propertyStatus;
+	}
+
+	public String getStatusRemark() {
+		return this.statusRemark;
+	}
+
+	public void setStatusRemark(String statusRemark) {
+		this.statusRemark = statusRemark;
+	}
+
+	public void setNodeKind(SVNNodeKind nodeKind) {
+		this.nodeKind = nodeKind;
+	}
+
+	public SVNNodeKind getNodeKind() {
+		return nodeKind;
 	}
 
 }
