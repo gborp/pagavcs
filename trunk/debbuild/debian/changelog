@@ -3,8 +3,14 @@ pagavcs (1.4.27) karmic; urgency=low
   [ Gábor Pápai ]
   * [merge gui] do dryRun before real merge if more than one commit number is specified, and notice if a conflicted file would be updated by a later revision number, abort the merge process
   * [update gui] resolving conflict should change the list item in the table immediately
+  * [commit] show property changes by double click
+  * [commit]  show the tree-conflict's reason in tooltip
+  * [commit] copy to the clipboard the commit completed message only after closing the dialog
+  * [merge] add "Ignore EOL style" switch
+  * [update][merge] show tree-conflict during update/merger
+  * [gui] smaller gaps between components and around the window
   
- -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 16 Jun 2010 20:06:31 +0200
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 21 Jun 2010 22:49:12 +0200
 
 pagavcs (1.4.26) karmic; urgency=low
 
