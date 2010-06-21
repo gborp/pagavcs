@@ -67,6 +67,8 @@ public class UpdateEventHandler implements ISVNEventHandler {
 				gui.addItem(fileName, updateContentStatus, ContentStatus.UPDATE, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_COMPLETED.equals(action)) {
 				gui.addItem(event.getFile() + " - Revision number: " + event.getRevision(), updateContentStatus, ContentStatus.COMPLETED, -1);
+			} else if (SVNEventAction.TREE_CONFLICT.equals(action)) {
+				gui.addItem("Tree conflict: " + event.getFile(), updateContentStatus, ContentStatus.MISSING, -1);
 			}
 
 			// TODO SVNEventAction.MERGE_COMPLETE
