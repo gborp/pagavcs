@@ -46,6 +46,11 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			SVNErrorMessage errorMessage = ((SVNException) ex).getErrorMessage();
 
 			SVNErrorCode errorCode = errorMessage.getErrorCode();
+
+			if (errorCode.isAuthentication()) {
+				Manager.setForceShowingLoginDialogNextTime(true);
+			}
+
 			String errorString = errorMessage.getFullMessage();
 			if (SVNErrorCode.UNVERSIONED_RESOURCE.equals(errorCode)) {
 				MessagePane.showError(null, ex.getMessage(), "Error");
@@ -76,7 +81,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			PagaException pex = (PagaException) ex;
 			switch (pex.getType()) {
 				case LOGIN_FAILED:
-					MessagePane.showError(null, "Login", "Login failed");
+					MessagePane.showError(null, "Login failed", "Login failed");
 					return;
 				case CONNECTION_ERROR:
 					MessagePane.showError(null, "Connection Error", "Error in Communication");

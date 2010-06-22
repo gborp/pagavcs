@@ -3,6 +3,7 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.commit.CommitGui;
+import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.StringHelper;
 
 import java.io.File;
@@ -155,7 +156,13 @@ public class Commit {
 				successOrExit = true;
 			} catch (SVNException ex) {
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
-				if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
+				if (errorCode.isAuthentication()) {
+					MessagePane.showError(gui.getFrame(), "Authentication failure", "" + errorCode.getDescription());
+					Manager.setForceShowingLoginDialogNextTime(true);
+					mgrSvn = Manager.getSVNClientManager(new File(path));
+					commitClient = mgrSvn.getCommitClient();
+					commitClient.setEventHandler(new CommitEventHandler());
+				} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
 					File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
 					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
 					        "Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
