@@ -28,6 +28,7 @@ import hu.pagavcs.operation.Commit.CommittedItemStatus;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -1220,6 +1221,10 @@ public class CommitGui implements Working, Refreshable {
 
 			suppressListSelectionListener = false;
 		}
+	}
+
+	public Window getFrame() {
+		return frame;
 	}
 
 }
