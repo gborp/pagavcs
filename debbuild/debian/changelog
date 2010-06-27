@@ -1,3 +1,11 @@
+pagavcs (1.4.28) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [commit] handle better if the login password is wrong, but the repo is readable in read-only mode with even wrong password
+  * [commit gui] show option "add recursively" even if a directory only containing files
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 27 Jun 2010 18:08:17 +0200
+
 pagavcs (1.4.27) karmic; urgency=low
 
   [ Gábor Pápai ]
