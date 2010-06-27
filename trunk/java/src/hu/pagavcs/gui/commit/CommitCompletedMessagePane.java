@@ -1,6 +1,7 @@
 package hu.pagavcs.gui.commit;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
@@ -41,7 +42,7 @@ public class CommitCompletedMessagePane extends MessagePane {
 		Label lblMessage = new Label(message);
 		lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMessage.setIcon(icon);
-		JButton btnOk = new JButton(new OkAction());
+		final JButton btnOk = new JButton(new OkAction());
 
 		cbAutoCopyToClipboard = new JCheckBox("Copy to clipboard");
 		if (Boolean.TRUE.equals(SettingsStore.getInstance().getAutoCopyCommitRevisionToClipboard())) {
@@ -51,6 +52,17 @@ public class CommitCompletedMessagePane extends MessagePane {
 		panel.add(lblMessage, cc.xywh(1, 1, 1, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		panel.add(cbAutoCopyToClipboard, cc.xywh(1, 3, 1, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		panel.add(btnOk, cc.xywh(1, 5, 1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		try {
+			new OnSwing(true) {
+
+				protected void process() throws Exception {
+					btnOk.requestFocus();
+				}
+
+			}.run();
+		} catch (Exception ex) {
+			Manager.handle(ex);
+		}
 
 		return panel;
 	}
