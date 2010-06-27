@@ -70,19 +70,19 @@ Description: PagaVCS extension for mugCommander
  It's written in Java.
 
 Package: pagavcs
-Version: 1.4.27
+Version: 1.4.28
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Installed-Size: 5180
+Installed-Size: 5188
 Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs/pagavcs_1.4.27_all.deb
-Size: 3905624
-SHA256: 0609e655e04349587d25d45e3d618d0b44e8ef8a92cd82b2a54a41087205f15e
-SHA1: 03a96fb4687be1868e7195b42b372745b6601f90
-MD5sum: 6494d4db6cb0a048a39c50a4e223fb5d
+Filename: pool/main/p/pagavcs/pagavcs_1.4.28_all.deb
+Size: 3906692
+SHA256: e91f737f1d9a61ac88196fbc3d338bffc3cd33948c4d00499f917a6b345cb29a
+SHA1: c96843182c229d943a2d4700ad20ede72a004fcc
+MD5sum: 0ee56d79b76a7390dfb4152191360432
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
