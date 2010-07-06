@@ -1,3 +1,11 @@
+pagavcs (1.4.29) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [repo browser] use the url selected in the tree for checkout operation
+  * [commit] default focus on the OK button in the commit completed dialog
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 06 Jul 2010 18:51:29 +0200
+
 pagavcs (1.4.28) karmic; urgency=low
 
   [ Gábor Pápai ]
