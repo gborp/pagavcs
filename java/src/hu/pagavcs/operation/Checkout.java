@@ -56,7 +56,16 @@ public class Checkout implements Cancelable {
 	public void execute() throws SVNException, BackingStoreException {
 		gui = new CheckoutGui(this);
 		gui.display();
-		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
+
+		String[] urlHistory = SvnHelper.getRepoUrlHistory();
+		if (url != null) {
+			String[] urlHistoryWithPreloadedUrl = new String[urlHistory.length + 1];
+			urlHistoryWithPreloadedUrl[0] = url;
+			System.arraycopy(urlHistory, 0, urlHistoryWithPreloadedUrl, 1, urlHistory.length);
+			urlHistory = urlHistoryWithPreloadedUrl;
+		}
+
+		gui.setUrlHistory(urlHistory);
 
 		// TODO check if directory is under version control
 	}
