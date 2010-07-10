@@ -20,6 +20,7 @@ import hu.pagavcs.operation.ResolveConflictUsingTheirs;
 import hu.pagavcs.operation.Revert;
 import hu.pagavcs.operation.Settings;
 import hu.pagavcs.operation.ShowChangesOperation;
+import hu.pagavcs.operation.SwitchOperation;
 import hu.pagavcs.operation.Unignore;
 import hu.pagavcs.operation.UnlockOperation;
 import hu.pagavcs.operation.Update;
@@ -84,6 +85,7 @@ public class Communication {
 	private static final String  COMMAND_OTHER                 = "other";
 	private static final String  COMMAND_CHECKOUT              = "checkout";
 	private static final String  COMMAND_SETTINGS              = "settings";
+	private static final String  COMMAND_SWITCH                = "switch";
 	private static final String  COMMAND_RESOLVE               = "resolve";
 	private static final String  COMMAND_RESOLVEUSINGMINE      = "resolveusingmine";
 	private static final String  COMMAND_RESOLVEUSINGTHEIRS    = "resolveusingtheirs";
@@ -414,6 +416,7 @@ public class Communication {
 			makeMenuItem(sb, "Resolve", "Resolve", "pagavcs-resolve", "", COMMAND_RESOLVE);
 		}
 		if (hasSvned) {
+			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "t", COMMAND_SWITCH);
 			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", COMMAND_MERGE);
 		}
 		if (hasSvned) {
@@ -513,6 +516,11 @@ public class Communication {
 				} else if (COMMAND_DELETE.equals(command)) {
 					Delete delete = new Delete(lstArg);
 					delete.execute();
+				} else if (COMMAND_SWITCH.equals(command)) {
+					for (String path : lstArg) {
+						SwitchOperation switchOp = new SwitchOperation(path);
+						switchOp.execute();
+					}
 				} else if (COMMAND_MERGE.equals(command)) {
 					for (String path : lstArg) {
 						MergeOperation merge = new MergeOperation(path);
