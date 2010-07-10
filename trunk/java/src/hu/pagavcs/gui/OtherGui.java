@@ -52,9 +52,6 @@ public class OtherGui implements Working, Cancelable {
 	private EditField   sfRepo;
 	private EditField   sfWorkingCopy;
 	private JButton     btnShowLog;
-	private JButton     btnSwitch;
-	private EditField   sfSwitchToUrl;
-	private EditField   sfSwitchToRevision;
 	private ProgressBar prgBusy;
 	private EditField   sfBlameRevision;
 	private JButton     btnBlame;
@@ -69,8 +66,7 @@ public class OtherGui implements Working, Cancelable {
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
-		        "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -81,10 +77,6 @@ public class OtherGui implements Working, Cancelable {
 		sfRepo = new EditField();
 		sfRepo.setEditable(false);
 		btnShowLog = new JButton(new ShowLogAction());
-
-		sfSwitchToUrl = new EditField();
-		sfSwitchToRevision = new EditField();
-		btnSwitch = new JButton(new SwitchAction());
 
 		sfBlameRevision = new EditField();
 		sfBlameRevision.setToolTipText("Leave empty for HEAD revision");
@@ -108,33 +100,26 @@ public class OtherGui implements Working, Cancelable {
 		pnlMain.add(btnShowLog, cc.xywh(4, 5, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 6, 4, 1));
-		pnlMain.add(new JLabel("To url:"), cc.xywh(1, 7, 1, 1));
-		pnlMain.add(sfSwitchToUrl, cc.xywh(3, 7, 2, 1));
-		pnlMain.add(new JLabel("Revison:"), cc.xywh(1, 9, 1, 1));
-		pnlMain.add(sfSwitchToRevision, cc.xywh(3, 9, 2, 1));
-		pnlMain.add(btnSwitch, cc.xywh(4, 11, 1, 1));
+		pnlMain.add(new JLabel("Revison:"), cc.xywh(1, 7, 1, 1));
+		pnlMain.add(sfBlameRevision, cc.xywh(3, 7, 2, 1));
+		pnlMain.add(btnBlame, cc.xywh(4, 9, 1, 1));
 
-		pnlMain.add(new JSeparator(), cc.xywh(1, 12, 4, 1));
-		pnlMain.add(new JLabel("Revison:"), cc.xywh(1, 13, 1, 1));
-		pnlMain.add(sfBlameRevision, cc.xywh(3, 13, 2, 1));
-		pnlMain.add(btnBlame, cc.xywh(4, 15, 1, 1));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 10, 4, 1));
+		pnlMain.add(new JLabel("Export to:"), cc.xywh(1, 11, 1, 1));
+		pnlMain.add(sfExportTo, cc.xywh(3, 11, 2, 1));
+		pnlMain.add(btnExportTo, cc.xywh(4, 13, 1, 1));
 
-		pnlMain.add(new JSeparator(), cc.xywh(1, 16, 4, 1));
-		pnlMain.add(new JLabel("Export to:"), cc.xywh(1, 17, 1, 1));
-		pnlMain.add(sfExportTo, cc.xywh(3, 17, 2, 1));
-		pnlMain.add(btnExportTo, cc.xywh(4, 19, 1, 1));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 14, 4, 1));
+		pnlMain.add(new JLabel("Update to revision:"), cc.xywh(1, 15, 1, 1));
+		pnlMain.add(sfUpdateTo, cc.xywh(3, 15, 2, 1));
+		pnlMain.add(btnUpdateToRevision, cc.xywh(4, 17, 1, 1));
+
+		pnlMain.add(new JSeparator(), cc.xywh(1, 18, 4, 1));
+		pnlMain.add(btnApplyPatch, cc.xywh(4, 19, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 20, 4, 1));
-		pnlMain.add(new JLabel("Update to revision:"), cc.xywh(1, 21, 1, 1));
-		pnlMain.add(sfUpdateTo, cc.xywh(3, 21, 2, 1));
-		pnlMain.add(btnUpdateToRevision, cc.xywh(4, 23, 1, 1));
-
-		pnlMain.add(new JSeparator(), cc.xywh(1, 24, 4, 1));
-		pnlMain.add(btnApplyPatch, cc.xywh(4, 25, 1, 1));
-
-		pnlMain.add(new JSeparator(), cc.xywh(1, 26, 4, 1));
-		pnlMain.add(prgBusy, cc.xywh(1, 27, 3, 1));
-		pnlMain.add(lblStatus, cc.xywh(4, 27, 1, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 21, 3, 1));
+		pnlMain.add(lblStatus, cc.xywh(4, 21, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Other", "/hu/pagavcs/resources/other-app-icon.png");
 		frame.setTitlePrefix(other.getPath());
@@ -151,15 +136,6 @@ public class OtherGui implements Working, Cancelable {
 
 	public void setURL(String text) {
 		sfRepo.setText(text);
-	}
-
-	private void doSwitch() throws Exception {
-		try {
-			prgBusy.startProgress();
-			other.doSwitch(sfWorkingCopy.getText(), sfSwitchToUrl.getText().trim(), sfSwitchToRevision.getText().trim());
-		} finally {
-			prgBusy.stopProgress();
-		}
 	}
 
 	private void doBlame() throws Exception {
@@ -272,18 +248,6 @@ public class OtherGui implements Working, Cancelable {
 
 	}
 
-	private class SwitchAction extends ThreadAction {
-
-		public SwitchAction() {
-			super("Switch");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			doSwitch();
-		}
-
-	}
-
 	private class BlameAction extends ThreadAction {
 
 		public BlameAction() {
@@ -306,17 +270,6 @@ public class OtherGui implements Working, Cancelable {
 			doExport();
 		}
 
-	}
-
-	private class RepoBrowserAction extends ThreadAction {
-
-		public RepoBrowserAction() {
-			super("Repo Browser");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			other.doRepoBrowser(sfWorkingCopy.getText());
-		}
 	}
 
 	private class UpdateToRevisionAction extends ThreadAction {
