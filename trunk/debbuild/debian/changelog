@@ -1,3 +1,11 @@
+pagavcs (1.4.30) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 38: svn: Checksum mismatch while updating
+  * Issue 67: [context menu] separate context menu item for "switch"
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 31 Jul 2010 20:52:58 +0200
+
 pagavcs (1.4.29) karmic; urgency=low
 
   [ Gábor Pápai ]
