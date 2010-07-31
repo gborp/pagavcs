@@ -6,6 +6,8 @@ import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.TextArea;
 
 import java.awt.BorderLayout;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,6 +18,8 @@ import javax.swing.JScrollPane;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -61,6 +65,34 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			} else if (SVNErrorCode.ENTRY_NOT_FOUND.equals(errorCode)) {
 				MessagePane.showError(null, "Not under version control", errorString);
 				return;
+			} else if (SVNErrorCode.WC_CORRUPT_TEXT_BASE.equals(errorCode)) {
+				try {
+					Object[] relObjects = errorMessage.getRelatedObjects();
+					File file = (File) relObjects[0];
+
+					File dir = file.getParentFile().getParentFile().getParentFile();
+					String fileRealName = file.getName().substring(0, file.getName().length() - ".svn-base".length());
+
+					SVNClientManager mgr = Manager.getSVNClientManager(dir);
+
+					file.getParentFile().mkdirs();
+					FileOutputStream out = new FileOutputStream(file);
+
+					File realFile = new File(dir, fileRealName);
+
+					SVNRevision revision = mgr.getWCClient().doInfo(realFile, SVNRevision.WORKING).getRevision();
+
+					mgr.getWCClient().doGetFileContents(realFile, SVNRevision.HEAD, revision, false, out);
+					out.close();
+
+					MessagePane.showError(null, "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")",
+					        "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")");
+
+					return;
+
+				} catch (Exception ex2) {
+					Manager.handle(ex2);
+				}
 			}
 
 			SVNErrorCode rootErrorCode = errorMessage.getRootErrorMessage().getErrorCode();
