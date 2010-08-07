@@ -145,7 +145,7 @@ public class Log implements Cancelable {
 
 	public SVNURL getRootUrl() throws SVNException {
 		if (rootUrl == null) {
-			rootUrl = Manager.getInfo(path).getURL();
+			rootUrl = Manager.getInfo(path).getRepositoryRootURL();
 		}
 		return rootUrl;
 	}
