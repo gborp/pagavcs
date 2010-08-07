@@ -1,3 +1,10 @@
+pagavcs (1.4.31) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 13: [log gui] print in gray in detail log the items which not log command is issued for -- fix regression
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 07 Aug 2010 12:50:18 +0200
+
 pagavcs (1.4.30) karmic; urgency=low
 
   [ Gábor Pápai ]
