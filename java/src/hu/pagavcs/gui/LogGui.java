@@ -123,10 +123,10 @@ public class LogGui implements Working {
 		filterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
 
 			private boolean nullSafeContains(String where, String what) {
-				if (where == null) {
+				if (where == null || what == null) {
 					return false;
 				}
-				return where.contains(what);
+				return where.toLowerCase().contains(what.toLowerCase());
 			}
 
 			public boolean include(javax.swing.RowFilter.Entry<? extends TableModel<LogListItem>, ? extends Integer> entry) {
