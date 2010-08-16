@@ -1,6 +1,5 @@
 #summary How to enable the icons in the Nautilus context menu
-
-= Details =
+=How to enable the icons in the Nautilus context menu=
 
 In gconf-editor :
 set /desktop/gnome/interface/menus_have_icons to checked.
