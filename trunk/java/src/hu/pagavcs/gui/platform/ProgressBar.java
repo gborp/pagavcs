@@ -27,6 +27,10 @@ public class ProgressBar extends JProgressBar {
 		this.working = working;
 	}
 
+	public boolean isWorking() {
+		return busyCount > 0;
+	}
+
 	public void startProgress() throws Exception {
 		System.nanoTime();
 		new OnSwing() {

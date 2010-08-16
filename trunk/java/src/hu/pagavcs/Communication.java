@@ -3,16 +3,18 @@ package hu.pagavcs;
 import hu.pagavcs.bl.FileStatusCache;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.FileStatusCache.STATUS;
+import hu.pagavcs.operation.ApplyPatchOperation;
+import hu.pagavcs.operation.BlameOperation;
 import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.CopyMoveRename;
 import hu.pagavcs.operation.Delete;
+import hu.pagavcs.operation.ExportOperation;
 import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.LockOperation;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.MergeOperation;
-import hu.pagavcs.operation.Other;
 import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.ResolveConflictUsingMine;
@@ -24,6 +26,7 @@ import hu.pagavcs.operation.SwitchOperation;
 import hu.pagavcs.operation.Unignore;
 import hu.pagavcs.operation.UnlockOperation;
 import hu.pagavcs.operation.Update;
+import hu.pagavcs.operation.UpdateToRevisionOperation;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -82,7 +85,6 @@ public class Communication {
 	private static final String  COMMAND_DELETE                = "delete";
 	private static final String  COMMAND_MERGE                 = "merge";
 	private static final String  COMMAND_COPYMOVERENAME        = "copymoverename";
-	private static final String  COMMAND_OTHER                 = "other";
 	private static final String  COMMAND_CHECKOUT              = "checkout";
 	private static final String  COMMAND_SETTINGS              = "settings";
 	private static final String  COMMAND_SWITCH                = "switch";
@@ -92,6 +94,12 @@ public class Communication {
 	private static final String  COMMAND_REPOBROWSER           = "repobrowser";
 	private static final String  COMMAND_STOP                  = "stop";
 	private static final String  COMMAND_PING                  = "ping";
+	private static final String  COMMAND_ADD                   = "add";
+	private static final String  COMMAND_APPLY_PATCH           = "applypatch";
+	private static final String  COMMAND_BLAME                 = "blame";
+	private static final String  COMMAND_UPDATE_TO_REVISION    = "updatetorevision";
+	private static final String  COMMAND_EXPORT                = "export";
+
 	private static final String  CFG_COMMUNICATION_PORT_KEY    = "port";
 
 	private static Communication singleton;
@@ -390,6 +398,11 @@ public class Communication {
 		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "", COMMAND_REPOBROWSER);
 
 		if (hasSvned) {
+			makeMenuItem(sb, "Update to revision", "Update to revision", "pagavcs-update", "", COMMAND_UPDATE_TO_REVISION);
+			makeMenuItem(sb, "Blame", "Blame", "pagavcs-other", "", COMMAND_BLAME);
+		}
+
+		if (hasSvned) {
 			makeMenuItem(sb, "Ignore", "Ignore", "pagavcs-ignore", "s", COMMAND_IGNORE);
 		}
 		if (hasSvned) {
@@ -418,9 +431,10 @@ public class Communication {
 		if (hasSvned) {
 			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "t", COMMAND_SWITCH);
 			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", COMMAND_MERGE);
+			makeMenuItem(sb, "Export", "Export", "pagavcs-export", "", COMMAND_EXPORT);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Other", "Other", "pagavcs-other", "t", COMMAND_OTHER);
+			makeMenuItem(sb, "Apply patch", "Apply patch", "pagavcs-applypatch", "", COMMAND_APPLY_PATCH);
 		}
 
 		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s", COMMAND_SETTINGS);
@@ -461,10 +475,29 @@ public class Communication {
 
 		public void run() {
 			try {
-
-				if (COMMAND_UPDATE.equals(command)) {
+				if (COMMAND_APPLY_PATCH.equals(command)) {
+					for (String path : lstArg) {
+						ApplyPatchOperation applyPatch = new ApplyPatchOperation(path);
+						applyPatch.execute();
+					}
+				} else if (COMMAND_BLAME.equals(command)) {
+					for (String path : lstArg) {
+						BlameOperation blame = new BlameOperation(path);
+						blame.execute();
+					}
+				} else if (COMMAND_EXPORT.equals(command)) {
+					for (String path : lstArg) {
+						ExportOperation export = new ExportOperation(path);
+						export.execute();
+					}
+				} else if (COMMAND_UPDATE.equals(command)) {
 					Update update = new Update(lstArg);
 					update.execute();
+				} else if (COMMAND_UPDATE_TO_REVISION.equals(command)) {
+					for (String path : lstArg) {
+						UpdateToRevisionOperation updateToRevision = new UpdateToRevisionOperation(path);
+						updateToRevision.execute();
+					}
 				} else if (COMMAND_LOG.equals(command)) {
 					for (String path : lstArg) {
 						Log showlog = new Log(path);
@@ -525,11 +558,6 @@ public class Communication {
 					for (String path : lstArg) {
 						MergeOperation merge = new MergeOperation(path);
 						merge.execute();
-					}
-				} else if (COMMAND_OTHER.equals(command)) {
-					for (String path : lstArg) {
-						Other other = new Other(path);
-						other.execute();
 					}
 				} else if (COMMAND_CHECKOUT.equals(command)) {
 					for (String path : lstArg) {
