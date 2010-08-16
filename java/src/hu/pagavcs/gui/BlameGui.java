@@ -1,12 +1,17 @@
 package hu.pagavcs.gui;
 
-import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
+import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
+import hu.pagavcs.gui.platform.Label;
+import hu.pagavcs.gui.platform.ProgressBar;
 import hu.pagavcs.gui.platform.Table;
 import hu.pagavcs.gui.platform.TableModel;
+import hu.pagavcs.operation.BlameOperation;
+import hu.pagavcs.operation.GeneralStatus;
 import hu.pagavcs.operation.Log;
 
 import java.awt.event.ActionEvent;
@@ -16,10 +21,12 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+
+import org.tmatesoft.svn.core.SVNCancelException;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -37,30 +44,28 @@ import com.jgoodies.forms.layout.FormLayout;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class BlameGui {
+public class BlameGui implements Working {
 
 	private Table<BlameListItem>      tblBlame;
 	private TableModel<BlameListItem> tableModel;
-	private final Cancelable          update;
+	private final BlameOperation      blameOperation;
+	private JButton                   btnBlame;
 	private JButton                   btnStop;
+	private JLabel                    lblStatus;
+	private EditField                 sfRepo;
+	private EditField                 sfRevision;
 	// TODO use Progress, btnStop make it stop too
-	private JProgressBar              prgWorking;
-	private List<BlameListItem>       lstBlame;
-	private final String              file;
+	private ProgressBar               prgBusy;
+	private String                    file;
 	private Frame                     frame;
 
-	public BlameGui(Cancelable update, String file) {
-		this.update = update;
-		this.file = file;
-	}
-
-	public void setBlamedFile(List<BlameListItem> lstBlame) {
-		this.lstBlame = lstBlame;
+	public BlameGui(BlameOperation blameOperation) {
+		this.blameOperation = blameOperation;
 	}
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("1dlu:g, p, p", "fill:4dlu:g,p");
+		FormLayout layout = new FormLayout("p, 2dlu,p:g,2dlu, p", "p,2dlu,p,2dlu,fill:4dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -75,23 +80,96 @@ public class BlameGui {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
-					btnStop.setEnabled(false);
-					update.setCancel(true);
+					if (prgBusy.isWorking()) {
+						btnStop.setEnabled(false);
+						blameOperation.setCancel(true);
+					} else {
+						frame.setVisible(false);
+						frame.dispose();
+					}
 				} catch (Exception e1) {
 					Manager.handle(e1);
 				}
 			}
 		});
-		prgWorking = new JProgressBar();
 
-		pnlMain.add(scrollPane, cc.xywh(1, 1, 3, 1));
-		pnlMain.add(prgWorking, cc.xywh(2, 2, 1, 1));
-		pnlMain.add(btnStop, cc.xywh(3, 2, 1, 1));
+		btnBlame = new JButton("Blame");
+		btnBlame.setEnabled(false);
+		btnBlame.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					prgBusy.startProgress();
+					new Thread(new Runnable() {
+
+						public void run() {
+							try {
+								try {
+									final List<BlameListItem> lstBlame = blameOperation.doBlame(blameOperation.getPath(), sfRevision.getText());
+									new OnSwing() {
+
+										protected void process() throws Exception {
+											setStatus(GeneralStatus.COMPLETED);
+											tableModel.clear();
+											tableModel.addLines(lstBlame);
+											prgBusy.stopProgress();
+										}
+
+									}.run();
+								} catch (SVNCancelException ex) {
+									new OnSwing() {
+
+										protected void process() throws Exception {
+											btnStop.setEnabled(true);
+											prgBusy.stopProgress();
+										}
+									}.run();
+								}
+
+							} catch (Exception e1) {
+								Manager.handle(e1);
+							}
+						}
+					}).start();
+
+				} catch (Exception e1) {
+					Manager.handle(e1);
+				}
+			}
+		});
+
+		prgBusy = new ProgressBar(this);
+
+		Label lblRepo = new Label("Repository:");
+		sfRepo = new EditField();
+		sfRepo.setEditable(false);
+		lblStatus = new Label(" ");
+		Label lblRevision = new Label("Revision:");
+		sfRevision = new EditField();
+		sfRevision.setColumns(10);
+
+		pnlMain.add(lblRepo, cc.xywh(1, 1, 1, 1));
+		pnlMain.add(sfRepo, cc.xywh(3, 1, 3, 1));
+		pnlMain.add(lblRevision, cc.xywh(1, 3, 1, 1));
+		pnlMain.add(sfRevision, cc.xywh(3, 3, 1, 1));
+		pnlMain.add(btnBlame, cc.xywh(5, 3, 1, 1));
+
+		pnlMain.add(scrollPane, cc.xywh(1, 5, 5, 1));
+		pnlMain.add(prgBusy, cc.xywh(1, 7, 3, 1));
+		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
 		frame.setTitlePrefix(file);
 
-		tableModel.addLines(lstBlame);
+	}
+
+	public void setStatus(GeneralStatus status) {
+		lblStatus.setText("Status: " + status.toString());
+	}
+
+	public void setURL(String text) {
+		sfRepo.setText(text);
+		btnBlame.setEnabled(true);
 	}
 
 	private class ShowLog extends ThreadAction {
@@ -137,5 +215,13 @@ public class BlameGui {
 		public void mouseReleased(MouseEvent e) {
 			showPopup(e);
 		}
+	}
+
+	public void workStarted() {
+		setStatus(GeneralStatus.WORKING);
+	}
+
+	public void workEnded() {
+		setStatus(GeneralStatus.COMPLETED);
 	}
 }
