@@ -1,3 +1,14 @@
+pagavcs (1.4.32) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [log gui] make the text filtering caseinsensitive
+  * Issue 68: [context menu] separate context menu item for "blame"
+  * Issue 69: [context menu] separate context menu item for "export"
+  * Issue 70: [context menu] separate context menu item for "update to revision"
+  * Issue 72: [context menu] separate context menu item for "apply patch"
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 16 Aug 2010 19:39:24 +0200
+
 pagavcs (1.4.31) karmic; urgency=low
 
   [ Gábor Pápai ]
