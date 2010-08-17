@@ -49,30 +49,33 @@ public class DynamicExtensionsManager {
 				// TODO throw exception or something
 				System.out.println("extensions.cfg.dir variable is not set!");
 			} else {
-				for (String extClassName : new File(cfgDir, "extensions").list()) {
-					try {
-						Object instance = Class.forName(extClassName).newInstance();
-						if (instance instanceof ContextMenuExtensionFactory) {
-							addContextMenuExtension(((ContextMenuExtensionFactory) instance).getContextMenuExtension());
-						}
+				File fileExtensions = new File(cfgDir, "extensions");
+				if (fileExtensions.isDirectory()) {
+					for (String extClassName : fileExtensions.list()) {
+						try {
+							Object instance = Class.forName(extClassName).newInstance();
+							if (instance instanceof ContextMenuExtensionFactory) {
+								addContextMenuExtension(((ContextMenuExtensionFactory) instance).getContextMenuExtension());
+							}
 
-						if (instance instanceof FileEmblemExtensionFactory) {
-							lstFileEmblemExtensions.add(((FileEmblemExtensionFactory) instance).getFileEmblemExtension());
-						}
+							if (instance instanceof FileEmblemExtensionFactory) {
+								lstFileEmblemExtensions.add(((FileEmblemExtensionFactory) instance).getFileEmblemExtension());
+							}
 
-						if (instance instanceof DrivePopupMenuExtensionFactory) {
-							lstDrivePopupMenuExtensions.add(((DrivePopupMenuExtensionFactory) instance).getDrivePopupMenuExtension());
-						}
+							if (instance instanceof DrivePopupMenuExtensionFactory) {
+								lstDrivePopupMenuExtensions.add(((DrivePopupMenuExtensionFactory) instance).getDrivePopupMenuExtension());
+							}
 
-						if (instance instanceof MainMenuBarExtensionFactory) {
-							lstMainMenuBarExtensions.add(((MainMenuBarExtensionFactory) instance).getMainMenuBarExtension());
-						}
+							if (instance instanceof MainMenuBarExtensionFactory) {
+								lstMainMenuBarExtensions.add(((MainMenuBarExtensionFactory) instance).getMainMenuBarExtension());
+							}
 
-						if (instance instanceof ServiceExtensionFactory) {
-							lstServiceExtensions.add(((ServiceExtensionFactory) instance).getServiceExtension());
+							if (instance instanceof ServiceExtensionFactory) {
+								lstServiceExtensions.add(((ServiceExtensionFactory) instance).getServiceExtension());
+							}
+						} catch (Exception ex) {
+							ex.printStackTrace();
 						}
-					} catch (Exception ex) {
-						ex.printStackTrace();
 					}
 				}
 			}
