@@ -1,3 +1,10 @@
+mugcommander (1.0.5) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 82: error starting mugcommander without extensions
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 17 Aug 2010 07:45:14 +0200
+
 mugcommander (1.0.4) karmic; urgency=low
 
   [ Gábor Pápai ]
