@@ -159,12 +159,16 @@ public class BlameGui implements Working {
 		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
-		frame.setTitlePrefix(file);
 
 	}
 
 	public void setStatus(GeneralStatus status) {
 		lblStatus.setText("Status: " + status.toString());
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+		frame.setTitlePrefix(file);
 	}
 
 	public void setURL(String text) {
