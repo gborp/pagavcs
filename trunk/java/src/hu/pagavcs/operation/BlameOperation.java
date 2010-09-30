@@ -50,6 +50,7 @@ public class BlameOperation implements Cancelable {
 	public void execute() throws SVNException, BackingStoreException, PagaException {
 		gui = new BlameGui(this);
 		gui.display();
+		gui.setFile(path);
 		gui.setStatus(GeneralStatus.INIT);
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
