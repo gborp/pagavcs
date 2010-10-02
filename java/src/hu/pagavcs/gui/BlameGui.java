@@ -100,6 +100,7 @@ public class BlameGui implements Working {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					prgBusy.startProgress();
+					tblBlame.hideMessage();
 					new Thread(new Runnable() {
 
 						public void run() {
@@ -157,6 +158,8 @@ public class BlameGui implements Working {
 		pnlMain.add(scrollPane, cc.xywh(1, 5, 5, 1));
 		pnlMain.add(prgBusy, cc.xywh(1, 7, 3, 1));
 		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
+
+		tblBlame.showMessage("Click the \"Blame\" button", Manager.ICON_INFORMATION);
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
 
