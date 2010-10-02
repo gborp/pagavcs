@@ -1,3 +1,10 @@
+pagavcs (1.4.33) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 86: [blame] the show-log function is broken from the Blame gui
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 30 Sep 2010 18:49:38 +0200
+
 pagavcs (1.4.32) karmic; urgency=low
 
   [ Gábor Pápai ]
