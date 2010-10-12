@@ -422,6 +422,13 @@ public class LogGui implements Working {
 								lstLi.add(li);
 							}
 						}
+						if (lstLi.size() == 1) {
+							List<LogListItem> lines = tmdlLog.getAllData();
+							if (lines.get(lines.size() - 1).getRevision() == lstLi.get(0).getRevision()) {
+								lstLi.clear();
+							}
+						}
+
 						tmdlLog.addLines(lstLi);
 					}
 				}.run();
