@@ -1,3 +1,12 @@
+pagavcs (1.4.34) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [settings gui] add about dialog
+  * [blame gui] show "Click the Blame button" info when opening the blame function. it helps the user.
+  * [log gui] add context menu for "added" items in the detail table view
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 12 Oct 2010 19:33:51 +0200
+
 pagavcs (1.4.33) karmic; urgency=low
 
   [ Gábor Pápai ]
