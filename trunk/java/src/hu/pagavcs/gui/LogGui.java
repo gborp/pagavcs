@@ -716,6 +716,7 @@ public class LogGui implements Working {
 	private class DetailPopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppModified;
+		private JPopupMenu ppAdded;
 
 		public DetailPopupupMouseListener() {
 			ppModified = new JPopupMenu();
@@ -727,6 +728,12 @@ public class LogGui implements Working {
 			ppModified.add(new DetailRevertChangesFromThisRevisionAction());
 			ppModified.add(new CopyDetailLineToClipboard());
 			ppModified.add(new CopyDetailAllToClipboard());
+
+			ppAdded = new JPopupMenu();
+			ppAdded.add(new ShowFileAction());
+			ppAdded.add(new SaveRevisionToAction());
+			ppAdded.add(new CopyDetailLineToClipboard());
+			ppAdded.add(new CopyDetailAllToClipboard());
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -741,6 +748,12 @@ public class LogGui implements Working {
 
 			if (selected.getAction().equals(ContentStatus.MODIFIED)) {
 				JPopupMenu ppVisible = ppModified;
+				ppVisible.setInvoker(tblDetailLog);
+				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				ppVisible.setVisible(true);
+				e.consume();
+			} else if (selected.getAction().equals(ContentStatus.ADDED)) {
+				JPopupMenu ppVisible = ppAdded;
 				ppVisible.setInvoker(tblDetailLog);
 				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
 				ppVisible.setVisible(true);
