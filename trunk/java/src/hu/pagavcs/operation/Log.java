@@ -290,13 +290,13 @@ public class Log implements Cancelable {
 
 	public void revertChanges(String revertPath, long revision) throws Exception {
 
+		String pathToUrl = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
+		String rootUrlDecoded = getRootUrl().toDecodedString();
+
 		SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
 		SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath() + revertPath,
 		        true);
-
-		String pathRevert = svnUrl.getPath();
-		String pathWc = getRootUrl().getPath();
-		String pathRevertWc = path + pathRevert.substring(pathWc.length());
+		String pathRevertWc = path + revertPath.substring(pathToUrl.substring(rootUrlDecoded.length()).length());
 
 		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), Long.toString(revision), true, false);
 	}
