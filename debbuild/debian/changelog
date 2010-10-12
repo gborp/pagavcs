@@ -1,3 +1,11 @@
+pagavcs (1.4.35) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 87: [log] calling "show more" for a file which is newly added adds another line, but it's the same
+  * [Log] fix "revert changes from this revision" function when "show log" is invoked on a file, not on a dir
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 12 Oct 2010 20:16:56 +0200
+
 pagavcs (1.4.34) karmic; urgency=low
 
   [ Gábor Pápai ]
