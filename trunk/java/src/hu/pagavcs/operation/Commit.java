@@ -141,7 +141,7 @@ public class Commit {
 		}
 	}
 
-	public void doCommit(ArrayList<File> lstCommit, String message) throws Exception {
+	public void doCommit(List<File> lstCommit, String message) throws Exception {
 		gui.setStatus(CommitStatus.COMMIT_STARTED, null);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
 		SVNCommitClient commitClient = mgrSvn.getCommitClient();
