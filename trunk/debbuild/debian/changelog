@@ -1,3 +1,11 @@
+pagavcs (1.4.36) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [log-gui] fix error if there's only one line log info
+  * Issue 89 -- during committing unversioned directory give the user the possibility to add recoursively its subdirectorys
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 14 Oct 2010 20:24:18 +0200
+
 pagavcs (1.4.35) karmic; urgency=low
 
   [ Gábor Pápai ]
