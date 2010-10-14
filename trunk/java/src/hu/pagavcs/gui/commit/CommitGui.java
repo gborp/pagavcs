@@ -2,6 +2,7 @@ package hu.pagavcs.gui.commit;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
+import hu.pagavcs.bl.OnSwingWait;
 import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
@@ -43,11 +44,13 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.ComboBoxModel;
@@ -115,9 +118,11 @@ public class CommitGui implements Working, Refreshable {
 	private JButton                             btnCreatePatch;
 	private JCheckBox                           cbHelpMerge;
 	private String                              url;
+	private Semaphore                           refreshFinished;
 
 	public CommitGui(Commit commit) {
 		this.commit = commit;
+		refreshFinished = new Semaphore(1, true);
 	}
 
 	public void display() throws SVNException {
@@ -397,6 +402,7 @@ public class CommitGui implements Working, Refreshable {
 	}
 
 	public void refresh() throws Exception {
+		refreshFinished.acquire();
 		new OnSwing() {
 
 			protected void process() throws Exception {
@@ -420,9 +426,9 @@ public class CommitGui implements Working, Refreshable {
 							commit.refresh();
 							workEnded();
 
-							new OnSwing() {
+							new OnSwingWait<Object, Object>() {
 
-								protected void process() throws Exception {
+								protected Object process() throws Exception {
 									for (CommitListItem li : tmdlCommit.getAllData()) {
 										Boolean oldSelectionState = mapOldSelectionState.get(li.getPath());
 										if (oldSelectionState != null) {
@@ -430,10 +436,13 @@ public class CommitGui implements Working, Refreshable {
 										}
 									}
 									tblCommit.repaint();
+									return null;
 								}
 							}.run();
 						} catch (Exception e) {
 							Manager.handle(e);
+						} finally {
+							refreshFinished.release();
 						}
 					}
 				}).start();
@@ -548,6 +557,36 @@ public class CommitGui implements Working, Refreshable {
 		return lstResult;
 	}
 
+	private boolean addRecoursively(List<CommitListItem> lstItems) throws SVNException {
+		boolean hasDirectory = false;
+		for (CommitListItem li : lstItems) {
+			if (li.getPath().isDirectory()) {
+				if (li.getPath().listFiles().length != 0) {
+					hasDirectory = true;
+					break;
+				}
+			}
+		}
+
+		boolean addRecursively = false;
+		if (hasDirectory) {
+			int answer = JOptionPane.showConfirmDialog(frame, "Do you want to add recursively?");
+			if (answer == JOptionPane.CANCEL_OPTION) {
+				return false;
+			} else {
+				if (answer == JOptionPane.YES_OPTION) {
+					addRecursively = true;
+				}
+			}
+		}
+
+		for (CommitListItem li : lstItems) {
+			li.setSelected(true);
+			commit.add(li.getPath(), addRecursively);
+		}
+		return true;
+	}
+
 	private class CreatePatchAction extends ThreadAction {
 
 		public CreatePatchAction() {
@@ -598,32 +637,33 @@ public class CommitGui implements Working, Refreshable {
 
 	private class CommitAction extends ThreadAction {
 
+		private boolean needRefreshAndRecount;
+		private boolean firstPass;
+
 		public CommitAction() {
 			super("Commit");
 		}
 
-		public void actionProcess(ActionEvent e) throws Exception {
-			workStarted();
-			if (taMessage.getText().trim().length() < logMinSize) {
-				MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
-				return;
-			}
-
-			Manager.getSettings().addCommitMessageForHistory(taMessage.getText().trim());
-
-			noCommit = 0;
+		private List<File> commitHelper() throws SVNException {
 			ArrayList<File> lstCommit = new ArrayList<File>();
 			for (CommitListItem li : tmdlCommit.getAllData()) {
 				if (li.isSelected()) {
 
-					if (li.getStatus().equals(ContentStatus.UNVERSIONED)) {
+					if (firstPass && li.getStatus().equals(ContentStatus.UNVERSIONED)) {
 						// auto-add unversioned items
-						commit.add(li.getPath(), false);
+						boolean success = addRecoursively(Arrays.asList(li));
+						if (!success) {
+							MessagePane.showError(frame, "Cancelled", "Cancelled.");
+							return null;
+						} else {
+							needRefreshAndRecount = true;
+						}
+
 					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
 						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
 						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
 						MessagePane.showError(frame, "Cannot commit", "Cannot commit conflicted file! Please resolve the conflict first.");
-						return;
+						return null;
 					}
 
 					lstCommit.add(li.getPath());
@@ -639,18 +679,50 @@ public class CommitGui implements Working, Refreshable {
 					}
 				}
 			}
-			if (noCommit == 0) {
-				MessagePane.showError(frame, "Cannot commit", "Nothing is selected to commit");
-				return;
-			}
+			return lstCommit;
+		}
 
-			tblCommit.setEnabled(false);
-			btnCommit.setEnabled(false);
-			btnCreatePatch.setEnabled(false);
-			prgWorkinProgress.setValue(0);
-			prgWorkinProgress.setIndeterminate(true);
-			preRealCommitProcess = true;
-			workEnded();
+		public void actionProcess(ActionEvent e) throws Exception {
+			workStarted();
+			List<File> lstCommit;
+			try {
+				if (taMessage.getText().trim().length() < logMinSize) {
+					MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
+					return;
+				}
+
+				Manager.getSettings().addCommitMessageForHistory(taMessage.getText().trim());
+
+				noCommit = 0;
+				needRefreshAndRecount = false;
+				firstPass = true;
+				lstCommit = commitHelper();
+				if (lstCommit != null && needRefreshAndRecount) {
+					firstPass = false;
+					refresh();
+					refreshFinished.acquire();
+					refreshFinished.release();
+					lstCommit = commitHelper();
+				}
+
+				if (lstCommit == null) {
+					return;
+				}
+
+				if (noCommit == 0) {
+					MessagePane.showError(frame, "Cannot commit", "Nothing is selected to commit");
+					return;
+				}
+
+				tblCommit.setEnabled(false);
+				btnCommit.setEnabled(false);
+				btnCreatePatch.setEnabled(false);
+				prgWorkinProgress.setValue(0);
+				prgWorkinProgress.setIndeterminate(true);
+				preRealCommitProcess = true;
+			} finally {
+				workEnded();
+			}
 			commit.doCommit(lstCommit, taMessage.getText());
 		}
 	}
@@ -692,36 +764,14 @@ public class CommitGui implements Working, Refreshable {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			workStarted();
-
-			boolean hasDirectory = false;
-			for (CommitListItem li : getSelectedItems()) {
-				if (li.getPath().isDirectory()) {
-					if (li.getPath().listFiles().length != 0) {
-						hasDirectory = true;
-						break;
-					}
+			try {
+				boolean success = addRecoursively(getSelectedItems());
+				if (success) {
+					refresh();
 				}
+			} finally {
+				workEnded();
 			}
-
-			boolean addRecursively = false;
-			if (hasDirectory) {
-				int answer = JOptionPane.showConfirmDialog(frame, "Do you want to add recursively?");
-				if (answer == JOptionPane.CANCEL_OPTION) {
-					workEnded();
-					return;
-				} else {
-					if (answer == JOptionPane.YES_OPTION) {
-						addRecursively = true;
-					}
-				}
-			}
-
-			for (CommitListItem li : getSelectedItems()) {
-				li.setSelected(true);
-				commit.add(li.getPath(), addRecursively);
-			}
-			refresh();
-			workEnded();
 		}
 	}
 
