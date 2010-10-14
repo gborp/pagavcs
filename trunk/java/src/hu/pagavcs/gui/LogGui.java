@@ -424,7 +424,7 @@ public class LogGui implements Working {
 						}
 						if (lstLi.size() == 1) {
 							List<LogListItem> lines = tmdlLog.getAllData();
-							if (lines.get(lines.size() - 1).getRevision() == lstLi.get(0).getRevision()) {
+							if (!lines.isEmpty() && lines.get(lines.size() - 1).getRevision() == lstLi.get(0).getRevision()) {
 								lstLi.clear();
 							}
 						}
