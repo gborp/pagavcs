@@ -94,7 +94,7 @@ public class LogGui implements Working {
 	private JSplitPane                              splDetail;
 	private JSplitPane                              splMain;
 	private Timer                                   tmrTableRevalidate;
-	private boolean                                 revalidateIsTimed;
+	private volatile boolean                        revalidateIsTimed;
 	private JButton                                 btnShowMore;
 	private JButton                                 btnShowAll;
 	private ConcurrentLinkedQueue<LogListItem>      quNewItems = new ConcurrentLinkedQueue<LogListItem>();

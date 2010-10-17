@@ -6,7 +6,11 @@ import hu.pagavcs.bl.OnSwing;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.Icon;
 import javax.swing.JTable;
@@ -37,6 +41,8 @@ public class Table<L extends ListItem> extends JTable {
 	private static final long   serialVersionUID = -1;
 	private Label               lblMessage;
 	private final TableModel<L> tableModel;
+	private Timer               tmrResize;
+	private volatile boolean    resizeIsTimed;
 
 	public Table(TableModel<L> tableModel) {
 		super(tableModel);
@@ -45,32 +51,45 @@ public class Table<L extends ListItem> extends JTable {
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setFillsViewportHeight(true);
 		setShowGrid(false);
+		tmrResize = new Timer("Delayed resize table", true);
+
+		addPropertyChangeListener("visible", new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent evt) {
+				tmrResize.cancel();
+				tmrResize.purge();
+			}
+		});
+
 		tableModel.addTableModelListener(new TableModelListener() {
 
 			public void tableChanged(TableModelEvent e) {
-				// if (e.getType() == TableModelEvent.INSERT) {
-				new Thread(new Runnable() {
 
-					public void run() {
-						try {
-							Thread.sleep(200);
-							new OnSwing(true) {
-
-								protected void process() throws Exception {
-									resizeColumns();
-								}
-
-							}.run();
-						} catch (Exception ex) {
-							Manager.handle(ex);
-						}
-					}
-
-				}).start();
-
-				// }
+				if (!resizeIsTimed) {
+					resizeIsTimed = true;
+					tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
+				}
 			}
 		});
+
+	}
+
+	private class DoResizeTask extends TimerTask {
+
+		public void run() {
+			try {
+				new OnSwing(true) {
+
+					protected void process() throws Exception {
+						resizeIsTimed = false;
+						resizeColumns();
+					}
+
+				}.run();
+			} catch (Exception e) {
+				Manager.handle(e);
+			}
+		}
 	}
 
 	public TableModel<L> getModel() {
