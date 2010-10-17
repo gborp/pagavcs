@@ -339,6 +339,7 @@ public class CommitGui implements Working, Refreshable {
 					btnCreatePatch.setEnabled(true);
 					prgWorkinProgress.setValue(0);
 					prgWorkinProgress.setIndeterminate(false);
+					prgWorkinProgress.setString("");
 					preRealCommitProcess = false;
 				}
 			}
@@ -752,6 +753,7 @@ public class CommitGui implements Working, Refreshable {
 				}
 
 			}.run();
+			prgWorkinProgress.setString("");
 			commit.setCancel(true);
 		}
 	}
