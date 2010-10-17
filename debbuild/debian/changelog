@@ -1,3 +1,10 @@
+pagavcs (1.4.37) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 91: [log-gui] slow performance opening commit dialog with many committable items
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 17 Oct 2010 11:01:07 +0200
+
 pagavcs (1.4.36) karmic; urgency=low
 
   [ Gábor Pápai ]
