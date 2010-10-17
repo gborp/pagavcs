@@ -517,7 +517,7 @@ public class CommitGui implements Working, Refreshable {
 
 		if (itemStatus.equals(CommittedItemStatus.DELTA_SENT)) {
 			prgWorkinProgress.setValue(prgWorkinProgress.getValue() + 1);
-			prgWorkinProgress.setString("");
+			prgWorkinProgress.setString(fileName);
 		}
 
 		if (itemStatus.equals(CommittedItemStatus.COMPLETED)) {
