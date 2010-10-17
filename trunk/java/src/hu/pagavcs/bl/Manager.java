@@ -64,6 +64,7 @@ import org.tmatesoft.svn.util.SVNDebugLog;
 public class Manager {
 
 	public static final long        REVALIDATE_DELAY                    = 500;
+	public static final long        TABLE_RESIZE_DELAY                  = 100;
 
 	public static Icon              ICON_ERROR                          = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
 	public static Icon              ICON_INFORMATION                    = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
