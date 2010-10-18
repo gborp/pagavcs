@@ -6,8 +6,6 @@ import hu.pagavcs.bl.OnSwing;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,6 +14,8 @@ import javax.swing.Icon;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
@@ -53,12 +53,16 @@ public class Table<L extends ListItem> extends JTable {
 		setShowGrid(false);
 		tmrResize = new Timer("Delayed resize table", true);
 
-		addPropertyChangeListener("visible", new PropertyChangeListener() {
+		addAncestorListener(new AncestorListener() {
 
-			public void propertyChange(PropertyChangeEvent evt) {
+			public void ancestorRemoved(AncestorEvent event) {
 				tmrResize.cancel();
 				tmrResize.purge();
 			}
+
+			public void ancestorMoved(AncestorEvent event) {}
+
+			public void ancestorAdded(AncestorEvent event) {}
 		});
 
 		tableModel.addTableModelListener(new TableModelListener() {
