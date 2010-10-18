@@ -40,6 +40,7 @@ import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.DefaultHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
+import org.tmatesoft.svn.core.internal.wc.SVNFileUtil;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNConflictChoice;
 import org.tmatesoft.svn.core.wc.SVNInfo;
@@ -91,6 +92,7 @@ public class Manager {
 			bandwidthMeter = new BandwidthMeter();
 			SVNDebugLog.setDefaultLog(bandwidthMeter);
 			SVNRepositoryFactoryImpl.setup();
+			SVNFileUtil.setSleepForTimestamp(false);
 			// Enable full HTTP request spooling to prevent "svn: REPORT request
 			// failed on '/svn/VSMRepo/!svn/vcc/default'"
 			// http://old.nabble.com/REPORT-request-failed-accessing-Sourceforge-Subversion-td14733189.html
