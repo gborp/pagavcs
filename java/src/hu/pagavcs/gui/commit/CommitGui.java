@@ -193,7 +193,7 @@ public class CommitGui implements Working, Refreshable {
 		pnlCheck.add(lblSelectedInfo, cc.xy(3, 1));
 		pnlCheck.add(cbHelpMerge, cc.xy(5, 1));
 
-		JPanel pnlBottom = new JPanel(new FormLayout("p,2dlu, p:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
+		JPanel pnlBottom = new JPanel(new FormLayout("p,2dlu, 1dlu:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
 
 		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlBottom.add(btnRefresh, cc.xy(1, 3));
