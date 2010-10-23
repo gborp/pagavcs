@@ -14,10 +14,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class ShowAllAction extends ThreadAction {
 
-	/**
-     * 
-     */
-    private final LogGui logGui;
+	private final LogGui logGui;
 
 	public ShowAllAction(LogGui logGui) {
 		super("Show all");
@@ -27,14 +24,14 @@ public class ShowAllAction extends ThreadAction {
 	public void actionProcess(ActionEvent e) throws Exception {
 		this.logGui.workStarted();
 		try {
-			List<LogListItem> allRetrivedLogs = this.logGui.tmdlLog.getAllData();
+			List<LogListItem> allRetrivedLogs = this.logGui.getAllTableDataFromMain();
 			if (!allRetrivedLogs.isEmpty()) {
 				LogListItem lastLi = allRetrivedLogs.get(allRetrivedLogs.size() - 1);
 				if (lastLi.getRevision() > 1) {
-					this.logGui.log.doShowLog(SVNRevision.create(lastLi.getRevision() + 1), Log.NO_LIMIT);
+					logGui.doShowLog(SVNRevision.create(lastLi.getRevision() + 1), Log.NO_LIMIT);
 				}
 			} else {
-				this.logGui.log.doShowLog(SVNRevision.HEAD, Log.NO_LIMIT);
+				logGui.doShowLog(SVNRevision.HEAD, Log.NO_LIMIT);
 			}
 			this.logGui.workEnded();
 		} catch (Exception ex) {

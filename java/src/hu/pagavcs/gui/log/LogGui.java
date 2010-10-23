@@ -62,6 +62,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -81,10 +82,10 @@ import com.toedter.calendar.JDateChooser;
 public class LogGui implements Working {
 
 	private Table<LogListItem>                      tblLog;
-	TableModel<LogListItem>                         tmdlLog;
-	final Log                                       log;
+	private TableModel<LogListItem>                 tmdlLog;
+	private final Log                               log;
 	private JButton                                 btnStop;
-	TableModel<LogDetailListItem>                   tmdlLogDetail;
+	private TableModel<LogDetailListItem>           tmdlLogDetail;
 	private Table<LogDetailListItem>                tblDetailLog;
 	private TextArea                                taMessage;
 	private ProgressBar                             prgWorkInProgress;
@@ -103,7 +104,7 @@ public class LogGui implements Working {
 	private TableRowSorter<TableModel<LogListItem>> filterLog;
 	private List<SVNURL>                            lstLogRoot;
 	private SVNURL                                  svnRepoRootUrl;
-	Frame                                           frame;
+	private Frame                                   frame;
 
 	public LogGui(Log log) {
 		this.log = log;
@@ -599,6 +600,42 @@ public class LogGui implements Working {
 			        + StringHelper.toNullAware(li.getCopyRevision()) + "\n");
 		}
 		Manager.setClipboard(result.toString());
+	}
+
+	public void revertChanges(String revertPath, long revision) throws Exception {
+		log.revertChanges(revertPath, revision);
+	}
+
+	public void showDirChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
+		log.showDirChanges(showChangesPath, revision, contentStatus);
+	}
+
+	public void showChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
+		log.showChanges(showChangesPath, revision, contentStatus);
+	}
+
+	public void saveRevisionTo(String showChangesPath, long revision, File destination) throws Exception {
+		log.saveRevisionTo(showChangesPath, revision, destination);
+	}
+
+	public void doShowLog(SVNRevision startRevision, long limit) throws Exception {
+		log.doShowLog(startRevision, limit);
+	}
+
+	public void showFile(String showChangesPath, long revision) throws Exception {
+		log.showFile(showChangesPath, revision);
+	}
+
+	public List<LogListItem> getAllTableDataFromMain() {
+		return tmdlLog.getAllData();
+	}
+
+	public List<LogDetailListItem> getAllTableDataFromDetail() {
+		return tmdlLogDetail.getAllData();
+	}
+
+	public Frame getFrame() {
+		return frame;
 	}
 
 	private class DetailCompareWithWorkingCopyAction extends ThreadAction {

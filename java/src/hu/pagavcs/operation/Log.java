@@ -79,7 +79,7 @@ public class Log implements Cancelable {
 		gui.setSvnRepoRootUrl(getRootUrl());
 		// Manager.getSvnRootUrlByFile(new File(path)));
 
-		doShowLog(SVNRevision.HEAD, LIMIT);
+		gui.doShowLog(SVNRevision.HEAD, LIMIT);
 	}
 
 	/**
