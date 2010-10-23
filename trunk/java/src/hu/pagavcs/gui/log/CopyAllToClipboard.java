@@ -17,6 +17,6 @@ class CopyAllToClipboard extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		this.logGui.copyLogListItemsToClipboard(this.logGui.tmdlLog.getAllData());
+		this.logGui.copyLogListItemsToClipboard(this.logGui.getAllTableDataFromMain());
 	}
 }

@@ -10,10 +10,7 @@ import java.awt.event.ActionEvent;
 
 class DetailRevertChangesFromThisRevisionAction extends ThreadAction {
 
-	/**
-     * 
-     */
-    private final LogGui logGui;
+	private final LogGui logGui;
 
 	public DetailRevertChangesFromThisRevisionAction(LogGui logGui) {
 		super("Revert changes from this revision");
@@ -22,7 +19,7 @@ class DetailRevertChangesFromThisRevisionAction extends ThreadAction {
 
 	public void actionProcess(ActionEvent e) throws Exception {
 		for (LogDetailListItem liDetail : this.logGui.getSelectedDetailLogItems()) {
-			this.logGui.log.revertChanges(liDetail.getPath(), liDetail.getRevision());
+			logGui.revertChanges(liDetail.getPath(), liDetail.getRevision());
 		}
 	}
 }
