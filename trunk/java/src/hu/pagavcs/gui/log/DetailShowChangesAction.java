@@ -12,10 +12,7 @@ import org.tmatesoft.svn.core.SVNNodeKind;
 
 class DetailShowChangesAction extends ThreadAction {
 
-	/**
-     * 
-     */
-    private final LogGui logGui;
+	private final LogGui logGui;
 
 	public DetailShowChangesAction(LogGui logGui) {
 		super("Show changes");
@@ -25,11 +22,11 @@ class DetailShowChangesAction extends ThreadAction {
 	public void actionProcess(ActionEvent e) throws Exception {
 		for (LogDetailListItem liDetail : this.logGui.getSelectedDetailLogItems()) {
 			if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-				this.logGui.log.showDirChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
+				logGui.showDirChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
 			} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-				this.logGui.log.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
+				logGui.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
 			} else {
-				this.logGui.log.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
+				logGui.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
 			}
 		}
 	}

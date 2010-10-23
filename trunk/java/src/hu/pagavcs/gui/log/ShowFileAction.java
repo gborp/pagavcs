@@ -16,10 +16,7 @@ import org.tmatesoft.svn.core.SVNNodeKind;
 
 class ShowFileAction extends ThreadAction {
 
-	/**
-     * 
-     */
-    private final LogGui logGui;
+	private final LogGui logGui;
 
 	public ShowFileAction(LogGui logGui) {
 		super("Show file");
@@ -33,9 +30,9 @@ class ShowFileAction extends ThreadAction {
 			} else {
 				ContentStatus cs = liDetail.getAction();
 				if (ContentStatus.DELETED.equals(cs)) {
-					MessagePane.showError(this.logGui.frame, "Cannot save", "File is deleted in this revision.");
+					MessagePane.showError(this.logGui.getFrame(), "Cannot save", "File is deleted in this revision.");
 				}
-				this.logGui.log.showFile(liDetail.getPath(), liDetail.getRevision());
+				logGui.showFile(liDetail.getPath(), liDetail.getRevision());
 			}
 		}
 	}

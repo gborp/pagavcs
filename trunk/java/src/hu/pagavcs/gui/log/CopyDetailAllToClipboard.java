@@ -12,7 +12,7 @@ class CopyDetailAllToClipboard extends AbstractAction {
 	/**
      * 
      */
-    private final LogGui logGui;
+	private final LogGui logGui;
 
 	public CopyDetailAllToClipboard(LogGui logGui) {
 		super("Copy all to clipboard");
@@ -20,6 +20,6 @@ class CopyDetailAllToClipboard extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		this.logGui.copyLogDetailListItemsToClipboard(this.logGui.tmdlLogDetail.getAllData());
+		this.logGui.copyLogDetailListItemsToClipboard(this.logGui.getAllTableDataFromDetail());
 	}
 }

@@ -19,10 +19,7 @@ import org.tmatesoft.svn.core.SVNNodeKind;
 
 class SaveRevisionToAction extends ThreadAction {
 
-	/**
-     * 
-     */
-    private final LogGui logGui;
+	private final LogGui logGui;
 
 	public SaveRevisionToAction(LogGui logGui) {
 		super("Save revision to");
@@ -36,7 +33,7 @@ class SaveRevisionToAction extends ThreadAction {
 			} else {
 				ContentStatus cs = liDetail.getAction();
 				if (ContentStatus.DELETED.equals(cs)) {
-					MessagePane.showError(this.logGui.frame, "Cannot save", "File is deleted in this revision.");
+					MessagePane.showError(this.logGui.getFrame(), "Cannot save", "File is deleted in this revision.");
 				}
 
 				String path = liDetail.getPath();
@@ -47,11 +44,11 @@ class SaveRevisionToAction extends ThreadAction {
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				fc.setSelectedFile(new File(path));
 
-				int choosed = fc.showSaveDialog(this.logGui.frame);
+				int choosed = fc.showSaveDialog(this.logGui.getFrame());
 
 				if (choosed == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					this.logGui.log.saveRevisionTo(liDetail.getPath(), liDetail.getRevision(), file);
+					logGui.saveRevisionTo(liDetail.getPath(), liDetail.getRevision(), file);
 				}
 			}
 		}
