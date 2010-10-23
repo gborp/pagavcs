@@ -4,7 +4,7 @@ import hu.pagavcs.bl.CacheLog;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.SvnHelper;
-import hu.pagavcs.gui.LogGui;
+import hu.pagavcs.gui.log.LogGui;
 
 import java.io.File;
 import java.io.FileOutputStream;
