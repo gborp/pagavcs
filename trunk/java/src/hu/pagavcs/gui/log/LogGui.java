@@ -1,16 +1,17 @@
-package hu.pagavcs.gui;
+package hu.pagavcs.gui.log;
 
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
-import hu.pagavcs.bl.PagaException;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
-import hu.pagavcs.bl.PagaException.PagaExceptionType;
+import hu.pagavcs.gui.LogDetailListItem;
+import hu.pagavcs.gui.LogListItem;
+import hu.pagavcs.gui.StatusCellRendererForLogDetailListItem;
+import hu.pagavcs.gui.Working;
 import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.Label;
-import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.NullCellRenderer;
 import hu.pagavcs.gui.platform.ProgressBar;
 import hu.pagavcs.gui.platform.StringHelper;
@@ -44,9 +45,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -63,7 +62,6 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -83,10 +81,10 @@ import com.toedter.calendar.JDateChooser;
 public class LogGui implements Working {
 
 	private Table<LogListItem>                      tblLog;
-	private TableModel<LogListItem>                 tmdlLog;
-	private final Log                               log;
+	TableModel<LogListItem>                         tmdlLog;
+	final Log                                       log;
 	private JButton                                 btnStop;
-	private TableModel<LogDetailListItem>           tmdlLogDetail;
+	TableModel<LogDetailListItem>                   tmdlLogDetail;
 	private Table<LogDetailListItem>                tblDetailLog;
 	private TextArea                                taMessage;
 	private ProgressBar                             prgWorkInProgress;
@@ -105,7 +103,7 @@ public class LogGui implements Working {
 	private TableRowSorter<TableModel<LogListItem>> filterLog;
 	private List<SVNURL>                            lstLogRoot;
 	private SVNURL                                  svnRepoRootUrl;
-	private Frame                                   frame;
+	Frame                                           frame;
 
 	public LogGui(Log log) {
 		this.log = log;
@@ -120,43 +118,7 @@ public class LogGui implements Working {
 		tblLog.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		tblLog.addMouseListener(new PopupupMouseListener());
 		filterLog = new TableRowSorter<TableModel<LogListItem>>(tmdlLog);
-		filterLog.setRowFilter(new RowFilter<TableModel<LogListItem>, Integer>() {
-
-			private boolean nullSafeContains(String where, String what) {
-				if (where == null || what == null) {
-					return false;
-				}
-				return where.toLowerCase().contains(what.toLowerCase());
-			}
-
-			public boolean include(javax.swing.RowFilter.Entry<? extends TableModel<LogListItem>, ? extends Integer> entry) {
-				String textFilter = sfFilter.getText();
-				Date dateFromFilter = calFrom.getDate();
-				Date dateToFilter = calTo.getDate();
-
-				if (textFilter.isEmpty() && dateFromFilter == null && dateToFilter == null) {
-					return true;
-				}
-
-				LogListItem row = entry.getModel().getRow(entry.getIdentifier());
-
-				if (!textFilter.isEmpty() && !nullSafeContains(row.getMessage(), textFilter) && !nullSafeContains(row.getAuthor(), textFilter)
-				        && !nullSafeContains(Long.toString(row.getRevision()), textFilter)) {
-					return false;
-				}
-
-				if (dateFromFilter != null && row.getDate().compareTo(dateFromFilter) <= 0) {
-					return false;
-				}
-
-				if (dateToFilter != null && row.getDate().compareTo(dateToFilter) >= 0) {
-					return false;
-				}
-
-				return true;
-			}
-
-		});
+		filterLog.setRowFilter(new LogRowFilter());
 		tblLog.setRowSorter(filterLog);
 		new NullCellRenderer<LogListItem>(tblLog);
 		tblLog.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -194,26 +156,7 @@ public class LogGui implements Working {
 
 		calFrom = new JDateChooser();
 		calFrom.getCalendarButton().setToolTipText("Right click to clear");
-		calFrom.getCalendarButton().addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showPopup(e);
-				}
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showPopup(e);
-				}
-			}
-
-			public void showPopup(MouseEvent e) {
-				calFrom.setDate(null);
-				filterChanged();
-			}
-
-		});
+		calFrom.getCalendarButton().addMouseListener(new CalendarFromButtonMouseListener());
 		calFrom.addPropertyChangeListener("date", new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -230,26 +173,7 @@ public class LogGui implements Working {
 			public void focusGained(FocusEvent e) {}
 		});
 		calTo.getCalendarButton().setToolTipText("Right click to clear");
-		calTo.getCalendarButton().addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showPopup(e);
-				}
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showPopup(e);
-				}
-			}
-
-			public void showPopup(MouseEvent e) {
-				calTo.setDate(null);
-				filterChanged();
-			}
-
-		});
+		calTo.getCalendarButton().addMouseListener(new CalendarToButtonMouseListener());
 		calTo.addPropertyChangeListener("date", new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -258,20 +182,7 @@ public class LogGui implements Working {
 		});
 		sfFilter = new EditField(20);
 		sfFilter.setToolTipText("Type your filter text here");
-		sfFilter.getDocument().addDocumentListener(new DocumentListener() {
-
-			public void changedUpdate(DocumentEvent e) {
-				filterChanged();
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				filterChanged();
-			}
-
-			public void insertUpdate(DocumentEvent e) {
-				filterChanged();
-			}
-		});
+		sfFilter.getDocument().addDocumentListener(new FilterDocumentListener());
 		lblUrl = new Label();
 
 		JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -289,8 +200,8 @@ public class LogGui implements Working {
 				log.setCancel(true);
 			}
 		});
-		btnShowMore = new JButton(new ShowMoreAction());
-		btnShowAll = new JButton(new ShowAllAction());
+		btnShowMore = new JButton(new ShowMoreAction(this));
+		btnShowAll = new JButton(new ShowAllAction(this));
 
 		prgWorkInProgress = new ProgressBar(this);
 
@@ -306,20 +217,7 @@ public class LogGui implements Working {
 		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log", "/hu/pagavcs/resources/showlog-app-icon.png");
-		frame.addWindowListener(new WindowAdapter() {
-
-			public void windowClosing(WindowEvent e) {
-				SettingsStore settingsStore = Manager.getSettings();
-				settingsStore.setGuiLogSeparatorDetail(splDetail.getDividerLocation());
-				settingsStore.setGuiLogSeparatorMain(splMain.getDividerLocation());
-				shuttingDown = true;
-			}
-
-			public void windowClosed(WindowEvent e) {
-				tmrTableRevalidate.cancel();
-				tmrTableRevalidate.purge();
-			}
-		});
+		frame.addWindowListener(new FrameWindowListener());
 	}
 
 	private void filterChanged() {
@@ -403,6 +301,113 @@ public class LogGui implements Working {
 				revalidateIsTimed = true;
 				tmrTableRevalidate.schedule(new DoRevalidateTask(), Manager.REVALIDATE_DELAY);
 			}
+		}
+	}
+
+	private final class FrameWindowListener extends WindowAdapter {
+
+		public void windowClosing(WindowEvent e) {
+			SettingsStore settingsStore = Manager.getSettings();
+			settingsStore.setGuiLogSeparatorDetail(splDetail.getDividerLocation());
+			settingsStore.setGuiLogSeparatorMain(splMain.getDividerLocation());
+			shuttingDown = true;
+		}
+
+		public void windowClosed(WindowEvent e) {
+			tmrTableRevalidate.cancel();
+			tmrTableRevalidate.purge();
+		}
+	}
+
+	private final class FilterDocumentListener implements DocumentListener {
+
+		public void changedUpdate(DocumentEvent e) {
+			filterChanged();
+		}
+
+		public void removeUpdate(DocumentEvent e) {
+			filterChanged();
+		}
+
+		public void insertUpdate(DocumentEvent e) {
+			filterChanged();
+		}
+	}
+
+	private final class CalendarToButtonMouseListener extends MouseAdapter {
+
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void showPopup(MouseEvent e) {
+			calTo.setDate(null);
+			filterChanged();
+		}
+	}
+
+	private final class CalendarFromButtonMouseListener extends MouseAdapter {
+
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				showPopup(e);
+			}
+		}
+
+		public void showPopup(MouseEvent e) {
+			calFrom.setDate(null);
+			filterChanged();
+		}
+	}
+
+	private final class LogRowFilter extends RowFilter<TableModel<LogListItem>, Integer> {
+
+		private boolean nullSafeContains(String where, String what) {
+			if (where == null || what == null) {
+				return false;
+			}
+			return where.toLowerCase().contains(what.toLowerCase());
+		}
+
+		public boolean include(javax.swing.RowFilter.Entry<? extends TableModel<LogListItem>, ? extends Integer> entry) {
+			String textFilter = sfFilter.getText();
+			Date dateFromFilter = calFrom.getDate();
+			Date dateToFilter = calTo.getDate();
+
+			if (textFilter.isEmpty() && dateFromFilter == null && dateToFilter == null) {
+				return true;
+			}
+
+			LogListItem row = entry.getModel().getRow(entry.getIdentifier());
+
+			if (!textFilter.isEmpty() && !nullSafeContains(row.getMessage(), textFilter) && !nullSafeContains(row.getAuthor(), textFilter)
+			        && !nullSafeContains(Long.toString(row.getRevision()), textFilter)) {
+				return false;
+			}
+
+			if (dateFromFilter != null && row.getDate().compareTo(dateFromFilter) <= 0) {
+				return false;
+			}
+
+			if (dateToFilter != null && row.getDate().compareTo(dateToFilter) >= 0) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 
@@ -540,7 +545,7 @@ public class LogGui implements Working {
 		tmdlLogDetail.addLines(lstResult);
 	}
 
-	private List<LogListItem> getSelectedLogItems() {
+	List<LogListItem> getSelectedLogItems() {
 		ArrayList<LogListItem> lstResult = new ArrayList<LogListItem>();
 		for (int row : tblLog.getSelectedRows()) {
 
@@ -549,13 +554,51 @@ public class LogGui implements Working {
 		return lstResult;
 	}
 
-	private List<LogDetailListItem> getSelectedDetailLogItems() {
+	List<LogDetailListItem> getSelectedDetailLogItems() {
 		ArrayList<LogDetailListItem> lstResult = new ArrayList<LogDetailListItem>();
 		for (int row : tblDetailLog.getSelectedRows()) {
 
 			lstResult.add(tmdlLogDetail.getRow(tblDetailLog.convertRowIndexToModel(row)));
 		}
 		return lstResult;
+	}
+
+	void copyLogListItemsToClipboard(List<LogListItem> lstLogListItem) {
+		StringBuilder result = new StringBuilder();
+		long maxRevisionNumber = -1;
+		int maxDateLength = -1;
+		for (LogListItem li : lstLogListItem) {
+			long revisionNumber = li.getRevision();
+			if (revisionNumber > maxRevisionNumber) {
+				maxRevisionNumber = revisionNumber;
+			}
+
+			if (li.getDateAsString().length() > maxDateLength) {
+				maxDateLength = li.getDateAsString().length();
+			}
+		}
+		int revisionPadding = 10 - Long.toString(maxRevisionNumber).length();
+		int datePadding = 10 - maxDateLength;
+		for (LogListItem li : lstLogListItem) {
+			String message = li.getMessage();
+			message = message.replace('\n', ' ');
+			String revision = Long.toString(li.getRevision());
+			revision = "          ".substring(revisionPadding + revision.length()) + revision;
+			String date = li.getDateAsString() + "          ".substring(datePadding + li.getDateAsString().length());
+
+			result.append(revision + " " + li.getActions() + " " + li.getAuthor() + " " + date + " " + message + "\n");
+		}
+		Manager.setClipboard(result.toString());
+	}
+
+	void copyLogDetailListItemsToClipboard(List<LogDetailListItem> lstDetailLogListItem) {
+		StringBuilder result = new StringBuilder();
+		for (LogDetailListItem li : lstDetailLogListItem) {
+
+			result.append(li.getPath() + " " + li.getAction() + " " + StringHelper.toNullAware(li.getCopyFromPath()) + " "
+			        + StringHelper.toNullAware(li.getCopyRevision()) + "\n");
+		}
+		Manager.setClipboard(result.toString());
 	}
 
 	private class DetailCompareWithWorkingCopyAction extends ThreadAction {
@@ -580,146 +623,6 @@ public class LogGui implements Working {
 		}
 	}
 
-	private class DetailShowChangesAction extends ThreadAction {
-
-		public DetailShowChangesAction() {
-			super("Show changes");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-					log.showDirChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
-				} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-					log.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
-				} else {
-					log.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
-				}
-			}
-		}
-	}
-
-	private class ShowFileAction extends ThreadAction {
-
-		public ShowFileAction() {
-			super("Show file");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-					throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
-				} else {
-					ContentStatus cs = liDetail.getAction();
-					if (ContentStatus.DELETED.equals(cs)) {
-						MessagePane.showError(frame, "Cannot save", "File is deleted in this revision.");
-					}
-					log.showFile(liDetail.getPath(), liDetail.getRevision());
-				}
-			}
-		}
-	}
-
-	private class SaveRevisionToAction extends ThreadAction {
-
-		public SaveRevisionToAction() {
-			super("Save revision to");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-					throw new PagaException(PagaExceptionType.UNIMPLEMENTED);
-				} else {
-					ContentStatus cs = liDetail.getAction();
-					if (ContentStatus.DELETED.equals(cs)) {
-						MessagePane.showError(frame, "Cannot save", "File is deleted in this revision.");
-					}
-
-					String path = liDetail.getPath();
-					if (path.lastIndexOf('/') != -1) {
-						path = path.substring(path.lastIndexOf('/'));
-					}
-					JFileChooser fc = new JFileChooser();
-					fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					fc.setSelectedFile(new File(path));
-
-					int choosed = fc.showSaveDialog(frame);
-
-					if (choosed == JFileChooser.APPROVE_OPTION) {
-						File file = fc.getSelectedFile();
-						log.saveRevisionTo(liDetail.getPath(), liDetail.getRevision(), file);
-					}
-				}
-			}
-		}
-	}
-
-	private class DetailRevertChangesFromThisRevisionAction extends ThreadAction {
-
-		public DetailRevertChangesFromThisRevisionAction() {
-			super("Revert changes from this revision");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				log.revertChanges(liDetail.getPath(), liDetail.getRevision());
-			}
-		}
-	}
-
-	public class ShowMoreAction extends ThreadAction {
-
-		public ShowMoreAction() {
-			super("Show more");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			workStarted();
-			try {
-				List<LogListItem> allRetrivedLogs = tmdlLog.getAllData();
-				if (!allRetrivedLogs.isEmpty()) {
-					LogListItem lastLi = allRetrivedLogs.get(allRetrivedLogs.size() - 1);
-					if (lastLi.getRevision() > 1) {
-						log.doShowLog(SVNRevision.create(lastLi.getRevision() + 1), Log.LIMIT);
-					}
-				}
-				workEnded();
-			} catch (Exception ex) {
-				workEnded();
-				throw ex;
-			}
-		}
-
-	}
-
-	public class ShowAllAction extends ThreadAction {
-
-		public ShowAllAction() {
-			super("Show all");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			workStarted();
-			try {
-				List<LogListItem> allRetrivedLogs = tmdlLog.getAllData();
-				if (!allRetrivedLogs.isEmpty()) {
-					LogListItem lastLi = allRetrivedLogs.get(allRetrivedLogs.size() - 1);
-					if (lastLi.getRevision() > 1) {
-						log.doShowLog(SVNRevision.create(lastLi.getRevision() + 1), Log.NO_LIMIT);
-					}
-				} else {
-					log.doShowLog(SVNRevision.HEAD, Log.NO_LIMIT);
-				}
-				workEnded();
-			} catch (Exception ex) {
-				workEnded();
-				throw ex;
-			}
-		}
-
-	}
-
 	private class DetailPopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppModified;
@@ -727,20 +630,20 @@ public class LogGui implements Working {
 
 		public DetailPopupupMouseListener() {
 			ppModified = new JPopupMenu();
-			ppModified.add(new DetailShowChangesAction());
-			ppModified.add(new ShowFileAction());
-			ppModified.add(new SaveRevisionToAction());
+			ppModified.add(new DetailShowChangesAction(LogGui.this));
+			ppModified.add(new ShowFileAction(LogGui.this));
+			ppModified.add(new SaveRevisionToAction(LogGui.this));
 			// TODO
 			// ppModified.add(new DetailCompareWithWorkingCopyAction());
-			ppModified.add(new DetailRevertChangesFromThisRevisionAction());
-			ppModified.add(new CopyDetailLineToClipboard());
-			ppModified.add(new CopyDetailAllToClipboard());
+			ppModified.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
+			ppModified.add(new CopyDetailLineToClipboard(LogGui.this));
+			ppModified.add(new CopyDetailAllToClipboard(LogGui.this));
 
 			ppAdded = new JPopupMenu();
-			ppAdded.add(new ShowFileAction());
-			ppAdded.add(new SaveRevisionToAction());
-			ppAdded.add(new CopyDetailLineToClipboard());
-			ppAdded.add(new CopyDetailAllToClipboard());
+			ppAdded.add(new ShowFileAction(LogGui.this));
+			ppAdded.add(new SaveRevisionToAction(LogGui.this));
+			ppAdded.add(new CopyDetailLineToClipboard(LogGui.this));
+			ppAdded.add(new CopyDetailAllToClipboard(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -787,7 +690,7 @@ public class LogGui implements Working {
 
 					public void run() {
 						try {
-							new DetailShowChangesAction().actionProcess(null);
+							new DetailShowChangesAction(LogGui.this).actionProcess(null);
 						} catch (Exception e1) {
 							Manager.handle(e1);
 						}
@@ -798,96 +701,14 @@ public class LogGui implements Working {
 		}
 	}
 
-	private void copyLogListItemsToClipboard(List<LogListItem> lstLogListItem) {
-		StringBuilder result = new StringBuilder();
-		long maxRevisionNumber = -1;
-		int maxDateLength = -1;
-		for (LogListItem li : lstLogListItem) {
-			long revisionNumber = li.getRevision();
-			if (revisionNumber > maxRevisionNumber) {
-				maxRevisionNumber = revisionNumber;
-			}
-
-			if (li.getDateAsString().length() > maxDateLength) {
-				maxDateLength = li.getDateAsString().length();
-			}
-		}
-		int revisionPadding = 10 - Long.toString(maxRevisionNumber).length();
-		int datePadding = 10 - maxDateLength;
-		for (LogListItem li : lstLogListItem) {
-			String message = li.getMessage();
-			message = message.replace('\n', ' ');
-			String revision = Long.toString(li.getRevision());
-			revision = "          ".substring(revisionPadding + revision.length()) + revision;
-			String date = li.getDateAsString() + "          ".substring(datePadding + li.getDateAsString().length());
-
-			result.append(revision + " " + li.getActions() + " " + li.getAuthor() + " " + date + " " + message + "\n");
-		}
-		Manager.setClipboard(result.toString());
-	}
-
-	private void copyLogDetailListItemsToClipboard(List<LogDetailListItem> lstDetailLogListItem) {
-		StringBuilder result = new StringBuilder();
-		for (LogDetailListItem li : lstDetailLogListItem) {
-
-			result.append(li.getPath() + " " + li.getAction() + " " + StringHelper.toNullAware(li.getCopyFromPath()) + " "
-			        + StringHelper.toNullAware(li.getCopyRevision()) + "\n");
-		}
-		Manager.setClipboard(result.toString());
-	}
-
-	private class CopyDetailAllToClipboard extends AbstractAction {
-
-		public CopyDetailAllToClipboard() {
-			super("Copy all to clipboard");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			copyLogDetailListItemsToClipboard(tmdlLogDetail.getAllData());
-		}
-	}
-
-	private class CopyDetailLineToClipboard extends AbstractAction {
-
-		public CopyDetailLineToClipboard() {
-			super("Copy selected lines to clipboard");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			copyLogDetailListItemsToClipboard(getSelectedDetailLogItems());
-		}
-	}
-
-	private class CopyAllToClipboard extends AbstractAction {
-
-		public CopyAllToClipboard() {
-			super("Copy all to clipboard");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			copyLogListItemsToClipboard(tmdlLog.getAllData());
-		}
-	}
-
-	private class CopyLineToClipboard extends AbstractAction {
-
-		public CopyLineToClipboard() {
-			super("Copy selected lines to clipboard");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			copyLogListItemsToClipboard(getSelectedLogItems());
-		}
-	}
-
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu pp;
 
 		public PopupupMouseListener() {
 			pp = new JPopupMenu();
-			pp.add(new CopyLineToClipboard());
-			pp.add(new CopyAllToClipboard());
+			pp.add(new CopyLineToClipboard(LogGui.this));
+			pp.add(new CopyAllToClipboard(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -922,5 +743,4 @@ public class LogGui implements Working {
 		}
 
 	}
-
 }
