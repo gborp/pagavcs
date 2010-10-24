@@ -1,3 +1,12 @@
+mugcommander (1.0.6) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * faster file search
+  * remember last searched patterns
+  * feedback search progress
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Oct 2010 20:23:26 +0200
+
 mugcommander (1.0.5) karmic; urgency=low
 
   [ Gábor Pápai ]
