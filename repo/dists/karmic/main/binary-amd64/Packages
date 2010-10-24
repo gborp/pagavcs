@@ -1,17 +1,17 @@
 Package: mugcommander
-Version: 1.0.5
+Version: 1.0.6
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Installed-Size: 4636
+Installed-Size: 4644
 Depends: sun-java6-jre | default-jre
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/m/mugcommander/mugcommander_1.0.5_all.deb
-Size: 4219786
-SHA256: 9f0275a13b7036f34f2bad910b1db8dcb6297d17c165c8931193576b38f64d73
-SHA1: ed116078ab64e0f0a8558e078b1aaf1dbc43b4c4
-MD5sum: ee00a8f7f37a79fdb925944e856ac7e4
+Filename: pool/main/m/mugcommander/mugcommander_1.0.6_all.deb
+Size: 4225566
+SHA256: 3c701881aa7a18bf19ceaafad1c72ebe1a45a9fe6905804f87c2c17776c0ea26
+SHA1: c0a098a533c465e0c90edee2ed7abfae4253fb0b
+MD5sum: a89ad1aae9efa111c786d49f44114da4
 Description: File Browser
  Total Commander styled file browser, forked from the muCommander
 
