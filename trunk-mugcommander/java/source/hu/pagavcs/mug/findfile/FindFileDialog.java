@@ -1,5 +1,7 @@
 package hu.pagavcs.mug.findfile;
 
+import hu.pagavcs.mug.MugHelper;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -7,16 +9,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import com.mucommander.file.AbstractFile;
 import com.mucommander.text.Translator;
@@ -36,7 +43,9 @@ import com.mucommander.ui.main.MainFrame;
  */
 public class FindFileDialog extends FocusDialog implements ActionListener {
 
-	private JTextField             nameField;
+	private static final int       MAX_NAME_HISTORY_SIZE    = 20;
+
+	private JComboBox              cboNameField;
 	private JTextField             sfSearchText;
 	private JTextField             sfSearchTextEncoding;
 	private JCheckBox              cbCaseSensitive;
@@ -56,6 +65,10 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 	private final static Dimension MAXIMUM_DIALOG_DIMENSION = new Dimension(400, 10000);
 	private final MainFrame        mainFrame;
 	private String                 findInProgress;
+	private List<String>           lstNameHistory;
+	private JLabel                 lblInfoProgress;
+	private String                 actualFileOrDir;
+	private Timer                  timerFindFeedback;
 
 	public FindFileDialog(MainFrame mainFrame) {
 		super(mainFrame, ActionProperties.getActionLabel(FindFileAction.Descriptor.ACTION_ID), mainFrame);
@@ -69,7 +82,13 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 		final XAlignedComponentPanel compPanel = new XAlignedComponentPanel();
 
-		nameField = new JTextField("*");
+		lstNameHistory = MugHelper.loadList(MugHelper.KEY_FIND_NAME_HISTORY);
+		if (lstNameHistory.isEmpty()) {
+			lstNameHistory = Arrays.asList("*");
+		}
+
+		cboNameField = new JComboBox(lstNameHistory.toArray());
+		cboNameField.setEditable(true);
 		cbSearchInArchive = new JCheckBox("Search in archive");
 		sfSearchText = new JTextField("");
 		cbCaseSensitive = new JCheckBox("Case sensitive");
@@ -82,6 +101,8 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		taIncludeExclude = new JTextArea();
 		taIncludeExclude.setToolTipText("example: -/home/moo/private/*");
 		taIncludeExclude.setVisible(false);
+		lblInfoProgress = new JLabel(" ");
+		lblInfoProgress.setUI(new CenterDottedLabelUI());
 
 		cbIncludeExclude.addItemListener(new ItemListener() {
 
@@ -116,15 +137,16 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 		compPanel.addRow("Search in:", new JLabel(currentFolder.getPath()), 10);
 
-		compPanel.addRow("Search for:", nameField, 10);
+		compPanel.addRow("Search for:", cboNameField, 10);
+		compPanel.addRow("Find text:", sfSearchText, 10);
+		compPanel.addRow(cbCaseSensitive, 10);
 		compPanel.addRow(cbSearchInArchive, 10);
 		compPanel.addRow(cbIncludeExclude, 10);
 		compPanel.addRow(cbIncludeSelected, 10);
 		compPanel.addRow(cbExcludeSelected, 10);
 		compPanel.addRow(taIncludeExclude, 10);
-		compPanel.addRow("Find text:", sfSearchText, 10);
-		compPanel.addRow(cbCaseSensitive, 10);
 		compPanel.addRow("Text encoding:", sfSearchTextEncoding, 10);
+		compPanel.addRow(lblInfoProgress, 10);
 
 		mainPanel.add(compPanel);
 
@@ -134,6 +156,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		btnStartSearch.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+				saveHistory();
 				startSearch(currentFolder);
 			}
 
@@ -142,6 +165,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		btnCancel.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+				saveHistory();
 				cancelSearch();
 			}
 		});
@@ -149,16 +173,48 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 		// Select text in name field and transfer focus to it for immediate user
 		// change
-		nameField.selectAll();
-		setInitialFocusComponent(nameField);
+		setInitialFocusComponent(cboNameField);
 
 		// Packs dialog
 		setMinimumSize(MINIMUM_DIALOG_DIMENSION);
 		setMaximumSize(MAXIMUM_DIALOG_DIMENSION);
 
+		ActionListener listener = new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				lblInfoProgress.setText(actualFileOrDir);
+			}
+		};
+		timerFindFeedback = new Timer(150, listener);
+		timerFindFeedback.setRepeats(true);
+		timerFindFeedback.start();
+
+		addWindowListener(new WindowAdapter() {
+
+			public void windowClosed(WindowEvent e) {
+				saveHistory();
+				cancelSearch();
+				if (timerFindFeedback != null) {
+					timerFindFeedback.stop();
+				}
+			}
+
+		});
+
 		showDialog();
 	}
 
+	private void saveHistory() {
+		String selectedName = (String) cboNameField.getSelectedItem();
+		if (selectedName != null && !selectedName.isEmpty()) {
+			lstNameHistory.remove(selectedName);
+			lstNameHistory.add(0, selectedName);
+			while (lstNameHistory.size() > MAX_NAME_HISTORY_SIZE) {
+				lstNameHistory.remove(lstNameHistory.size() - 1);
+			}
+			MugHelper.storeList(MugHelper.KEY_FIND_NAME_HISTORY, lstNameHistory);
+		}
+	}
 
 	private void cancelSearch() {
 		if (findInProgress == null) {
@@ -174,7 +230,8 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 			return;
 		}
 		try {
-			final String searchFileName = nameField.getText();
+
+			final String searchFileName = (String) cboNameField.getSelectedItem();
 			final String searchText = sfSearchText.getText();
 			final String searchTextEncoding = sfSearchTextEncoding.getText();
 			final boolean caseSensitive = cbCaseSensitive.isSelected();
@@ -195,6 +252,17 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 				}
 			}
 
+			final FindProcessCallback findProcessCallBack = new FindProcessCallback() {
+
+				public void actualFile(String fileName) {
+					actualFileOrDir = fileName;
+				}
+
+				public void actualDir(String dirName) {
+					actualFileOrDir = dirName;
+				}
+			};
+
 			findInProgress = findId;
 
 			btnStartSearch.setText("Searching...");
@@ -204,7 +272,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 				public void run() {
 
 					FindManager.getInstance().startSearch(mainFrame, findId, currentFolder, searchFileName, searchText, searchTextEncoding, caseSensitive,
-					        searchInArchive, lstInclude, lstExclude);
+					        searchInArchive, lstInclude, lstExclude, findProcessCallBack);
 
 					findInProgress = null;
 					if (FindManager.getInstance().isCancel(findId)) {
