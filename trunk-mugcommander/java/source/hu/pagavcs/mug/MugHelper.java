@@ -3,6 +3,14 @@ package hu.pagavcs.mug;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -10,6 +18,44 @@ import javax.swing.JPopupMenu;
 import javax.swing.text.JTextComponent;
 
 public class MugHelper {
+
+	private static Preferences prefs = Preferences.userNodeForPackage(MugHelper.class);
+
+	public static final String KEY_FIND_NAME_HISTORY = "find-name-history";
+
+	public static List<String> loadList(String listName) {
+		try {
+		Map<String, String> result = new HashMap<String, String>();
+		List<String> resultList = new ArrayList<String>();
+		Preferences node = prefs.node(listName);
+		for (String key : node.keys()) {
+			result.put(key, node.get(key, null));
+		}
+		Object[] keys = result.keySet().toArray();
+		Arrays.sort(keys);
+		for (Object key : keys) {
+			resultList.add(result.get(key));
+		}
+		return resultList;
+		} catch (BackingStoreException ex) {
+			// TODO log
+			return Collections.EMPTY_LIST;
+		}
+	}
+
+	public static void storeList(String mapName, List<String> data) {
+		try {
+		Preferences node = prefs.node(mapName);
+		node.clear();
+		int index = 0;
+		for (String li : data) {
+			node.put(String.format("%05d", index), li);
+			index++;
+		}
+		} catch (BackingStoreException ex) {
+			// TODO log
+		}
+	}
 
 	public static void addPopupMenu(JTextComponent component) {
 		JPopupMenu contextMenu = new JPopupMenu();

@@ -76,7 +76,8 @@ public class FindManager {
 	}
 
 	public void startSearch(final MainFrame mainFrame, final String findId, final AbstractFile currentFolder, String searchFileName, String searchText,
-	        String searchTextEncoding, boolean caseSensitive, boolean searchInArchive, List<String> lstInclude, List<String> lstExclude) {
+	        String searchTextEncoding, boolean caseSensitive, boolean searchInArchive, List<String> lstInclude, List<String> lstExclude,
+	        FindProcessCallback callback) {
 		try {
 			Charset searchEncoding = null;
 
@@ -114,7 +115,7 @@ public class FindManager {
 			}
 
 			search(findId, currentFolder, searchFileNamePattern, searchText, searchEncoding, caseSensitive, searchInArchive, lstIncludePattern,
-			        lstExcludePattern);
+			        lstExcludePattern, callback);
 
 			if (!isCancel(findId)) {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -131,10 +132,11 @@ public class FindManager {
 	}
 
 	private void search(String findId, AbstractFile file, Pattern searchFileNamePattern, String searchText, Charset searchEncoding, boolean caseSensitive,
-	        boolean searchInArchive, List<Pattern> lstIncludePattern, List<Pattern> lstExcludePattern) {
+	        boolean searchInArchive, List<Pattern> lstIncludePattern, List<Pattern> lstExcludePattern, FindProcessCallback callback) {
 		if (isCancel(findId)) {
 			return;
 		}
+
 
 		// prevent infinite cycle
 		if (file.isSymlink()) {
@@ -142,14 +144,15 @@ public class FindManager {
 		}
 
 		if (file.isDirectory() || (searchInArchive && file.isBrowsable())) {
+			callback.actualDir(file.getAbsolutePath());
 			try {
 				for (AbstractFile child : file.ls()) {
 					search(findId, child, searchFileNamePattern, searchText, searchEncoding, caseSensitive, searchInArchive, lstIncludePattern,
-					        lstExcludePattern);
+					        lstExcludePattern, callback);
 				}
 			} catch (UnsupportedFileOperationException ex) {} catch (IOException ex) {}
 		} else {
-
+			callback.actualFile(file.getAbsolutePath());
 			String absPath = file.getAbsolutePath();
 			boolean matchInclude = false;
 			if (lstIncludePattern.isEmpty()) {

@@ -56,14 +56,14 @@ public class AbstractExtensionFilter extends AbstractStringCriterionFilter {
     //////////////////////////////////////////////////
 
     public boolean accept(String value) {
-        int i;
-        int len;
-
-        len = value.length();
+		if (!value.contains(".")) {
+			return false;
+		}
+		int len = value.length();
 
         // If case isn't important, a simple String.endsWith is enough.
         if(isCaseSensitive()) {
-            for(i = 0; i < extensions.length; i++)
+			for (int i = 0; i < extensions.length; i++)
                 if(StringUtils.matches(value, extensions[i], len))
                     return true;
         }
@@ -72,8 +72,8 @@ public class AbstractExtensionFilter extends AbstractStringCriterionFilter {
         // use String.regionMatches.
         else {
             // Matches the value to each extension.
-            for(i = 0; i < extensions.length; i++)
-                if(StringUtils.matchesIgnoreCase(value, extensions[i], len))
+			for (int i = 0; i < extensions.length; i++)
+				if (StringUtils.matchesIgnoreCase(value, extensions[i], len))
                     return true;
         }
         return false;

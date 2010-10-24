@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import com.mucommander.auth.AuthException;
 import com.mucommander.auth.CredentialsManager;
+import com.mucommander.file.filter.FilenameFilter;
 import com.mucommander.file.icon.FileIconProvider;
 import com.mucommander.file.icon.impl.SwingFileIconProvider;
 import com.mucommander.file.impl.local.LocalFile;
@@ -321,9 +322,20 @@ public class FileFactory {
 		if (filename == null)
 			return null;
 
+		String filenameLowerCase = filename.toLowerCase();
+
 		for (ArchiveFormatProvider provider : archiveFormatProviders) {
-			if (provider.getFilenameFilter().accept(filename))
-				return provider;
+			FilenameFilter filter = provider.getFilenameFilter();
+			if (filter.isCaseSensitive()) {
+				if (filter.accept(filename)) {
+					return provider;
+				}
+			} else {
+				if (filter.accept(filenameLowerCase)) {
+					return provider;
+				}
+			}
+
 		}
 		return null;
 	}
