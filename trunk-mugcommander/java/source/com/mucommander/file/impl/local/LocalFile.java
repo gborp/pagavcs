@@ -18,7 +18,36 @@
 
 package com.mucommander.file.impl.local;
 
-import com.mucommander.file.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.mucommander.file.AbstractFile;
+import com.mucommander.file.FileFactory;
+import com.mucommander.file.FileLogger;
+import com.mucommander.file.FileOperation;
+import com.mucommander.file.FilePermissions;
+import com.mucommander.file.FileProtocols;
+import com.mucommander.file.FileURL;
+import com.mucommander.file.GroupedPermissionBits;
+import com.mucommander.file.IndividualPermissionBits;
+import com.mucommander.file.PermissionBits;
+import com.mucommander.file.ProtocolFile;
+import com.mucommander.file.UnsupportedFileOperation;
+import com.mucommander.file.UnsupportedFileOperationException;
 import com.mucommander.file.filter.FilenameFilter;
 import com.mucommander.file.util.Kernel32;
 import com.mucommander.file.util.Kernel32API;
@@ -27,16 +56,12 @@ import com.mucommander.io.BufferPool;
 import com.mucommander.io.FilteredOutputStream;
 import com.mucommander.io.RandomAccessInputStream;
 import com.mucommander.io.RandomAccessOutputStream;
-import com.mucommander.runtime.*;
+import com.mucommander.runtime.JavaVersions;
+import com.mucommander.runtime.OsFamilies;
+import com.mucommander.runtime.OsFamily;
+import com.mucommander.runtime.OsVersion;
+import com.mucommander.runtime.OsVersions;
 import com.sun.jna.ptr.LongByReference;
-
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -988,7 +1013,7 @@ public class LocalFile extends ProtocolFile {
 
             // Retrieves an AbstractFile (LocalFile or AbstractArchiveFile) instance that's potentially already in
             // the cache, reuse this file as the file's parent, and the already-created java.io.File instance.
-            children[i] = FileFactory.getFile(childURL, this, files[i]);
+			children[i] = FileFactory.getFileNotInArchive(childURL, this, files[i]);
         }
 
         return children;

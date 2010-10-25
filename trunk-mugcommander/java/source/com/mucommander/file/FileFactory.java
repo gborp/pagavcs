@@ -571,6 +571,44 @@ public class FileFactory {
 		return currentFile;
 	}
 
+	public static AbstractFile getFileNotInArchive(FileURL fileURL, AbstractFile parent, Object... instantiationParams) throws IOException {
+		String protocol = fileURL.getScheme();
+		if (!isRegisteredProtocol(protocol)) {
+			throw new IOException("Unsupported file protocol: " + protocol);
+		}
+
+		String filePath = fileURL.getPath();
+		// For local paths under Windows (e.g. "/C:\temp"), remove the leading
+		// '/' character
+		if (OsFamilies.WINDOWS.isCurrent() && FileProtocols.FILE.equals(protocol))
+			filePath = PathUtils.removeLeadingSeparator(filePath, "/");
+
+		String pathSeparator = fileURL.getPathSeparator();
+
+		PathTokenizer pt = new PathTokenizer(filePath, pathSeparator, false);
+
+		AbstractFile currentFile = null;
+
+		while (pt.hasMoreFilenames()) {
+			pt.nextFilename();
+		}
+
+		// Note: DON'T strip out the trailing separator, as this would cause
+		// problems with root resources
+		String currentPath = pt.getCurrentPath();
+
+		FileURL clonedURL = (FileURL) fileURL.clone();
+		clonedURL.setPath(currentPath);
+		currentFile = createRawFile(clonedURL, instantiationParams);
+
+		// Reuse existing parent file instance if one was specified
+		if (parent != null) {
+			currentFile.setParent(parent);
+		}
+
+		return currentFile;
+	}
+
 	private static AbstractFile createRawFile(FileURL fileURL, Object... instantiationParams) throws IOException {
 		String scheme = fileURL.getScheme().toLowerCase();
 		FilePool rawFilePool = rawFilePoolMap.get(scheme);
