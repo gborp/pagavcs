@@ -1,3 +1,11 @@
+pagavcs (1.4.39) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [update*] add global-ignore-eol flag (can be set in the settings view)
+  * [resolve conflict] better handling if a conflicted line is not terminated by enter
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 25 Oct 2010 22:24:25 +0200
+
 pagavcs (1.4.38) karmic; urgency=low
 
   [ Gábor Pápai ]

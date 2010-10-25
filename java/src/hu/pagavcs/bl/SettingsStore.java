@@ -45,6 +45,7 @@ public class SettingsStore {
 	private static final String  KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD = "auto-copy-commit-revision-to-clipboard";
 	private static final String  KEY_LAST_HELP_MERGE_TO_DIR                 = "last-help-merge-to-dir";
 	private static final String  KEY_MERGE_IGNORE_EOL                       = "merge-ignore-eol";
+	private static final String  KEY_GLOBAL_UPDATE_IGNORE_EOL               = "global-update-ignore-eol";
 
 	private Map<String, String>  mapUsername                                = new HashMap<String, String>();
 	private Map<String, String>  mapPassword                                = new HashMap<String, String>();
@@ -58,6 +59,7 @@ public class SettingsStore {
 	private String               commitCompletedMessageTemplates;
 	private Boolean              autoCopyCommitRevisionToClipboard;
 	private Boolean              mergeIgnoreEol;
+	private Boolean              globalIgnoreEol;
 	private String               lastHelpMergeToDir;
 
 	public static SettingsStore getInstance() {
@@ -81,6 +83,7 @@ public class SettingsStore {
 		storeBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD, autoCopyCommitRevisionToClipboard);
 		storeString(KEY_LAST_HELP_MERGE_TO_DIR, lastHelpMergeToDir);
 		storeBoolean(KEY_MERGE_IGNORE_EOL, mergeIgnoreEol);
+		storeBoolean(KEY_GLOBAL_UPDATE_IGNORE_EOL, globalIgnoreEol);
 		prefs.flush();
 	}
 
@@ -98,6 +101,7 @@ public class SettingsStore {
 		autoCopyCommitRevisionToClipboard = loadBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD);
 		lastHelpMergeToDir = loadString(KEY_LAST_HELP_MERGE_TO_DIR);
 		mergeIgnoreEol = loadBoolean(KEY_MERGE_IGNORE_EOL);
+		globalIgnoreEol = loadBoolean(KEY_GLOBAL_UPDATE_IGNORE_EOL);
 	}
 
 	private List<String> loadList(String listName) throws BackingStoreException {
@@ -346,5 +350,13 @@ public class SettingsStore {
 
 	public void setMergeIgnoreEol(Boolean mergeIgnoreEol) {
 		this.mergeIgnoreEol = mergeIgnoreEol;
+	}
+
+	public Boolean getGlobalIgnoreEol() {
+		return this.globalIgnoreEol;
+	}
+
+	public void setGlobalIgnoreEol(Boolean globalIgnoreEol) {
+		this.globalIgnoreEol = globalIgnoreEol;
 	}
 }

@@ -34,16 +34,26 @@ import javax.swing.UIManager;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.DefaultHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
+import org.tmatesoft.svn.core.internal.wc.DefaultSVNMerger;
+import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.internal.wc.SVNFileUtil;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminArea;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNLog;
+import org.tmatesoft.svn.core.wc.ISVNConflictHandler;
+import org.tmatesoft.svn.core.wc.ISVNMerger;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNConflictChoice;
+import org.tmatesoft.svn.core.wc.SVNDiffOptions;
 import org.tmatesoft.svn.core.wc.SVNInfo;
+import org.tmatesoft.svn.core.wc.SVNMergeFileSet;
+import org.tmatesoft.svn.core.wc.SVNMergeResult;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -206,6 +216,8 @@ public class Manager {
 				reTryLogin = true;
 			}
 		}
+
+		result.setOptions(new MergerFactory());
 
 		return result;
 	}
@@ -463,6 +475,40 @@ public class Manager {
 		}
 
 		return new File(sb.toString());
+	}
+
+	private static class MergerFactory extends DefaultSVNOptions {
+
+		private ISVNConflictHandler myConflictResolver;
+
+		public void setConflictHandler(ISVNConflictHandler resolver) {
+			myConflictResolver = resolver;
+		}
+
+		public ISVNMerger createMerger(byte[] conflictStart, byte[] conflictSeparator, byte[] conflictEnd) {
+			return new SVNMergerIgnoreEol(new DefaultSVNMerger(conflictStart, conflictSeparator, conflictEnd, myConflictResolver));
+		}
+	}
+
+	private static class SVNMergerIgnoreEol implements ISVNMerger {
+
+		private final ISVNMerger delegate;
+
+		public SVNMergerIgnoreEol(ISVNMerger delegate) {
+			this.delegate = delegate;
+		}
+
+		public SVNMergeResult mergeProperties(String localPath, SVNProperties workingProperties, SVNProperties baseProperties, SVNProperties serverBaseProps,
+		        SVNProperties propDiff, SVNAdminArea adminArea, SVNLog log, boolean baseMerge, boolean dryRun) throws SVNException {
+			return this.delegate.mergeProperties(localPath, workingProperties, baseProperties, serverBaseProps, propDiff, adminArea, log, baseMerge, dryRun);
+		}
+
+		public SVNMergeResult mergeText(SVNMergeFileSet files, boolean dryRun, SVNDiffOptions options) throws SVNException {
+			if (options == null && Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol())) {
+				options = new SVNDiffOptions(false, false, true);
+			}
+			return this.delegate.mergeText(files, dryRun, options);
+		}
 	}
 
 }

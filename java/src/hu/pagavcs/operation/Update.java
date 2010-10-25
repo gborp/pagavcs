@@ -101,6 +101,7 @@ public class Update implements Cancelable {
 
 			SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
 			updateClient.setEventHandler(new UpdateEventHandler(this, gui));
+
 			gui.setStatus(ContentStatus.STARTED);
 			boolean successOrExit = false;
 			while (!successOrExit) {
