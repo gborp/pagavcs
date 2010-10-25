@@ -166,7 +166,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 			public void actionPerformed(ActionEvent e) {
 				saveHistory();
-				cancelSearch();
+				cancelSearch(true);
 			}
 		});
 		contentPane.add(DialogToolkit.createOKCancelPanel(btnStartSearch, btnCancel, getRootPane(), this), BorderLayout.SOUTH);
@@ -193,7 +193,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 			public void windowClosed(WindowEvent e) {
 				saveHistory();
-				cancelSearch();
+				cancelSearch(false);
 				if (timerFindFeedback != null) {
 					timerFindFeedback.stop();
 				}
@@ -216,9 +216,11 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 		}
 	}
 
-	private void cancelSearch() {
+	private void cancelSearch(boolean doClose) {
 		if (findInProgress == null) {
+			if (doClose) {
 			dispose();
+			}
 		} else {
 			FindManager.getInstance().cancelSearch(findInProgress);
 		}

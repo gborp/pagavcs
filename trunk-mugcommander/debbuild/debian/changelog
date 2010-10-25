@@ -1,3 +1,11 @@
+mugcommander (1.0.7) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * even faster local not-in-archive file search
+  * fix find dialog closing resulted 100% cpu usage (regression in 1.0.6)
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Oct 2010 21:43:26 +0200
+
 mugcommander (1.0.6) karmic; urgency=low
 
   [ Gábor Pápai ]
