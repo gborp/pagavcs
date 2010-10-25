@@ -1,6 +1,7 @@
 package hu.pagavcs.gui;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.gui.platform.Frame;
 import hu.pagavcs.gui.platform.GuiHelper;
@@ -10,8 +11,11 @@ import hu.pagavcs.gui.platform.TextArea;
 import hu.pagavcs.operation.Settings;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -45,12 +49,14 @@ public class SettingsGui {
 	private TextArea            taCommitCompleteTemplate;
 	private Frame               frame;
 
+	private JCheckBox           cbGlobalIgnoreEol;
+
 	public SettingsGui(Settings settings) {
 		this.settings = settings;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("p,p:g,p", "p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p:g");
+		FormLayout layout = new FormLayout("p,p:g,p", "p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p:g");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -60,22 +66,35 @@ public class SettingsGui {
 		JButton btnShowLoginDialogNextTime = new JButton(new ShowLoginDialogNextTimeAction());
 		JButton btnExitPagavcs = new JButton(new ExitPagavcsAction());
 		JButton btnSetCommitCompletedMessageTemplates = new JButton(new SetCommitCompletedMessageTemplatesAction());
+		cbGlobalIgnoreEol = new JCheckBox("Global Ignore EOL");
+		if (Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol())) {
+			cbGlobalIgnoreEol.setSelected(true);
+		}
 
 		taCommitCompleteTemplate = new TextArea();
 		taCommitCompleteTemplate.setToolTipText("Example: /pagavcs/trunk>>>#{0} trunk.PagaVCS");
+		taCommitCompleteTemplate.setRows(3);
 
 		pnlMain.add(btnAbout, cc.xy(3, 1));
 		pnlMain.add(btnClearLogin, cc.xy(3, 3));
 		pnlMain.add(btnShowIcons, cc.xy(3, 5));
 		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(3, 7));
 		pnlMain.add(btnExitPagavcs, cc.xy(3, 9));
-		pnlMain.add(new Label("Commit completed message templates:"), cc.xy(1, 11));
-		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 11));
-		pnlMain.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 13, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(cbGlobalIgnoreEol, cc.xy(3, 11));
+		pnlMain.add(new Label("Commit completed message templates:"), cc.xy(1, 13));
+		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 13));
+		pnlMain.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 15, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
 
 		taCommitCompleteTemplate.setText(Manager.getSettings().getCommitCompletedMessageTemplates());
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Settings");
+
+		frame.addWindowListener(new WindowAdapter() {
+
+			public void windowClosed(WindowEvent e) {
+				SettingsStore.getInstance().setGlobalIgnoreEol(cbGlobalIgnoreEol.isSelected());
+			}
+		});
 	}
 
 	private class AboutAction extends ThreadAction {
