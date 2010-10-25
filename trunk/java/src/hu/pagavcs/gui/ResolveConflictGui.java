@@ -162,20 +162,24 @@ public class ResolveConflictGui {
 
 		for (String line : lines) {
 
-			if (line.startsWith("<<<<<<<")) {
+			if (line.contains("<<<<<<<")) {
+				doc.insertString(doc.getLength(), line.substring(0, line.indexOf("<<<<<<<")), setActual);
 				blockId++;
 				setActual = (SimpleAttributeSet) setConflictWorking.clone();
 				setActual.addAttribute(ATTRIBUTE_BLOCK_ID, blockId);
 				continue;
-			} else if (line.equals("|||||||")) {
+			} else if (line.contains("|||||||")) {
+				doc.insertString(doc.getLength(), line.substring(0, line.indexOf("|||||||")), setActual);
 				setActual = (SimpleAttributeSet) setOriginal.clone();
 				setActual.addAttribute(ATTRIBUTE_BLOCK_ID, blockId);
 				continue;
-			} else if (line.equals("=======")) {
+			} else if (line.contains("=======")) {
+				doc.insertString(doc.getLength(), line.substring(0, line.indexOf("=======")), setActual);
 				setActual = (SimpleAttributeSet) setConflictTheirs.clone();
 				setActual.addAttribute(ATTRIBUTE_BLOCK_ID, blockId);
 				continue;
-			} else if (line.startsWith(">>>>>>>")) {
+			} else if (line.contains(">>>>>>>")) {
+				doc.insertString(doc.getLength(), line.substring(0, line.indexOf(">>>>>>>")), setActual);
 				setActual = setNormalText;
 				continue;
 			}
