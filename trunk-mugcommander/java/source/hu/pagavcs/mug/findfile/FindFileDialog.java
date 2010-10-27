@@ -84,7 +84,7 @@ public class FindFileDialog extends FocusDialog implements ActionListener {
 
 		lstNameHistory = MugHelper.loadList(MugHelper.KEY_FIND_NAME_HISTORY);
 		if (lstNameHistory.isEmpty()) {
-			lstNameHistory = Arrays.asList("*");
+			lstNameHistory = new ArrayList<String>(Arrays.asList("*"));
 		}
 
 		cboNameField = new JComboBox(lstNameHistory.toArray());
