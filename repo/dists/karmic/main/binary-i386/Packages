@@ -70,21 +70,39 @@ Description: PagaVCS extension for mugCommander
  It's written in Java.
 
 Package: pagavcs
-Version: 1.4.39
+Version: 1.4.40
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Installed-Size: 5296
+Installed-Size: 5300
 Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs/pagavcs_1.4.39_all.deb
-Size: 3954050
-SHA256: 3e2b710155419c53b66ce47a6f510837bf38de4c346e8eadbc412074625bdafb
-SHA1: f321e76decd696f86894e2de10d631bcf3cc667f
-MD5sum: e804bbed3c58af3f375671e86c0c5362
+Filename: pool/main/p/pagavcs/pagavcs_1.4.40_all.deb
+Size: 3955666
+SHA256: eb146be6e0556d94ca2fe05d6d8a848163331e0a49944ed3e240196c20e41542
+SHA1: a06f39499ed2df3a4b458bfca6ee3785585a6937
+MD5sum: 2f80bb645c4b0827f4aa5a520aeb3c5d
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
  Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
+
+Package: pagavcs-bigmem
+Version: 1.0.0
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 48
+Depends: pagavcs (>= 1.4.40)
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/p/pagavcs-bigmem/pagavcs-bigmem_1.0.0_all.deb
+Size: 1222
+SHA256: f04768f6cda90463294a0f31df30fdd80d60fbbdc90ada3694c04e5b08a34dc0
+SHA1: fc8943e92c776eb24ad03fa4d2c37752bf976c97
+MD5sum: 3ecc1e9f8eca8ef00a31b722043da246
+Description: PagaVCS bigmemory
+ Switcges PagaVCS into bigmemory mode.
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild-bigmem/debian/changelog
 
