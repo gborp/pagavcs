@@ -3,7 +3,6 @@ package hu.pagavcs.gui.log;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.SettingsStore;
-import hu.pagavcs.bl.ThreadAction;
 import hu.pagavcs.gui.LogDetailListItem;
 import hu.pagavcs.gui.LogListItem;
 import hu.pagavcs.gui.StatusCellRendererForLogDetailListItem;
@@ -60,7 +59,6 @@ import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
-import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -614,6 +612,12 @@ public class LogGui implements Working {
 		log.showChanges(showChangesPath, revision, contentStatus);
 	}
 
+	public void compareWithWorkingCopy(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
+
+		log.compareWithWorkingCopy(Manager.getAbsoluteFile(log.getPath(), showChangesPath), Manager.getAbsoluteUrl(log.getUrl(), showChangesPath), revision,
+		        contentStatus);
+	}
+
 	public void saveRevisionTo(String showChangesPath, long revision, File destination) throws Exception {
 		log.saveRevisionTo(showChangesPath, revision, destination);
 	}
@@ -638,28 +642,6 @@ public class LogGui implements Working {
 		return frame;
 	}
 
-	private class DetailCompareWithWorkingCopyAction extends ThreadAction {
-
-		public DetailCompareWithWorkingCopyAction() {
-			super("Compare with working copy");
-		}
-
-		public void actionProcess(ActionEvent e) throws Exception {
-			for (LogDetailListItem liDetail : getSelectedDetailLogItems()) {
-				if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-					// log.showDirChanges(liDetail.getPath(),
-					// liDetail.getRevision(), liDetail.getAction());
-				} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-					// log.showChanges(liDetail.getPath(),
-					// liDetail.getRevision(), liDetail.getAction());
-				} else {
-					// log.showChanges(liDetail.getPath(),
-					// liDetail.getRevision(), liDetail.getAction());
-				}
-			}
-		}
-	}
-
 	private class DetailPopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppModified;
@@ -670,8 +652,7 @@ public class LogGui implements Working {
 			ppModified.add(new DetailShowChangesAction(LogGui.this));
 			ppModified.add(new ShowFileAction(LogGui.this));
 			ppModified.add(new SaveRevisionToAction(LogGui.this));
-			// TODO
-			// ppModified.add(new DetailCompareWithWorkingCopyAction());
+			ppModified.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
 			ppModified.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
 			ppModified.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppModified.add(new CopyDetailAllToClipboard(LogGui.this));
@@ -679,6 +660,7 @@ public class LogGui implements Working {
 			ppAdded = new JPopupMenu();
 			ppAdded.add(new ShowFileAction(LogGui.this));
 			ppAdded.add(new SaveRevisionToAction(LogGui.this));
+			ppAdded.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
 			ppAdded.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppAdded.add(new CopyDetailAllToClipboard(LogGui.this));
 		}

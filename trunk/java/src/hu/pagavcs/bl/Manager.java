@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -134,6 +135,49 @@ public class Manager {
 			new File(tempDir).mkdirs();
 		}
 		return tempDir;
+	}
+
+	public static File getAbsoluteFile(String path, String relativeUrl) throws SVNException, PagaException {
+
+		ArrayList<String> lstPath = new ArrayList<String>(Arrays.asList(path.split("/")));
+		ArrayList<String> lstRelative = new ArrayList<String>(Arrays.asList(relativeUrl.split("/")));
+		if (lstRelative.get(0).isEmpty()) {
+			lstRelative.remove(0);
+		}
+
+		int offset1 = lstPath.size() - lstRelative.size();
+
+		boolean success = false;
+
+		while (!success && offset1 < lstPath.size()) {
+			success = true;
+			for (int i = 0; i < lstRelative.size() && (offset1 + i) < lstPath.size(); i++) {
+				if (!lstPath.get(i + offset1).equals(lstRelative.get(i))) {
+					success = false;
+					break;
+				}
+			}
+			if (!success) {
+				offset1++;
+			}
+		}
+		lstPath.subList(offset1, lstPath.size()).clear();
+		lstPath.addAll(lstRelative);
+
+		StringBuilder sbResult = new StringBuilder();
+		for (String li : lstPath) {
+			sbResult.append(li);
+			sbResult.append('/');
+		}
+
+		return new File(sbResult.toString());
+	}
+
+	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl) throws SVNException, PagaException {
+
+		SVNClientManager mgr = Manager.getSVNClientManager(path);
+		SVNURL rootUrl = mgr.getWCClient().doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED).getRepositoryRootURL();
+		return rootUrl.appendPath(relativeUrl, true);
 	}
 
 	public static SVNClientManager getSVNClientManagerForWorkingCopyOnly() {

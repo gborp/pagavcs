@@ -143,11 +143,19 @@ public class Log implements Cancelable {
 		return cancel;
 	}
 
+	public String getPath() {
+		return path;
+	}
+
 	public SVNURL getRootUrl() throws SVNException {
 		if (rootUrl == null) {
 			rootUrl = Manager.getInfo(path).getRepositoryRootURL();
 		}
 		return rootUrl;
+	}
+
+	public SVNURL getUrl() throws SVNException {
+		return Manager.getInfo(path).getURL();
 	}
 
 	public void showDirChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
@@ -284,6 +292,66 @@ public class Log implements Cancelable {
 			}
 			if (fileOld != null) {
 				fileOld.delete();
+			}
+		}
+	}
+
+	public void compareWithWorkingCopy(File file, SVNURL svnurl, long revision, ContentStatus contentStatus) throws Exception {
+		FileOutputStream outNewRevision = null;
+		File fileNew = null;
+		try {
+			gui.workStarted();
+			// SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
+			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+			// File f = wcClient.doInfo(svnurl2, SVNRevision.WORKING,
+			// SVNRevision.WORKING).getFile();
+
+			// SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+			// SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(),
+			// repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(),
+			// repoRoot.getPath() + svnurl2,
+			// true);
+
+			String svnurl2Str = svnurl.toDecodedString();
+			String fileName = svnurl2Str.substring(svnurl2Str.lastIndexOf('/') + 1);
+
+			String fileNameNew = "r" + revision + "-" + fileName;
+			String tempPrefix = Manager.getTempDir();
+
+			fileNew = new File(tempPrefix + fileNameNew);
+			fileNew.delete();
+			outNewRevision = new FileOutputStream(tempPrefix + fileNameNew);
+
+			wcClient.doGetFileContents(svnurl, SVNRevision.create(revision), SVNRevision.create(revision), false, outNewRevision);
+
+			fileNew.setReadOnly();
+			fileNew.deleteOnExit();
+
+			ProcessBuilder processBuilder;
+			if (contentStatus.equals(ContentStatus.DELETED)) {
+				processBuilder = new ProcessBuilder("gedit", file.toString());
+			} else if (contentStatus.equals(ContentStatus.ADDED)) {
+				processBuilder = new ProcessBuilder("gedit", file.toString());
+			} else {
+				processBuilder = new ProcessBuilder("meld", "-L " + file.getName(), file.toString(), "-L " + fileNameNew, tempPrefix + fileNameNew);
+			}
+			Process process = processBuilder.start();
+			gui.workEnded();
+			process.waitFor();
+		} catch (Exception e) {
+			try {
+				gui.workEnded();
+			} catch (Exception e1) {
+				Manager.handle(e1);
+			}
+			throw e;
+		} finally {
+			if (outNewRevision != null) {
+				outNewRevision.close();
+			}
+			if (fileNew != null) {
+				fileNew.delete();
 			}
 		}
 	}
