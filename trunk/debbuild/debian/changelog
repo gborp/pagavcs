@@ -1,3 +1,11 @@
+pagavcs (1.4.40) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 14: [log gui] new context menu item: "compare with working copy" in detail table
+  * Issue 100: Problem committing deletion of large folder: new installable package: pagavcs-bigmem. it causes PagaVCS to run with more memory
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 07 Dec 2010 19:17:16 +0100
+
 pagavcs (1.4.39) karmic; urgency=low
 
   [ Gábor Pápai ]

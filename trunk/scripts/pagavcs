@@ -13,7 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
-START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
+if [ -f "/usr/share/pagavcs/data/pagavcs-bigmem" ];
+then
+	START_SERVER_CMD="java -Xms16m -Xmx199m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
+else 
+	START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
+fi 
+
 
 CONFIG_FILE="${HOME}/.pagavcs/config.properties"
 CFG_PORT_KEY="port"
