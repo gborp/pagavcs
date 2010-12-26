@@ -45,8 +45,7 @@ public class LoginGui {
 	private final String   predefinedUsername;
 	private final String   predefinedPassword;
 	private boolean        loginButtonPressed;
-	private JCheckBox      cbUsername;
-	private JCheckBox      cbPassword;
+	private JCheckBox      cbRemember;
 
 	public LoginGui(String username, String password) {
 		this.predefinedUsername = username;
@@ -55,19 +54,15 @@ public class LoginGui {
 	}
 
 	public void display() {
-		JPanel pnlMain = new JPanel(new FormLayout("p,2dlu,p,2dlu, p:g,p", "p,2dlu,p,2dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu, p:g,p", "p,2dlu,p,2dlu,p,2dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
-		cbUsername = new JCheckBox();
-		cbUsername.setToolTipText("Remember username");
-		cbUsername.setFocusable(false);
+		cbRemember = new JCheckBox();
+		cbRemember.setFocusable(false);
 		Label lblUsername = new Label("Username:");
 		sfUsername = new EditField(predefinedUsername, 20);
 		sfUsername.setToolTipText("Leave it empty if username is not required");
 
-		cbPassword = new JCheckBox();
-		cbPassword.setToolTipText("Remember password");
-		cbPassword.setFocusable(false);
 		Label lblPassword = new Label("Password:");
 		sfPassword = new JPasswordField(predefinedPassword, 20);
 		btnLogin = new JButton("Login");
@@ -77,25 +72,24 @@ public class LoginGui {
 				loginButtonPressed = true;
 
 				SettingsStore settings = Manager.getSettings();
-				settings.setRememberUsername(cbUsername.isSelected());
-				settings.setRememberPassword(cbPassword.isSelected());
+				settings.setRememberUsername(cbRemember.isSelected());
 
 				synchronized (logMeIn) {
 					logMeIn.notifyAll();
 				}
 			}
 		});
-		pnlMain.add(cbUsername, cc.xywh(1, 1, 1, 1));
-		pnlMain.add(lblUsername, cc.xywh(3, 1, 1, 1));
-		pnlMain.add(sfUsername, cc.xywh(5, 1, 2, 1));
-		pnlMain.add(cbPassword, cc.xywh(1, 3, 1, 1));
-		pnlMain.add(lblPassword, cc.xywh(3, 3, 1, 1));
-		pnlMain.add(sfPassword, cc.xywh(5, 3, 2, 1));
-		pnlMain.add(btnLogin, cc.xywh(6, 5, 1, 1));
+
+		pnlMain.add(lblUsername, cc.xywh(1, 1, 1, 1));
+		pnlMain.add(sfUsername, cc.xywh(3, 1, 2, 1));
+		pnlMain.add(lblPassword, cc.xywh(1, 3, 1, 1));
+		pnlMain.add(sfPassword, cc.xywh(3, 3, 2, 1));
+		pnlMain.add(cbRemember, cc.xywh(1, 5, 1, 1));
+		pnlMain.add(new Label("Remember"), cc.xywh(3, 5, 2, 1));
+		pnlMain.add(btnLogin, cc.xywh(4, 7, 1, 1));
 
 		SettingsStore settings = Manager.getSettings();
-		cbUsername.setSelected(Boolean.TRUE.equals(settings.getRememberUsername()));
-		cbPassword.setSelected(Boolean.TRUE.equals(settings.getRememberPassword()));
+		cbRemember.setSelected(Boolean.TRUE.equals(settings.getRememberPassword()));
 
 		sfUsername.addKeyListener(new KeyAdapter() {
 
@@ -155,12 +149,8 @@ public class LoginGui {
 		return new String(sfPassword.getPassword()).trim();
 	}
 
-	public boolean getRememberUsername() {
-		return cbUsername.isSelected();
-	}
-
-	public boolean getRememberPassword() {
-		return cbPassword.isSelected();
+	public boolean isRememberChecked() {
+		return cbRemember.isSelected();
 	}
 
 }
