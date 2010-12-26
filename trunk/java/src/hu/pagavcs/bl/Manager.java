@@ -223,13 +223,9 @@ public class Manager {
 				username = loginGui.getPredefinedUsername();
 				password = loginGui.getPredefinedPassword();
 
-				if (loginGui.getRememberUsername()) {
+				if (loginGui.isRememberChecked()) {
 					getSettings().setUsername(repoid, username);
-					if (loginGui.getRememberPassword()) {
-						getSettings().setPassword(repoid, password);
-					} else {
-						getSettings().setPassword(repoid, null);
-					}
+					getSettings().setPassword(repoid, password);
 				} else {
 					getSettings().setUsername(repoid, null);
 					getSettings().setPassword(repoid, null);
