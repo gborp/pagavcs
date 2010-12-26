@@ -5,6 +5,8 @@ import hu.pagavcs.bl.OnSwing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -12,6 +14,7 @@ import java.util.TimerTask;
 
 import javax.swing.Icon;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.AncestorEvent;
@@ -47,7 +50,7 @@ public class Table<L extends ListItem> extends JTable {
 	public Table(TableModel<L> tableModel) {
 		super(tableModel);
 		this.tableModel = tableModel;
-		setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setFillsViewportHeight(true);
 		setShowGrid(false);
@@ -69,6 +72,16 @@ public class Table<L extends ListItem> extends JTable {
 
 			public void tableChanged(TableModelEvent e) {
 
+				if (!resizeIsTimed) {
+					resizeIsTimed = true;
+					tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
+				}
+			}
+		});
+
+		addComponentListener(new ComponentAdapter() {
+
+			public void componentResized(ComponentEvent e) {
 				if (!resizeIsTimed) {
 					resizeIsTimed = true;
 					tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
@@ -134,7 +147,21 @@ public class Table<L extends ListItem> extends JTable {
 			lstRows.add(tableModel.getRow(convertRowIndexToModel(i)));
 		}
 
+		JViewport parent = (JViewport) getParent();
+		int viewWidth = parent.getSize().width;
+
+		int headerTotalWidth = 0;
+		for (int i = 0; i < columnCount; i++) {
+			TableColumn col = colModel.getColumn(i);
+			TableCellRenderer headerRenderer = col.getHeaderRenderer();
+			if (headerRenderer == null) {
+				headerRenderer = getDefaultRenderer(String.class);
+			}
+			headerTotalWidth += headerRenderer.getTableCellRendererComponent(this, col.getHeaderValue(), false, false, 0, i).getPreferredSize().width;
+		}
+
 		if (!lstRows.isEmpty()) {
+			int dataTotalWidth = 0;
 			for (int i = 0; i < columnCount; i++) {
 
 				TableColumn col = colModel.getColumn(i);
@@ -146,12 +173,23 @@ public class Table<L extends ListItem> extends JTable {
 					width = Math.max(width, comp.getPreferredSize().width);
 				}
 				width += 12;
-				col.setMinWidth(width);
-				col.setPreferredWidth(width);
+
 				if (i != columnCount - 1) {
 					col.setMaxWidth(width);
+				} else {
+					if ((dataTotalWidth + width) < viewWidth) {
+						width = viewWidth - dataTotalWidth;
+					}
 				}
+				col.setMinWidth(width);
+				col.setPreferredWidth(width);
+				col.setWidth(width);
+				dataTotalWidth += width;
 			}
+			// setPreferredSize(new Dimension(Math.max(headerTotalWidth,
+			// dataTotalWidth), 16));
+		} else {
+			// setPreferredSize(new Dimension(headerTotalWidth, 16));
 		}
 	}
 
