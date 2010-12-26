@@ -114,7 +114,7 @@ public class UpdateGui implements Working {
 
 		pnlMain.add(new Label("Working copy:"), cc.xywh(1, 1, 1, 1));
 		pnlMain.add(lblWorkingCopy, cc.xywh(3, 1, 6, 1));
-		pnlMain.add(new Label("Url:"), cc.xywh(1, 3, 1, 1));
+		pnlMain.add(new Label("URL:"), cc.xywh(1, 3, 1, 1));
 		pnlMain.add(lblRepo, cc.xywh(3, 3, 6, 1));
 		pnlMain.add(scrollPane, cc.xywh(1, 5, 8, 1));
 		pnlMain.add(lblInfo, cc.xy(1, 7));

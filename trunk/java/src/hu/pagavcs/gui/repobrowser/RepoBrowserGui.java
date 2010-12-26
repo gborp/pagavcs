@@ -111,7 +111,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		tree.addTreeWillExpandListener(this);
 		tree.addMouseListener(new PopupupMouseListener());
 
-		pnlMain.add(new JLabel("Url:"), cc.xywh(1, 1, 1, 1));
+		pnlMain.add(new JLabel("URL:"), cc.xywh(1, 1, 1, 1));
 		pnlMain.add(sfUrl, cc.xywh(3, 1, 1, 1));
 
 		pnlMain.add(new JLabel("Working copy:"), cc.xywh(1, 3, 1, 1));
@@ -127,7 +127,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 	private class UrlChangedAction extends ThreadAction {
 
 		public UrlChangedAction() {
-			super("Url changed");
+			super("URL changed");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
