@@ -56,7 +56,7 @@ public class CheckoutGui {
 
 		frame = GuiHelper.createFrame(pnlMain, "Checkout Settings", null);
 
-		Label lblUrl = new Label("Url:");
+		Label lblUrl = new Label("URL:");
 		cboUrl = new JComboBox();
 		cboUrl.setEditable(true);
 		if (checkout.getUrl() != null) {
@@ -118,7 +118,7 @@ public class CheckoutGui {
 			return;
 		}
 		if (url.isEmpty()) {
-			MessagePane.showError(frame, "Error", "Url must be set");
+			MessagePane.showError(frame, "Error", "URL must be set");
 			return;
 		}
 		long numberRevision = Checkout.HEAD_REVISION;
