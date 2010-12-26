@@ -561,7 +561,7 @@ public class CommitGui implements Working, Refreshable {
 	private boolean addRecoursively(List<CommitListItem> lstItems) throws SVNException {
 		boolean hasDirectory = false;
 		for (CommitListItem li : lstItems) {
-			if (li.getPath().isDirectory()) {
+			if (li != null && li.getPath() != null && li.getPath().isDirectory()) {
 				if (li.getPath().listFiles().length != 0) {
 					hasDirectory = true;
 					break;
