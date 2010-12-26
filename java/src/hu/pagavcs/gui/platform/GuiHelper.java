@@ -5,6 +5,7 @@ import hu.pagavcs.bl.WindowPreferencesSaverOnClose;
 import hu.pagavcs.gui.CommitListItem;
 import hu.pagavcs.operation.ContentStatus;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -221,11 +222,16 @@ public class GuiHelper {
 	}
 
 	public static Frame createFrame(JComponent pnlMain, String applicationName, String iconName) {
+		return createFrame(pnlMain, applicationName, iconName, true);
+	}
+
+	public static Frame createFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
 		if (iconName == null) {
 			iconName = "/hu/pagavcs/resources/icon.png";
 		}
 		Frame frame = new Frame(applicationName, iconName);
-		frame.getContentPane().add(addBorder(pnlMain));
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(addBorder(pnlMain, addScrollPane), BorderLayout.CENTER);
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
 		return frame;
 	}
@@ -235,7 +241,11 @@ public class GuiHelper {
 	}
 
 	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName) {
-		Frame frame = createFrame(pnlMain, applicationName, iconName);
+		return createAndShowFrame(pnlMain, applicationName, iconName, true);
+	}
+
+	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
+		Frame frame = createFrame(pnlMain, applicationName, iconName, addScrollPane);
 		frame.pack();
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
@@ -253,7 +263,7 @@ public class GuiHelper {
 
 	public static JDialog createDialog(Window parent, JComponent main, String title) {
 		final JDialog dialog = new JDialog(parent);
-		dialog.getContentPane().add(addBorder(main));
+		dialog.getContentPane().add(addBorder(main, true));
 		dialog.setTitle(title);
 		dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
 		dialog.pack();
@@ -275,12 +285,16 @@ public class GuiHelper {
 		return dialog;
 	}
 
-	private static JComponent addBorder(JComponent pnlMain) {
+	private static JComponent addBorder(JComponent pnlMain, boolean addScrollPane) {
 		JPanel pnlBorder = new JPanel(new FormLayout("2dlu,fill:p:g,2dlu", "2dlu,fill:p:g,2dlu"));
 
 		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
 
-		return new JScrollPane(pnlBorder);
+		if (addScrollPane) {
+			return new JScrollPane(pnlBorder);
+		} else {
+			return pnlBorder;
+		}
 	}
 
 	public static void addUndoRedo(JTextComponent comp) {

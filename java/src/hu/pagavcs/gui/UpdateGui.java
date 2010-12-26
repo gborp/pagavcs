@@ -78,7 +78,6 @@ public class UpdateGui implements Working {
 	private Label                                 lblInfo;
 	private List<File>                            lstPath;
 	private long                                  totalReceived;
-	private JPanel                                pnlMain;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -91,8 +90,15 @@ public class UpdateGui implements Working {
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("r:p,2dlu,p,2dlu,1dlu:g, p,2dlu, p", "p,2dlu,p,2dlu,fill:4dlu:g,2dlu,p");
-		pnlMain = new JPanel(layout);
+		FormLayout lyTop = new FormLayout("r:p,2dlu,1dlu:g", "p,2dlu,p");
+		JPanel pnlTop = new JPanel(lyTop);
+
+		FormLayout lyBottom = new FormLayout("p,2dlu,1dlu:g,2dlu,p", "p");
+		JPanel pnlBottom = new JPanel(lyBottom);
+
+		FormLayout lyMain = new FormLayout("1dlu:g", "p,2dlu,fill:10dlu:g,2dlu,p");
+		JPanel pnlMain = new JPanel(lyMain);
+
 		CellConstraints cc = new CellConstraints();
 
 		lblWorkingCopy = new Label();
@@ -112,16 +118,21 @@ public class UpdateGui implements Working {
 
 		prgWorking = new JProgressBar();
 
-		pnlMain.add(new Label("Working copy:"), cc.xywh(1, 1, 1, 1));
-		pnlMain.add(lblWorkingCopy, cc.xywh(3, 1, 6, 1));
-		pnlMain.add(new Label("URL:"), cc.xywh(1, 3, 1, 1));
-		pnlMain.add(lblRepo, cc.xywh(3, 3, 6, 1));
-		pnlMain.add(scrollPane, cc.xywh(1, 5, 8, 1));
-		pnlMain.add(lblInfo, cc.xy(1, 7));
-		pnlMain.add(prgWorking, cc.xywh(3, 7, 4, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-		pnlMain.add(btnStopFinish, cc.xy(8, 7));
+		pnlTop.add(new Label("Working copy:"), cc.xy(1, 1));
+		pnlTop.add(lblWorkingCopy, cc.xy(3, 1));
+		pnlTop.add(new Label("URL:"), cc.xy(1, 3));
+		pnlTop.add(lblRepo, cc.xy(3, 3));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, title, "/hu/pagavcs/resources/update-app-icon.png");
+		pnlBottom.add(lblInfo, cc.xy(1, 1));
+		pnlBottom.add(prgWorking, cc.xywh(3, 1, 1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlBottom.add(btnStopFinish, cc.xy(5, 1));
+
+		pnlMain.add(pnlTop, cc.xy(1, 1));
+		pnlMain.add(scrollPane, cc.xy(1, 3));
+		pnlMain.add(pnlBottom, cc.xy(1, 5));
+
+		frame = GuiHelper.createAndShowFrame(pnlMain, title, "/hu/pagavcs/resources/update-app-icon.png", false);
+
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
@@ -149,11 +160,13 @@ public class UpdateGui implements Working {
 
 	public void setWorkingCopy(String workingCopy) {
 		lblWorkingCopy.setText(workingCopy);
+		lblWorkingCopy.setToolTipText(workingCopy);
 		frame.setTitlePrefix(workingCopy);
 	}
 
 	public void setRepo(String repo) {
 		lblRepo.setText(repo);
+		lblRepo.setToolTipText(repo);
 	}
 
 	public void setPaths(List<File> lstPath) {

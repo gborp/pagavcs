@@ -34,7 +34,7 @@ public abstract class AbstractCellRendererColorizator<L extends ListItem> implem
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
 
 		Component delegeteComponent = delegate.getTableCellRendererComponent(decorTable, value, isSelected, hasFocus, rowIndex, vColIndex);
-		if (!isSelected) {
+		if (!isSelected && decorTable.getModel().getRowCount() > 0) {
 			delegeteComponent.setForeground(getForegroundColor(decorTable.getModel().getRow(decorTable.convertRowIndexToModel(rowIndex))));
 			delegeteComponent.setBackground(rowIndex % 2 == 0 ? AbstractCellRendererColorizator.alternateColor : null);
 		} else {
