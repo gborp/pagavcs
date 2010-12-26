@@ -77,7 +77,7 @@ public class MergeGui {
 		pnlMain.add(btnShowLog, cc.xywh(4, 5, 1, 1));
 
 		pnlMain.add(new JSeparator(), cc.xywh(1, 6, 4, 1));
-		pnlMain.add(new JLabel("Url to merge from:"), cc.xywh(1, 7, 1, 1));
+		pnlMain.add(new JLabel("URL to merge from:"), cc.xywh(1, 7, 1, 1));
 		pnlMain.add(cboUrlMergeFrom, cc.xywh(3, 7, 2, 1));
 		pnlMain.add(new JLabel("Revision range to merge:"), cc.xywh(1, 9, 1, 1));
 		pnlMain.add(sfRevisionRange, cc.xywh(3, 9, 2, 1));
