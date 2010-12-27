@@ -150,18 +150,45 @@ public class Table<L extends ListItem> extends JTable {
 		JViewport parent = (JViewport) getParent();
 		int viewWidth = parent.getSize().width;
 
+		boolean hasRows = !lstRows.isEmpty();
+		int[] columnPreferredWidth = new int[columnCount];
+
 		int headerTotalWidth = 0;
+		int interCellSpacingHorizontal = getIntercellSpacing().width;
 		for (int i = 0; i < columnCount; i++) {
 			TableColumn col = colModel.getColumn(i);
+
 			TableCellRenderer headerRenderer = col.getHeaderRenderer();
 			if (headerRenderer == null) {
-				headerRenderer = getDefaultRenderer(String.class);
+				headerRenderer = getTableHeader().getDefaultRenderer();
+				if (headerRenderer == null) {
+					headerRenderer = getDefaultRenderer(String.class);
+				}
 			}
-			headerTotalWidth += headerRenderer.getTableCellRendererComponent(this, col.getHeaderValue(), false, false, 0, i).getPreferredSize().width;
+
+			int width = headerRenderer.getTableCellRendererComponent(this, col.getHeaderValue(), false, false, -1, i).getPreferredSize().width
+			        + interCellSpacingHorizontal;
+			columnPreferredWidth[i] = width;
+
+			if (!hasRows) {
+				if (i != columnCount - 1) {
+					col.setMaxWidth(width);
+				} else {
+					if ((headerTotalWidth + width) < viewWidth) {
+						width = viewWidth - headerTotalWidth;
+					}
+				}
+
+				col.setMinWidth(width);
+				col.setPreferredWidth(width);
+				col.setWidth(width);
+			}
+			headerTotalWidth += width;
 		}
 
-		if (!lstRows.isEmpty()) {
+		if (hasRows) {
 			int dataTotalWidth = 0;
+
 			for (int i = 0; i < columnCount; i++) {
 
 				TableColumn col = colModel.getColumn(i);
@@ -172,7 +199,9 @@ public class Table<L extends ListItem> extends JTable {
 					Component comp = renderer.getTableCellRendererComponent(this, li.getValue(i), false, false, 0, i);
 					width = Math.max(width, comp.getPreferredSize().width);
 				}
-				width += 12;
+
+				width += interCellSpacingHorizontal;
+				width = Math.max(width, columnPreferredWidth[i]);
 
 				if (i != columnCount - 1) {
 					col.setMaxWidth(width);
