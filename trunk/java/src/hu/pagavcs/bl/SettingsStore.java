@@ -283,7 +283,8 @@ public class SettingsStore {
 			Rectangle result = getWindowBounds(parent.getName() + "->" + windowName);
 			if (result != null) {
 				Point parentLocation = parent.getLocationOnScreen();
-				result.getLocation().translate((int) parentLocation.getX(), (int) parentLocation.getY());
+				result.x += parentLocation.getX();
+				result.y += parentLocation.getY();
 			}
 			return result;
 		} else {
@@ -302,7 +303,8 @@ public class SettingsStore {
 	public void setWindowBounds(Window parent, String windowName, Rectangle bounds) {
 		if (parent != null) {
 			Point parentLocation = parent.getLocationOnScreen();
-			bounds.getLocation().translate((int) -parentLocation.getX(), (int) -parentLocation.getY());
+			bounds.x -= parentLocation.getX();
+			bounds.y -= parentLocation.getY();
 			setWindowBounds(parent.getName() + "->" + windowName, bounds);
 		} else {
 			setWindowBounds(windowName, bounds);
