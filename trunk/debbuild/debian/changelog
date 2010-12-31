@@ -1,3 +1,14 @@
+pagavcs (1.4.41) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue #99 Save password
+  * Issue #92: 2. Do you want to add recursively? java.lang.NullPointerException
+  * Issue 101: Windows scrolls in Ubuntu
+  * Issue 103: fix window position saving/reloading issues
+  * Issue 105: Add "restart pagavcs" button to the exception window
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Fri, 31 Dec 2010 10:05:30 +0100
+
 pagavcs (1.4.40) karmic; urgency=low
 
   [ Gábor Pápai ]
