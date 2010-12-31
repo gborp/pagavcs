@@ -42,6 +42,10 @@ public abstract class ThreadAction extends AbstractAction {
 		putValue(Action.NAME, label);
 	}
 
+	public void setTooltip(String label) {
+		putValue(Action.SHORT_DESCRIPTION, label);
+	}
+
 	public abstract void actionProcess(ActionEvent e) throws Exception;
 
 }
