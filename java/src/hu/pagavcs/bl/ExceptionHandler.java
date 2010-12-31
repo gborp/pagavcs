@@ -5,13 +5,14 @@ import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.MessagePane;
 import hu.pagavcs.gui.platform.TextArea;
 
-import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -20,6 +21,9 @@ import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -148,10 +152,31 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 		}
 		taStacktrace.setText(writer.getBuffer().toString());
 
-		JPanel pnlMain = new JPanel(new BorderLayout());
-		pnlMain.add(sfMessage, BorderLayout.NORTH);
-		pnlMain.add(new JScrollPane(taStacktrace), BorderLayout.CENTER);
+		JButton btnRestart = new JButton(new RestartPagaVcsAction());
+
+		CellConstraints cc = new CellConstraints();
+		FormLayout lyTop = new FormLayout("f:1dlu:g,2dlu,p", "p");
+		JPanel pnlTop = new JPanel(lyTop);
+		pnlTop.add(sfMessage, cc.xy(1, 1));
+		pnlTop.add(btnRestart, cc.xy(3, 1));
+
+		FormLayout lyMain = new FormLayout("f:20dlu:g", "p,2dlu,p");
+		JPanel pnlMain = new JPanel(lyMain);
+		pnlMain.add(pnlTop, cc.xy(1, 1));
+		pnlMain.add(new JScrollPane(taStacktrace), cc.xy(1, 3));
 
 		GuiHelper.createAndShowFrame(pnlMain, "Exception occured");
+	}
+
+	private class RestartPagaVcsAction extends ThreadAction {
+
+		public RestartPagaVcsAction() {
+			super("Restart PagaVCS");
+			setTooltip("Press refresh in nautilus after pressing this button");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			System.exit(0);
+		}
 	}
 }

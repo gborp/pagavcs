@@ -165,6 +165,7 @@ public class SettingsGui {
 
 		public ExitPagavcsAction() {
 			super("Exit PagaVCS server");
+			setTooltip("Press refresh in nautilus after pressing this button");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
