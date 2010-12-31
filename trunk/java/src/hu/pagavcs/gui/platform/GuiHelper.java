@@ -246,6 +246,7 @@ public class GuiHelper {
 
 	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
 		Frame frame = createFrame(pnlMain, applicationName, iconName, addScrollPane);
+		frame.invalidate();
 		frame.pack();
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
