@@ -21,9 +21,7 @@ import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.Log.ShowLogStatus;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +60,8 @@ import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.toedter.calendar.JDateChooser;
 
 /**
@@ -109,6 +109,8 @@ public class LogGui implements Working {
 	}
 
 	public void display() throws SVNException {
+
+		CellConstraints cc = new CellConstraints();
 
 		tmrTableRevalidate = new Timer("Revalidate table", true);
 		SettingsStore settingsStore = Manager.getSettings();
@@ -184,11 +186,12 @@ public class LogGui implements Working {
 		sfFilter.getDocument().addDocumentListener(new FilterDocumentListener());
 		lblUrl = new Label();
 
-		JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pnlTop.add(calFrom);
-		pnlTop.add(calTo);
-		pnlTop.add(sfFilter);
-		pnlTop.add(lblUrl);
+		FormLayout lyTop = new FormLayout("p,2dlu,p,2dlu,p:g(0.5),2dlu,p", "p");
+		JPanel pnlTop = new JPanel(lyTop);
+		pnlTop.add(calFrom, cc.xy(1, 1));
+		pnlTop.add(calTo, cc.xy(3, 1));
+		pnlTop.add(sfFilter, cc.xy(5, 1));
+		pnlTop.add(lblUrl, cc.xy(7, 1));
 
 		btnStop = new JButton("Stop");
 		btnStop.addActionListener(new ActionListener() {
@@ -204,18 +207,20 @@ public class LogGui implements Working {
 
 		prgWorkInProgress = new ProgressBar(this);
 
-		JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pnlBottom.add(prgWorkInProgress);
-		pnlBottom.add(btnShowMore);
-		pnlBottom.add(btnShowAll);
-		pnlBottom.add(btnStop);
+		FormLayout lyBottom = new FormLayout("f:1dlu:g,2dlu,p,2dlu,p,2dlu,p", "p");
+		JPanel pnlBottom = new JPanel(lyBottom);
+		pnlBottom.add(prgWorkInProgress, cc.xy(1, 1));
+		pnlBottom.add(btnShowMore, cc.xy(3, 1));
+		pnlBottom.add(btnShowAll, cc.xy(5, 1));
+		pnlBottom.add(btnStop, cc.xy(7, 1));
 
-		JPanel pnlMain = new JPanel(new BorderLayout());
-		pnlMain.add(pnlTop, BorderLayout.NORTH);
-		pnlMain.add(splMain, BorderLayout.CENTER);
-		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
+		FormLayout lyMain = new FormLayout("f:1dlu:g", "p,2dlu,f:1dlu:g,2dlu,p");
+		JPanel pnlMain = new JPanel(lyMain);
+		pnlMain.add(pnlTop, cc.xy(1, 1));
+		pnlMain.add(splMain, cc.xy(1, 3));
+		pnlMain.add(pnlBottom, cc.xy(1, 5));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log", "/hu/pagavcs/resources/showlog-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log", "/hu/pagavcs/resources/showlog-app-icon.png", false);
 		frame.addWindowListener(new FrameWindowListener());
 	}
 

@@ -26,7 +26,6 @@ import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.Commit.CommitStatus;
 import hu.pagavcs.operation.Commit.CommittedItemStatus;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
@@ -59,7 +58,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -166,11 +164,11 @@ public class CommitGui implements Working, Refreshable {
 		});
 
 		JPanel pnlTop = new JPanel(new FormLayout("r:p,2dlu,p:g", "p,2dlu,p,2dlu,p,2dlu"));
-		pnlTop.add(new JLabel("Commit to:"), cc.xy(1, 1));
+		pnlTop.add(new Label("Commit to:"), cc.xy(1, 1));
 		pnlTop.add(lblUrl, cc.xy(3, 1));
-		pnlTop.add(new JLabel("Working copy:"), cc.xy(1, 3));
+		pnlTop.add(new Label("Working copy:"), cc.xy(1, 3));
 		pnlTop.add(lblWorkingCopy, cc.xy(3, 3));
-		pnlTop.add(new JLabel("Recent messages:"), cc.xy(1, 5));
+		pnlTop.add(new Label("Recent messages:"), cc.xy(1, 5));
 		pnlTop.add(cboMessage, cc.xy(3, 5));
 
 		btnStop = new JButton(new StopAction());
@@ -202,12 +200,13 @@ public class CommitGui implements Working, Refreshable {
 		pnlBottom.add(btnStop, cc.xy(7, 3));
 		pnlBottom.add(btnCommit, cc.xy(9, 3));
 
-		JPanel pnlMain = new JPanel(new BorderLayout());
-		pnlMain.add(pnlTop, BorderLayout.NORTH);
-		pnlMain.add(splMain, BorderLayout.CENTER);
-		pnlMain.add(pnlBottom, BorderLayout.SOUTH);
+		FormLayout lyMain = new FormLayout("1dlu:g", "p,2dlu,f:1dlu:g,2dlu,p");
+		JPanel pnlMain = new JPanel(lyMain);
+		pnlMain.add(pnlTop, cc.xy(1, 1));
+		pnlMain.add(splMain, cc.xy(1, 3));
+		pnlMain.add(pnlBottom, cc.xy(1, 5));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit", "/hu/pagavcs/resources/commit-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit", "/hu/pagavcs/resources/commit-app-icon.png", false);
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
