@@ -364,8 +364,7 @@ public class CommitGui implements Working, Refreshable {
 			jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			jc.setAcceptAllFileFilterUsed(false);
 			int option = jc.showOpenDialog(frame);
-			frame.setVisible(false);
-			frame.dispose();
+			GuiHelper.closeWindow(frame);
 
 			if (option == JFileChooser.APPROVE_OPTION) {
 				String selectedDir = jc.getSelectedFile().getAbsolutePath();
@@ -377,8 +376,7 @@ public class CommitGui implements Working, Refreshable {
 				mergeOperation.execute();
 			}
 		} else {
-			frame.setVisible(false);
-			frame.dispose();
+			GuiHelper.closeWindow(frame);
 		}
 	}
 
