@@ -20,14 +20,16 @@ import java.awt.event.WindowEvent;
 public class WindowPreferencesSaverOnClose extends WindowAdapter {
 
 	private final String windowName;
+	private final Window parent;
 
-	public WindowPreferencesSaverOnClose(String windowName) {
+	public WindowPreferencesSaverOnClose(Window parent, String windowName) {
+		this.parent = parent;
 		this.windowName = windowName;
 	}
 
 	public void windowClosing(WindowEvent e) {
 		Window window = e.getWindow();
-		Manager.getSettings().setWindowBounds(windowName, window.getBounds());
+		Manager.getSettings().setWindowBounds(parent, windowName, window.getBounds());
 	}
 
 	public void windowClosed(WindowEvent e) {

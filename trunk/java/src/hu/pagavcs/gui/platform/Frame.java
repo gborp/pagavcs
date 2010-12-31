@@ -32,6 +32,7 @@ public class Frame extends JFrame {
 
 	public Frame(String applicationName, String iconName) {
 		super();
+		setName(applicationName);
 		this.applicationName = applicationName;
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource(iconName)));
@@ -53,12 +54,12 @@ public class Frame extends JFrame {
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
 		if (bounds != null) {
-			setBounds(bounds);
+			GuiHelper.setBounds(this, bounds);
 		} else {
 			GuiHelper.centerScreen(this);
 		}
 
-		addWindowListener(new WindowPreferencesSaverOnClose(applicationName));
+		addWindowListener(new WindowPreferencesSaverOnClose(null, applicationName));
 		setVisible(true);
 	}
 }
