@@ -1,6 +1,8 @@
 package hu.pagavcs.bl;
 
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -276,11 +278,34 @@ public class SettingsStore {
 		return new Rectangle(Integer.valueOf(v[0]), Integer.valueOf(v[1]), Integer.valueOf(v[2]), Integer.valueOf(v[3]));
 	}
 
+	public Rectangle getWindowBounds(Window parent, String windowName) {
+		if (parent != null) {
+			Rectangle result = getWindowBounds(parent.getName() + "->" + windowName);
+			if (result != null) {
+				Point parentLocation = parent.getLocationOnScreen();
+				result.getLocation().translate((int) parentLocation.getX(), (int) parentLocation.getY());
+			}
+			return result;
+		} else {
+			return getWindowBounds(windowName);
+		}
+	}
+
 	public Rectangle getWindowBounds(String windowName) {
 		if (mapWindowBounds.containsKey(windowName)) {
 			return stringToRectangle(mapWindowBounds.get(windowName));
 		} else {
 			return null;
+		}
+	}
+
+	public void setWindowBounds(Window parent, String windowName, Rectangle bounds) {
+		if (parent != null) {
+			Point parentLocation = parent.getLocationOnScreen();
+			bounds.getLocation().translate((int) -parentLocation.getX(), (int) -parentLocation.getY());
+			setWindowBounds(parent.getName() + "->" + windowName, bounds);
+		} else {
+			setWindowBounds(windowName, bounds);
 		}
 	}
 

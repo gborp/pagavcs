@@ -75,7 +75,7 @@ public class MessagePane {
 		dialog = GuiHelper.createDialog(parent, getDisplayComponent(), title);
 		dialog.setModalityType(modalityType);
 		dialog.setVisible(true);
-		dialog.dispose();
+		GuiHelper.closeWindow(dialog);
 
 		if (optionChoosed == null) {
 			optionChoosed = OPTIONS.CANCEL;
