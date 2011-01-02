@@ -1,5 +1,7 @@
 package hu.pagavcs.gui.platform;
 
+import hu.pagavcs.LogHelper;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +45,7 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 	}
 
 	public List<L> getAllData() {
+		LogHelper.GENERAL.debug("TableModel.getAllData()");
 		return lstData;
 	}
 
@@ -64,6 +67,7 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 	}
 
 	public void addLines(final Collection<L> lstLi) {
+		LogHelper.GENERAL.debug("TableModel.addLines()");
 		if (!lstLi.isEmpty()) {
 			lstData.addAll(lstLi);
 			fireTableRowsInserted(getRowCount() - lstLi.size(), getRowCount() - 1);
@@ -71,15 +75,16 @@ public class TableModel<L extends ListItem> extends AbstractTableModel {
 	}
 
 	public void removeLine(L li) {
+		LogHelper.GENERAL.debug("TableModel.removeLine()");
 		int index = lstData.indexOf(li);
 		if (index != -1) {
 			lstData.remove(index);
 			fireTableRowsDeleted(index, index);
 		}
-
 	}
 
 	public void clear() {
+		LogHelper.GENERAL.debug("TableModel.clear()");
 		int count = lstData.size();
 		if (count > 0) {
 			lstData.clear();

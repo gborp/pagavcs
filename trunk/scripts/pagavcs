@@ -13,11 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
+LOG_FILE="${HOME}/.pagavcs/pagavcs.log"
+
 if [ -f "/usr/share/pagavcs/data/pagavcs-bigmem" ];
 then
-	START_SERVER_CMD="java -Xms16m -Xmx199m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
+	START_SERVER_CMD="java -Xms16m -Xmx199m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar > ${LOG_FILE} 2>&1"
 else 
-	START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar"
+	START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar > ${LOG_FILE} 2>&1"
 fi 
 
 
@@ -48,6 +50,10 @@ function startserver {
 			fi
 		fi
 	fi
+
+	mv -f ${LOG_FILE}.1 ${LOG_FILE}.2 > /dev/null 2>&1
+	mv -f ${LOG_FILE} ${LOG_FILE}.1 > /dev/null 2>&1
+	rm -f ${LOG_FILE} > /dev/null 2>&1
 	
 	echo server is not running, start a new PagaVCS server
 	${START_SERVER_CMD} &

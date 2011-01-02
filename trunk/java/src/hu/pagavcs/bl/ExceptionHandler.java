@@ -1,5 +1,6 @@
 package hu.pagavcs.bl;
 
+import hu.pagavcs.LogHelper;
 import hu.pagavcs.gui.platform.EditField;
 import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.gui.platform.MessagePane;
@@ -109,7 +110,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 				return;
 			}
 
-			System.out.println("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"
+			LogHelper.GENERAL.error("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"
 			        + errorCode.getDescription() + "\n");
 		}
 
@@ -134,7 +135,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			}
 		}
 
-		ex.printStackTrace();
+		LogHelper.GENERAL.error(ex);
 
 		EditField sfMessage = new EditField();
 		sfMessage.setEditable(false);
