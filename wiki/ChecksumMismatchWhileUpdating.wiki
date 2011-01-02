@@ -28,3 +28,6 @@ michael
   # Save the file and then go refresh, resynchronize and update your file. 
 
 _thx goes to fatidaniela!_
+
+http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFile.png
+http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFileafterDelete.png
