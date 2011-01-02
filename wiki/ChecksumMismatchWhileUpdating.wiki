@@ -29,5 +29,5 @@ michael
 
 _thx goes to fatidaniela!_
 
-http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFile.png
-http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFileafterDelete.png
+[http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFile.png]
+[http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFileafterDelete.png]
