@@ -1,4 +1,4 @@
-#summary The background and solution of Subversion's "Checksum Mismatch While Updating" error
+#summary The background and solution of Subversion's "Checksum Mismatch While Updating" error by fatidaniela
 
 This seems to be quite a common issue with svn. The way i managed to solve this issue is:
 (first set your folder preferences to show all hidden files and folders,to be able to edit some of the files mentioned below you will have to remove the read-only attributes and allow them to be edited)
