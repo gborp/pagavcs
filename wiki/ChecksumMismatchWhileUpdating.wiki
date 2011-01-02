@@ -25,7 +25,7 @@ michael
 }}}
 ). Delete all that portion of text and make sure the spacing between two consecutive such portions of text remains the same, other wise svn will throw an unknown depth error. (see the attach file, if you want to delete the portion of text from 197 to 209, you have to delete the spaces underneath it so that after the delete 7695 will now be on line 197)
 
-  # Save the file and then go refresh, resynchronize and update your file. 
+  * Save the file and then go refresh, resynchronize and update your file. 
 
 _thx goes to fatidaniela!_
 
