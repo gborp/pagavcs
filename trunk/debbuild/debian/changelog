@@ -2,8 +2,9 @@ pagavcs (1.4.42) karmic; urgency=low
 
   [ Gábor Pápai ]
   * [internal] Add logging (log4j) to help solving issues
+  * Issue 106: [Commit gui] Title text is wrong in after pressing Refresh
   
- -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 02 Jan 2011 17:30:38 +0100
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 02 Jan 2011 18:12:38 +0100
 
 pagavcs (1.4.41) karmic; urgency=low
 
