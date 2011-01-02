@@ -16,6 +16,7 @@ package hu.pagavcs;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		LogHelper.init();
 		Communication.getInstance().execute();
 	}
 

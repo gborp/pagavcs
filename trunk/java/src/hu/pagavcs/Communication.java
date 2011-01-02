@@ -101,6 +101,7 @@ public class Communication {
 	private static final String  COMMAND_EXPORT                = "export";
 
 	private static final String  CFG_COMMUNICATION_PORT_KEY    = "port";
+	private static final String  CFG_DEBUG_MODE_KEY            = "debug";
 
 	private static Communication singleton;
 	private boolean              shutdown;
@@ -194,6 +195,7 @@ public class Communication {
 		running.createNewFile();
 
 		int port = DEFAULT_PORT;
+		boolean debugMode = false;
 		File cfgFile = new File(System.getProperty("user.home"), ".pagavcs/config.properties");
 		try {
 			if (cfgFile.exists()) {
@@ -203,6 +205,10 @@ public class Communication {
 				reader.close();
 				if (prop.containsKey(CFG_COMMUNICATION_PORT_KEY)) {
 					port = Integer.valueOf((String) prop.get(CFG_COMMUNICATION_PORT_KEY));
+				}
+				if (prop.containsKey(CFG_DEBUG_MODE_KEY)) {
+					debugMode = Boolean.valueOf((String) prop.get(CFG_DEBUG_MODE_KEY));
+					LogHelper.setDebugMode(debugMode);
 				}
 			}
 		} catch (Exception ex) {}
@@ -214,6 +220,7 @@ public class Communication {
 
 			Properties prop = new Properties();
 			prop.put(CFG_COMMUNICATION_PORT_KEY, Integer.toString(port));
+			prop.put(CFG_DEBUG_MODE_KEY, Boolean.toString(debugMode));
 			FileWriter writer = new FileWriter(cfgFile);
 			prop.store(writer, null);
 			writer.close();
@@ -224,13 +231,13 @@ public class Communication {
 		try {
 			serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
 		} catch (IOException ex) {
-			System.out.println("Port is not free, maybe PagaVCS is already running?");
+			LogHelper.GENERAL.fatal("Port is not free, maybe PagaVCS is already running?");
 			System.exit(-5);
 		}
 
 		Manager.init();
 		fileStatusCache = FileStatusCache.getInstance();
-		System.out.println("PagaVCS started.");
+		LogHelper.GENERAL.warn("PagaVCS started.");
 
 		while (!shutdown) {
 			try {
