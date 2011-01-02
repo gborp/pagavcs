@@ -29,6 +29,7 @@ import javax.swing.KeyStroke;
 public class Frame extends JFrame {
 
 	private final String applicationName;
+	private String       titleRoot;
 
 	public Frame(String applicationName, String iconName) {
 		super();
@@ -45,8 +46,17 @@ public class Frame extends JFrame {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
+	public void setTitle(String title) {
+		super.setTitle(title);
+		titleRoot = title;
+	}
+
 	public void setTitlePrefix(String prefix) {
-		setTitle(prefix + " - " + getTitle());
+		if (titleRoot != null) {
+			super.setTitle(prefix + " - " + titleRoot);
+		} else {
+			super.setTitle(prefix);
+		}
 	}
 
 	public void execute() {
