@@ -2,11 +2,11 @@
 
 This seems to be quite a common issue with svn. The way i managed to solve this issue is:
 (first set your folder preferences to show all hidden files and folders,to be able to edit some of the files mentioned below you will have to remove the read-only attributes and allow them to be edited)
-  # Browse through your project to the file with which there seems to be a problem (in this example fileUnabletoUpdate)
-  # Open the .svn folder that is located in the same folder with the file you browsed to
-  # In the .svn folder open the tmp folder and delete all the occurrences of that file from all the sub folders of tmp
-  # Go back to the .svn foler and open the text-base folder. You will find here a file with the name of the file you're having problems with followed by .svn-base (eq fileUnabletoUpdate.svn-base). Delete this file
-  # Go back to the .svn folder and open and edit the entries file found there. In the entries file you will find a portion of text where the file you're dealing with is mentioned. 
+  * Browse through your project to the file with which there seems to be a problem (in this example fileUnabletoUpdate)
+  * Open the .svn folder that is located in the same folder with the file you browsed to
+  * In the .svn folder open the tmp folder and delete all the occurrences of that file from all the sub folders of tmp
+  * Go back to the .svn foler and open the text-base folder. You will find here a file with the name of the file you're having problems with followed by .svn-base (eq fileUnabletoUpdate.svn-base). Delete this file
+  * Go back to the .svn folder and open and edit the entries file found there. In the entries file you will find a portion of text where the file you're dealing with is mentioned. 
 (eg.:
 {{{
 16052
