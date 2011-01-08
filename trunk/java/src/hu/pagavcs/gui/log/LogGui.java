@@ -614,6 +614,10 @@ public class LogGui implements Working {
 		log.revertChangesExact(revision);
 	}
 
+	public void revertChangesToThisRevisionExact(String revisionRange) throws Exception {
+		log.revertChangesToThisRevisionExact(revisionRange);
+	}
+
 	public void showDirChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
 		log.showDirChanges(showChangesPath, revision, contentStatus);
 	}
@@ -732,14 +736,22 @@ public class LogGui implements Working {
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu pp;
+		// private JPopupMenu pp;
+		private JPopupMenu ppOnlyOne;
 
 		public PopupupMouseListener() {
-			pp = new JPopupMenu();
-			pp.add(new CopyLineToClipboard(LogGui.this));
-			pp.add(new CopyAllToClipboard(LogGui.this));
-			pp.add(new JSeparator());
-			pp.add(new RevertChangesFromThisRevisionAction(LogGui.this));
+			// pp = new JPopupMenu();
+			// pp.add(new CopyLineToClipboard(LogGui.this));
+			// pp.add(new CopyAllToClipboard(LogGui.this));
+			// pp.add(new JSeparator());
+			// pp.add(new RevertChangesFromThisRevisionAction(LogGui.this));
+
+			ppOnlyOne = new JPopupMenu();
+			ppOnlyOne.add(new CopyLineToClipboard(LogGui.this));
+			ppOnlyOne.add(new CopyAllToClipboard(LogGui.this));
+			ppOnlyOne.add(new JSeparator());
+			ppOnlyOne.add(new RevertChangesFromThisRevisionAction(LogGui.this));
+			ppOnlyOne.add(new RevertChangesToThisRevisionAction(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -754,7 +766,7 @@ public class LogGui implements Working {
 				tblLog.getSelectionModel().setSelectionInterval(row, row);
 			}
 
-			JPopupMenu ppVisible = pp;
+			JPopupMenu ppVisible = ppOnlyOne;
 			ppVisible.setInvoker(tblLog);
 			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
 			ppVisible.setVisible(true);
