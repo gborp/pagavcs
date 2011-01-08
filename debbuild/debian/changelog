@@ -1,3 +1,11 @@
+pagavcs (1.4.43) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 17 [log gui] new context menu items: "revert changes from this revision" and "revert changes to this revision"
+  * [internal] log the stacktrace if an exception occurs
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 08 Jan 2011 18:11:50 +0100
+
 pagavcs (1.4.42) karmic; urgency=low
 
   [ Gábor Pápai ]
