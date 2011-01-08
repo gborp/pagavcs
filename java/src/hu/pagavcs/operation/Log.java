@@ -3,6 +3,7 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.CacheLog;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.log.LogGui;
 
@@ -366,7 +367,13 @@ public class Log implements Cancelable {
 		        true);
 		String pathRevertWc = path + revertPath.substring(pathToUrl.substring(rootUrlDecoded.length()).length());
 
-		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), Long.toString(revision), true, false);
+		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), Long.toString(revision), true, Boolean.TRUE
+		        .equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+	}
+
+	public void revertChangesExact(long revision) throws Exception {
+		String svnPath = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
+		SvnHelper.doMerge(this, svnPath, path, svnPath, Long.toString(revision), true, Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
 	}
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {
