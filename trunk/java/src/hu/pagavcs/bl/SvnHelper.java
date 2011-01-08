@@ -81,7 +81,7 @@ public class SvnHelper {
 		return rangesToMerge;
 	}
 
-	public static void doMerge(Cancelable cancelable, String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge,
+	public static void doMerge(Cancelable cancelable, String urlTo, String pathTo, String urlFrom, String pathFrom, String revisionRange, boolean reverseMerge,
 	        boolean ignoreEolStyle) throws Exception {
 
 		cancelable.setCancel(false);
@@ -110,8 +110,13 @@ public class SvnHelper {
 			if (rangesToMerge.size() > 1) {
 				while (!success && !exit) {
 					try {
-						diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, true,
-						        recordOnly);
+						if (pathFrom == null) {
+							diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force,
+							        true, recordOnly);
+						} else {
+							diffClient.doMerge(new File(pathFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, true,
+							        recordOnly);
+						}
 						success = true;
 					} catch (SVNCancelException ex) {
 						exit = true;
@@ -152,8 +157,12 @@ public class SvnHelper {
 			success = false;
 			while (!success && !exit) {
 				try {
-					diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, false,
-					        recordOnly);
+					if (pathFrom == null) {
+						diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force,
+						        false, recordOnly);
+					} else {
+						diffClient.doMerge(new File(pathFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, false, recordOnly);
+					}
 					success = true;
 				} catch (SVNCancelException ex) {
 					exit = true;
