@@ -92,7 +92,7 @@ public class MergeOperation implements Cancelable {
 	}
 
 	public void doMerge(String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge, boolean ignoreEolStyle) throws Exception {
-		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, revisionRange, reverseMerge, ignoreEolStyle);
+		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, null, revisionRange, reverseMerge, ignoreEolStyle);
 	}
 
 	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {

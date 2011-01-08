@@ -135,7 +135,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			}
 		}
 
-		LogHelper.GENERAL.error(ex);
+		LogHelper.GENERAL.error(ex, ex);
 
 		EditField sfMessage = new EditField();
 		sfMessage.setEditable(false);
