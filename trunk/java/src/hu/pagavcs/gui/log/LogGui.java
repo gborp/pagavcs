@@ -46,6 +46,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
@@ -609,6 +610,10 @@ public class LogGui implements Working {
 		log.revertChanges(revertPath, revision);
 	}
 
+	public void revertChangesExact(long revision) throws Exception {
+		log.revertChangesExact(revision);
+	}
+
 	public void showDirChanges(String showChangesPath, long revision, ContentStatus contentStatus) throws Exception {
 		log.showDirChanges(showChangesPath, revision, contentStatus);
 	}
@@ -733,6 +738,8 @@ public class LogGui implements Working {
 			pp = new JPopupMenu();
 			pp.add(new CopyLineToClipboard(LogGui.this));
 			pp.add(new CopyAllToClipboard(LogGui.this));
+			pp.add(new JSeparator());
+			pp.add(new RevertChangesFromThisRevisionAction(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
