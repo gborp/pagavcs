@@ -13,6 +13,7 @@ import hu.pagavcs.operation.Settings;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -21,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 import org.tmatesoft.svn.core.SVNException;
@@ -43,7 +45,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class SettingsGui {
 
-	private static final String ABOUT_TEXT = "PagaVCS\nPaga Version Control System\n\npagavcs.googlecode.com\n\n©2010 Gábor Pápai";
+	private static final String ABOUT_TEXT = "PagaVCS\nPaga Version Control System\n\npagavcs.googlecode.com\n\n©2010-2011 Gábor Pápai";
 
 	private Settings            settings;
 	private TextArea            taCommitCompleteTemplate;
@@ -51,18 +53,18 @@ public class SettingsGui {
 
 	private JCheckBox           cbGlobalIgnoreEol;
 
+	private JCheckBox           cbShowIconsInContextMenu;
+
 	public SettingsGui(Settings settings) {
 		this.settings = settings;
 	}
 
-	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("p,p:g,p", "p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p:g");
-		JPanel pnlMain = new JPanel(layout);
+	public void display() throws SVNException, IOException {
+
 		CellConstraints cc = new CellConstraints();
 
 		JButton btnAbout = new JButton(new AboutAction());
 		JButton btnClearLogin = new JButton(new ClearLoginCacheAction());
-		JButton btnShowIcons = new JButton(new ShowIconsInContextMenuAction());
 		JButton btnShowLoginDialogNextTime = new JButton(new ShowLoginDialogNextTimeAction());
 		JButton btnExitPagavcs = new JButton(new ExitPagavcsAction());
 		JButton btnSetCommitCompletedMessageTemplates = new JButton(new SetCommitCompletedMessageTemplatesAction());
@@ -71,23 +73,39 @@ public class SettingsGui {
 			cbGlobalIgnoreEol.setSelected(true);
 		}
 
+		cbShowIconsInContextMenu = new JCheckBox(new ShowIconsInContextMenuAction());
+		cbShowIconsInContextMenu.setSelected(isShowIconsInContextMenus());
+
 		taCommitCompleteTemplate = new TextArea();
 		taCommitCompleteTemplate.setToolTipText("Example: /pagavcs/trunk>>>#{0} trunk.PagaVCS");
 		taCommitCompleteTemplate.setRows(3);
 
-		pnlMain.add(btnAbout, cc.xy(3, 1));
-		pnlMain.add(btnClearLogin, cc.xy(3, 3));
-		pnlMain.add(btnShowIcons, cc.xy(3, 5));
-		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(3, 7));
-		pnlMain.add(btnExitPagavcs, cc.xy(3, 9));
-		pnlMain.add(cbGlobalIgnoreEol, cc.xy(3, 11));
-		pnlMain.add(new Label("Commit completed message templates:"), cc.xy(1, 13));
-		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 13));
-		pnlMain.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 15, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		FormLayout lyTemplate = new FormLayout("p,1dlu:g", "p,2dlu,p:g");
+		JPanel pnlTemplate = new JPanel(lyTemplate);
+
+		FormLayout lyMain = new FormLayout("1dlu:g,2dlu,p", "1dlu:g,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p");
+		JPanel pnlMain = new JPanel(lyMain);
+
+		pnlTemplate.add(new Label("Commit-completed message templates"), cc.xy(1, 1));
+		pnlTemplate.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 3, 2, 1, CellConstraints.FILL, CellConstraints.FILL));
+
+		pnlMain.add(pnlTemplate, cc.xywh(1, 1, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 3));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 4, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+
+		pnlMain.add(cbGlobalIgnoreEol, cc.xy(3, 5));
+		pnlMain.add(cbShowIconsInContextMenu, cc.xy(3, 7));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 8, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+
+		pnlMain.add(btnClearLogin, cc.xy(3, 9));
+		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(3, 11));
+		pnlMain.add(btnExitPagavcs, cc.xy(3, 13));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 14, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(btnAbout, cc.xy(3, 15));
 
 		taCommitCompleteTemplate.setText(Manager.getSettings().getCommitCompletedMessageTemplates());
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Settings");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Settings", "/hu/pagavcs/resources/other-app-icon.png", false);
 
 		frame.addWindowListener(new WindowAdapter() {
 
@@ -95,6 +113,11 @@ public class SettingsGui {
 				SettingsStore.getInstance().setGlobalIgnoreEol(cbGlobalIgnoreEol.isSelected());
 			}
 		});
+	}
+
+	private boolean isShowIconsInContextMenus() throws IOException {
+		String result = Manager.getOsCommandResult(null, "gconftool-2", "-g", "/desktop/gnome/interface/menus_have_icons");
+		return Boolean.valueOf(result.trim());
 	}
 
 	private class AboutAction extends ThreadAction {
@@ -142,9 +165,8 @@ public class SettingsGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			Runtime.getRuntime().exec("gconftool-2 –type bool –set /desktop/gnome/interface/menus_have_icons true");
-			// get the status:
-			// gconftool-2 -g /desktop/gnome/interface/menus_have_icons
+			Runtime.getRuntime().exec(
+			        "gconftool-2 -t bool -s /desktop/gnome/interface/menus_have_icons " + Boolean.toString(cbShowIconsInContextMenu.isSelected()));
 		}
 
 	}
@@ -152,7 +174,7 @@ public class SettingsGui {
 	private class ShowLoginDialogNextTimeAction extends ThreadAction {
 
 		public ShowLoginDialogNextTimeAction() {
-			super("Force showing login dialog next time");
+			super("Force login dialog once");
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
@@ -164,7 +186,7 @@ public class SettingsGui {
 	private class ExitPagavcsAction extends ThreadAction {
 
 		public ExitPagavcsAction() {
-			super("Exit PagaVCS server");
+			super("Exit/Restart PagaVCS server");
 			setTooltip("Press refresh in nautilus after pressing this button");
 		}
 
