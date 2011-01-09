@@ -151,7 +151,7 @@ public class CommitGui implements Working, Refreshable {
 		lblUrl = new Label();
 		lblWorkingCopy = new Label();
 		cboMessage = new JComboBox();
-		cboMessage.setPreferredSize(new Dimension(1, (int) cboMessage.getPreferredSize().getHeight()));
+		cboMessage.setPreferredSize(new Dimension(10, (int) cboMessage.getPreferredSize().getHeight()));
 		cboMessage.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
@@ -191,7 +191,7 @@ public class CommitGui implements Working, Refreshable {
 		pnlCheck.add(lblSelectedInfo, cc.xy(3, 1));
 		pnlCheck.add(cbHelpMerge, cc.xy(5, 1));
 
-		JPanel pnlBottom = new JPanel(new FormLayout("p,2dlu, 1dlu:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
+		JPanel pnlBottom = new JPanel(new FormLayout("p,2dlu, 50dlu:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
 
 		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlBottom.add(btnRefresh, cc.xy(1, 3));
@@ -200,7 +200,7 @@ public class CommitGui implements Working, Refreshable {
 		pnlBottom.add(btnStop, cc.xy(7, 3));
 		pnlBottom.add(btnCommit, cc.xy(9, 3));
 
-		FormLayout lyMain = new FormLayout("1dlu:g", "p,2dlu,f:1dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("p:g", "p,2dlu,f:50dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(splMain, cc.xy(1, 3));
@@ -260,6 +260,7 @@ public class CommitGui implements Working, Refreshable {
 		}
 		ComboBoxModel modelUrl = new DefaultComboBoxModel(lstRecentMessageSlot.toArray());
 		cboMessage.setModel(modelUrl);
+		cboMessage.setPreferredSize(new Dimension(10, (int) cboMessage.getPreferredSize().getHeight()));
 	}
 
 	public void refreshSelectedInfo() {

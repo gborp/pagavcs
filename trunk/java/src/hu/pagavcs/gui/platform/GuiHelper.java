@@ -6,7 +6,6 @@ import hu.pagavcs.gui.CommitListItem;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -242,8 +241,8 @@ public class GuiHelper {
 			iconName = "/hu/pagavcs/resources/icon.png";
 		}
 		Frame frame = new Frame(applicationName, iconName);
-		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(addBorder(pnlMain, addScrollPane), BorderLayout.CENTER);
+		frame.getContentPane().add(addBorder(pnlMain, addScrollPane));
+
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
 		return frame;
 	}
@@ -260,6 +259,7 @@ public class GuiHelper {
 		Frame frame = createFrame(pnlMain, applicationName, iconName, addScrollPane);
 		frame.invalidate();
 		frame.pack();
+		frame.setMinimumSize(frame.getPreferredSize());
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
 		if (bounds != null) {
