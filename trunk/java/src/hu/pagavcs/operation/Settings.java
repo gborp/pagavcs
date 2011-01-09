@@ -2,6 +2,7 @@ package hu.pagavcs.operation;
 
 import hu.pagavcs.gui.SettingsGui;
 
+import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
 import org.tmatesoft.svn.core.SVNException;
@@ -26,7 +27,7 @@ public class Settings {
 
 	public Settings() throws BackingStoreException {}
 
-	public void execute() throws SVNException, BackingStoreException {
+	public void execute() throws SVNException, BackingStoreException, IOException {
 		gui = new SettingsGui(this);
 		gui.display();
 	}
