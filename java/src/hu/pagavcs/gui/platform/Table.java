@@ -5,6 +5,8 @@ import hu.pagavcs.bl.OnSwing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -12,7 +14,9 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.CellRendererPane;
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
@@ -109,6 +113,7 @@ public class Table<L extends ListItem> extends JTable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public TableModel<L> getModel() {
 		return (TableModel<L>) super.getModel();
 	}
@@ -254,4 +259,36 @@ public class Table<L extends ListItem> extends JTable {
 		};
 	}
 
+	public void scrollRectToVisible(Rectangle aRect) {
+		Container parent;
+		int dx = getX(), dy = getY();
+
+		for (parent = getParent(); !(parent == null) && !(parent instanceof JComponent) && !(parent instanceof CellRendererPane); parent = parent.getParent()) {
+			Rectangle bounds = parent.getBounds();
+
+			dx += bounds.x;
+			dy += bounds.y;
+		}
+
+		if (!(parent == null) && !(parent instanceof CellRendererPane)) {
+			aRect.x += dx;
+			aRect.y += dy;
+
+			JComponent jcompParent = ((JComponent) parent);
+
+			Rectangle visibleRect = jcompParent.getVisibleRect();
+			Rectangle newARect = new Rectangle(visibleRect.x, aRect.y, visibleRect.width, aRect.height);
+
+			if (!jcompParent.getVisibleRect().intersects(newARect)) {
+				aRect.x = newARect.x;
+				aRect.y = newARect.y;
+				aRect.width = newARect.width;
+				aRect.height = newARect.height;
+
+				jcompParent.scrollRectToVisible(aRect);
+				aRect.x -= dx;
+				aRect.y -= dy;
+			}
+		}
+	}
 }
