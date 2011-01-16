@@ -21,7 +21,6 @@ import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.Log.ShowLogStatus;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -145,13 +144,14 @@ public class LogGui implements Working {
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		splDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spDetailLog);
-		splDetail.setPreferredSize(new Dimension(40, 40));
+		splDetail.setResizeWeight(0.2);
 
 		if (settingsStore.getGuiLogSeparatorDetail() != null) {
 			splDetail.setDividerLocation(settingsStore.getGuiLogSeparatorDetail());
 		}
 		splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLog, splDetail);
-		splMain.setPreferredSize(new Dimension(40, 40));
+		splMain.setResizeWeight(0.5);
+
 		if (settingsStore.getGuiLogSeparatorMain() != null) {
 			splMain.setDividerLocation(settingsStore.getGuiLogSeparatorMain());
 		}
@@ -182,7 +182,7 @@ public class LogGui implements Working {
 				filterChanged();
 			}
 		});
-		sfFilter = new EditField(20);
+		sfFilter = new EditField(5);
 		sfFilter.setToolTipText("Type your filter text here");
 		sfFilter.getDocument().addDocumentListener(new FilterDocumentListener());
 		lblUrl = new Label();
@@ -215,7 +215,7 @@ public class LogGui implements Working {
 		pnlBottom.add(btnShowAll, cc.xy(5, 1));
 		pnlBottom.add(btnStop, cc.xy(7, 1));
 
-		FormLayout lyMain = new FormLayout("f:1dlu:g", "p,2dlu,f:1dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("f:200dlu:g", "p,2dlu,f:50dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(splMain, cc.xy(1, 3));
