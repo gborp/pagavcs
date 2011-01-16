@@ -96,7 +96,7 @@ public class UpdateGui implements Working {
 		FormLayout lyBottom = new FormLayout("p,2dlu,1dlu:g,2dlu,p", "p");
 		JPanel pnlBottom = new JPanel(lyBottom);
 
-		FormLayout lyMain = new FormLayout("1dlu:g", "p,2dlu,fill:10dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("200dlu:g", "p,2dlu,fill:60dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 
 		CellConstraints cc = new CellConstraints();
