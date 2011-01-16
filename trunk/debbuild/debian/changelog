@@ -1,3 +1,11 @@
+pagavcs (1.4.45) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue #110 - Better Table handling
+  * Issue #109 - Default window sizes are really tiny
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 16 Jan 2011 12:02:14 +0100
+
 pagavcs (1.4.44) karmic; urgency=low
 
   [ Gábor Pápai ]
