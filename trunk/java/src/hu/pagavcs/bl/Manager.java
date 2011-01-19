@@ -232,8 +232,8 @@ public class Manager {
 				}
 			}
 
-			int readTimeout = 60 * 1000;
-			int connectionTimeout = 20 * 1000;
+			int readTimeout = 3600 * 1000;
+			int connectionTimeout = 5 * 1000;
 			ISVNAuthenticationManager defAuthManager;
 			if (username == null || username.isEmpty()) {
 				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager();
