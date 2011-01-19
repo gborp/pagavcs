@@ -1,3 +1,13 @@
+pagavcs (1.4.46) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 104: "Invalid range" exception in Commit window -- fix "timer already cancelled" exception
+  * Issue 108:	NPE in GuiHelper.centerOnParent
+  * Issue 111:	Bug: it waits too much before timeouting if subversion host is not reachable
+  * Issue 112:	Commit: stop status collecting (refreshing) if commit window is closed
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 19 Jan 2011 19:29:57 +0100
+
 pagavcs (1.4.45) karmic; urgency=low
 
   [ Gábor Pápai ]
