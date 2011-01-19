@@ -39,11 +39,7 @@ public class ShortTimeoutAuthenticationManager implements ISVNAuthenticationMana
 	}
 
 	public int getConnectTimeout(SVNRepository repository) {
-		String protocol = repository.getLocation().getProtocol();
-		if ("http".equals(protocol) || "https".equals(protocol)) {
-			return connectionTimeout;
-		}
-		return 0;
+		return connectionTimeout;
 	}
 
 	public void acknowledgeAuthentication(boolean accepted, String kind, String realm, SVNErrorMessage errorMessage, SVNAuthentication authentication)
