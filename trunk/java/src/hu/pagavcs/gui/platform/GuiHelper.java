@@ -9,6 +9,7 @@ import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -225,7 +226,13 @@ public class GuiHelper {
 	}
 
 	private static void centerOnParent(Window parent, Window child) {
-		Rectangle dim = new Rectangle(parent.getLocationOnScreen(), parent.getSize());
+		Rectangle dim;
+		if (parent != null) {
+			dim = new Rectangle(parent.getLocationOnScreen(), parent.getSize());
+		} else {
+			dim = new Rectangle(new Point(0, 0), Toolkit.getDefaultToolkit().getScreenSize());
+		}
+
 		Rectangle bounds = child.getBounds();
 		bounds.x = dim.x + (dim.width - bounds.width) / 2;
 		bounds.y = dim.y + (dim.height - bounds.height) / 2;
