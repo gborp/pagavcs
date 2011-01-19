@@ -63,8 +63,11 @@ public class Table<L extends ListItem> extends JTable {
 		addAncestorListener(new AncestorListener() {
 
 			public void ancestorRemoved(AncestorEvent event) {
-				tmrResize.cancel();
-				tmrResize.purge();
+				if (tmrResize != null) {
+					tmrResize.cancel();
+					tmrResize.purge();
+					tmrResize = null;
+				}
 			}
 
 			public void ancestorMoved(AncestorEvent event) {}
@@ -78,7 +81,9 @@ public class Table<L extends ListItem> extends JTable {
 
 				if (!resizeIsTimed) {
 					resizeIsTimed = true;
-					tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
+					if (tmrResize != null) {
+						tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
+					}
 				}
 			}
 		});
@@ -88,7 +93,9 @@ public class Table<L extends ListItem> extends JTable {
 			public void componentResized(ComponentEvent e) {
 				if (!resizeIsTimed) {
 					resizeIsTimed = true;
-					tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
+					if (tmrResize != null) {
+						tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
+					}
 				}
 			}
 		});
