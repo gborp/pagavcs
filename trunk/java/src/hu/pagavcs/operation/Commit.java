@@ -1,6 +1,7 @@
 package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.commit.CommitGui;
 import hu.pagavcs.gui.platform.MessagePane;
@@ -61,10 +62,11 @@ public class Commit {
 		ADDED, DELETED, COMPLETED, MODIFIED, REPLACED, DELTA_SENT
 	}
 
-	private String    path;
-	private boolean   cancel;
-	private CommitGui gui;
-	private SVNURL    rootUrl;
+	private String                  path;
+	private boolean                 cancel;
+	private CommitGui               gui;
+	private SVNURL                  rootUrl;
+	private RefreshISVNEventHandler refreshISVNEventHandler;
 
 	public Commit(String path) throws SVNException, BackingStoreException {
 		this.path = path;
@@ -99,19 +101,45 @@ public class Commit {
 		return path;
 	}
 
+	public void cancelRefresh() {
+		if (refreshISVNEventHandler != null) {
+			refreshISVNEventHandler.setCancel(true);
+			refreshISVNEventHandler = null;
+		}
+	}
+
 	public void refresh() throws Exception {
-		gui.setStatus(CommitStatus.INIT, null);
+		cancelRefresh();
 
-		gui.setRecentMessages(getRecentMessages());
-		gui.setUrlLabel(getRootUrl().toDecodedString());
-		gui.setPath(path);
+		new OnSwing() {
 
-		File wcFile = new File(path);
-		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNStatusClient statusClient = mgrSvn.getStatusClient();
+			protected void process() throws Exception {
+				gui.setStatus(CommitStatus.INIT, null);
+				gui.setRecentMessages(getRecentMessages());
+				gui.setUrlLabel(getRootUrl().toDecodedString());
+				gui.setPath(path);
+			}
+		}.run();
 
-		statusClient.doStatus(wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
-		gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED, null);
+		try {
+			File wcFile = new File(path);
+			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+			SVNStatusClient statusClient = mgrSvn.getStatusClient();
+
+			refreshISVNEventHandler = new RefreshISVNEventHandler();
+			statusClient.setEventHandler(refreshISVNEventHandler);
+
+			statusClient.doStatus(wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
+		} catch (SVNCancelException ex) {
+			// ignoring cancel
+		} finally {
+			new OnSwing() {
+
+				protected void process() throws Exception {
+					gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED, null);
+				}
+			}.run();
+		}
 	}
 
 	private String[] getRecentMessages() {
@@ -123,6 +151,9 @@ public class Commit {
 
 	public void setCancel(boolean cancel) {
 		this.cancel = cancel;
+		if (cancel) {
+			cancelRefresh();
+		}
 	}
 
 	public boolean isCancel() {
@@ -403,6 +434,24 @@ public class Commit {
 		delete.setIgnoreIfFileError(true);
 		delete.execute();
 		Manager.invalidate(file);
+	}
+
+	private static class RefreshISVNEventHandler implements ISVNEventHandler {
+
+		private boolean cancel;
+
+		public void handleEvent(SVNEvent event, double progress) throws SVNException {}
+
+		public void checkCancelled() throws SVNCancelException {
+			if (cancel) {
+				throw new SVNCancelException();
+			}
+
+		}
+
+		public void setCancel(boolean cancel) {
+			this.cancel = cancel;
+		}
 	}
 
 	// public void resolved(File file) throws SVNException {
