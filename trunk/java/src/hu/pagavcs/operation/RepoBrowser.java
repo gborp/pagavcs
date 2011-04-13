@@ -105,15 +105,18 @@ public class RepoBrowser implements Cancelable {
 		SVNURL svnUrl2 = SVNURL.parseURIDecoded(url);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl2);
 		repo = mgrSvn.getRepositoryPool().createRepository(svnUrl2, true);
+		String relativePath = repo.getLocation().getPath();
 		repo.setLocation(repo.getRepositoryRoot(false), false);
-		return getDirEntryChain2(repo, "");
+		String rootPath = repo.getLocation().getPath();
+		List<SVNDirEntry> result = getDirEntryChain2(repo, relativePath.substring(rootPath.length()));
+		return result;
 	}
 
 	private List<SVNDirEntry> getDirEntryChain2(SVNRepository repo2, String relativePath) throws SVNException, PagaException {
 		ArrayList<SVNDirEntry> lstResult = new ArrayList<SVNDirEntry>();
 		SVNDirEntry result = repo2.info(relativePath, SVNRevision.HEAD.getNumber());
 		String parentRelativePath = SVNPathUtil.removeTail(relativePath);
-		if (!parentRelativePath.equals(relativePath) && !parentRelativePath.isEmpty()) {
+		if (!parentRelativePath.equals(relativePath)) {
 			lstResult.addAll(getDirEntryChain2(repo2, parentRelativePath));
 		}
 		lstResult.add(result);
