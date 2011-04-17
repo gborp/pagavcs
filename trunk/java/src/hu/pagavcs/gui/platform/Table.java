@@ -48,7 +48,7 @@ public class Table<L extends ListItem> extends JTable {
 	private static final long   serialVersionUID = -1;
 	private Label               lblMessage;
 	private final TableModel<L> tableModel;
-	private Timer               tmrResize;
+	private volatile Timer      tmrResize;
 	private volatile boolean    resizeIsTimed;
 
 	public Table(TableModel<L> tableModel) {
@@ -64,9 +64,10 @@ public class Table<L extends ListItem> extends JTable {
 
 			public void ancestorRemoved(AncestorEvent event) {
 				if (tmrResize != null) {
-					tmrResize.cancel();
-					tmrResize.purge();
+					Timer oldTimer = tmrResize;
 					tmrResize = null;
+					oldTimer.cancel();
+					oldTimer.purge();
 				}
 			}
 
