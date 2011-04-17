@@ -1,3 +1,11 @@
+pagavcs (1.4.47) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 104: "Invalid range" exception in Commit window -- fix "timer already cancelled" exception
+  * Issue 114:	RepoBrowser doesn't open in the tree where it was invoked
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 17 Apr 2011 11:45:22 +020
+
 pagavcs (1.4.46) karmic; urgency=low
 
   [ Gábor Pápai ]
