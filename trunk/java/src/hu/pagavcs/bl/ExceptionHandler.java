@@ -62,7 +62,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 
 			String errorString = errorMessage.getFullMessage();
 			if (SVNErrorCode.UNVERSIONED_RESOURCE.equals(errorCode)) {
-				MessagePane.showError(null, ex.getMessage(), "Error");
+				MessagePane.showError(null, "Not under version control", ex.getMessage());
 				return;
 			} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
 				MessagePane.showError(null, "Working Copy Locked", errorString);

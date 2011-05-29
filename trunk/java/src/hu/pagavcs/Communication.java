@@ -15,6 +15,7 @@ import hu.pagavcs.operation.Ignore;
 import hu.pagavcs.operation.LockOperation;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.MergeOperation;
+import hu.pagavcs.operation.PropertiesOperation;
 import hu.pagavcs.operation.RepoBrowser;
 import hu.pagavcs.operation.ResolveConflict;
 import hu.pagavcs.operation.ResolveConflictUsingMine;
@@ -99,6 +100,7 @@ public class Communication {
 	private static final String  COMMAND_BLAME                 = "blame";
 	private static final String  COMMAND_UPDATE_TO_REVISION    = "updatetorevision";
 	private static final String  COMMAND_EXPORT                = "export";
+	private static final String  COMMAND_PROPERTIES            = "properties";
 
 	private static final String  CFG_COMMUNICATION_PORT_KEY    = "port";
 	private static final String  CFG_DEBUG_MODE_KEY            = "debug";
@@ -439,9 +441,8 @@ public class Communication {
 			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "t", COMMAND_SWITCH);
 			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", COMMAND_MERGE);
 			makeMenuItem(sb, "Export", "Export", "pagavcs-export", "", COMMAND_EXPORT);
-		}
-		if (hasSvned) {
 			makeMenuItem(sb, "Apply patch", "Apply patch", "pagavcs-applypatch", "", COMMAND_APPLY_PATCH);
+			makeMenuItem(sb, "Properties", "Properties", "pagavcs-properties", "", COMMAND_PROPERTIES);
 		}
 
 		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s", COMMAND_SETTINGS);
@@ -482,7 +483,12 @@ public class Communication {
 
 		public void run() {
 			try {
-				if (COMMAND_APPLY_PATCH.equals(command)) {
+				if (COMMAND_PROPERTIES.equals(command)) {
+					for (String path : lstArg) {
+						PropertiesOperation propertiesOperation = new PropertiesOperation(path);
+						propertiesOperation.execute();
+					}
+				} else if (COMMAND_APPLY_PATCH.equals(command)) {
 					for (String path : lstArg) {
 						ApplyPatchOperation applyPatch = new ApplyPatchOperation(path);
 						applyPatch.execute();
