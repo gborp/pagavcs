@@ -2,28 +2,28 @@ Origin: http://pagavcs.googlecode.com
 Label: PagaVCS apt repository
 Suite: stable
 Codename: karmic
-Date: Sun, 17 Apr 2011 09:51:33 UTC
+Date: Sun, 29 May 2011 16:45:44 UTC
 Architectures: amd64 i386
 Components: main
 Description: A selection of pagavcs-packages, free to use, without charge!
 MD5Sum:
- d4efef798550d7487b1846d49f65374b 4096 main/binary-amd64/Packages
- 65d7fe9410f0570e6d74a09a1a15164b 1391 main/binary-amd64/Packages.gz
+ e3b23c29c999b1f85125e3c040c08bd0 4096 main/binary-amd64/Packages
+ 319a642ed2fd0a84d023b986cc5509cd 1392 main/binary-amd64/Packages.gz
  2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
- d4efef798550d7487b1846d49f65374b 4096 main/binary-i386/Packages
- 65d7fe9410f0570e6d74a09a1a15164b 1391 main/binary-i386/Packages.gz
+ e3b23c29c999b1f85125e3c040c08bd0 4096 main/binary-i386/Packages
+ 319a642ed2fd0a84d023b986cc5509cd 1392 main/binary-i386/Packages.gz
  059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
 SHA1:
- aff2c63e29da63c62b5f2588b621f720de3f73c3 4096 main/binary-amd64/Packages
- d913464c09b6cc1627e056256eeea240938b1bd1 1391 main/binary-amd64/Packages.gz
+ a65c141e2cc7dd2d97ae64609338c6f6feb081b1 4096 main/binary-amd64/Packages
+ 51227b439ea76820841e35dfbc145df729155a20 1392 main/binary-amd64/Packages.gz
  3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
- aff2c63e29da63c62b5f2588b621f720de3f73c3 4096 main/binary-i386/Packages
- d913464c09b6cc1627e056256eeea240938b1bd1 1391 main/binary-i386/Packages.gz
+ a65c141e2cc7dd2d97ae64609338c6f6feb081b1 4096 main/binary-i386/Packages
+ 51227b439ea76820841e35dfbc145df729155a20 1392 main/binary-i386/Packages.gz
  f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
 SHA256:
- a541b1656ab1f22411488ccace706b0d578a8d59bd83f9b7c984644aed80f72b 4096 main/binary-amd64/Packages
- 3f7053a90b8af91e7f2ff962ccabc1d11590921f52c6e7dad3b95883965a644d 1391 main/binary-amd64/Packages.gz
+ 0cfb3a7ba4b895a44360e053025780046de422319bd1992556998b7f6e6a1c85 4096 main/binary-amd64/Packages
+ eb7c0da016766c260450e3ce551f40dcd87fec6a1ba86e32364b1e05ebab7083 1392 main/binary-amd64/Packages.gz
  994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
- a541b1656ab1f22411488ccace706b0d578a8d59bd83f9b7c984644aed80f72b 4096 main/binary-i386/Packages
- 3f7053a90b8af91e7f2ff962ccabc1d11590921f52c6e7dad3b95883965a644d 1391 main/binary-i386/Packages.gz
+ 0cfb3a7ba4b895a44360e053025780046de422319bd1992556998b7f6e6a1c85 4096 main/binary-i386/Packages
+ eb7c0da016766c260450e3ce551f40dcd87fec6a1ba86e32364b1e05ebab7083 1392 main/binary-i386/Packages.gz
  6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release
