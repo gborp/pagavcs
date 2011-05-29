@@ -1,3 +1,10 @@
+pagavcs (1.4.48) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 120: Make Subversion properties editable
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 29 May 2011 18:38:36 +0200
+
 pagavcs (1.4.47) karmic; urgency=low
 
   [ Gábor Pápai ]
