@@ -266,7 +266,8 @@ public class GuiHelper {
 		Frame frame = createFrame(pnlMain, applicationName, iconName, addScrollPane);
 		frame.invalidate();
 		frame.pack();
-		frame.setMinimumSize(frame.getPreferredSize());
+		Dimension prefSize = frame.getPreferredSize();
+		frame.setMinimumSize(prefSize);
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
 		if (bounds != null) {
@@ -309,6 +310,15 @@ public class GuiHelper {
 
 	public static void setBounds(Window window, Rectangle bounds) {
 		Dimension dim = window.getToolkit().getScreenSize();
+		Dimension prefSize = window.getPreferredSize();
+
+		if (bounds.width < prefSize.width) {
+			bounds.width = prefSize.width;
+		}
+		if (bounds.height < prefSize.height) {
+			bounds.height = prefSize.height;
+		}
+
 		if (bounds.x < 0) {
 			bounds.x = 0;
 		}
