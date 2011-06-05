@@ -1,3 +1,13 @@
+pagavcs (1.4.49) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 122: new feature: "create repository here"
+  * Issue 124: new feature: [login gui] quick-key for toggling "remember" (ALT+R)
+  * Issue 119: bugfix: Window sizes are not correct (small)
+  * Issue 123: bugfix: [log gui] show the correct url, not the repo-root url only
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 05 Jun 2011 18:48:05 +0200
+
 pagavcs (1.4.48) karmic; urgency=low
 
   [ Gábor Pápai ]
