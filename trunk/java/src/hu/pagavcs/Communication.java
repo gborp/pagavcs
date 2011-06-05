@@ -9,6 +9,7 @@ import hu.pagavcs.operation.Checkout;
 import hu.pagavcs.operation.Cleanup;
 import hu.pagavcs.operation.Commit;
 import hu.pagavcs.operation.CopyMoveRename;
+import hu.pagavcs.operation.CreateRepo;
 import hu.pagavcs.operation.Delete;
 import hu.pagavcs.operation.ExportOperation;
 import hu.pagavcs.operation.Ignore;
@@ -93,6 +94,7 @@ public class Communication {
 	private static final String  COMMAND_RESOLVEUSINGMINE      = "resolveusingmine";
 	private static final String  COMMAND_RESOLVEUSINGTHEIRS    = "resolveusingtheirs";
 	private static final String  COMMAND_REPOBROWSER           = "repobrowser";
+	private static final String  COMMAND_CREATEREPO            = "createrepo";
 	private static final String  COMMAND_STOP                  = "stop";
 	private static final String  COMMAND_PING                  = "ping";
 	private static final String  COMMAND_ADD                   = "add";
@@ -405,6 +407,9 @@ public class Communication {
 		}
 
 		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "", COMMAND_REPOBROWSER);
+		if (!hasSvned && hasDir && !hasFile) {
+			makeMenuItem(sb, "Create Repository here", "Create Repository here", "pagavcs-about", "", COMMAND_CREATEREPO);
+		}
 
 		if (hasSvned) {
 			makeMenuItem(sb, "Update to revision", "Update to revision", "pagavcs-update", "", COMMAND_UPDATE_TO_REVISION);
@@ -595,6 +600,11 @@ public class Communication {
 					for (String path : lstArg) {
 						RepoBrowser repoBrowser = new RepoBrowser(path);
 						repoBrowser.execute();
+					}
+				} else if (COMMAND_CREATEREPO.equals(command)) {
+					for (String path : lstArg) {
+						CreateRepo createRepo = new CreateRepo(path);
+						createRepo.execute();
 					}
 				} else if (COMMAND_STOP.equals(command)) {
 					System.exit(0);
