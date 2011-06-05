@@ -58,8 +58,11 @@ public class LoginGui {
 		CellConstraints cc = new CellConstraints();
 
 		cbRemember = new JCheckBox();
+		cbRemember.setMnemonic('r');
+		cbRemember.setToolTipText("Remember username and password (ALT+R)");
 		cbRemember.setFocusable(false);
 		Label lblUsername = new Label("Username:");
+		lblUsername.setToolTipText("Remember username and password (ALT+R)");
 		sfUsername = new EditField(predefinedUsername, 20);
 		sfUsername.setToolTipText("Leave it empty if username is not required");
 
