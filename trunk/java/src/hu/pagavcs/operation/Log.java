@@ -73,9 +73,11 @@ public class Log implements Cancelable {
 		gui = new LogGui(this);
 		gui.display();
 		gui.setStatus(ShowLogStatus.INIT);
-		gui.setUrlLabel(getRootUrl().toDecodedString());
 		if (path != null) {
 			gui.setLogRootsFiles(Arrays.asList(new File(path)));
+			gui.setUrlLabel(getUrl().toDecodedString());
+		} else {
+			gui.setUrlLabel(getRootUrl().toDecodedString());
 		}
 		gui.setSvnRepoRootUrl(getRootUrl());
 		// Manager.getSvnRootUrlByFile(new File(path)));
