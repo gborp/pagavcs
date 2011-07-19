@@ -247,6 +247,9 @@ public class LogGui implements Working {
 	public void setStatus(ShowLogStatus status) {
 		if (ShowLogStatus.COMPLETED.equals(status)) {
 			btnStop.setEnabled(false);
+		} else if (ShowLogStatus.STARTED.equals(status)) {
+			btnStop.setText("Stop");
+			btnStop.setEnabled(true);
 		}
 	}
 
