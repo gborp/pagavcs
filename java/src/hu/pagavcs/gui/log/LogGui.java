@@ -663,6 +663,7 @@ public class LogGui implements Working {
 
 		private JPopupMenu ppModified;
 		private JPopupMenu ppAdded;
+		private JPopupMenu ppDeleted;
 
 		public DetailPopupupMouseListener() {
 			ppModified = new JPopupMenu();
@@ -678,8 +679,17 @@ public class LogGui implements Working {
 			ppAdded.add(new ShowFileAction(LogGui.this));
 			ppAdded.add(new SaveRevisionToAction(LogGui.this));
 			ppAdded.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
+			ppAdded.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
 			ppAdded.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppAdded.add(new CopyDetailAllToClipboard(LogGui.this));
+
+			ppDeleted = new JPopupMenu();
+			ppDeleted.add(new ShowFileAction(LogGui.this));
+			ppDeleted.add(new SaveRevisionToAction(LogGui.this));
+			ppDeleted.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
+			ppDeleted.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
+			ppDeleted.add(new CopyDetailLineToClipboard(LogGui.this));
+			ppDeleted.add(new CopyDetailAllToClipboard(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -700,6 +710,12 @@ public class LogGui implements Working {
 				e.consume();
 			} else if (selected.getAction().equals(ContentStatus.ADDED)) {
 				JPopupMenu ppVisible = ppAdded;
+				ppVisible.setInvoker(tblDetailLog);
+				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				ppVisible.setVisible(true);
+				e.consume();
+			} else if (selected.getAction().equals(ContentStatus.DELETED)) {
+				JPopupMenu ppVisible = ppDeleted;
 				ppVisible.setInvoker(tblDetailLog);
 				ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
 				ppVisible.setVisible(true);
