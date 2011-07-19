@@ -30,6 +30,8 @@ public class ShowMoreAction extends ThreadAction {
 				if (lastLi.getRevision() > 1) {
 					logGui.doShowLog(SVNRevision.create(lastLi.getRevision() + 1), Log.LIMIT);
 				}
+			} else {
+				logGui.doShowLog(SVNRevision.HEAD, Log.LIMIT);
 			}
 			this.logGui.workEnded();
 		} catch (Exception ex) {

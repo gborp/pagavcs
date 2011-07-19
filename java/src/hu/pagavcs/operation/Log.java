@@ -93,6 +93,7 @@ public class Log implements Cancelable {
 	 */
 	public void doShowLog(SVNRevision startRevision, long limit) throws Exception {
 		gui.workStarted();
+		cancel = false;
 		SVNClientManager mgrSvn;
 		if (path != null) {
 			mgrSvn = Manager.getSVNClientManager(new File(path));
@@ -369,14 +370,14 @@ public class Log implements Cancelable {
 		        true);
 		String pathRevertWc = path + revertPath.substring(pathToUrl.substring(rootUrlDecoded.length()).length());
 
-		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), pathRevertWc, Long.toString(revision), true, Boolean.TRUE
-		        .equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), pathRevertWc, Long.toString(revision), true,
+		        Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
 	}
 
 	public void revertChangesExact(long revision) throws Exception {
 		String svnPath = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
-		SvnHelper.doMerge(this, svnPath, path, svnPath, path, Long.toString(revision), true, Boolean.TRUE.equals(SettingsStore.getInstance()
-		        .getGlobalIgnoreEol()));
+		SvnHelper.doMerge(this, svnPath, path, svnPath, path, Long.toString(revision), true,
+		        Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
 	}
 
 	public void revertChangesToThisRevisionExact(String revisionRange) throws Exception {
