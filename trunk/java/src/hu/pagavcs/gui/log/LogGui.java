@@ -146,17 +146,17 @@ public class LogGui implements Working {
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
 		splDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spDetailLog);
-		splDetail.setResizeWeight(0.2);
+		splDetail.setResizeWeight(0);
 
-		if (settingsStore.getGuiLogSeparatorDetail() != null) {
-			splDetail.setDividerLocation(settingsStore.getGuiLogSeparatorDetail());
-		}
+		// if (settingsStore.getGuiLogSeparatorDetail() != null) {
+		// splDetail.setDividerLocation(settingsStore.getGuiLogSeparatorDetail());
+		// }
 		splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLog, splDetail);
 		splMain.setResizeWeight(0.5);
 
-		if (settingsStore.getGuiLogSeparatorMain() != null) {
-			splMain.setDividerLocation(settingsStore.getGuiLogSeparatorMain());
-		}
+		// if (settingsStore.getGuiLogSeparatorMain() != null) {
+		// splMain.setDividerLocation(settingsStore.getGuiLogSeparatorMain());
+		// }
 
 		calFrom = new JDateChooser();
 		calFrom.getCalendarButton().setToolTipText("Right click to clear");
@@ -217,7 +217,7 @@ public class LogGui implements Working {
 		pnlBottom.add(btnShowAll, cc.xy(5, 1));
 		pnlBottom.add(btnStop, cc.xy(7, 1));
 
-		FormLayout lyMain = new FormLayout("f:200dlu:g", "p,2dlu,f:50dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("f:200dlu:g", "p,2dlu,f:100dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(splMain, cc.xy(1, 3));
