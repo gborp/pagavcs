@@ -34,7 +34,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -587,24 +589,36 @@ public class LogGui implements Working {
 		}
 		int revisionPadding = 10 - Long.toString(maxRevisionNumber).length();
 		int datePadding = 10 - maxDateLength;
+
 		for (LogListItem li : lstLogListItem) {
 			String message = li.getMessage();
 			message = message.replace('\n', ' ');
 			String revision = Long.toString(li.getRevision());
 			revision = "          ".substring(revisionPadding + revision.length()) + revision;
 			String date = li.getDateAsString() + "          ".substring(datePadding + li.getDateAsString().length());
-
 			result.append(revision + " " + li.getActions() + " " + li.getAuthor() + " " + date + " " + message + "\n");
 		}
 		Manager.setClipboard(result.toString());
 	}
 
-	void copyLogDetailListItemsToClipboard(List<LogDetailListItem> lstDetailLogListItem) {
+	void copyLogDetailListItemsToClipboard(List<LogDetailListItem> lstDetailLogListItem, LogDetailCopyToClipboardType copyType) {
 		StringBuilder result = new StringBuilder();
-		for (LogDetailListItem li : lstDetailLogListItem) {
-
-			result.append(li.getPath() + " " + li.getAction() + " " + StringHelper.toNullAware(li.getCopyFromPath()) + " "
-			        + StringHelper.toNullAware(li.getCopyRevision()) + "\n");
+		if (copyType.equals(LogDetailCopyToClipboardType.DETAIL)) {
+			for (LogDetailListItem li : lstDetailLogListItem) {
+				result.append(li.getPath() + " " + li.getAction() + " " + StringHelper.toNullAware(li.getCopyFromPath()) + " "
+				        + StringHelper.toNullAware(li.getCopyRevision()) + "\n");
+			}
+		} else if (copyType.equals(LogDetailCopyToClipboardType.GROUP_NAME_ONLY)) {
+			HashSet<String> setPath = new HashSet<String>();
+			for (LogDetailListItem li : lstDetailLogListItem) {
+				setPath.add(li.getPath());
+			}
+			ArrayList<String> lstPath = new ArrayList<String>(setPath);
+			Collections.sort(lstPath);
+			for (String liPath : lstPath) {
+				result.append(liPath);
+				result.append('\n');
+			}
 		}
 		Manager.setClipboard(result.toString());
 	}
@@ -674,6 +688,7 @@ public class LogGui implements Working {
 			ppModified.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
 			ppModified.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppModified.add(new CopyDetailAllToClipboard(LogGui.this));
+			ppModified.add(new CopyDetailAllGrouppedToClipboard(LogGui.this));
 
 			ppAdded = new JPopupMenu();
 			ppAdded.add(new ShowFileAction(LogGui.this));
@@ -682,6 +697,7 @@ public class LogGui implements Working {
 			ppAdded.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
 			ppAdded.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppAdded.add(new CopyDetailAllToClipboard(LogGui.this));
+			ppAdded.add(new CopyDetailAllGrouppedToClipboard(LogGui.this));
 
 			ppDeleted = new JPopupMenu();
 			ppDeleted.add(new ShowFileAction(LogGui.this));
@@ -690,6 +706,7 @@ public class LogGui implements Working {
 			ppDeleted.add(new DetailRevertChangesFromThisRevisionAction(LogGui.this));
 			ppDeleted.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppDeleted.add(new CopyDetailAllToClipboard(LogGui.this));
+			ppDeleted.add(new CopyDetailAllGrouppedToClipboard(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -755,22 +772,16 @@ public class LogGui implements Working {
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		// private JPopupMenu pp;
-		private JPopupMenu ppOnlyOne;
+		private JPopupMenu pp;
 
 		public PopupupMouseListener() {
-			// pp = new JPopupMenu();
-			// pp.add(new CopyLineToClipboard(LogGui.this));
-			// pp.add(new CopyAllToClipboard(LogGui.this));
-			// pp.add(new JSeparator());
-			// pp.add(new RevertChangesFromThisRevisionAction(LogGui.this));
 
-			ppOnlyOne = new JPopupMenu();
-			ppOnlyOne.add(new CopyLineToClipboard(LogGui.this));
-			ppOnlyOne.add(new CopyAllToClipboard(LogGui.this));
-			ppOnlyOne.add(new JSeparator());
-			ppOnlyOne.add(new RevertChangesFromThisRevisionAction(LogGui.this));
-			ppOnlyOne.add(new RevertChangesToThisRevisionAction(LogGui.this));
+			pp = new JPopupMenu();
+			pp.add(new CopyLineToClipboard(LogGui.this));
+			pp.add(new CopyAllToClipboard(LogGui.this));
+			pp.add(new JSeparator());
+			pp.add(new RevertChangesFromThisRevisionAction(LogGui.this));
+			pp.add(new RevertChangesToThisRevisionAction(LogGui.this));
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -785,7 +796,7 @@ public class LogGui implements Working {
 				tblLog.getSelectionModel().setSelectionInterval(row, row);
 			}
 
-			JPopupMenu ppVisible = ppOnlyOne;
+			JPopupMenu ppVisible = pp;
 			ppVisible.setInvoker(tblLog);
 			ppVisible.setLocation(e.getXOnScreen(), e.getYOnScreen());
 			ppVisible.setVisible(true);
