@@ -1,3 +1,13 @@
+pagavcs (1.4.50) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 127: [log] to be able to stop while the "show all" working
+  * Issue 126: [log] revert changes from this revision for ADDED files too
+  * Issue 89: in the Show Log window, right-click menu add "Copy and group all to clipboard"
+  * Issue 85: Empty log (Perhaps it is worth to check the default size here (other windows were quite small initially too))
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Jul 2011 00:09:20 +0200
+
 pagavcs (1.4.49) karmic; urgency=low
 
   [ Gábor Pápai ]
