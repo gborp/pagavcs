@@ -12,7 +12,7 @@ class CopyLineToClipboard extends AbstractAction {
 	private final LogGui logGui;
 
 	public CopyLineToClipboard(LogGui logGui) {
-		super("Copy selected lines to clipboard");
+		super("Copy to clipboard");
 		this.logGui = logGui;
 	}
 

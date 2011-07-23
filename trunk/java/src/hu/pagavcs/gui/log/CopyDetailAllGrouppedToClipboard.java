@@ -17,19 +17,19 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-class CopyDetailLineToClipboard extends AbstractAction {
+class CopyDetailAllGrouppedToClipboard extends AbstractAction {
 
 	/**
      * 
      */
 	private final LogGui logGui;
 
-	public CopyDetailLineToClipboard(LogGui logGui) {
-		super("Copy to clipboard");
+	public CopyDetailAllGrouppedToClipboard(LogGui logGui) {
+		super("Copy and group all to clipboard");
 		this.logGui = logGui;
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		this.logGui.copyLogDetailListItemsToClipboard(this.logGui.getSelectedDetailLogItems(), LogDetailCopyToClipboardType.DETAIL);
+		this.logGui.copyLogDetailListItemsToClipboard(this.logGui.getAllTableDataFromDetail(), LogDetailCopyToClipboardType.GROUP_NAME_ONLY);
 	}
 }
