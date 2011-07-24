@@ -1,3 +1,10 @@
+pagavcs (1.4.51) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 89: in the Show Log window, right-click menu add "Copy and group all to clipboard"
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Jul 2011 11:00:40 +0200
+
 pagavcs (1.4.50) karmic; urgency=low
 
   [ Gábor Pápai ]
