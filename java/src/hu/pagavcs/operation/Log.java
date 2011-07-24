@@ -361,28 +361,42 @@ public class Log implements Cancelable {
 	}
 
 	public void revertChanges(String revertPath, long revision) throws Exception {
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		try {
+			String pathToUrl = mgrSvn.getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
+			String rootUrlDecoded = getRootUrl().toDecodedString();
 
-		String pathToUrl = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
-		String rootUrlDecoded = getRootUrl().toDecodedString();
+			SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
+			        + revertPath, true);
+			String pathRevertWc = path + revertPath.substring(pathToUrl.substring(rootUrlDecoded.length()).length());
 
-		SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
-		SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath() + revertPath,
-		        true);
-		String pathRevertWc = path + revertPath.substring(pathToUrl.substring(rootUrlDecoded.length()).length());
-
-		SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), pathRevertWc, Long.toString(revision), true,
-		        Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+			SvnHelper.doMerge(this, svnUrl.toDecodedString(), pathRevertWc, svnUrl.toDecodedString(), pathRevertWc, Long.toString(revision), true,
+			        Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public void revertChangesExact(long revision) throws Exception {
-		String svnPath = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
-		SvnHelper.doMerge(this, svnPath, path, svnPath, path, Long.toString(revision), true,
-		        Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		try {
+			String svnPath = mgrSvn.getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
+			SvnHelper.doMerge(this, svnPath, path, svnPath, path, Long.toString(revision), true,
+			        Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public void revertChangesToThisRevisionExact(String revisionRange) throws Exception {
-		String svnPath = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
-		SvnHelper.doMerge(this, svnPath, path, svnPath, path, revisionRange, true, Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		try {
+			String svnPath = mgrSvn.getWCClient().doInfo(new File(path), SVNRevision.WORKING).getURL().toDecodedString();
+			SvnHelper.doMerge(this, svnPath, path, svnPath, path, revisionRange, true, Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol()));
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {

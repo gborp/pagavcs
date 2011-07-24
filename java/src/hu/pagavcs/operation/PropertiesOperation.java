@@ -59,37 +59,40 @@ public class PropertiesOperation {
 
 	private List<PropertiesListItem> getProperties() throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = mgrSvn.getWCClient();
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
 
-		File dir = file.getAbsoluteFile();
+			File dir = file.getAbsoluteFile();
 
-		final List<SVNPropertyData> lstSvnProperties = new ArrayList<SVNPropertyData>();
-		wcClient.doGetProperty(dir, null, SVNRevision.WORKING, SVNRevision.WORKING, SVNDepth.EMPTY, new ISVNPropertyHandler() {
+			final List<SVNPropertyData> lstSvnProperties = new ArrayList<SVNPropertyData>();
+			wcClient.doGetProperty(dir, null, SVNRevision.WORKING, SVNRevision.WORKING, SVNDepth.EMPTY, new ISVNPropertyHandler() {
 
-			public void handleProperty(File path, SVNPropertyData property) throws SVNException {
-				lstSvnProperties.add(property);
+				public void handleProperty(File path, SVNPropertyData property) throws SVNException {
+					lstSvnProperties.add(property);
+				}
+
+				public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {}
+
+				public void handleProperty(long revision, SVNPropertyData property) throws SVNException {}
+
+			}, null);
+
+			List<PropertiesListItem> lstProperties = new ArrayList<PropertiesListItem>();
+			for (SVNPropertyData svnPropertyData : lstSvnProperties) {
+				PropertiesListItem property = new PropertiesListItem();
+
+				if (svnPropertyData.getValue().isString()) {
+					property.setKey(svnPropertyData.getName());
+					property.setValue(svnPropertyData.getValue().getString());
+					property.setDisplayValue(valueToDisplayValue(property.getValue()));
+					lstProperties.add(property);
+				}
 			}
 
-			public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {}
-
-			public void handleProperty(long revision, SVNPropertyData property) throws SVNException {}
-
-		}, null);
-
-		List<PropertiesListItem> lstProperties = new ArrayList<PropertiesListItem>();
-		for (SVNPropertyData svnPropertyData : lstSvnProperties) {
-			PropertiesListItem property = new PropertiesListItem();
-
-			if (svnPropertyData.getValue().isString()) {
-				property.setKey(svnPropertyData.getName());
-				property.setValue(svnPropertyData.getValue().getString());
-				property.setDisplayValue(valueToDisplayValue(property.getValue()));
-				lstProperties.add(property);
-			}
+			return lstProperties;
+		} finally {
+			mgrSvn.dispose();
 		}
-
-		return lstProperties;
-
 	}
 
 	public String valueToDisplayValue(String value) {
@@ -148,19 +151,23 @@ public class PropertiesOperation {
 
 	public void commitChanges() throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = mgrSvn.getWCClient();
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
 
-		File dir = file.getAbsoluteFile();
+			File dir = file.getAbsoluteFile();
 
-		for (PropertiesListItem li : lstModifiedProperties) {
-			wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(li.getValue()), false, li.isRecoursively() ? SVNDepth.INFINITY
-			        : SVNDepth.EMPTY, null, null);
+			for (PropertiesListItem li : lstModifiedProperties) {
+				wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(li.getValue()), false, li.isRecoursively() ? SVNDepth.INFINITY
+				        : SVNDepth.EMPTY, null, null);
+			}
+			for (PropertiesListItem li : lstDeletedProperties) {
+				wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(li.getValue()), false, li.isRecoursively() ? SVNDepth.INFINITY
+				        : SVNDepth.EMPTY, null, null);
+			}
+			Manager.invalidateAllFiles();
+		} finally {
+			mgrSvn.dispose();
 		}
-		for (PropertiesListItem li : lstDeletedProperties) {
-			wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(li.getValue()), false, li.isRecoursively() ? SVNDepth.INFINITY
-			        : SVNDepth.EMPTY, null, null);
-		}
-		Manager.invalidateAllFiles();
 	}
 
 	public List<PropertiesListItem> getOriginalProperties() {
