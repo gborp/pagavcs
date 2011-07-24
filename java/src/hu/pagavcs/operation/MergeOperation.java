@@ -76,6 +76,8 @@ public class MergeOperation implements Cancelable {
 			gui.setURL(svnInfo.getURL().toDecodedString());
 		} catch (SVNException ex) {
 			Manager.handle(ex);
+		} finally {
+			mgrSvn.dispose();
 		}
 	}
 

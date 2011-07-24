@@ -176,8 +176,12 @@ public class Manager {
 	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl) throws SVNException, PagaException {
 
 		SVNClientManager mgr = Manager.getSVNClientManager(path);
-		SVNURL rootUrl = mgr.getWCClient().doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED).getRepositoryRootURL();
-		return rootUrl.appendPath(relativeUrl, true);
+		try {
+			SVNURL rootUrl = mgr.getWCClient().doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED).getRepositoryRootURL();
+			return rootUrl.appendPath(relativeUrl, true);
+		} finally {
+			mgr.dispose();
+		}
 	}
 
 	public static SVNClientManager getSVNClientManagerForWorkingCopyOnly() {

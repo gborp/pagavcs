@@ -88,9 +88,10 @@ public class SvnHelper {
 		UpdateGui updateGui = new UpdateGui(cancelable, "Merge");
 		updateGui.setPaths(Arrays.asList(new File(pathTo)));
 		updateGui.display();
+		SVNClientManager clientMgr = null;
 		try {
 			updateGui.setStatus(ContentStatus.INIT);
-			SVNClientManager clientMgr = Manager.getSVNClientManager(new File(pathTo));
+			clientMgr = Manager.getSVNClientManager(new File(pathTo));
 			SVNDiffClient diffClient = clientMgr.getDiffClient();
 			diffClient.setMergeOptions(new SVNDiffOptions(false, false, ignoreEolStyle));
 			SVNDepth depth = SVNDepth.INFINITY;
@@ -188,6 +189,10 @@ public class SvnHelper {
 		} catch (Exception ex) {
 			updateGui.setStatus(ContentStatus.FAILED);
 			throw ex;
+		} finally {
+			if (clientMgr != null) {
+				clientMgr.dispose();
+			}
 		}
 	}
 
@@ -229,10 +234,11 @@ public class SvnHelper {
 		FileOutputStream outOldRevision = null;
 		File fileNew = null;
 		File fileOld = null;
+		SVNClientManager mgrSvn = null;
 		try {
 			working.workStarted();
 
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+			mgrSvn = Manager.getSVNClientManager(new File(path));
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 
 			String fileName = path.substring(path.lastIndexOf('/') + 1);
@@ -295,6 +301,9 @@ public class SvnHelper {
 			if (fileOld != null) {
 				fileOld.delete();
 			}
+			if (mgrSvn != null) {
+				mgrSvn.dispose();
+			}
 		}
 	}
 
@@ -329,23 +338,27 @@ public class SvnHelper {
 	        throws Exception {
 		final List<SVNPropertyData> lstResult = new ArrayList<SVNPropertyData>();
 		SVNClientManager svnMgr = Manager.getSVNClientManager(svnUrl);
-		SVNWCClient wcClient = svnMgr.getWCClient();
-		ISVNPropertyHandler handler = new ISVNPropertyHandler() {
+		try {
+			SVNWCClient wcClient = svnMgr.getWCClient();
+			ISVNPropertyHandler handler = new ISVNPropertyHandler() {
 
-			public void handleProperty(long revision, SVNPropertyData property) throws SVNException {
-				lstResult.add(property);
-			}
+				public void handleProperty(long revision, SVNPropertyData property) throws SVNException {
+					lstResult.add(property);
+				}
 
-			public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {
-				lstResult.add(property);
-			}
+				public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {
+					lstResult.add(property);
+				}
 
-			public void handleProperty(File path, SVNPropertyData property) throws SVNException {
-				lstResult.add(property);
-			}
-		};
-		wcClient.doGetProperty(svnUrl, null, pegRevision, revision, SVNDepth.EMPTY, handler);
-		return lstResult;
+				public void handleProperty(File path, SVNPropertyData property) throws SVNException {
+					lstResult.add(property);
+				}
+			};
+			wcClient.doGetProperty(svnUrl, null, pegRevision, revision, SVNDepth.EMPTY, handler);
+			return lstResult;
+		} finally {
+			svnMgr.dispose();
+		}
 	}
 
 	private static String propertyListToString(List<SVNPropertyData> lstSvnProperty) {

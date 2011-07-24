@@ -76,26 +76,30 @@ public class FileRevisionCache {
 
 		FileOutputStream outOldRevision = null;
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl);
-		SVNWCClient wcClient = mgrSvn.getWCClient();
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
 
-		String path = svnUrl.getPath();
-		String fileName = path.substring(path.lastIndexOf('/') + 1);
-		String fileNameOld = "r" + revision + "-" + fileName;
-		String tempPrefix = Manager.getTempDir() + "r/";
-		String fileNameRoot = tempPrefix + fileNameOld;
-		File file = new File(fileNameRoot);
-		int counter = 0;
-		while (file.exists()) {
-			file = new File(fileNameRoot + "-" + counter);
-			counter++;
+			String path = svnUrl.getPath();
+			String fileName = path.substring(path.lastIndexOf('/') + 1);
+			String fileNameOld = "r" + revision + "-" + fileName;
+			String tempPrefix = Manager.getTempDir() + "r/";
+			String fileNameRoot = tempPrefix + fileNameOld;
+			File file = new File(fileNameRoot);
+			int counter = 0;
+			while (file.exists()) {
+				file = new File(fileNameRoot + "-" + counter);
+				counter++;
+			}
+
+			outOldRevision = new FileOutputStream(file.getPath());
+			wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, revision, false, outOldRevision);
+			outOldRevision.close();
+
+			file.setReadOnly();
+			result = file;
+		} finally {
+			mgrSvn.dispose();
 		}
-
-		outOldRevision = new FileOutputStream(file.getPath());
-		wcClient.doGetFileContents(svnUrl, SVNRevision.UNDEFINED, revision, false, outOldRevision);
-		outOldRevision.close();
-
-		file.setReadOnly();
-		result = file;
 
 		if (lstUsedFiles.size() > MAX_CACHED_FILE) {
 			for (Pair<SVNURL, SVNRevision> li : mapFiles.keySet()) {
@@ -109,7 +113,7 @@ public class FileRevisionCache {
 		}
 
 		lstUsedFiles.add(key);
-		mapFiles.put(key, file);
+		mapFiles.put(key, result);
 
 		return result;
 	}

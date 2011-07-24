@@ -27,18 +27,22 @@ public class PreviousRevisionFetcher {
 
 	public void execute(SVNURL svnUrl, long revision) throws SVNException, PagaException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl);
-		SVNLogClient logClient = mgrSvn.getLogClient();
-		SVNRevision startRevision = SVNRevision.create(revision - 1);
-		SVNRevision endRevision = SVNRevision.create(0);
-		SVNRevision pegRevision = startRevision;
-		boolean stopOnCopy = false;
-		boolean discoverChangedPaths = true;
-		boolean includeMergedRevisions = false;
-		long limit = 1;
-		String[] revisionProperties = null;
-		ISVNLogEntryHandler handler = new LogEntryHandler();
-		logClient.doLog(svnUrl, new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions, limit,
-		        revisionProperties, handler);
+		try {
+			SVNLogClient logClient = mgrSvn.getLogClient();
+			SVNRevision startRevision = SVNRevision.create(revision - 1);
+			SVNRevision endRevision = SVNRevision.create(0);
+			SVNRevision pegRevision = startRevision;
+			boolean stopOnCopy = false;
+			boolean discoverChangedPaths = true;
+			boolean includeMergedRevisions = false;
+			long limit = 1;
+			String[] revisionProperties = null;
+			ISVNLogEntryHandler handler = new LogEntryHandler();
+			logClient.doLog(svnUrl, new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths, includeMergedRevisions,
+			        limit, revisionProperties, handler);
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	private class LogEntryHandler implements ISVNLogEntryHandler {

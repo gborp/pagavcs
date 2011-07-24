@@ -72,6 +72,8 @@ public class RepoBrowser implements Cancelable {
 			} catch (SVNException ex) {
 				Manager.handle(ex);
 				gui.setStatus(RepoBrowserStatus.FAILED);
+			} finally {
+				mgrSvn.dispose();
 			}
 		}
 	}
@@ -104,12 +106,16 @@ public class RepoBrowser implements Cancelable {
 	public List<SVNDirEntry> getDirEntryChain(String url) throws SVNException, PagaException {
 		SVNURL svnUrl2 = SVNURL.parseURIDecoded(url);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl2);
-		repo = mgrSvn.getRepositoryPool().createRepository(svnUrl2, true);
-		String relativePath = repo.getLocation().getPath();
-		repo.setLocation(repo.getRepositoryRoot(false), false);
-		String rootPath = repo.getLocation().getPath();
-		List<SVNDirEntry> result = getDirEntryChain2(repo, relativePath.substring(rootPath.length()));
-		return result;
+		try {
+			repo = mgrSvn.getRepositoryPool().createRepository(svnUrl2, true);
+			String relativePath = repo.getLocation().getPath();
+			repo.setLocation(repo.getRepositoryRoot(false), false);
+			String rootPath = repo.getLocation().getPath();
+			List<SVNDirEntry> result = getDirEntryChain2(repo, relativePath.substring(rootPath.length()));
+			return result;
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	private List<SVNDirEntry> getDirEntryChain2(SVNRepository repo2, String relativePath) throws SVNException, PagaException {
