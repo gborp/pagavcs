@@ -201,7 +201,9 @@ public class LogGui implements Working {
 
 			public void actionPerformed(ActionEvent e) {
 				btnStop.setEnabled(false);
-				btnStop.setText("Cancelled");
+				btnStop.setText("Cancelle");
+				btnShowMore.setEnabled(true);
+				btnShowAll.setEnabled(true);
 				log.setCancel(true);
 			}
 		});
@@ -249,9 +251,13 @@ public class LogGui implements Working {
 	public void setStatus(ShowLogStatus status) {
 		if (ShowLogStatus.COMPLETED.equals(status)) {
 			btnStop.setEnabled(false);
+			btnShowMore.setEnabled(true);
+			btnShowAll.setEnabled(true);
 		} else if (ShowLogStatus.STARTED.equals(status)) {
 			btnStop.setText("Stop");
 			btnStop.setEnabled(true);
+			btnShowMore.setEnabled(false);
+			btnShowAll.setEnabled(false);
 		}
 	}
 
