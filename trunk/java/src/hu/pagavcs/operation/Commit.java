@@ -184,56 +184,61 @@ public class Commit {
 		SVNCommitClient commitClient = mgrSvn.getCommitClient();
 		commitClient.setEventHandler(new CommitEventHandler());
 
-		boolean successOrExit = false;
-		while (!successOrExit) {
-			try {
-				commitClient.doCommit(lstCommit.toArray(new File[] {}), true, message, null, null, true, true, SVNDepth.EMPTY);
-				successOrExit = true;
-			} catch (SVNCancelException ex) {
-				successOrExit = true;
-			} catch (SVNException ex) {
-				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
-				if (errorCode.isAuthentication()) {
-					MessagePane.showError(gui.getFrame(), "Authentication failure", "" + errorCode.getDescription());
-					Manager.setForceShowingLoginDialogNextTime(true);
-					mgrSvn = Manager.getSVNClientManager(new File(path));
-					commitClient = mgrSvn.getCommitClient();
-					commitClient.setEventHandler(new CommitEventHandler());
-				} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-					File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
-					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
-					        "Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
-					if (choosed == JOptionPane.YES_OPTION) {
-						Cleanup cleanup = new Cleanup(file.getPath());
-						cleanup.setAutoClose(true);
-						cleanup.execute();
-					} else {
-						gui.setStatus(CommitStatus.CANCEL, null);
-						successOrExit = true;
-					}
-				} else if (doTryUpdateing(ex)) {
-					int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Update is needed",
-					        JOptionPane.YES_NO_OPTION);
-					if (choosed == JOptionPane.YES_OPTION) {
-						Update update = new Update(Arrays.asList(path));
-						update.execute();
+		try {
+			boolean successOrExit = false;
+			while (!successOrExit) {
+				try {
+					commitClient.doCommit(lstCommit.toArray(new File[] {}), true, message, null, null, true, true, SVNDepth.EMPTY);
+					successOrExit = true;
+				} catch (SVNCancelException ex) {
+					successOrExit = true;
+				} catch (SVNException ex) {
+					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
+					if (errorCode.isAuthentication()) {
+						MessagePane.showError(gui.getFrame(), "Authentication failure", "" + errorCode.getDescription());
+						Manager.setForceShowingLoginDialogNextTime(true);
+						mgrSvn.dispose();
+						mgrSvn = Manager.getSVNClientManager(new File(path));
+						commitClient = mgrSvn.getCommitClient();
+						commitClient.setEventHandler(new CommitEventHandler());
+					} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
+						File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
+						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
+						        "Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
+						if (choosed == JOptionPane.YES_OPTION) {
+							Cleanup cleanup = new Cleanup(file.getPath());
+							cleanup.setAutoClose(true);
+							cleanup.execute();
+						} else {
+							gui.setStatus(CommitStatus.CANCEL, null);
+							successOrExit = true;
+						}
+					} else if (doTryUpdateing(ex)) {
+						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Update is needed",
+						        JOptionPane.YES_NO_OPTION);
+						if (choosed == JOptionPane.YES_OPTION) {
+							Update update = new Update(Arrays.asList(path));
+							update.execute();
 
-						int choosedContinue = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "It's updated, do you still want to commit?",
-						        "Still commit?", JOptionPane.YES_NO_OPTION);
-						if (choosedContinue == JOptionPane.NO_OPTION) {
+							int choosedContinue = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "It's updated, do you still want to commit?",
+							        "Still commit?", JOptionPane.YES_NO_OPTION);
+							if (choosedContinue == JOptionPane.NO_OPTION) {
+								gui.setStatus(CommitStatus.CANCEL, null);
+								successOrExit = true;
+							}
+						} else {
 							gui.setStatus(CommitStatus.CANCEL, null);
 							successOrExit = true;
 						}
 					} else {
 						gui.setStatus(CommitStatus.CANCEL, null);
-						successOrExit = true;
+						throw ex;
 					}
-				} else {
-					gui.setStatus(CommitStatus.CANCEL, null);
-					throw ex;
-				}
 
+				}
 			}
+		} finally {
+			mgrSvn.dispose();
 		}
 	}
 

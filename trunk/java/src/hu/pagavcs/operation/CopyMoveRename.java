@@ -62,6 +62,8 @@ public class CopyMoveRename implements Cancelable {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(CopyMoveRenameStatus.FAILED);
+		} finally {
+			mgrSvn.dispose();
 		}
 		if (autoClose) {
 			gui.close();
