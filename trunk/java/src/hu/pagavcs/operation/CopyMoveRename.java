@@ -95,10 +95,14 @@ public class CopyMoveRename implements Cancelable {
 
 	public void copyMoveRename(String oldPath, String newPath, boolean copy) throws SVNException {
 		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNCopyClient copyClient = clientMgr.getCopyClient();
-		SVNCopySource[] source = new SVNCopySource[] { new SVNCopySource(SVNRevision.UNDEFINED, SVNRevision.UNDEFINED, new File(oldPath)) };
-		File dest = new File(newPath);
-		copyClient.doCopy(source, dest, !copy, true, true);
+		try {
+			SVNCopyClient copyClient = clientMgr.getCopyClient();
+			SVNCopySource[] source = new SVNCopySource[] { new SVNCopySource(SVNRevision.UNDEFINED, SVNRevision.UNDEFINED, new File(oldPath)) };
+			File dest = new File(newPath);
+			copyClient.doCopy(source, dest, !copy, true, true);
+		} finally {
+			clientMgr.dispose();
+		}
 	}
 
 	public void storeUrlForHistory(String url) {

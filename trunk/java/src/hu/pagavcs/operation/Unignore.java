@@ -43,9 +43,9 @@ public class Unignore {
 		gui.display();
 		gui.setStatus(GeneralStatus.INIT);
 		gui.setStatus(GeneralStatus.START);
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			File wcFile = new File(path);
-			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			File dir = wcFile.getParentFile().getAbsoluteFile();
 			SVNPropertyData property = wcClient.doGetProperty(dir, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
@@ -67,6 +67,8 @@ public class Unignore {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(GeneralStatus.FAILED);
+		} finally {
+			mgrSvn.dispose();
 		}
 
 	}

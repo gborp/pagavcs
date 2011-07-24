@@ -25,13 +25,13 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class FileRevisionCache {
 
-	private static final int                                MAX_CACHED_FILE     = 50;
+	private static final int                                MAX_CACHED_FILE = 50;
 
 	private static FileRevisionCache                        singleton;
 
-	private static HashMap<Pair<SVNURL, SVNRevision>, File> mapFiles            = new HashMap<Pair<SVNURL, SVNRevision>, File>();
-	private static HashSet<Pair<SVNURL, SVNRevision>>       lstUsedFiles        = new HashSet<Pair<SVNURL, SVNRevision>>();
-	private static HashMap<File, File>                      lstBaseFiles = new HashMap<File, File>();
+	private static HashMap<Pair<SVNURL, SVNRevision>, File> mapFiles        = new HashMap<Pair<SVNURL, SVNRevision>, File>();
+	private static HashSet<Pair<SVNURL, SVNRevision>>       lstUsedFiles    = new HashSet<Pair<SVNURL, SVNRevision>>();
+	private static HashMap<File, File>                      lstBaseFiles    = new HashMap<File, File>();
 
 	public static synchronized FileRevisionCache getInstance() {
 		if (singleton == null) {
@@ -133,14 +133,18 @@ public class FileRevisionCache {
 			}
 
 			SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-			SVNWCClient wcClient = svnMgr.getWCClient();
+			try {
+				SVNWCClient wcClient = svnMgr.getWCClient();
 
-			FileOutputStream outOldRevision = new FileOutputStream(file.getPath());
-			wcClient.doGetFileContents(wcFile, SVNRevision.BASE, SVNRevision.BASE, false, outOldRevision);
-			outOldRevision.close();
+				FileOutputStream outOldRevision = new FileOutputStream(file.getPath());
+				wcClient.doGetFileContents(wcFile, SVNRevision.BASE, SVNRevision.BASE, false, outOldRevision);
+				outOldRevision.close();
 
-			lstBaseFiles.put(wcFile, file);
-			result = file;
+				lstBaseFiles.put(wcFile, file);
+				result = file;
+			} finally {
+				svnMgr.dispose();
+			}
 		}
 		return result;
 	}

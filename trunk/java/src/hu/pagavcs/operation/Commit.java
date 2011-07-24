@@ -77,24 +77,29 @@ public class Commit {
 		gui.display();
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = mgrSvn.getWCClient();
-		SVNPropertyData logTemplate = wcClient.doGetProperty(wcFile, "tsvn:logtemplate", SVNRevision.WORKING, SVNRevision.WORKING);
-		SVNPropertyData logMinSize = wcClient.doGetProperty(wcFile, "tsvn:logminsize", SVNRevision.WORKING, SVNRevision.WORKING);
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+			SVNPropertyData logTemplate = wcClient.doGetProperty(wcFile, "tsvn:logtemplate", SVNRevision.WORKING, SVNRevision.WORKING);
+			SVNPropertyData logMinSize = wcClient.doGetProperty(wcFile, "tsvn:logminsize", SVNRevision.WORKING, SVNRevision.WORKING);
 
-		String strLogTemplate = null;
-		if (logTemplate != null) {
-			strLogTemplate = SVNPropertyValue.getPropertyAsString(logTemplate.getValue());
-			gui.setLogTemplate(strLogTemplate);
-		}
-		if (logMinSize != null) {
-			String strlogMinSize = SVNPropertyValue.getPropertyAsString(logMinSize.getValue());
-			try {
-				int intLogMinSize = Integer.valueOf(strlogMinSize);
-				gui.setLogMinSize(intLogMinSize);
-			} catch (Exception ex) {}
+			String strLogTemplate = null;
+			if (logTemplate != null) {
+				strLogTemplate = SVNPropertyValue.getPropertyAsString(logTemplate.getValue());
+				gui.setLogTemplate(strLogTemplate);
+			}
+			if (logMinSize != null) {
+				String strlogMinSize = SVNPropertyValue.getPropertyAsString(logMinSize.getValue());
+				try {
+					int intLogMinSize = Integer.valueOf(strlogMinSize);
+					gui.setLogMinSize(intLogMinSize);
+				} catch (Exception ex) {}
+			}
+		} finally {
+			mgrSvn.dispose();
 		}
 
 		refresh();
+
 	}
 
 	public String getPath() {
@@ -121,9 +126,9 @@ public class Commit {
 			}
 		}.run();
 
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			File wcFile = new File(path);
-			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 			SVNStatusClient statusClient = mgrSvn.getStatusClient();
 
 			refreshISVNEventHandler = new RefreshISVNEventHandler();
@@ -133,6 +138,7 @@ public class Commit {
 		} catch (SVNCancelException ex) {
 			// ignoring cancel
 		} finally {
+			mgrSvn.dispose();
 			new OnSwing() {
 
 				protected void process() throws Exception {
@@ -281,10 +287,14 @@ public class Commit {
 
 	public void add(File wcFile, boolean addRecursively) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = mgrSvn.getWCClient();
-		SVNDepth svnDepth = addRecursively ? SVNDepth.INFINITY : SVNDepth.EMPTY;
-		wcClient.doAdd(wcFile, true, false, true, svnDepth, false, false, true);
-		Manager.invalidate(wcFile);
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+			SVNDepth svnDepth = addRecursively ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+			wcClient.doAdd(wcFile, true, false, true, svnDepth, false, false, true);
+			Manager.invalidate(wcFile);
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public void createPatch(File[] wcFiles, OutputStream out) throws SVNException {
@@ -293,16 +303,20 @@ public class Commit {
 
 	public void ignore(File wcFile) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = mgrSvn.getWCClient();
-		File dir = wcFile.getParentFile().getAbsoluteFile();
-		SVNPropertyData property = wcClient.doGetProperty(dir, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
-		String alreadyIgnoredItems = "";
-		if (property != null) {
-			alreadyIgnoredItems = property.getValue().getString();
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+			File dir = wcFile.getParentFile().getAbsoluteFile();
+			SVNPropertyData property = wcClient.doGetProperty(dir, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
+			String alreadyIgnoredItems = "";
+			if (property != null) {
+				alreadyIgnoredItems = property.getValue().getString();
+			}
+			wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY,
+			        null, null);
+			Manager.invalidate(wcFile);
+		} finally {
+			mgrSvn.dispose();
 		}
-		wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY, null,
-		        null);
-		Manager.invalidate(wcFile);
 	}
 
 	private class StatusEventHandler implements ISVNStatusHandler {
@@ -416,16 +430,24 @@ public class Commit {
 
 	public void revertChanges(File file) throws SVNException {
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient client = svnMgr.getWCClient();
-		client.doRevert(new File[] { file }, SVNDepth.INFINITY, null);
-		Manager.invalidate(file);
+		try {
+			SVNWCClient client = svnMgr.getWCClient();
+			client.doRevert(new File[] { file }, SVNDepth.INFINITY, null);
+			Manager.invalidate(file);
+		} finally {
+			svnMgr.dispose();
+		}
 	}
 
 	public void revertPropertyChanges(File file) throws SVNException {
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient client = svnMgr.getWCClient();
-		client.doRevert(new File[] { file }, SVNDepth.EMPTY, null);
-		Manager.invalidate(file);
+		try {
+			SVNWCClient client = svnMgr.getWCClient();
+			client.doRevert(new File[] { file }, SVNDepth.EMPTY, null);
+			Manager.invalidate(file);
+		} finally {
+			svnMgr.dispose();
+		}
 	}
 
 	public void delete(File file) throws SVNException, BackingStoreException {

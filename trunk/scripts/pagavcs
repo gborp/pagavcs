@@ -17,9 +17,9 @@ LOG_FILE="${HOME}/.pagavcs/pagavcs.log"
 
 if [ -f "/usr/share/pagavcs/data/pagavcs-bigmem" ];
 then
-	START_SERVER_CMD="java -Xms16m -Xmx199m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar > ${LOG_FILE} 2>&1"
+	START_SERVER_CMD="java -Xms16m -Xmx199m -XX:PermSize=16M -XX:MaxPermSize=32M -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar > ${LOG_FILE} 2>&1"
 else 
-	START_SERVER_CMD="java -Xms16m -Xmx99m -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar > ${LOG_FILE} 2>&1"
+	START_SERVER_CMD="java -Xms16m -Xmx99m -XX:PermSize=16M -XX:MaxPermSize=32M -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -jar /usr/share/pagavcs/bin/pagavcs.jar > ${LOG_FILE} 2>&1"
 fi 
 
 

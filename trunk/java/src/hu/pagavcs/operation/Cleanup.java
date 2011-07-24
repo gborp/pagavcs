@@ -54,6 +54,8 @@ public class Cleanup {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(CleanupStatus.FAILED);
+		} finally {
+			mgrSvn.dispose();
 		}
 	}
 
