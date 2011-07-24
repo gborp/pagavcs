@@ -3,6 +3,7 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.CacheLog;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
+import hu.pagavcs.bl.MiniImmutableMap;
 import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.log.LogGui;
@@ -425,8 +426,7 @@ public class Log implements Cancelable {
 
 			Map<String, SVNLogEntryPath> mapChanges = logEntry.getChangedPaths();
 
-			// TODO use mini map
-			gui.addItem(revision, author, date, message, mapChanges);
+			gui.addItem(revision, author, date, message, new MiniImmutableMap<String, SVNLogEntryPath>(mapChanges));
 		}
 
 	}
