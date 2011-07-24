@@ -62,6 +62,8 @@ public class Delete {
 					} else {
 						throw ex;
 					}
+				} finally {
+					mgrSvn.dispose();
 				}
 				Manager.invalidate(wcFile);
 			}

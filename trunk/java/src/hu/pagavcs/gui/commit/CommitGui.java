@@ -19,12 +19,12 @@ import hu.pagavcs.gui.platform.Table;
 import hu.pagavcs.gui.platform.TableModel;
 import hu.pagavcs.gui.platform.TextArea;
 import hu.pagavcs.operation.Commit;
+import hu.pagavcs.operation.Commit.CommitStatus;
+import hu.pagavcs.operation.Commit.CommittedItemStatus;
 import hu.pagavcs.operation.ContentStatus;
 import hu.pagavcs.operation.Log;
 import hu.pagavcs.operation.MergeOperation;
 import hu.pagavcs.operation.ResolveConflict;
-import hu.pagavcs.operation.Commit.CommitStatus;
-import hu.pagavcs.operation.Commit.CommittedItemStatus;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -1018,8 +1018,7 @@ public class CommitGui implements Working, Refreshable {
 			}
 
 			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED) || setUsedStatus.contains(ContentStatus.MISSING) || setUsedStatus
-			        .contains(ContentStatus.DELETED))
-			        && !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
+			        .contains(ContentStatus.DELETED)) && !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
 				ppMixed.add(new RevertChangesAction());
 			}
 
@@ -1133,7 +1132,7 @@ public class CommitGui implements Working, Refreshable {
 
 	}
 
-	private class RecentMessageSlot {
+	private static class RecentMessageSlot {
 
 		private static final int SHORT_MESSAGE_LENGTH = 64;
 		private final String     message;

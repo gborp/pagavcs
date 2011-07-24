@@ -38,10 +38,10 @@ public class Revert {
 
 	public void execute() throws Exception {
 		RevertGui gui = new RevertGui(this);
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			gui.setStatus(RevertStatus.INIT);
 			File wcFile = new File(path);
-			SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			gui.setStatus(RevertStatus.START);
 			wcClient.doRevert(new File[] { wcFile }, SVNDepth.INFINITY, null);
@@ -53,6 +53,8 @@ public class Revert {
 		} catch (Exception ex) {
 			gui.setStatus(RevertStatus.FAILED);
 			throw ex;
+		} finally {
+			mgrSvn.dispose();
 		}
 	}
 

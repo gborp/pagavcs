@@ -3,8 +3,8 @@ package hu.pagavcs.operation;
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.PagaException;
-import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
+import hu.pagavcs.bl.SvnHelper;
 import hu.pagavcs.gui.ExportGui;
 
 import java.io.File;
@@ -101,13 +101,17 @@ public class ExportOperation implements Cancelable {
 		}
 
 		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNUpdateClient updateClient = clientMgr.getUpdateClient();
+		try {
+			SVNUpdateClient updateClient = clientMgr.getUpdateClient();
 
-		if (filePathExport.isFile()) {
-			throw new PagaException(PagaExceptionType.NOT_DIRECTORY);
-		}
-		if (!filePathExport.exists() || gui.exportPathExistsOverride(pathExport)) {
-			updateClient.doExport(filePathFrom, filePathExport, SVNRevision.WORKING, SVNRevision.WORKING, null, true, SVNDepth.INFINITY);
+			if (filePathExport.isFile()) {
+				throw new PagaException(PagaExceptionType.NOT_DIRECTORY);
+			}
+			if (!filePathExport.exists() || gui.exportPathExistsOverride(pathExport)) {
+				updateClient.doExport(filePathFrom, filePathExport, SVNRevision.WORKING, SVNRevision.WORKING, null, true, SVNDepth.INFINITY);
+			}
+		} finally {
+			clientMgr.dispose();
 		}
 	}
 

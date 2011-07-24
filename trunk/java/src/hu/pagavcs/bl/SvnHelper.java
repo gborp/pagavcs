@@ -193,10 +193,14 @@ public class SvnHelper {
 
 	public static void createPatch(File basePath, File[] wcFiles, OutputStream out) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNDiffClient diffClient = mgrSvn.getDiffClient();
-		diffClient.getDiffGenerator().setBasePath(basePath);
-		for (File wcFile : wcFiles) {
-			diffClient.doDiff(wcFile, SVNRevision.BASE, wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, true, out, null);
+		try {
+			SVNDiffClient diffClient = mgrSvn.getDiffClient();
+			diffClient.getDiffGenerator().setBasePath(basePath);
+			for (File wcFile : wcFiles) {
+				diffClient.doDiff(wcFile, SVNRevision.BASE, wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, true, out, null);
+			}
+		} finally {
+			mgrSvn.dispose();
 		}
 	}
 
@@ -298,23 +302,27 @@ public class SvnHelper {
 	        throws Exception {
 		final List<SVNPropertyData> lstResult = new ArrayList<SVNPropertyData>();
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = svnMgr.getWCClient();
-		ISVNPropertyHandler handler = new ISVNPropertyHandler() {
+		try {
+			SVNWCClient wcClient = svnMgr.getWCClient();
+			ISVNPropertyHandler handler = new ISVNPropertyHandler() {
 
-			public void handleProperty(long revision, SVNPropertyData property) throws SVNException {
-				lstResult.add(property);
-			}
+				public void handleProperty(long revision, SVNPropertyData property) throws SVNException {
+					lstResult.add(property);
+				}
 
-			public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {
-				lstResult.add(property);
-			}
+				public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {
+					lstResult.add(property);
+				}
 
-			public void handleProperty(File path, SVNPropertyData property) throws SVNException {
-				lstResult.add(property);
-			}
-		};
-		wcClient.doGetProperty(wcFile, null, pegRevision, revision, SVNDepth.EMPTY, handler, null);
-		return lstResult;
+				public void handleProperty(File path, SVNPropertyData property) throws SVNException {
+					lstResult.add(property);
+				}
+			};
+			wcClient.doGetProperty(wcFile, null, pegRevision, revision, SVNDepth.EMPTY, handler, null);
+			return lstResult;
+		} finally {
+			svnMgr.dispose();
+		}
 	}
 
 	private static List<SVNPropertyData> showPropertyChangesFromBase(Working working, SVNURL svnUrl, SVNRevision pegRevision, SVNRevision revision)
@@ -372,8 +380,8 @@ public class SvnHelper {
 		Manager.saveStringToFile(fileBase, strBase);
 		Manager.saveStringToFile(fileWorking, strWorking);
 
-		ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileBase.getName(), fileBase.getPath(), "-L " + fileWorking.getName(), fileWorking
-		        .getPath());
+		ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileBase.getName(), fileBase.getPath(), "-L " + fileWorking.getName(),
+		        fileWorking.getPath());
 		Process process = processBuilder.start();
 		working.workEnded();
 		process.waitFor();

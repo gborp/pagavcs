@@ -268,8 +268,12 @@ public class ResolveConflictGui {
 		Manager.saveStringToFile(mixedFile, doc.getText(0, doc.getLength()));
 
 		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient client = svnMgr.getWCClient();
-		client.doResolve(mixedFile, SVNDepth.INFINITY, true, true, true, SVNConflictChoice.MERGED);
+		try {
+			SVNWCClient client = svnMgr.getWCClient();
+			client.doResolve(mixedFile, SVNDepth.INFINITY, true, true, true, SVNConflictChoice.MERGED);
+		} finally {
+			svnMgr.dispose();
+		}
 		Manager.invalidate(mixedFile);
 
 		if (parentRefreshable != null) {

@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
@@ -251,6 +252,14 @@ public class GuiHelper {
 		frame.getContentPane().add(addBorder(pnlMain, addScrollPane));
 
 		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
+
+		frame.addWindowListener(new WindowAdapter() {
+
+			public void windowClosing(WindowEvent e) {
+				e.getWindow().dispose();
+			}
+		});
+
 		return frame;
 	}
 

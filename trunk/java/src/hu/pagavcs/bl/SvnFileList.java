@@ -8,6 +8,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
 import org.tmatesoft.svn.core.internal.util.SVNURLUtil;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -18,9 +19,14 @@ public class SvnFileList {
 
 	public SvnFileList(File... files) throws SVNException {
 		List<SVNURL> lstInfo = new ArrayList<SVNURL>();
-		for (File file : files) {
-			SVNInfo svnInfo = Manager.getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(file, SVNRevision.WORKING);
-			lstInfo.add(svnInfo.getURL());
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		try {
+			for (File file : files) {
+				SVNInfo svnInfo = mgrSvn.getWCClient().doInfo(file, SVNRevision.WORKING);
+				lstInfo.add(svnInfo.getURL());
+			}
+		} finally {
+			mgrSvn.dispose();
 		}
 
 		String[] paths = new String[lstInfo.size()];

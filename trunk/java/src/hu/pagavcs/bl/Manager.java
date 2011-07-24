@@ -185,11 +185,21 @@ public class Manager {
 	}
 
 	public static SVNURL getSvnUrlByFile(File path) throws SVNException {
-		return getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getURL();
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING).getURL();
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public static SVNURL getSvnRootUrlByFile(File path) throws SVNException {
-		return getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL();
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL();
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public static SVNClientManager getSVNClientManager(File path) throws SVNException, PagaException {
@@ -294,8 +304,12 @@ public class Manager {
 
 	public static SVNInfo getInfo(File path) throws SVNException {
 		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
-		SVNWCClient wcClient = mgrSvn.getWCClient();
-		return wcClient.doInfo(path, SVNRevision.WORKING);
+		try {
+			SVNWCClient wcClient = mgrSvn.getWCClient();
+			return wcClient.doInfo(path, SVNRevision.WORKING);
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public static Icon loadIcon(String path) {
@@ -343,16 +357,32 @@ public class Manager {
 	}
 
 	public static void resolveConflictUsingTheirs(String path) throws SVNException {
-		getSVNClientManagerForWorkingCopyOnly().getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.THEIRS_FULL);
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.THEIRS_FULL);
+		} finally {
+			mgrSvn.dispose();
+		}
+
 	}
 
 	public static void resolveConflictUsingMine(String path) throws SVNException {
-		getSVNClientManagerForWorkingCopyOnly().getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.MINE_FULL);
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.MINE_FULL);
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public static SVNInfo getInfo(String path) throws SVNException {
-		SVNInfo info = getSVNClientManagerForWorkingCopyOnly().getWCClient().doInfo(new File(path), SVNRevision.WORKING);
-		return info;
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			SVNInfo info = mgrSvn.getWCClient().doInfo(new File(path), SVNRevision.WORKING);
+			return info;
+		} finally {
+			mgrSvn.dispose();
+		}
 	}
 
 	public static Color getColorByContentStatus(ContentStatus status) {
