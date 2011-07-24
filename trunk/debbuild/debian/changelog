@@ -1,3 +1,11 @@
+pagavcs (1.4.52) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 129: Minimize memory usage
+  * Issue 130: [log] disable "show more" and "show all" buttons while operation is running
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Jul 2011 15:57:06 +0200
+
 pagavcs (1.4.51) karmic; urgency=low
 
   [ Gábor Pápai ]
