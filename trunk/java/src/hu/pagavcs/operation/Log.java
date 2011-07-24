@@ -100,40 +100,44 @@ public class Log implements Cancelable {
 		} else {
 			mgrSvn = Manager.getSVNClientManager(getRootUrl());
 		}
-		SVNLogClient logClient = mgrSvn.getLogClient();
-		logClient.setEventHandler(new LogEventHandler());
-		gui.setStatus(ShowLogStatus.STARTED);
-
-		SVNRevision endRevision = SVNRevision.create(0);
-		SVNRevision pegRevision = SVNRevision.UNDEFINED;
-		boolean stopOnCopy = false;
-		boolean discoverChangedPaths = true;
-		boolean includeMergedRevisions = false;
-		String[] revisionProperties = null;
-		final ISVNLogEntryHandler handler = new LogEntryHandler();
 		try {
-			if (path != null) {
-				CacheLog.getInstance().doLog(logClient, new File(path), startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths,
-				        includeMergedRevisions, limit, revisionProperties, handler);
-			} else {
+			SVNLogClient logClient = mgrSvn.getLogClient();
+			logClient.setEventHandler(new LogEventHandler());
+			gui.setStatus(ShowLogStatus.STARTED);
 
-				ISVNLogEntryHandler wrapCacheItems = new ISVNLogEntryHandler() {
+			SVNRevision endRevision = SVNRevision.create(0);
+			SVNRevision pegRevision = SVNRevision.UNDEFINED;
+			boolean stopOnCopy = false;
+			boolean discoverChangedPaths = true;
+			boolean includeMergedRevisions = false;
+			String[] revisionProperties = null;
+			final ISVNLogEntryHandler handler = new LogEntryHandler();
+			try {
+				if (path != null) {
+					CacheLog.getInstance().doLog(logClient, new File(path), startRevision, endRevision, pegRevision, stopOnCopy, discoverChangedPaths,
+					        includeMergedRevisions, limit, revisionProperties, handler);
+				} else {
 
-					public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
+					ISVNLogEntryHandler wrapCacheItems = new ISVNLogEntryHandler() {
 
-						handler.handleLogEntry(logEntry);
-					}
-				};
+						public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
 
-				logClient.doLog(getRootUrl(), new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths,
-				        includeMergedRevisions, limit, revisionProperties, wrapCacheItems);
+							handler.handleLogEntry(logEntry);
+						}
+					};
+
+					logClient.doLog(getRootUrl(), new String[] { "" }, pegRevision, startRevision, endRevision, stopOnCopy, discoverChangedPaths,
+					        includeMergedRevisions, limit, revisionProperties, wrapCacheItems);
+				}
+
+				gui.setStatus(ShowLogStatus.COMPLETED);
+			} catch (SVNCancelException ex) {
+				gui.setStatus(ShowLogStatus.CANCELLED);
 			}
-
-			gui.setStatus(ShowLogStatus.COMPLETED);
-		} catch (SVNCancelException ex) {
-			gui.setStatus(ShowLogStatus.CANCELLED);
+			gui.workEnded();
+		} finally {
+			mgrSvn.dispose();
 		}
-		gui.workEnded();
 	}
 
 	public void setCancel(boolean cancel) {
@@ -208,10 +212,13 @@ public class Log implements Cancelable {
 			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
 			        + showChangesPath, true);
 			SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
-			SVNWCClient wcClient = mgrSvn.getWCClient();
+			try {
+				SVNWCClient wcClient = mgrSvn.getWCClient();
 
-			wcClient.doGetFileContents(svnUrl, SVNRevision.create(revision), SVNRevision.create(revision), false, outNewRevision);
-
+				wcClient.doGetFileContents(svnUrl, SVNRevision.create(revision), SVNRevision.create(revision), false, outNewRevision);
+			} finally {
+				mgrSvn.dispose();
+			}
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -228,12 +235,13 @@ public class Log implements Cancelable {
 		FileOutputStream outOldRevision = null;
 		File fileNew = null;
 		File fileOld = null;
+		SVNClientManager mgrSvn = null;
 		try {
 			gui.workStarted();
 			SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
 			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(), repoRoot.getUserInfo(), repoRoot.getHost(), repoRoot.getPort(), repoRoot.getPath()
 			        + showChangesPath, true);
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
+			mgrSvn = Manager.getSVNClientManager(repoRoot);
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			long previousRevision = -1;
 			if (!contentStatus.equals(ContentStatus.ADDED)) {
@@ -297,16 +305,20 @@ public class Log implements Cancelable {
 			if (fileOld != null) {
 				fileOld.delete();
 			}
+			if (mgrSvn != null) {
+				mgrSvn.dispose();
+			}
 		}
 	}
 
 	public void compareWithWorkingCopy(File file, SVNURL svnurl, long revision, ContentStatus contentStatus) throws Exception {
 		FileOutputStream outNewRevision = null;
 		File fileNew = null;
+		SVNClientManager mgrSvn = null;
 		try {
 			gui.workStarted();
 			// SVNClientManager mgrSvn = Manager.getSVNClientManager(repoRoot);
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+			mgrSvn = Manager.getSVNClientManager(new File(path));
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			// File f = wcClient.doInfo(svnurl2, SVNRevision.WORKING,
 			// SVNRevision.WORKING).getFile();
@@ -356,6 +368,9 @@ public class Log implements Cancelable {
 			}
 			if (fileNew != null) {
 				fileNew.delete();
+			}
+			if (mgrSvn != null) {
+				mgrSvn.dispose();
 			}
 		}
 	}
@@ -410,6 +425,7 @@ public class Log implements Cancelable {
 
 			Map<String, SVNLogEntryPath> mapChanges = logEntry.getChangedPaths();
 
+			// TODO use mini map
 			gui.addItem(revision, author, date, message, mapChanges);
 		}
 

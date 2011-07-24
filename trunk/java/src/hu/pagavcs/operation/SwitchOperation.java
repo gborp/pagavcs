@@ -68,6 +68,8 @@ public class SwitchOperation implements Cancelable {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(SwitchStatus.FAILED);
+		} finally {
+			mgrSvn.dispose();
 		}
 		if (autoClose) {
 			gui.close();
@@ -104,10 +106,11 @@ public class SwitchOperation implements Cancelable {
 		UpdateGui updateGui = new UpdateGui(this, "Switching...");
 		updateGui.setPaths(Arrays.asList(new File(wc)));
 		updateGui.display();
+		SVNClientManager clientMgr = null;
 		try {
 			updateGui.setStatus(ContentStatus.INIT);
 
-			SVNClientManager clientMgr = Manager.getSVNClientManager(new File(path));
+			clientMgr = Manager.getSVNClientManager(new File(path));
 			SVNUpdateClient updateClient = clientMgr.getUpdateClient();
 			updateClient.setIgnoreExternals(false);
 			SVNRevision revision = null;
@@ -148,6 +151,8 @@ public class SwitchOperation implements Cancelable {
 		} catch (Exception ex) {
 			updateGui.setStatus(ContentStatus.FAILED);
 			throw ex;
+		} finally {
+			clientMgr.dispose();
 		}
 	}
 

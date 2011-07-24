@@ -2,8 +2,8 @@ package hu.pagavcs.operation;
 
 import hu.pagavcs.bl.Cancelable;
 import hu.pagavcs.bl.FileStatusCache;
-import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.FileStatusCache.STATUS;
+import hu.pagavcs.bl.Manager;
 import hu.pagavcs.gui.UpdateGui;
 
 import java.io.File;
@@ -81,10 +81,9 @@ public class Update implements Cancelable {
 			}
 
 		}, 0, 1, TimeUnit.SECONDS);
-
+		SVNClientManager mgrSvn = null;
 		try {
 			gui.setStatus(ContentStatus.INIT);
-			SVNClientManager mgrSvn;
 			if (!baseDirIsNotSvned) {
 				mgrSvn = Manager.getSVNClientManager(baseDir);
 			} else {
@@ -134,6 +133,9 @@ public class Update implements Cancelable {
 			gui.setStatus(ContentStatus.FAILED);
 			throw ex;
 		} finally {
+			if (mgrSvn != null) {
+				mgrSvn.dispose();
+			}
 			executor.shutdownNow();
 		}
 	}

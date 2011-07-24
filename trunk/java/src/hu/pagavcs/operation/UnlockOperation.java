@@ -38,9 +38,10 @@ public class UnlockOperation {
 		gui.display();
 		gui.setStatus(GeneralStatus.INIT);
 		gui.setStatus(GeneralStatus.START);
+		SVNClientManager mgrSvn = null;
 		try {
 			File wcFile = new File(path);
-			SVNClientManager mgrSvn = Manager.getSVNClientManager(wcFile);
+			mgrSvn = Manager.getSVNClientManager(wcFile);
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			wcClient.doUnlock(new File[] { wcFile }, true);
 			Manager.invalidate(wcFile);
@@ -48,6 +49,10 @@ public class UnlockOperation {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(GeneralStatus.FAILED);
+		} finally {
+			if (mgrSvn != null) {
+				mgrSvn.dispose();
+			}
 		}
 	}
 

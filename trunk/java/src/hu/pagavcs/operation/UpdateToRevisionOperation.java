@@ -57,6 +57,8 @@ public class UpdateToRevisionOperation implements Cancelable {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 			gui.setStatus(GeneralStatus.FAILED);
+		} finally {
+			mgrSvn.dispose();
 		}
 		if (autoClose) {
 			gui.close();

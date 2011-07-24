@@ -79,21 +79,25 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 					String fileRealName = file.getName().substring(0, file.getName().length() - ".svn-base".length());
 
 					SVNClientManager mgr = Manager.getSVNClientManager(dir);
+					try {
 
-					file.getParentFile().mkdirs();
-					FileOutputStream out = new FileOutputStream(file);
+						file.getParentFile().mkdirs();
+						FileOutputStream out = new FileOutputStream(file);
 
-					File realFile = new File(dir, fileRealName);
+						File realFile = new File(dir, fileRealName);
 
-					SVNRevision revision = mgr.getWCClient().doInfo(realFile, SVNRevision.WORKING).getRevision();
+						SVNRevision revision = mgr.getWCClient().doInfo(realFile, SVNRevision.WORKING).getRevision();
 
-					mgr.getWCClient().doGetFileContents(realFile, SVNRevision.HEAD, revision, false, out);
-					out.close();
+						mgr.getWCClient().doGetFileContents(realFile, SVNRevision.HEAD, revision, false, out);
+						out.close();
 
-					MessagePane.showError(null, "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")",
-					        "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")");
+						MessagePane.showError(null, "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")",
+						        "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")");
 
-					return;
+						return;
+					} finally {
+						mgr.dispose();
+					}
 
 				} catch (Exception ex2) {
 					Manager.handle(ex2);
