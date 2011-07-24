@@ -2,6 +2,7 @@ package hu.pagavcs.gui;
 
 import hu.pagavcs.gui.platform.ListItem;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -87,7 +88,11 @@ public class LogListItem implements ListItem {
 	}
 
 	public String getDateAsString() {
-		return this.date.toLocaleString();
+		if (date == null) {
+			return "";
+		}
+		DateFormat formatter = DateFormat.getDateTimeInstance();
+		return formatter.format(date);
 	}
 
 	public void setDate(Date date) {
