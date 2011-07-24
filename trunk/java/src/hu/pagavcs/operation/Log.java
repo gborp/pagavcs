@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 
@@ -48,14 +49,15 @@ public class Log implements Cancelable {
 
 	}
 
-	public static final long LIMIT    = 100;
-	public static final long NO_LIMIT = 0;
+	public static final long        LIMIT          = 100;
+	public static final long        NO_LIMIT       = 0;
 
-	private String           path;
-	private boolean          cancel;
+	private String                  path;
+	private boolean                 cancel;
 
-	private LogGui           gui;
-	private SVNURL           rootUrl;
+	private LogGui                  gui;
+	private SVNURL                  rootUrl;
+	private HashMap<String, String> mapCacheAuthor = new HashMap<String, String>();
 
 	public Log(String path) throws SVNException, BackingStoreException {
 		this(path, true);
@@ -415,12 +417,22 @@ public class Log implements Cancelable {
 		}
 	}
 
+	private String getCachedAuthor(String author) {
+		String result = mapCacheAuthor.get(author);
+		if (result == null) {
+			mapCacheAuthor.put(author, author);
+			result = author;
+		}
+
+		return result;
+	}
+
 	private class LogEntryHandler implements ISVNLogEntryHandler {
 
 		@SuppressWarnings("unchecked")
 		public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
 			long revision = logEntry.getRevision();
-			String author = logEntry.getAuthor();
+			String author = getCachedAuthor(logEntry.getAuthor());
 			Date date = logEntry.getDate();
 			String message = logEntry.getMessage();
 
