@@ -2,7 +2,7 @@ Origin: http://pagavcs.googlecode.com
 Label: PagaVCS apt repository
 Suite: stable
 Codename: karmic
-Date: Sat, 30 Jul 2011 21:01:25 UTC
+Date: Sat, 30 Jul 2011 21:34:51 UTC
 Architectures: amd64 i386
 Components: main
 Description: A selection of pagavcs-packages, free to use, without charge!
