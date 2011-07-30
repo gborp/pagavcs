@@ -1,3 +1,10 @@
+pagavcs (1.4.53) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 131: Support file:// protocol
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 30 Jul 2011 15:22:41 +0200
+
 pagavcs (1.4.52) karmic; urgency=low
 
   [ Gábor Pápai ]
