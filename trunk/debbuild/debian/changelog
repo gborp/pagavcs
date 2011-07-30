@@ -1,3 +1,10 @@
+pagavcs (1.4.54) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 132:Support Gnome 3 (and so Ubuntu 11.10)
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 30 Jul 2011 22:32:41 +0200
+
 pagavcs (1.4.53) karmic; urgency=low
 
   [ Gábor Pápai ]
