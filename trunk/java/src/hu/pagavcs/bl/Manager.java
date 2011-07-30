@@ -41,6 +41,7 @@ import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.DefaultHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
+import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNMerger;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
@@ -109,6 +110,7 @@ public class Manager {
 			// http://old.nabble.com/REPORT-request-failed-accessing-Sourceforge-Subversion-td14733189.html
 			IHTTPConnectionFactory factory = new DefaultHTTPConnectionFactory(null, true, null);
 			DAVRepositoryFactory.setup(factory);
+			FSRepositoryFactory.setup();
 			FileRevisionCache.getInstance().init();
 			inited = true;
 			getSettings().load();
