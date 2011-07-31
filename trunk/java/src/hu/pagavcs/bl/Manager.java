@@ -221,7 +221,7 @@ public class Manager {
 
 			String username = getSettings().getUsername(repoid);
 			String password = getSettings().getPassword(repoid);
-			if (forceShowingLoginDialogNextTime || password == null || username == null || "".equals(username) || "".equals(password) || reTryLogin) {
+			if (forceShowingLoginDialogNextTime || password == null || username == null || reTryLogin) {
 				forceShowingLoginDialogNextTime = false;
 				final LoginGui loginGui = new LoginGui(username, password);
 				SwingUtilities.invokeLater(new Runnable() {
