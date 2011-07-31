@@ -1,3 +1,10 @@
+pagavcs (1.4.55) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Issue 133: Login dialog everytime if you don't need to login (empty username or password can be valid too)
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 31 Jul 2011 13:04:27 +0200
+
 pagavcs (1.4.54) karmic; urgency=low
 
   [ Gábor Pápai ]
