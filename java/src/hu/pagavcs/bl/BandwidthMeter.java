@@ -1,7 +1,5 @@
 package hu.pagavcs.bl;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.tmatesoft.svn.util.SVNDebugLogAdapter;
@@ -9,20 +7,9 @@ import org.tmatesoft.svn.util.SVNLogType;
 
 public class BandwidthMeter extends SVNDebugLogAdapter {
 
-	private int bandwidthLastSecond;
-	private int bandwidthActual;
+	private int transmittedSinceLastRead;
 
-	public BandwidthMeter() {
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-		executor.scheduleAtFixedRate(new Runnable() {
-
-			public void run() {
-				bandwidthLastSecond = bandwidthActual;
-				bandwidthActual = 0;
-			}
-
-		}, 0, 1, TimeUnit.SECONDS);
-	}
+	public BandwidthMeter() {}
 
 	public void log(SVNLogType logType, Throwable th, Level logLevel) {}
 
@@ -30,12 +17,14 @@ public class BandwidthMeter extends SVNDebugLogAdapter {
 
 	public void log(SVNLogType logType, String message, byte[] data) {
 		if (data != null) {
-			bandwidthActual += data.length;
+			transmittedSinceLastRead += data.length;
 		}
 	}
 
 	public int getBandwidth() {
-		return bandwidthLastSecond;
+		int result = transmittedSinceLastRead;
+		transmittedSinceLastRead = 0;
+		return result;
 	}
 
 }

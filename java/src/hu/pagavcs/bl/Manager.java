@@ -3,6 +3,7 @@ package hu.pagavcs.bl;
 import hu.pagavcs.Communication;
 import hu.pagavcs.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.gui.LoginGui;
+import hu.pagavcs.gui.platform.GuiHelper;
 import hu.pagavcs.operation.ContentStatus;
 
 import java.awt.Color;
@@ -30,7 +31,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNErrorCode;
@@ -79,11 +79,11 @@ public class Manager {
 	public static final long        REVALIDATE_DELAY                    = 500;
 	public static final long        TABLE_RESIZE_DELAY                  = 50;
 
-	public static Icon              ICON_ERROR                          = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
-	public static Icon              ICON_INFORMATION                    = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
-	public static Icon              ICON_PASSWORD                       = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
-	public static Icon              ICON_QUESTION                       = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
-	public static Icon              ICON_WARNING                        = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
+	private static Icon             ICON_ERROR;
+	private static Icon             ICON_INFORMATION;
+	private static Icon             ICON_PASSWORD;
+	private static Icon             ICON_QUESTION;
+	private static Icon             ICON_WARNING;
 
 	public static final String      COMMIT_COMPLETED_TEMPLATE_SEPARATOR = ">>>";
 
@@ -117,9 +117,7 @@ public class Manager {
 			Runtime.getRuntime().addShutdownHook(new Thread(new ShutDownRunnable()));
 			exceptionHandler = new ExceptionHandler();
 			Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e) {}
+			GuiHelper.initGui();
 		}
 	}
 
@@ -587,4 +585,38 @@ public class Manager {
 		}
 	}
 
+	public static Icon getIconError() {
+		if (ICON_ERROR == null) {
+			ICON_ERROR = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
+		}
+		return ICON_ERROR;
+	}
+
+	public static Icon getIconInformation() {
+		if (ICON_INFORMATION == null) {
+			ICON_INFORMATION = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
+		}
+		return ICON_INFORMATION;
+	}
+
+	public static Icon getIconPassword() {
+		if (ICON_PASSWORD == null) {
+			ICON_PASSWORD = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
+		}
+		return ICON_PASSWORD;
+	}
+
+	public static Icon getIconQuestion() {
+		if (ICON_QUESTION == null) {
+			ICON_QUESTION = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
+		}
+		return ICON_QUESTION;
+	}
+
+	public static Icon getIconWarning() {
+		if (ICON_WARNING == null) {
+			ICON_WARNING = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
+		}
+		return ICON_WARNING;
+	}
 }

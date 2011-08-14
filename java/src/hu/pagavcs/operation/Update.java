@@ -136,7 +136,7 @@ public class Update implements Cancelable {
 			if (mgrSvn != null) {
 				mgrSvn.dispose();
 			}
-			executor.shutdownNow();
+			executor.shutdown();
 		}
 	}
 
