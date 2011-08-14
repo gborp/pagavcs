@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Document;
@@ -62,8 +63,16 @@ public class GuiHelper {
 	private static HashMap<ContentStatus, ImageIcon> mapContentStatusIcon;
 	private static HashMap<ContentStatus, ImageIcon> mapPropertyContentStatusIcon;
 
-	static {
-		initIcons();
+	private static boolean                           guiInitialized;
+	private static boolean                           iconsInitialized;
+
+	public static void initGui() {
+		if (!guiInitialized) {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {}
+			guiInitialized = true;
+		}
 	}
 
 	private static ImageIcon loadEmblem(String name) {
@@ -78,32 +87,37 @@ public class GuiHelper {
 	}
 
 	private static void initIcons() {
-		mapContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
-		mapContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
-		mapContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
-		mapContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
-		mapContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
-		mapContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
-		mapContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
-		mapContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
-		mapContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
+		if (!iconsInitialized) {
+			mapContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
+			mapContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
+			mapContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
+			mapContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
+			mapContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
+			mapContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
+			mapContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
+			mapContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
+			mapContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
 
-		mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
-		mapPropertyContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
-		mapPropertyContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
-		mapPropertyContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
-		mapPropertyContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
-		mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
-		mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
-		mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
-		mapPropertyContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
+			mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
+			mapPropertyContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
+			mapPropertyContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
+			mapPropertyContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
+			mapPropertyContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
+			mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
+			mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
+			mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
+			mapPropertyContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
+			iconsInitialized = true;
+		}
 	}
 
 	public static ImageIcon getContentStatusIcon(ContentStatus contentStatus) {
+		initIcons();
 		return mapContentStatusIcon.get(contentStatus);
 	}
 
 	public static ImageIcon getPropertyContentStatusIcon(ContentStatus contentStatus) {
+		initIcons();
 		return mapPropertyContentStatusIcon.get(contentStatus);
 	}
 
@@ -245,6 +259,7 @@ public class GuiHelper {
 	}
 
 	public static Frame createFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
+		initGui();
 		if (iconName == null) {
 			iconName = "/hu/pagavcs/resources/icon.png";
 		}
@@ -272,6 +287,7 @@ public class GuiHelper {
 	}
 
 	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
+		initGui();
 		Frame frame = createFrame(pnlMain, applicationName, iconName, addScrollPane);
 		frame.invalidate();
 		frame.pack();
@@ -292,6 +308,7 @@ public class GuiHelper {
 	}
 
 	public static JDialog createDialog(Window parent, JComponent main, String title) {
+		initGui();
 		final JDialog dialog = new JDialog(parent);
 		dialog.getContentPane().add(addBorder(main, true));
 		dialog.setTitle(title);

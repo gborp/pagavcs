@@ -314,12 +314,12 @@ public class CommitGui implements Working, Refreshable {
 					btnCreatePatch.setEnabled(true);
 					btnRefresh.setEnabled(true);
 					if (tmdlCommit.getAllData().isEmpty()) {
-						tblCommit.showMessage("There is nothing to commit", Manager.ICON_WARNING);
+						tblCommit.showMessage("There is nothing to commit", Manager.getIconWarning());
 					}
 				}
 				if (CommitStatus.INIT.equals(status)) {
 					workStarted();
-					tblCommit.showMessage("Working...", Manager.ICON_INFORMATION);
+					tblCommit.showMessage("Working...", Manager.getIconInformation());
 
 					btnSelectAllNone.setEnabled(false);
 

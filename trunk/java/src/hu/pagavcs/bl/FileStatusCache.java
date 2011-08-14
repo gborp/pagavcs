@@ -136,7 +136,7 @@ public class FileStatusCache {
 				while ((fileHead = setCalc.take()) != null) {
 					try {
 
-						ArrayList<File> lstFilesTo = new ArrayList<File>(256);
+						ArrayList<File> lstFilesTo = new ArrayList<File>(32);
 						lstFilesTo.add(fileHead);
 						setCalc.drainTo(lstFilesTo);
 
