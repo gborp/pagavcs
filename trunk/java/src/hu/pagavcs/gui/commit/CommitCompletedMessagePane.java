@@ -6,8 +6,8 @@ import hu.pagavcs.bl.SettingsStore;
 import hu.pagavcs.gui.platform.Label;
 import hu.pagavcs.gui.platform.MessagePane;
 
-import java.awt.Window;
 import java.awt.Dialog.ModalityType;
+import java.awt.Window;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -28,7 +28,7 @@ public class CommitCompletedMessagePane extends MessagePane {
 	}
 
 	public static OPTIONS showInfo(Window parent, String title, String message) {
-		return execute(parent, Manager.ICON_INFORMATION, title, message, ModalityType.DOCUMENT_MODAL);
+		return execute(parent, Manager.getIconInformation(), title, message, ModalityType.DOCUMENT_MODAL);
 	}
 
 	protected static OPTIONS execute(Window parent, Icon icon, String title, String message, ModalityType modalityType) {

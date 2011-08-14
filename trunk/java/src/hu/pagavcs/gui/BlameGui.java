@@ -159,7 +159,7 @@ public class BlameGui implements Working {
 		pnlMain.add(prgBusy, cc.xywh(1, 7, 3, 1));
 		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
-		tblBlame.showMessage("Click the \"Blame\" button", Manager.ICON_INFORMATION);
+		tblBlame.showMessage("Click the \"Blame\" button", Manager.getIconInformation());
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
 

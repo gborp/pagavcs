@@ -1,8 +1,8 @@
 package hu.pagavcs;
 
 import hu.pagavcs.bl.FileStatusCache;
-import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.FileStatusCache.STATUS;
+import hu.pagavcs.bl.Manager;
 import hu.pagavcs.operation.ApplyPatchOperation;
 import hu.pagavcs.operation.BlameOperation;
 import hu.pagavcs.operation.Checkout;
@@ -252,6 +252,12 @@ public class Communication {
 				String line = br.readLine();
 				if (line == null || line.isEmpty()) {
 					continue;
+				}
+
+				boolean waitSyncMode = false;
+				if (line.startsWith("wait ")) {
+					waitSyncMode = true;
+					line = line.substring("wait ".length());
 				}
 
 				int commandEndIndex = line.indexOf(' ');

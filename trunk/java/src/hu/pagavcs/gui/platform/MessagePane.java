@@ -4,8 +4,8 @@ import hu.pagavcs.bl.Manager;
 import hu.pagavcs.bl.OnSwing;
 import hu.pagavcs.bl.ThreadAction;
 
-import java.awt.Window;
 import java.awt.Dialog.ModalityType;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
@@ -33,15 +33,15 @@ public class MessagePane {
 	protected final ModalityType modalityType;
 
 	public static OPTIONS showError(Window parent, String title, String message) {
-		return execute(parent, Manager.ICON_ERROR, title, message, ModalityType.DOCUMENT_MODAL);
+		return execute(parent, Manager.getIconError(), title, message, ModalityType.DOCUMENT_MODAL);
 	}
 
 	public static OPTIONS showWarning(Window parent, String title, String message) {
-		return execute(parent, Manager.ICON_WARNING, title, message, ModalityType.DOCUMENT_MODAL);
+		return execute(parent, Manager.getIconWarning(), title, message, ModalityType.DOCUMENT_MODAL);
 	}
 
 	public static OPTIONS showInfo(Window parent, String title, String message) {
-		return execute(parent, Manager.ICON_INFORMATION, title, message, ModalityType.DOCUMENT_MODAL);
+		return execute(parent, Manager.getIconInformation(), title, message, ModalityType.DOCUMENT_MODAL);
 	}
 
 	protected static OPTIONS execute(Window parent, Icon icon, String title, String message, ModalityType modalityType) {
