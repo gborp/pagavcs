@@ -55,7 +55,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 public class Commit {
 
 	public enum CommitStatus {
-		INIT, CANCEL, FILE_LIST_GATHERING_COMPLETED, COMMIT_STARTED, COMMIT_COMPLETED, COMMIT_FAILED,
+		INIT, CANCEL, FILE_LIST_GATHERING_COMPLETED, COMMIT_STARTED, COMMIT_COMPLETED, FAILED,
 	}
 
 	public enum CommittedItemStatus {
@@ -180,9 +180,16 @@ public class Commit {
 
 	public void doCommit(List<File> lstCommit, String message) throws Exception {
 		gui.setStatus(CommitStatus.COMMIT_STARTED, null);
-		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
-		SVNCommitClient commitClient = mgrSvn.getCommitClient();
-		commitClient.setEventHandler(new CommitEventHandler());
+		SVNClientManager mgrSvn;
+		SVNCommitClient commitClient;
+		try {
+			mgrSvn = Manager.getSVNClientManager(new File(path));
+			commitClient = mgrSvn.getCommitClient();
+			commitClient.setEventHandler(new CommitEventHandler());
+		} catch (Exception ex) {
+			gui.setStatus(CommitStatus.FAILED, null);
+			throw ex;
+		}
 
 		try {
 			boolean successOrExit = false;
@@ -231,7 +238,7 @@ public class Commit {
 							successOrExit = true;
 						}
 					} else {
-						gui.setStatus(CommitStatus.CANCEL, null);
+						gui.setStatus(CommitStatus.FAILED, null);
 						throw ex;
 					}
 

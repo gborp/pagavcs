@@ -327,12 +327,19 @@ public class CommitGui implements Working, Refreshable {
 
 				} else if (CommitStatus.COMMIT_COMPLETED.equals(status)) {
 					commitCompleted(message);
-				} else if (CommitStatus.COMMIT_FAILED.equals(status)) {
-					MessagePane.showError(frame, "Failed!", "Commit failed!");
-					frame.setVisible(false);
-					frame.dispose();
+				} else if (CommitStatus.FAILED.equals(status)) {
+					// MessagePaune.showError(frame, "Failed",
+					// "Commit failed!");
+
+					tblCommit.setEnabled(true);
+					btnCommit.setEnabled(true);
+					btnCreatePatch.setEnabled(true);
+					prgWorkinProgress.setValue(0);
+					prgWorkinProgress.setIndeterminate(false);
+					prgWorkinProgress.setString("");
+					preRealCommitProcess = false;
 				} else if (CommitStatus.CANCEL.equals(status)) {
-					MessagePane.showInfo(frame, "Cancelled!", "Commit cancelled!");
+					MessagePane.showInfo(frame, "Cancelled", "Commit cancelled!");
 
 					tblCommit.setEnabled(true);
 					btnCommit.setEnabled(true);
