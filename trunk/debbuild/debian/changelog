@@ -1,3 +1,10 @@
+pagavcs (1.4.56) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Issue 142: Nautilus extension doesn't work on Ubuntu 11.10
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 17 Oct 2011 19:03:19 +0200
+
 pagavcs (1.4.55) karmic; urgency=low
 
   [ Gábor Pápai ]
