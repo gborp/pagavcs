@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 # PagaVCS is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,13 +14,10 @@
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 #
 # Thanks for Martin Enlund for his example code!
-import urllib
 
-#import gtk
-#import nautilus
 
-import gobject
-import gnomevfs
+from gi.repository import Nautilus, GObject
+
 import os
 os.environ["NAUTILUS_PYTHON_REQUIRE_GTK3"] = "1"
 import re
@@ -28,10 +25,11 @@ import sys
 import traceback
 import socket
 import threading
-from gi.repository import Nautilus
+import urllib
+
 
 EXECUTABLE = '/usr/bin/pagavcs'
-SEPARATOR = unicode(u'\u2015'*10)
+SEPARATOR = '-'
 server_creating = False
 DEFAULT_PORT=12905
 PORT=-1
@@ -125,22 +123,23 @@ class StartPagaVCSServerThread (threading.Thread):
 		server_creating = False
 
 
-class EmblemExtensionSignature(gobject.GObject, Nautilus.InfoProvider):
+class EmblemExtensionSignature(GObject.GObject, Nautilus.InfoProvider):
+	
 	def __init__(self):
 		server_creating = True
 		StartPagaVCSServerThread().start()       
 		pass
-	
+
 	def update_file_info (self, file):
 		filename = urllib.unquote(file.get_uri()[7:])
 		data = sendRequest('getfileinfo '+filename)
 		if (data != ''):
 			file.add_emblem (data)
 
-class PagaVCS(gobject.GObject, Nautilus.MenuProvider):
-	#def __init__(self):
-	#	#self.client = gconf.client_get_default()
-	#	pass
+class PagaVCS(GObject.GObject, Nautilus.MenuProvider):
+	def __init__(self):
+		#	#self.client = gconf.client_get_default()
+		pass
 	
 	def _do_command(self, menu, strFiles, command):
 		sendRequest(command+' '+strFiles)
@@ -205,7 +204,8 @@ class PagaVCS(gobject.GObject, Nautilus.MenuProvider):
 			strFilesList.append('" ')
 		
 		strFiles = ''.join(strFilesList)
-		#print ('get_file_items: '+strFiles)
+		# debug
+		# print ('get_file_items: '+strFiles)
 		return self._get_all_items(False, strFiles)
 
 	def get_background_items(self, window, file):
@@ -216,9 +216,9 @@ class PagaVCS(gobject.GObject, Nautilus.MenuProvider):
 		
 		return self._get_all_items(False, '"'+filename+'"')
 	
-	def get_toolbar_items(self, window, file):
-		if file.get_uri_scheme() != 'file':
-			return
-		filename = urllib.unquote(file.get_uri()[7:])
-		
-		return self._get_all_items(True, '"'+filename+'"')
+#	def get_toolbar_items(self, window, file):
+#		if file.get_uri_scheme() != 'file':
+#			return
+#		filename = urllib.unquote(file.get_uri()[7:])
+#		
+#		return self._get_all_items(True, '"'+filename+'"')
