@@ -29,9 +29,8 @@ public class WindowPreferencesSaverOnClose extends WindowAdapter {
 
 	public void windowClosing(WindowEvent e) {
 		Window window = e.getWindow();
-		if (window.isVisible()) {
-			Manager.getSettings().setWindowBounds(parent, windowName, window.getBounds());
-		}
+		Manager.getSettings().setWindowBounds(parent, windowName,
+				window.getBounds());
 	}
 
 	public void windowClosed(WindowEvent e) {
