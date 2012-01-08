@@ -62,7 +62,7 @@
     	</manifest>
     </jar>
     <copy todir="${dist}">
-		<fileset dir="${src}/hu/pagavcs/resources/">
+		<fileset dir="${src}/hu/pagavcs/client/resources/">
 			<include name="icon.png" />
 		</fileset>
 	</copy>

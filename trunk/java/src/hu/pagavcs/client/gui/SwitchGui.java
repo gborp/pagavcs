@@ -38,22 +38,23 @@ import com.jgoodies.forms.layout.FormLayout;
 public class SwitchGui implements Working, Cancelable {
 
 	private SwitchOperation switchOp;
-	private JLabel          lblStatus;
-	private Frame           frame;
-	private EditField       sfRepo;
-	private EditField       sfWorkingCopy;
-	private JButton         btnShowLog;
-	private JButton         btnSwitch;
-	private EditField       sfSwitchToUrl;
-	private EditField       sfSwitchToRevision;
-	private ProgressBar     prgBusy;
+	private JLabel lblStatus;
+	private Frame frame;
+	private EditField sfRepo;
+	private EditField sfWorkingCopy;
+	private JButton btnShowLog;
+	private JButton btnSwitch;
+	private EditField sfSwitchToUrl;
+	private EditField sfSwitchToRevision;
+	private ProgressBar prgBusy;
 
 	public SwitchGui(SwitchOperation other) {
 		this.switchOp = other;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+				"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -89,7 +90,8 @@ public class SwitchGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 13, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 13, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Switch", "/hu/pagavcs/resources/switch-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Switch",
+				"switch-app-icon.png");
 		frame.setTitlePrefix(switchOp.getPath());
 	}
 
@@ -109,7 +111,8 @@ public class SwitchGui implements Working, Cancelable {
 	private void doSwitch() throws Exception {
 		try {
 			prgBusy.startProgress();
-			switchOp.doSwitch(sfWorkingCopy.getText(), sfSwitchToUrl.getText().trim(), sfSwitchToRevision.getText().trim());
+			switchOp.doSwitch(sfWorkingCopy.getText(), sfSwitchToUrl.getText()
+					.trim(), sfSwitchToRevision.getText().trim());
 		} finally {
 			prgBusy.stopProgress();
 		}

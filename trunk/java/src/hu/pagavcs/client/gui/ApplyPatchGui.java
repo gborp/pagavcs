@@ -44,20 +44,21 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ApplyPatchGui implements Working, Cancelable {
 
 	private ApplyPatchOperation other;
-	private JLabel              lblStatus;
-	private Frame               frame;
-	private EditField           sfRepo;
-	private EditField           sfWorkingCopy;
-	private JButton             btnShowLog;
-	private ProgressBar         prgBusy;
-	private JButton             btnApplyPatch;
+	private JLabel lblStatus;
+	private Frame frame;
+	private EditField sfRepo;
+	private EditField sfWorkingCopy;
+	private JButton btnShowLog;
+	private ProgressBar prgBusy;
+	private JButton btnApplyPatch;
 
 	public ApplyPatchGui(ApplyPatchOperation other) {
 		this.other = other;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+				"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -87,7 +88,8 @@ public class ApplyPatchGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 9, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 9, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Other", "/hu/pagavcs/resources/other-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Other",
+				"other-app-icon.png");
 		frame.setTitlePrefix(other.getPath());
 	}
 
@@ -118,14 +120,16 @@ public class ApplyPatchGui implements Working, Cancelable {
 			final File baseDir = baseDirCandiate;
 			File file = fc.getSelectedFile();
 
-			String result = Manager.getOsCommandResult(baseDir, "lsdiff", file.getPath());
+			String result = Manager.getOsCommandResult(baseDir, "lsdiff",
+					file.getPath());
 			// TODO display file names, select from files
 
 			List<String> lstFilesToPatch = new ArrayList<String>();
 			for (String filename : result.split("\n")) {
 				lstFilesToPatch.add(filename);
 			}
-			Manager.getOsCommandResult(baseDir, "patch", "-p0", "--no-backup-if-mismatch", "-U", "-i", file.getPath());
+			Manager.getOsCommandResult(baseDir, "patch", "-p0",
+					"--no-backup-if-mismatch", "-U", "-i", file.getPath());
 			/*
 			 * example output: patching file a Hunk #1 FAILED at 9. 1 out of 1
 			 * hunk FAILED -- saving rejects to file a.rej
@@ -145,7 +149,8 @@ public class ApplyPatchGui implements Working, Cancelable {
 				/*
 				 * example output: 1 unresolved conflict found
 				 */
-				String output = Manager.getOsCommandResult(baseDir, "wiggle", "--replace", fileName, fileName + ".rej");
+				String output = Manager.getOsCommandResult(baseDir, "wiggle",
+						"--replace", fileName, fileName + ".rej");
 				if (output.contains("unresolved conflict")) {
 					lstUnresolved.add(fileName);
 				}
@@ -162,7 +167,8 @@ public class ApplyPatchGui implements Working, Cancelable {
 						new File(baseDir, fileName + ".porig").delete();
 					}
 				};
-				ResolveConflict resolveConflict = new ResolveConflict(li, baseDir.getPath() + "/" + fileName, true);
+				ResolveConflict resolveConflict = new ResolveConflict(li,
+						baseDir.getPath() + "/" + fileName, true);
 				resolveConflict.execute();
 			}
 		}

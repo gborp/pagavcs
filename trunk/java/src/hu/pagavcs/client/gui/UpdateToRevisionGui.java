@@ -38,21 +38,22 @@ import com.jgoodies.forms.layout.FormLayout;
 public class UpdateToRevisionGui implements Working, Cancelable {
 
 	private UpdateToRevisionOperation other;
-	private JLabel                    lblStatus;
-	private Frame                     frame;
-	private EditField                 sfRepo;
-	private EditField                 sfWorkingCopy;
-	private JButton                   btnShowLog;
-	private ProgressBar               prgBusy;
-	private JButton                   btnUpdateToRevision;
-	private EditField                 sfUpdateTo;
+	private JLabel lblStatus;
+	private Frame frame;
+	private EditField sfRepo;
+	private EditField sfWorkingCopy;
+	private JButton btnShowLog;
+	private ProgressBar prgBusy;
+	private JButton btnUpdateToRevision;
+	private EditField sfUpdateTo;
 
 	public UpdateToRevisionGui(UpdateToRevisionOperation other) {
 		this.other = other;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+				"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -85,7 +86,8 @@ public class UpdateToRevisionGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 11, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 11, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Update to revision", "/hu/pagavcs/resources/update-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Update to revision",
+				"update-app-icon.png");
 		frame.setTitlePrefix(other.getPath());
 	}
 
@@ -117,7 +119,8 @@ public class UpdateToRevisionGui implements Working, Cancelable {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			other.doUpdateToRevision(sfWorkingCopy.getText(), sfUpdateTo.getText().trim());
+			other.doUpdateToRevision(sfWorkingCopy.getText(), sfUpdateTo
+					.getText().trim());
 		}
 
 	}

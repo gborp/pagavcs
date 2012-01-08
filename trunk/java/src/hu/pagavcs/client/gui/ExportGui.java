@@ -8,8 +8,8 @@ import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
 import hu.pagavcs.client.gui.platform.MessagePane;
-import hu.pagavcs.client.gui.platform.ProgressBar;
 import hu.pagavcs.client.gui.platform.MessagePane.OPTIONS;
+import hu.pagavcs.client.gui.platform.ProgressBar;
 import hu.pagavcs.client.operation.ExportOperation;
 import hu.pagavcs.client.operation.GeneralStatus;
 
@@ -42,21 +42,22 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ExportGui implements Working, Cancelable {
 
 	private ExportOperation other;
-	private JLabel          lblStatus;
-	private Frame           frame;
-	private EditField       sfRepo;
-	private EditField       sfWorkingCopy;
-	private JButton         btnShowLog;
-	private ProgressBar     prgBusy;
-	private EditField       sfExportTo;
-	private JButton         btnExportTo;
+	private JLabel lblStatus;
+	private Frame frame;
+	private EditField sfRepo;
+	private EditField sfWorkingCopy;
+	private JButton btnShowLog;
+	private ProgressBar prgBusy;
+	private EditField sfExportTo;
+	private JButton btnExportTo;
 
 	public ExportGui(ExportOperation other) {
 		this.other = other;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+				"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,2dlu,p,4dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -89,7 +90,8 @@ public class ExportGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 11, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 11, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Export", "/hu/pagavcs/resources/actions/pagavcs-export.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Export",
+				"actions/pagavcs-export.png");
 		frame.setTitlePrefix(other.getPath());
 	}
 
@@ -109,7 +111,9 @@ public class ExportGui implements Working, Cancelable {
 	private void doExport() throws Exception {
 		try {
 			if (sfExportTo.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(Manager.getRootFrame(), "Directory cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(Manager.getRootFrame(),
+						"Directory cannot be empty", "Error",
+						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
@@ -161,8 +165,13 @@ public class ExportGui implements Working, Cancelable {
 	}
 
 	public boolean exportPathExistsOverride(String filePathExport) {
-		OPTIONS choice = MessagePane.showWarning(frame, "Directory exists", "Directory " + filePathExport
-		        + " is already exist,\ndo you really want to export there?");
+		OPTIONS choice = MessagePane
+				.showWarning(
+						frame,
+						"Directory exists",
+						"Directory "
+								+ filePathExport
+								+ " is already exist,\ndo you really want to export there?");
 		return OPTIONS.OK.equals(choice);
 	}
 
