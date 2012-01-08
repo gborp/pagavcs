@@ -30,14 +30,15 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class MergeOperation implements Cancelable {
 
-	private String   path;
+	private String path;
 	private MergeGui gui;
-	private boolean  cancel;
-	private String   prefillMergeFromRevision;
-	private String   prefillMergeFromUrl;
-	private Boolean  prefillCommitToo;
+	private boolean cancel;
+	private String prefillMergeFromRevision;
+	private String prefillMergeFromUrl;
+	private Boolean prefillCommitToo;
 
-	public MergeOperation(String path) throws BackingStoreException, SVNException {
+	public MergeOperation(String path) throws BackingStoreException,
+			SVNException {
 		this.path = path;
 	}
 
@@ -53,7 +54,8 @@ public class MergeOperation implements Cancelable {
 		this.prefillCommitToo = prefillCommitToo;
 	}
 
-	public void execute() throws SVNException, BackingStoreException, PagaException {
+	public void execute() throws SVNException, BackingStoreException,
+			PagaException {
 		gui = new MergeGui(this);
 		gui.display();
 		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
@@ -77,6 +79,7 @@ public class MergeOperation implements Cancelable {
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 		} finally {
+			gui.pack();
 			mgrSvn.dispose();
 		}
 	}
@@ -93,15 +96,20 @@ public class MergeOperation implements Cancelable {
 		return cancel;
 	}
 
-	public void doMerge(String urlTo, String pathTo, String urlFrom, String revisionRange, boolean reverseMerge, boolean ignoreEolStyle) throws Exception {
-		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, null, revisionRange, reverseMerge, ignoreEolStyle);
+	public void doMerge(String urlTo, String pathTo, String urlFrom,
+			String revisionRange, boolean reverseMerge, boolean ignoreEolStyle)
+			throws Exception {
+		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, null, revisionRange,
+				reverseMerge, ignoreEolStyle);
 	}
 
-	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {
+	public void doShowLog(String pathToShowLog) throws SVNException,
+			BackingStoreException, Exception {
 		new Log(pathToShowLog).execute();
 	}
 
-	public void doShowLogUrl(String url) throws SVNException, BackingStoreException, Exception {
+	public void doShowLogUrl(String url) throws SVNException,
+			BackingStoreException, Exception {
 		new Log(url, false).execute();
 	}
 

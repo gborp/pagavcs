@@ -1,5 +1,7 @@
 package hu.pagavcs.client.bl;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.SwingUtilities;
 
 /**
@@ -20,17 +22,24 @@ public abstract class OnSwingWait<P extends Object, R extends Object> {
 	protected R returnValue;
 	protected P argument;
 
-	public OnSwingWait() {}
+	public OnSwingWait() {
+	}
 
 	public OnSwingWait(P argument) {
 		this.argument = argument;
 	}
 
-	public R run() throws Exception {
+	public R run() {
 		if (SwingUtilities.isEventDispatchThread()) {
 			new Runner().run();
 		} else {
-			SwingUtilities.invokeAndWait(new Runner());
+			try {
+				SwingUtilities.invokeAndWait(new Runner());
+			} catch (InvocationTargetException ex) {
+				Manager.handle(ex);
+			} catch (InterruptedException ex) {
+				Manager.handle(ex);
+			}
 		}
 
 		return returnValue;
