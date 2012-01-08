@@ -58,26 +58,26 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class UpdateGui implements Working {
 
-	private Table<UpdateListItem>                 tblUpdate;
-	private TableModel<UpdateListItem>            tmdlUpdate;
-	private final Cancelable                      update;
-	private JButton                               btnStopFinish;
-	private final String                          title;
+	private Table<UpdateListItem> tblUpdate;
+	private TableModel<UpdateListItem> tmdlUpdate;
+	private final Cancelable update;
+	private JButton btnStopFinish;
+	private final String title;
 	// TODO use Progress, btnStop make it stop too
-	private JProgressBar                          prgWorking;
-	private boolean                               started;
-	private int                                   numberOfPathUpdated;
+	private JProgressBar prgWorking;
+	private boolean started;
+	private int numberOfPathUpdated;
 	private ConcurrentLinkedQueue<UpdateListItem> quNewItems = new ConcurrentLinkedQueue<UpdateListItem>();
-	private Timer                                 tmrTableRevalidate;
-	private boolean                               revalidateIsTimed;
-	private boolean                               shuttingDown;
-	private Label                                 lblWorkingCopy;
-	private Label                                 lblRepo;
-	private Frame                                 frame;
-	private StopExitAction                        actStopFinish;
-	private Label                                 lblInfo;
-	private List<File>                            lstPath;
-	private long                                  totalReceived;
+	private Timer tmrTableRevalidate;
+	private boolean revalidateIsTimed;
+	private boolean shuttingDown;
+	private Label lblWorkingCopy;
+	private Label lblRepo;
+	private Frame frame;
+	private StopExitAction actStopFinish;
+	private Label lblInfo;
+	private List<File> lstPath;
+	private long totalReceived;
 
 	public UpdateGui(Cancelable update) {
 		this(update, "Update");
@@ -96,7 +96,8 @@ public class UpdateGui implements Working {
 		FormLayout lyBottom = new FormLayout("p,2dlu,1dlu:g,2dlu,p", "p");
 		JPanel pnlBottom = new JPanel(lyBottom);
 
-		FormLayout lyMain = new FormLayout("200dlu:g", "p,2dlu,fill:60dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("200dlu:g",
+				"p,2dlu,fill:60dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 
 		CellConstraints cc = new CellConstraints();
@@ -124,14 +125,16 @@ public class UpdateGui implements Working {
 		pnlTop.add(lblRepo, cc.xy(3, 3));
 
 		pnlBottom.add(lblInfo, cc.xy(1, 1));
-		pnlBottom.add(prgWorking, cc.xywh(3, 1, 1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlBottom.add(prgWorking, cc.xywh(3, 1, 1, 1, CellConstraints.FILL,
+				CellConstraints.DEFAULT));
 		pnlBottom.add(btnStopFinish, cc.xy(5, 1));
 
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(scrollPane, cc.xy(1, 3));
 		pnlMain.add(pnlBottom, cc.xy(1, 5));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, title, "/hu/pagavcs/resources/update-app-icon.png", false);
+		frame = GuiHelper.createAndShowFrame(pnlMain, title,
+				"update-app-icon.png", false);
 
 		frame.addWindowListener(new WindowAdapter() {
 
@@ -146,7 +149,8 @@ public class UpdateGui implements Working {
 				tmrTableRevalidate.cancel();
 			}
 
-			public void windowClosed(WindowEvent e) {}
+			public void windowClosed(WindowEvent e) {
+			}
 		});
 
 		tmrTableRevalidate = new Timer("Revalidate table");
@@ -177,8 +181,10 @@ public class UpdateGui implements Working {
 		addItem("", null, status, -1);
 	}
 
-	public void addItem(final String path, final UpdateContentStatus updateContentStatus, final ContentStatus status, final long previousRevision)
-	        throws Exception {
+	public void addItem(final String path,
+			final UpdateContentStatus updateContentStatus,
+			final ContentStatus status, final long previousRevision)
+			throws Exception {
 
 		new OnSwing() {
 
@@ -212,7 +218,8 @@ public class UpdateGui implements Working {
 
 				if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)) {
 					effectiveStatus = ContentStatus.CONFLICTED;
-				} else if (UpdateContentStatus.MERGED.equals(updateContentStatus)) {
+				} else if (UpdateContentStatus.MERGED
+						.equals(updateContentStatus)) {
 					effectiveStatus = ContentStatus.MERGED;
 				}
 
@@ -236,21 +243,49 @@ public class UpdateGui implements Working {
 						int total = 0;
 						int conflicted = 0;
 						for (UpdateListItem uli : tmdlUpdate.getAllData()) {
-							UpdateContentStatus updateContentStatus = uli.getContentStatus();
+							UpdateContentStatus updateContentStatus = uli
+									.getContentStatus();
 							ContentStatus contentStatus = uli.getStatus();
-							if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus) || ContentStatus.CONFLICTED.equals(contentStatus)) {
+							if (UpdateContentStatus.CONFLICTED
+									.equals(updateContentStatus)
+									|| ContentStatus.CONFLICTED
+											.equals(contentStatus)) {
 								conflicted++;
 							}
 							if (contentStatus != null) {
-								if (ContentStatus.ADDED.equals(contentStatus) || ContentStatus.ADDED.equals(contentStatus)
-								        || ContentStatus.CONFLICTED.equals(contentStatus) || ContentStatus.DELETED.equals(contentStatus)
-								        || ContentStatus.EXTERNAL.equals(contentStatus) || ContentStatus.IGNORED.equals(contentStatus)
-								        || ContentStatus.INCOMPLETE.equals(contentStatus) || ContentStatus.MERGED.equals(contentStatus)
-								        || ContentStatus.MISSING.equals(contentStatus) || ContentStatus.MODIFIED.equals(contentStatus)
-								        || ContentStatus.NONE.equals(contentStatus) || ContentStatus.NORMAL.equals(contentStatus)
-								        || ContentStatus.OBSTRUCTED.equals(contentStatus) || ContentStatus.REPLACED.equals(contentStatus)
-								        || ContentStatus.UNVERSIONED.equals(contentStatus) || ContentStatus.EXISTS.equals(contentStatus)
-								        || ContentStatus.UPDATE.equals(contentStatus)) {
+								if (ContentStatus.ADDED.equals(contentStatus)
+										|| ContentStatus.ADDED
+												.equals(contentStatus)
+										|| ContentStatus.CONFLICTED
+												.equals(contentStatus)
+										|| ContentStatus.DELETED
+												.equals(contentStatus)
+										|| ContentStatus.EXTERNAL
+												.equals(contentStatus)
+										|| ContentStatus.IGNORED
+												.equals(contentStatus)
+										|| ContentStatus.INCOMPLETE
+												.equals(contentStatus)
+										|| ContentStatus.MERGED
+												.equals(contentStatus)
+										|| ContentStatus.MISSING
+												.equals(contentStatus)
+										|| ContentStatus.MODIFIED
+												.equals(contentStatus)
+										|| ContentStatus.NONE
+												.equals(contentStatus)
+										|| ContentStatus.NORMAL
+												.equals(contentStatus)
+										|| ContentStatus.OBSTRUCTED
+												.equals(contentStatus)
+										|| ContentStatus.REPLACED
+												.equals(contentStatus)
+										|| ContentStatus.UNVERSIONED
+												.equals(contentStatus)
+										|| ContentStatus.EXISTS
+												.equals(contentStatus)
+										|| ContentStatus.UPDATE
+												.equals(contentStatus)) {
 									total++;
 								}
 							}
@@ -262,8 +297,11 @@ public class UpdateGui implements Working {
 						lblInfo.setText(strInfo);
 
 						if (conflicted > 0) {
-							JOptionPane.showMessageDialog(Manager.getRootFrame(), "There were " + conflicted + " conflicted items!", "Conflict",
-							        JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(
+									Manager.getRootFrame(),
+									"There were " + conflicted
+											+ " conflicted items!", "Conflict",
+									JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				}
@@ -293,7 +331,8 @@ public class UpdateGui implements Working {
 		synchronized (quNewItems) {
 			if (!revalidateIsTimed && !shuttingDown) {
 				revalidateIsTimed = true;
-				tmrTableRevalidate.schedule(new DoRevalidateTask(), Manager.REVALIDATE_DELAY);
+				tmrTableRevalidate.schedule(new DoRevalidateTask(),
+						Manager.REVALIDATE_DELAY);
 			}
 		}
 	}
@@ -314,7 +353,8 @@ public class UpdateGui implements Working {
 							}
 						}
 						tmdlUpdate.addLines(lstLi);
-						tblUpdate.scrollRectToVisible(tblUpdate.getCellRect(tblUpdate.getRowCount() - 1, 0, true));
+						tblUpdate.scrollRectToVisible(tblUpdate.getCellRect(
+								tblUpdate.getRowCount() - 1, 0, true));
 					}
 				}.run();
 			} catch (Exception e) {
@@ -324,7 +364,8 @@ public class UpdateGui implements Working {
 	}
 
 	private UpdateListItem getSelectedUpdateListItem() {
-		return tmdlUpdate.getRow(tblUpdate.convertRowIndexToModel(tblUpdate.getSelectedRow()));
+		return tmdlUpdate.getRow(tblUpdate.convertRowIndexToModel(tblUpdate
+				.getSelectedRow()));
 	}
 
 	private class CopyAllToClipboard extends AbstractAction {
@@ -375,8 +416,9 @@ public class UpdateGui implements Working {
 		public void actionProcess(ActionEvent e) throws Exception {
 			UpdateListItem li = getSelectedUpdateListItem();
 
-			SvnHelper.showChangesBetweenRevisions(UpdateGui.this, li.getPath(), SVNRevision.create(li.getPreviousRevision()), SVNRevision.WORKING, li
-			        .getSvnContentStatus());
+			SvnHelper.showChangesBetweenRevisions(UpdateGui.this, li.getPath(),
+					SVNRevision.create(li.getPreviousRevision()),
+					SVNRevision.WORKING, li.getSvnContentStatus());
 		}
 	}
 
@@ -431,10 +473,12 @@ public class UpdateGui implements Working {
 				UpdateListItem li = getSelectedUpdateListItem();
 				File file = new File(li.getPath());
 				if (file.isDirectory()) {
-					MessagePane.showError(frame, "Cannot resolve conflict", "Cannot resolve conflict on directory");
+					MessagePane.showError(frame, "Cannot resolve conflict",
+							"Cannot resolve conflict on directory");
 					return;
 				}
-				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath(), false).execute();
+				new ResolveConflict(new RefreshUpdateGuiIfResolved(li),
+						file.getPath(), false).execute();
 
 			} catch (Exception ex) {
 				Manager.handle(ex);
@@ -496,7 +540,8 @@ public class UpdateGui implements Working {
 
 				File selectedFile = new File(selected.getPath());
 				if (!selectedFile.isDirectory()) {
-					if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
+					if (UpdateContentStatus.CONFLICTED.equals(selected
+							.getContentStatus())) {
 						new ResolveConflictAction().actionPerformed(null);
 					} else {
 						new ShowChanges().actionPerformed(null);
@@ -519,11 +564,16 @@ public class UpdateGui implements Working {
 			if (selectedFile.exists() && selectedFile.isDirectory()) {
 				ppVisible = ppDirectory;
 			} else {
-				if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
+				if (UpdateContentStatus.CONFLICTED.equals(selected
+						.getContentStatus())) {
 					ppVisible = ppConflicted;
-				} else if (ContentStatus.ADDED.equals(status) || ContentStatus.EXISTS.equals(status) || ContentStatus.EXTERNAL.equals(status)
-				        || ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status) || ContentStatus.UPDATE.equals(status)
-				        || ContentStatus.MERGED.equals(status)) {
+				} else if (ContentStatus.ADDED.equals(status)
+						|| ContentStatus.EXISTS.equals(status)
+						|| ContentStatus.EXTERNAL.equals(status)
+						|| ContentStatus.NONE.equals(status)
+						|| ContentStatus.REPLACED.equals(status)
+						|| ContentStatus.UPDATE.equals(status)
+						|| ContentStatus.MERGED.equals(status)) {
 					ppVisible = ppUpdated;
 				} else if (ContentStatus.DELETED.equals(status)) {
 					ppVisible = ppDeleted;
@@ -573,19 +623,19 @@ public class UpdateGui implements Working {
 
 				protected void process() throws Exception {
 					switch (type) {
-						case Stop:
-							update.setCancel(true);
-							setType(StopExitActionType.Cancelled);
-							break;
-						case Cancelled:
-							exit();
-							break;
-						case Failed:
-							exit();
-							break;
-						case Finished:
-							exit();
-							break;
+					case Stop:
+						update.setCancel(true);
+						setType(StopExitActionType.Cancelled);
+						break;
+					case Cancelled:
+						exit();
+						break;
+					case Failed:
+						exit();
+						break;
+					case Finished:
+						exit();
+						break;
 					}
 				}
 			}.run();
@@ -598,17 +648,18 @@ public class UpdateGui implements Working {
 	}
 
 	public void workEnded() throws Exception {
-	// TODO workEnded
+		// TODO workEnded
 	}
 
 	public void workStarted() throws Exception {
-	// TODO workStarted
+		// TODO workStarted
 	}
 
 	public void setBandwidth(int bandwidth) {
 		totalReceived += bandwidth;
 		prgWorking.setStringPainted(true);
-		prgWorking.setString("" + (bandwidth / 1024) + " kB/sec (total: " + ((int) (totalReceived / 1024)) + " kB)");
+		prgWorking.setString("" + (bandwidth / 1024) + " kB/sec (total: "
+				+ ((int) (totalReceived / 1024)) + " kB)");
 	}
 
 }

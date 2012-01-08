@@ -27,11 +27,11 @@ import hu.pagavcs.client.operation.Unignore;
 import hu.pagavcs.client.operation.UnlockOperation;
 import hu.pagavcs.client.operation.Update;
 import hu.pagavcs.client.operation.UpdateToRevisionOperation;
+import hu.pagavcs.common.ResourceBundleAccessor;
 import hu.pagavcs.server.FileStatusCache;
 import hu.pagavcs.server.FileStatusCache.STATUS;
 
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -45,7 +45,6 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -71,88 +70,90 @@ import org.tmatesoft.svn.core.SVNException;
 
 public class Communication {
 
-	private static final int     DEFAULT_PORT                  = 12905;
-	private static final String  SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
+	private static final int DEFAULT_PORT = 12905;
+	private static final String SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
 
-	private static final String  COMMAND_UPDATE                = "update";
-	private static final String  COMMAND_LOG                   = "log";
-	private static final String  COMMAND_COMMIT                = "commit";
-	private static final String  COMMAND_SHOWLOCALCHANGES      = "showlocalchanges";
-	private static final String  COMMAND_IGNORE                = "ignore";
-	private static final String  COMMAND_UNIGNORE              = "unignore";
-	private static final String  COMMAND_REVERT                = "revert";
-	private static final String  COMMAND_CLEANUP               = "cleanup";
-	private static final String  COMMAND_LOCK                  = "lock";
-	private static final String  COMMAND_UNLOCK                = "unlock";
-	private static final String  COMMAND_DELETE                = "delete";
-	private static final String  COMMAND_MERGE                 = "merge";
-	private static final String  COMMAND_COPYMOVERENAME        = "copymoverename";
-	private static final String  COMMAND_CHECKOUT              = "checkout";
-	private static final String  COMMAND_SETTINGS              = "settings";
-	private static final String  COMMAND_SWITCH                = "switch";
-	private static final String  COMMAND_RESOLVE               = "resolve";
-	private static final String  COMMAND_RESOLVEUSINGMINE      = "resolveusingmine";
-	private static final String  COMMAND_RESOLVEUSINGTHEIRS    = "resolveusingtheirs";
-	private static final String  COMMAND_REPOBROWSER           = "repobrowser";
-	private static final String  COMMAND_CREATEREPO            = "createrepo";
-	private static final String  COMMAND_STOP                  = "stop";
-	private static final String  COMMAND_PING                  = "ping";
-	private static final String  COMMAND_ADD                   = "add";
-	private static final String  COMMAND_APPLY_PATCH           = "applypatch";
-	private static final String  COMMAND_BLAME                 = "blame";
-	private static final String  COMMAND_UPDATE_TO_REVISION    = "updatetorevision";
-	private static final String  COMMAND_EXPORT                = "export";
-	private static final String  COMMAND_PROPERTIES            = "properties";
+	private static final String COMMAND_UPDATE = "update";
+	private static final String COMMAND_LOG = "log";
+	private static final String COMMAND_COMMIT = "commit";
+	private static final String COMMAND_SHOWLOCALCHANGES = "showlocalchanges";
+	private static final String COMMAND_IGNORE = "ignore";
+	private static final String COMMAND_UNIGNORE = "unignore";
+	private static final String COMMAND_REVERT = "revert";
+	private static final String COMMAND_CLEANUP = "cleanup";
+	private static final String COMMAND_LOCK = "lock";
+	private static final String COMMAND_UNLOCK = "unlock";
+	private static final String COMMAND_DELETE = "delete";
+	private static final String COMMAND_MERGE = "merge";
+	private static final String COMMAND_COPYMOVERENAME = "copymoverename";
+	private static final String COMMAND_CHECKOUT = "checkout";
+	private static final String COMMAND_SETTINGS = "settings";
+	private static final String COMMAND_SWITCH = "switch";
+	private static final String COMMAND_RESOLVE = "resolve";
+	private static final String COMMAND_RESOLVEUSINGMINE = "resolveusingmine";
+	private static final String COMMAND_RESOLVEUSINGTHEIRS = "resolveusingtheirs";
+	private static final String COMMAND_REPOBROWSER = "repobrowser";
+	private static final String COMMAND_CREATEREPO = "createrepo";
+	private static final String COMMAND_STOP = "stop";
+	private static final String COMMAND_PING = "ping";
+	private static final String COMMAND_ADD = "add";
+	private static final String COMMAND_APPLY_PATCH = "applypatch";
+	private static final String COMMAND_BLAME = "blame";
+	private static final String COMMAND_UPDATE_TO_REVISION = "updatetorevision";
+	private static final String COMMAND_EXPORT = "export";
+	private static final String COMMAND_PROPERTIES = "properties";
 
-	private static final String  CFG_COMMUNICATION_PORT_KEY    = "port";
-	private static final String  CFG_DEBUG_MODE_KEY            = "debug";
+	private static final String CFG_COMMUNICATION_PORT_KEY = "port";
+	private static final String CFG_DEBUG_MODE_KEY = "debug";
 
 	private static Communication singleton;
-	private boolean              shutdown;
-	private File                 running;
-	private ServerSocket         serverSocket;
-	private FileStatusCache      fileStatusCache;
+	private boolean shutdown;
+	private File running;
+	private ServerSocket serverSocket;
+	private FileStatusCache fileStatusCache;
 
-	private Communication() {}
+	private Communication() {
+	}
 
 	private String getFileEmblem(STATUS status) {
 		if (status == null) {
 			return "";
 		}
 		switch (status) {
-			case ADDED:
-				return "pagavcs-added";
-			case CONFLICTS:
-				return "pagavcs-conflict";
-			case DELETED:
-				return "pagavcs-deleted";
-			case IGNORED:
-				return "pagavcs-ignored";
-			case LOCKED:
-				return "pagavcs-locked";
-			case MODIFIED:
-				return "pagavcs-modified";
-			case NONE:
-				return "";
-			case NORMAL:
-				return "pagavcs-normal";
-			case OBSTRUCTED:
-				return "pagavcs-obstructed";
-			case READONLY:
-				return "pagavcs-readonly";
-			case SVNED:
-				return "pagavcs-svn";
-			case UNVERSIONED:
-				return "pagavcs-unversioned";
-			case UNKNOWN:
-				return "pagavcs-unknown";
-			default:
-				return "";
+		case ADDED:
+			return "pagavcs-added";
+		case CONFLICTS:
+			return "pagavcs-conflict";
+		case DELETED:
+			return "pagavcs-deleted";
+		case IGNORED:
+			return "pagavcs-ignored";
+		case LOCKED:
+			return "pagavcs-locked";
+		case MODIFIED:
+			return "pagavcs-modified";
+		case NONE:
+			return "";
+		case NORMAL:
+			return "pagavcs-normal";
+		case OBSTRUCTED:
+			return "pagavcs-obstructed";
+		case READONLY:
+			return "pagavcs-readonly";
+		case SVNED:
+			return "pagavcs-svn";
+		case UNVERSIONED:
+			return "pagavcs-unversioned";
+		case UNKNOWN:
+			return "pagavcs-unknown";
+		default:
+			return "";
 		}
 	}
 
 	private void outComm(Socket socket, String strOut) throws IOException {
-		BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(
+				socket.getOutputStream()));
 		outToClient.write(strOut);
 		outToClient.close();
 	}
@@ -171,12 +172,13 @@ public class Communication {
 			width = Integer.valueOf(args[1]);
 			height = Integer.valueOf(args[2]);
 
-			URL url = Communication.class.getResource("/hu/pagavcs/resources/" + name + ".png");
-			if (url != null) {
-				ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(url));
-				imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+			ImageIcon ii = ResourceBundleAccessor.getImage(name + ".png");
+			if (ii != null) {
+				imageIcon = new ImageIcon(ii.getImage().getScaledInstance(
+						width, height, Image.SCALE_SMOOTH));
 			}
-		} catch (Throwable t) {}
+		} catch (Throwable t) {
+		}
 
 		if (imageIcon == null) {
 			if (width == null) {
@@ -185,10 +187,12 @@ public class Communication {
 			if (height == null) {
 				height = 8;
 			}
-			imageIcon = new ImageIcon(new BufferedImage(width, height, BufferedImage.TRANSLUCENT));
+			imageIcon = new ImageIcon(new BufferedImage(width, height,
+					BufferedImage.TRANSLUCENT));
 		}
 
-		ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+		ObjectOutputStream objOut = new ObjectOutputStream(
+				socket.getOutputStream());
 		objOut.writeObject(imageIcon);
 		objOut.close();
 	}
@@ -200,7 +204,8 @@ public class Communication {
 
 		int port = DEFAULT_PORT;
 		boolean debugMode = false;
-		File cfgFile = new File(System.getProperty("user.home"), ".pagavcs/config.properties");
+		File cfgFile = new File(System.getProperty("user.home"),
+				".pagavcs/config.properties");
 		try {
 			if (cfgFile.exists()) {
 				Properties prop = new Properties();
@@ -208,14 +213,17 @@ public class Communication {
 				prop.load(reader);
 				reader.close();
 				if (prop.containsKey(CFG_COMMUNICATION_PORT_KEY)) {
-					port = Integer.valueOf((String) prop.get(CFG_COMMUNICATION_PORT_KEY));
+					port = Integer.valueOf((String) prop
+							.get(CFG_COMMUNICATION_PORT_KEY));
 				}
 				if (prop.containsKey(CFG_DEBUG_MODE_KEY)) {
-					debugMode = Boolean.valueOf((String) prop.get(CFG_DEBUG_MODE_KEY));
+					debugMode = Boolean.valueOf((String) prop
+							.get(CFG_DEBUG_MODE_KEY));
 					LogHelper.setDebugMode(debugMode);
 				}
 			}
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+		}
 
 		try {
 			if (!cfgFile.getParentFile().isDirectory()) {
@@ -233,9 +241,11 @@ public class Communication {
 		}
 
 		try {
-			serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
+			serverSocket = ServerSocketFactory.getDefault().createServerSocket(
+					port);
 		} catch (IOException ex) {
-			LogHelper.GENERAL.fatal("Port is not free, maybe PagaVCS is already running?");
+			LogHelper.GENERAL
+					.fatal("Port is not free, maybe PagaVCS is already running?");
 			System.exit(-5);
 		}
 
@@ -247,7 +257,8 @@ public class Communication {
 			try {
 				Socket socket = serverSocket.accept();
 
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						socket.getInputStream()));
 
 				String line = br.readLine();
 				if (line == null || line.isEmpty()) {
@@ -261,7 +272,8 @@ public class Communication {
 				}
 
 				int commandEndIndex = line.indexOf(' ');
-				String command = line.substring(0, commandEndIndex > -1 ? commandEndIndex : line.length());
+				String command = line.substring(0,
+						commandEndIndex > -1 ? commandEndIndex : line.length());
 
 				String arg = null;
 				if (commandEndIndex > -1) {
@@ -273,10 +285,12 @@ public class Communication {
 				}
 
 				if (command.equals("getfileinfo")) {
-					String outStr = getFileEmblem(fileStatusCache.getStatus(new File(arg)));
+					String outStr = getFileEmblem(fileStatusCache
+							.getStatus(new File(arg)));
 					outComm(socket, outStr);
 				} else if (command.equals("getfileinfonl")) {
-					String outStr = getFileEmblem(fileStatusCache.getStatusFast(new File(arg))) + "\n";
+					String outStr = getFileEmblem(fileStatusCache
+							.getStatusFast(new File(arg))) + "\n";
 					outComm(socket, outStr);
 				} else if (command.equals("getemblem")) {
 					outCommEmblem(socket, arg);
@@ -325,7 +339,8 @@ public class Communication {
 					if (command.equals("getmenuitems")) {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
-						new Thread(new ProcessInput(command, lstArg), line).start();
+						new Thread(new ProcessInput(command, lstArg), line)
+								.start();
 						outComm(socket, "Processing...\n");
 					}
 				}
@@ -341,7 +356,8 @@ public class Communication {
 		running.delete();
 	}
 
-	private void makeMenuItem(StringBuilder sb, String label, String tooltip, String icon, String mode, String command) {
+	private void makeMenuItem(StringBuilder sb, String label, String tooltip,
+			String icon, String mode, String command) {
 		sb.append("NautilusPython::PagaVCS::");
 		sb.append(command);
 		sb.append('\n');
@@ -374,9 +390,17 @@ public class Communication {
 		for (String fileName : lstArg) {
 			File file = new File(fileName);
 			STATUS status = fileStatusCache.getStatus(file);
-			if (hasSvned || status.equals(STATUS.ADDED) || status.equals(STATUS.CONFLICTS) || status.equals(STATUS.DELETED) || status.equals(STATUS.IGNORED)
-			        || status.equals(STATUS.LOCKED) || status.equals(STATUS.MODIFIED) || status.equals(STATUS.NORMAL) || status.equals(STATUS.OBSTRUCTED)
-			        || status.equals(STATUS.READONLY) || status.equals(STATUS.SVNED) || status.equals(STATUS.UNVERSIONED)) {
+			if (hasSvned || status.equals(STATUS.ADDED)
+					|| status.equals(STATUS.CONFLICTS)
+					|| status.equals(STATUS.DELETED)
+					|| status.equals(STATUS.IGNORED)
+					|| status.equals(STATUS.LOCKED)
+					|| status.equals(STATUS.MODIFIED)
+					|| status.equals(STATUS.NORMAL)
+					|| status.equals(STATUS.OBSTRUCTED)
+					|| status.equals(STATUS.READONLY)
+					|| status.equals(STATUS.SVNED)
+					|| status.equals(STATUS.UNVERSIONED)) {
 				hasSvned = true;
 			}
 			if (status.equals(STATUS.CONFLICTS)) {
@@ -399,64 +423,90 @@ public class Communication {
 		StringBuilder sb = new StringBuilder(512);
 		boolean showShowChanges = false;
 		if (hasSvned && !hasDir && hasFile && hasModified && !hasNotModified) {
-			makeMenuItem(sb, "Show changes", "Show local changes", "pagavcs-difficon", "", COMMAND_SHOWLOCALCHANGES);
+			makeMenuItem(sb, "Show changes", "Show local changes",
+					"pagavcs-difficon", "", COMMAND_SHOWLOCALCHANGES);
 			showShowChanges = true;
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp" + (showShowChanges ? "s" : ""), COMMAND_UPDATE);
+			makeMenuItem(sb, "Update", "Update", "pagavcs-update", "tp"
+					+ (showShowChanges ? "s" : ""), COMMAND_UPDATE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Commit", "Commit", "pagavcs-commit", "tp", COMMAND_COMMIT);
+			makeMenuItem(sb, "Commit", "Commit", "pagavcs-commit", "tp",
+					COMMAND_COMMIT);
 		}
 		if (hasSvned) {
 			makeMenuItem(sb, "Log", "Log", "pagavcs-log", "t", COMMAND_LOG);
 		}
 
-		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "", COMMAND_REPOBROWSER);
+		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "",
+				COMMAND_REPOBROWSER);
 		if (!hasSvned && hasDir && !hasFile) {
-			makeMenuItem(sb, "Create Repository here", "Create Repository here", "pagavcs-about", "", COMMAND_CREATEREPO);
+			makeMenuItem(sb, "Create Repository here",
+					"Create Repository here", "pagavcs-about", "",
+					COMMAND_CREATEREPO);
 		}
 
 		if (hasSvned) {
-			makeMenuItem(sb, "Update to revision", "Update to revision", "pagavcs-update", "", COMMAND_UPDATE_TO_REVISION);
-			makeMenuItem(sb, "Blame", "Blame", "pagavcs-other", "", COMMAND_BLAME);
+			makeMenuItem(sb, "Update to revision", "Update to revision",
+					"pagavcs-update", "", COMMAND_UPDATE_TO_REVISION);
+			makeMenuItem(sb, "Blame", "Blame", "pagavcs-other", "",
+					COMMAND_BLAME);
 		}
 
 		if (hasSvned) {
-			makeMenuItem(sb, "Ignore", "Ignore", "pagavcs-ignore", "s", COMMAND_IGNORE);
+			makeMenuItem(sb, "Ignore", "Ignore", "pagavcs-ignore", "s",
+					COMMAND_IGNORE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Unignore", "Unignore", "pagavcs-unignore", "", COMMAND_UNIGNORE);
+			makeMenuItem(sb, "Unignore", "Unignore", "pagavcs-unignore", "",
+					COMMAND_UNIGNORE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Copy-move-rename", "Copy-move-rename", "pagavcs-rename", "", COMMAND_COPYMOVERENAME);
-			makeMenuItem(sb, "Delete", "Delete", "pagavcs-delete", "", COMMAND_DELETE);
+			makeMenuItem(sb, "Copy-move-rename", "Copy-move-rename",
+					"pagavcs-rename", "", COMMAND_COPYMOVERENAME);
+			makeMenuItem(sb, "Delete", "Delete", "pagavcs-delete", "",
+					COMMAND_DELETE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Revert", "Revert", "pagavcs-revert", "", COMMAND_REVERT);
+			makeMenuItem(sb, "Revert", "Revert", "pagavcs-revert", "",
+					COMMAND_REVERT);
 		}
 		if (!hasSvned) {
-			makeMenuItem(sb, "Checkout", "Checkout", "pagavcs-checkout", "t", COMMAND_CHECKOUT);
+			makeMenuItem(sb, "Checkout", "Checkout", "pagavcs-checkout", "t",
+					COMMAND_CHECKOUT);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Cleanup", "Cleanup", "pagavcs-cleanup", "t", COMMAND_CLEANUP);
-			makeMenuItem(sb, "Get lock", "Get lock", "pagavcs-lock", "", COMMAND_LOCK);
-			makeMenuItem(sb, "Release lock", "Release lock", "pagavcs-unlock", "", COMMAND_UNLOCK);
+			makeMenuItem(sb, "Cleanup", "Cleanup", "pagavcs-cleanup", "t",
+					COMMAND_CLEANUP);
+			makeMenuItem(sb, "Get lock", "Get lock", "pagavcs-lock", "",
+					COMMAND_LOCK);
+			makeMenuItem(sb, "Release lock", "Release lock", "pagavcs-unlock",
+					"", COMMAND_UNLOCK);
 		}
 		if (hasConflicted && !hasNotConflicted) {
-			makeMenuItem(sb, "Resolve using mine", "Resolve using mine", "pagavcs-resolve", "", COMMAND_RESOLVEUSINGMINE);
-			makeMenuItem(sb, "Resolve using theirs", "Resolve using theirs", "pagavcs-resolve", "", COMMAND_RESOLVEUSINGTHEIRS);
-			makeMenuItem(sb, "Resolve", "Resolve", "pagavcs-resolve", "", COMMAND_RESOLVE);
+			makeMenuItem(sb, "Resolve using mine", "Resolve using mine",
+					"pagavcs-resolve", "", COMMAND_RESOLVEUSINGMINE);
+			makeMenuItem(sb, "Resolve using theirs", "Resolve using theirs",
+					"pagavcs-resolve", "", COMMAND_RESOLVEUSINGTHEIRS);
+			makeMenuItem(sb, "Resolve", "Resolve", "pagavcs-resolve", "",
+					COMMAND_RESOLVE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "t", COMMAND_SWITCH);
-			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t", COMMAND_MERGE);
-			makeMenuItem(sb, "Export", "Export", "pagavcs-export", "", COMMAND_EXPORT);
-			makeMenuItem(sb, "Apply patch", "Apply patch", "pagavcs-applypatch", "", COMMAND_APPLY_PATCH);
-			makeMenuItem(sb, "Properties", "Properties", "pagavcs-properties", "", COMMAND_PROPERTIES);
+			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "t",
+					COMMAND_SWITCH);
+			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t",
+					COMMAND_MERGE);
+			makeMenuItem(sb, "Export", "Export", "pagavcs-export", "",
+					COMMAND_EXPORT);
+			makeMenuItem(sb, "Apply patch", "Apply patch",
+					"pagavcs-applypatch", "", COMMAND_APPLY_PATCH);
+			makeMenuItem(sb, "Properties", "Properties", "pagavcs-properties",
+					"", COMMAND_PROPERTIES);
 		}
 
-		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s", COMMAND_SETTINGS);
+		makeMenuItem(sb, "Settings", "Settings", "pagavcs-settings", "s",
+				COMMAND_SETTINGS);
 
 		sb.append("--end--\n");
 
@@ -471,7 +521,8 @@ public class Communication {
 		if (serverSocket != null) {
 			try {
 				serverSocket.close();
-			} catch (IOException e) {}
+			} catch (IOException e) {
+			}
 		}
 	}
 
@@ -484,7 +535,7 @@ public class Communication {
 
 	private static class ProcessInput implements Runnable {
 
-		private final String       command;
+		private final String command;
 		private final List<String> lstArg;
 
 		public ProcessInput(String command, List<String> lstArg) {
@@ -496,12 +547,14 @@ public class Communication {
 			try {
 				if (COMMAND_PROPERTIES.equals(command)) {
 					for (String path : lstArg) {
-						PropertiesOperation propertiesOperation = new PropertiesOperation(path);
+						PropertiesOperation propertiesOperation = new PropertiesOperation(
+								path);
 						propertiesOperation.execute();
 					}
 				} else if (COMMAND_APPLY_PATCH.equals(command)) {
 					for (String path : lstArg) {
-						ApplyPatchOperation applyPatch = new ApplyPatchOperation(path);
+						ApplyPatchOperation applyPatch = new ApplyPatchOperation(
+								path);
 						applyPatch.execute();
 					}
 				} else if (COMMAND_BLAME.equals(command)) {
@@ -519,7 +572,8 @@ public class Communication {
 					update.execute();
 				} else if (COMMAND_UPDATE_TO_REVISION.equals(command)) {
 					for (String path : lstArg) {
-						UpdateToRevisionOperation updateToRevision = new UpdateToRevisionOperation(path);
+						UpdateToRevisionOperation updateToRevision = new UpdateToRevisionOperation(
+								path);
 						updateToRevision.execute();
 					}
 				} else if (COMMAND_LOG.equals(command)) {
@@ -533,7 +587,8 @@ public class Communication {
 						commit.execute();
 					}
 				} else if (COMMAND_SHOWLOCALCHANGES.equals(command)) {
-					ShowChangesOperation showChanges = new ShowChangesOperation(lstArg);
+					ShowChangesOperation showChanges = new ShowChangesOperation(
+							lstArg);
 					showChanges.execute();
 				} else if (COMMAND_IGNORE.equals(command)) {
 					for (String path : lstArg) {
@@ -562,12 +617,14 @@ public class Communication {
 					}
 				} else if (COMMAND_UNLOCK.equals(command)) {
 					for (String path : lstArg) {
-						UnlockOperation unlockOperation = new UnlockOperation(path);
+						UnlockOperation unlockOperation = new UnlockOperation(
+								path);
 						unlockOperation.execute();
 					}
 				} else if (COMMAND_COPYMOVERENAME.equals(command)) {
 					for (String path : lstArg) {
-						CopyMoveRename copyMoveReaname = new CopyMoveRename(path);
+						CopyMoveRename copyMoveReaname = new CopyMoveRename(
+								path);
 						copyMoveReaname.execute();
 					}
 				} else if (COMMAND_DELETE.equals(command)) {
@@ -593,14 +650,17 @@ public class Communication {
 					settings.execute();
 				} else if (COMMAND_RESOLVE.equals(command)) {
 					for (String path : lstArg) {
-						ResolveConflict resolve = new ResolveConflict(null, path, false);
+						ResolveConflict resolve = new ResolveConflict(null,
+								path, false);
 						resolve.execute();
 					}
 				} else if (COMMAND_RESOLVEUSINGMINE.equals(command)) {
-					ResolveConflictUsingMine resolveUsingMine = new ResolveConflictUsingMine(lstArg);
+					ResolveConflictUsingMine resolveUsingMine = new ResolveConflictUsingMine(
+							lstArg);
 					resolveUsingMine.execute();
 				} else if (COMMAND_RESOLVEUSINGTHEIRS.equals(command)) {
-					ResolveConflictUsingTheirs resolveUsingTheirs = new ResolveConflictUsingTheirs(lstArg);
+					ResolveConflictUsingTheirs resolveUsingTheirs = new ResolveConflictUsingTheirs(
+							lstArg);
 					resolveUsingTheirs.execute();
 				} else if (COMMAND_REPOBROWSER.equals(command)) {
 					for (String path : lstArg) {

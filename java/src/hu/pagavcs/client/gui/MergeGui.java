@@ -26,25 +26,26 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class MergeGui {
 
-	private EditField      sfWorkingCopy;
-	private EditField      sfRepo;
-	private JButton        btnShowLog;
+	private EditField sfWorkingCopy;
+	private EditField sfRepo;
+	private JButton btnShowLog;
 
 	private MergeOperation backend;
-	private JComboBox      cboUrlMergeFrom;
-	private EditField      sfRevisionRange;
-	private JCheckBox      cbReverseMerge;
-	private JButton        btnShowLogFrom;
-	private JButton        btnMergeRevisions;
-	private Frame          frame;
-	private JCheckBox      cbIgnoreEolStyle;
+	private JComboBox cboUrlMergeFrom;
+	private EditField sfRevisionRange;
+	private JCheckBox cbReverseMerge;
+	private JButton btnShowLogFrom;
+	private JButton btnMergeRevisions;
+	private Frame frame;
+	private JCheckBox cbIgnoreEolStyle;
 
 	public MergeGui(MergeOperation backend) {
 		this.backend = backend;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+				"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -59,14 +60,17 @@ public class MergeGui {
 		cboUrlMergeFrom = new JComboBox();
 		cboUrlMergeFrom.setEditable(true);
 		sfRevisionRange = new EditField();
-		sfRevisionRange.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
+		sfRevisionRange
+				.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
 		cbReverseMerge = new JCheckBox("Reverse merge");
 		btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
 		btnMergeRevisions = new JButton(new MergeAction());
 		cbIgnoreEolStyle = new JCheckBox("Ignore EOL style");
-		cbIgnoreEolStyle.setToolTipText("Ignore end-of-line style (eg. windows or unix style)");
+		cbIgnoreEolStyle
+				.setToolTipText("Ignore end-of-line style (eg. windows or unix style)");
 
-		if (!Boolean.FALSE.equals(SettingsStore.getInstance().getAutoCopyCommitRevisionToClipboard())) {
+		if (!Boolean.FALSE.equals(SettingsStore.getInstance()
+				.getAutoCopyCommitRevisionToClipboard())) {
 			cbIgnoreEolStyle.setSelected(true);
 		}
 
@@ -86,7 +90,8 @@ public class MergeGui {
 		pnlMain.add(cbIgnoreEolStyle, cc.xywh(3, 13, 1, 1));
 		pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings", "/hu/pagavcs/resources/other-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings",
+				"other-app-icon.png");
 		frame.setTitlePrefix(backend.getPath());
 	}
 
@@ -144,10 +149,12 @@ public class MergeGui {
 			String url = cboUrlMergeFrom.getSelectedItem().toString().trim();
 			backend.storeUrlForHistory(url);
 
-			SettingsStore.getInstance().setMergeIgnoreEol(cbIgnoreEolStyle.isSelected());
+			SettingsStore.getInstance().setMergeIgnoreEol(
+					cbIgnoreEolStyle.isSelected());
 
-			backend.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), url, sfRevisionRange.getText().trim(), cbReverseMerge.isSelected(), cbIgnoreEolStyle
-			        .isSelected());
+			backend.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), url,
+					sfRevisionRange.getText().trim(),
+					cbReverseMerge.isSelected(), cbIgnoreEolStyle.isSelected());
 		}
 
 	}
