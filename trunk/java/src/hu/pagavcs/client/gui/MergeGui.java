@@ -1,5 +1,6 @@
 package hu.pagavcs.client.gui;
 
+import hu.pagavcs.client.bl.OnSwingWait;
 import hu.pagavcs.client.bl.SettingsStore;
 import hu.pagavcs.client.bl.ThreadAction;
 import hu.pagavcs.client.gui.platform.EditField;
@@ -18,8 +19,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-
-import org.tmatesoft.svn.core.SVNException;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -43,59 +42,66 @@ public class MergeGui {
 		this.backend = backend;
 	}
 
-	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
-				"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p");
-		JPanel pnlMain = new JPanel(layout);
-		CellConstraints cc = new CellConstraints();
+	public void display() {
+		new OnSwingWait<Object, Object>() {
+			protected Object process() throws Exception {
+				FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+						"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p");
+				JPanel pnlMain = new JPanel(layout);
+				CellConstraints cc = new CellConstraints();
 
-		Label lblWorkingCopy = new Label("Path:");
-		sfWorkingCopy = new EditField(backend.getPath());
-		sfWorkingCopy.setEditable(false);
-		Label lblRepo = new Label("Repository:");
-		sfRepo = new EditField();
-		sfRepo.setEditable(false);
-		btnShowLog = new JButton(new ShowLogAction());
+				Label lblWorkingCopy = new Label("Path:");
+				sfWorkingCopy = new EditField(backend.getPath());
+				sfWorkingCopy.setEditable(false);
+				Label lblRepo = new Label("Repository:");
+				sfRepo = new EditField();
+				sfRepo.setEditable(false);
+				btnShowLog = new JButton(new ShowLogAction());
 
-		cboUrlMergeFrom = new JComboBox();
-		cboUrlMergeFrom.setEditable(true);
-		sfRevisionRange = new EditField();
-		sfRevisionRange
-				.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
-		cbReverseMerge = new JCheckBox("Reverse merge");
-		btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
-		btnMergeRevisions = new JButton(new MergeAction());
-		cbIgnoreEolStyle = new JCheckBox("Ignore EOL style");
-		cbIgnoreEolStyle
-				.setToolTipText("Ignore end-of-line style (eg. windows or unix style)");
+				cboUrlMergeFrom = new JComboBox();
+				cboUrlMergeFrom.setEditable(true);
+				sfRevisionRange = new EditField();
+				sfRevisionRange
+						.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
+				cbReverseMerge = new JCheckBox("Reverse merge");
+				btnShowLogFrom = new JButton(new ShowLogMergeFromAction());
+				btnMergeRevisions = new JButton(new MergeAction());
+				cbIgnoreEolStyle = new JCheckBox("Ignore EOL style");
+				cbIgnoreEolStyle
+						.setToolTipText("Ignore end-of-line style (eg. windows or unix style)");
 
-		if (!Boolean.FALSE.equals(SettingsStore.getInstance()
-				.getAutoCopyCommitRevisionToClipboard())) {
-			cbIgnoreEolStyle.setSelected(true);
-		}
+				if (!Boolean.FALSE.equals(SettingsStore.getInstance()
+						.getAutoCopyCommitRevisionToClipboard())) {
+					cbIgnoreEolStyle.setSelected(true);
+				}
 
-		pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
-		pnlMain.add(sfWorkingCopy, cc.xywh(3, 1, 2, 1));
-		pnlMain.add(lblRepo, cc.xywh(1, 3, 1, 1));
-		pnlMain.add(sfRepo, cc.xywh(3, 3, 2, 1));
-		pnlMain.add(btnShowLog, cc.xywh(4, 5, 1, 1));
+				pnlMain.add(lblWorkingCopy, cc.xywh(1, 1, 1, 1));
+				pnlMain.add(sfWorkingCopy, cc.xywh(3, 1, 2, 1));
+				pnlMain.add(lblRepo, cc.xywh(1, 3, 1, 1));
+				pnlMain.add(sfRepo, cc.xywh(3, 3, 2, 1));
+				pnlMain.add(btnShowLog, cc.xywh(4, 5, 1, 1));
 
-		pnlMain.add(new JSeparator(), cc.xywh(1, 6, 4, 1));
-		pnlMain.add(new JLabel("URL to merge from:"), cc.xywh(1, 7, 1, 1));
-		pnlMain.add(cboUrlMergeFrom, cc.xywh(3, 7, 2, 1));
-		pnlMain.add(new JLabel("Revision range to merge:"), cc.xywh(1, 9, 1, 1));
-		pnlMain.add(sfRevisionRange, cc.xywh(3, 9, 2, 1));
-		pnlMain.add(cbReverseMerge, cc.xywh(3, 11, 1, 1));
-		pnlMain.add(btnShowLogFrom, cc.xywh(4, 11, 1, 1));
-		pnlMain.add(cbIgnoreEolStyle, cc.xywh(3, 13, 1, 1));
-		pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
+				pnlMain.add(new JSeparator(), cc.xywh(1, 6, 4, 1));
+				pnlMain.add(new JLabel("URL to merge from:"),
+						cc.xywh(1, 7, 1, 1));
+				pnlMain.add(cboUrlMergeFrom, cc.xywh(3, 7, 2, 1));
+				pnlMain.add(new JLabel("Revision range to merge:"),
+						cc.xywh(1, 9, 1, 1));
+				pnlMain.add(sfRevisionRange, cc.xywh(3, 9, 2, 1));
+				pnlMain.add(cbReverseMerge, cc.xywh(3, 11, 1, 1));
+				pnlMain.add(btnShowLogFrom, cc.xywh(4, 11, 1, 1));
+				pnlMain.add(cbIgnoreEolStyle, cc.xywh(3, 13, 1, 1));
+				pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings",
-				"other-app-icon.png");
-		frame.setTitlePrefix(backend.getPath());
+				frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings",
+						"other-app-icon.png");
+				frame.setTitlePrefix(backend.getPath());
+				return null;
+			}
+		}.run();
 	}
 
-	public void setURL(String text) {
+	public void setURL(final String text) {
 		sfRepo.setText(text);
 	}
 
@@ -111,9 +117,18 @@ public class MergeGui {
 		cbIgnoreEolStyle.setSelected(prefillCommitToo);
 	}
 
-	public void setUrlHistory(String[] urlHistory) {
+	public void setUrlHistory(final String[] urlHistory) {
 		ComboBoxModel modelUrl = new DefaultComboBoxModel(urlHistory);
 		cboUrlMergeFrom.setModel(modelUrl);
+	}
+
+	public void pack() {
+		new OnSwingWait<Object, Object>() {
+			protected Object process() throws Exception {
+				frame.pack();
+				return null;
+			}
+		}.run();
 	}
 
 	private class ShowLogAction extends ThreadAction {
