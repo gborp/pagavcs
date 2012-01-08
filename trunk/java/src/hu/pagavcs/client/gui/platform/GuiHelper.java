@@ -408,6 +408,16 @@ public class GuiHelper {
 	}
 
 	public static void setBounds(Window window, Rectangle bounds) {
+		Dimension minSize = window.getMinimumSize();
+		if (minSize != null) {
+			if (minSize.width > bounds.width) {
+				bounds.width = minSize.width;
+			}
+			if (minSize.height > bounds.height) {
+				bounds.height = minSize.height;
+			}
+		}
+
 		Dimension dim = window.getToolkit().getScreenSize();
 		Dimension prefSize = window.getPreferredSize();
 
