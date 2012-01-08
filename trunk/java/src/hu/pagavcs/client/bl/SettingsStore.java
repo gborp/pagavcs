@@ -31,38 +31,38 @@ import org.tmatesoft.svn.core.SVNException;
  */
 public class SettingsStore {
 
-	private Preferences          prefs                                      = Preferences.userNodeForPackage(this.getClass());
+	private Preferences prefs = Preferences.userRoot().node("hu/pagavcs/bl");
 	private static SettingsStore singleton;
 
-	private static final String  KEY_USERNAME                               = "username";
-	private static final String  KEY_PASSWORD                               = "password";
-	private static final String  KEY_COMMIT_MESSAGES                        = "commit-messages";
-	private static final String  KEY_REPO_URL                               = "repo-url";
-	private static final String  KEY_WINDOW_BOUNDS                          = "window-bounds";
-	private static final String  KEY_GUI_LOG_SEPARATOR_DETAIL               = "gui-log-separator-detail";
-	private static final String  KEY_GUI_LOG_SEPARATOR_MAIN                 = "gui-log-separator-main";
-	private static final String  KEY_LOGIN_REMEMBER_USERNAME                = "gui-login-remember-username";
-	private static final String  KEY_LOGIN_REMEMBER_PASSWORD                = "gui-login-remember-password";
-	private static final String  KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES     = "commit-completed-message-templates";
-	private static final String  KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD = "auto-copy-commit-revision-to-clipboard";
-	private static final String  KEY_LAST_HELP_MERGE_TO_DIR                 = "last-help-merge-to-dir";
-	private static final String  KEY_MERGE_IGNORE_EOL                       = "merge-ignore-eol";
-	private static final String  KEY_GLOBAL_UPDATE_IGNORE_EOL               = "global-update-ignore-eol";
+	private static final String KEY_USERNAME = "username";
+	private static final String KEY_PASSWORD = "password";
+	private static final String KEY_COMMIT_MESSAGES = "commit-messages";
+	private static final String KEY_REPO_URL = "repo-url";
+	private static final String KEY_WINDOW_BOUNDS = "window-bounds";
+	private static final String KEY_GUI_LOG_SEPARATOR_DETAIL = "gui-log-separator-detail";
+	private static final String KEY_GUI_LOG_SEPARATOR_MAIN = "gui-log-separator-main";
+	private static final String KEY_LOGIN_REMEMBER_USERNAME = "gui-login-remember-username";
+	private static final String KEY_LOGIN_REMEMBER_PASSWORD = "gui-login-remember-password";
+	private static final String KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES = "commit-completed-message-templates";
+	private static final String KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD = "auto-copy-commit-revision-to-clipboard";
+	private static final String KEY_LAST_HELP_MERGE_TO_DIR = "last-help-merge-to-dir";
+	private static final String KEY_MERGE_IGNORE_EOL = "merge-ignore-eol";
+	private static final String KEY_GLOBAL_UPDATE_IGNORE_EOL = "global-update-ignore-eol";
 
-	private Map<String, String>  mapUsername                                = new HashMap<String, String>();
-	private Map<String, String>  mapPassword                                = new HashMap<String, String>();
-	private List<String>         lstCommitMessages                          = new ArrayList<String>();
-	private List<String>         lstRepoUrl                                 = new ArrayList<String>();
-	private Map<String, String>  mapWindowBounds                            = new HashMap<String, String>();
-	private Integer              guiLogSeparatorDetail;
-	private Integer              guiLogSeparatorMain;
-	private Boolean              rememberUsername;
-	private Boolean              rememberPassword;
-	private String               commitCompletedMessageTemplates;
-	private Boolean              autoCopyCommitRevisionToClipboard;
-	private Boolean              mergeIgnoreEol;
-	private Boolean              globalIgnoreEol;
-	private String               lastHelpMergeToDir;
+	private Map<String, String> mapUsername = new HashMap<String, String>();
+	private Map<String, String> mapPassword = new HashMap<String, String>();
+	private List<String> lstCommitMessages = new ArrayList<String>();
+	private List<String> lstRepoUrl = new ArrayList<String>();
+	private Map<String, String> mapWindowBounds = new HashMap<String, String>();
+	private Integer guiLogSeparatorDetail;
+	private Integer guiLogSeparatorMain;
+	private Boolean rememberUsername;
+	private Boolean rememberPassword;
+	private String commitCompletedMessageTemplates;
+	private Boolean autoCopyCommitRevisionToClipboard;
+	private Boolean mergeIgnoreEol;
+	private Boolean globalIgnoreEol;
+	private String lastHelpMergeToDir;
 
 	public static SettingsStore getInstance() {
 		if (singleton == null) {
@@ -71,7 +71,8 @@ public class SettingsStore {
 		return singleton;
 	}
 
-	public void save() throws SVNException, BackingStoreException, GeneralSecurityException {
+	public void save() throws SVNException, BackingStoreException,
+			GeneralSecurityException {
 		storeMap(KEY_USERNAME, mapUsername, false);
 		storeMap(KEY_PASSWORD, mapPassword, true);
 		storeList(KEY_COMMIT_MESSAGES, lstCommitMessages);
@@ -81,15 +82,18 @@ public class SettingsStore {
 		storeInteger(KEY_GUI_LOG_SEPARATOR_MAIN, guiLogSeparatorMain);
 		storeBoolean(KEY_LOGIN_REMEMBER_USERNAME, rememberUsername);
 		storeBoolean(KEY_LOGIN_REMEMBER_PASSWORD, rememberPassword);
-		storeString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES, commitCompletedMessageTemplates);
-		storeBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD, autoCopyCommitRevisionToClipboard);
+		storeString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES,
+				commitCompletedMessageTemplates);
+		storeBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD,
+				autoCopyCommitRevisionToClipboard);
 		storeString(KEY_LAST_HELP_MERGE_TO_DIR, lastHelpMergeToDir);
 		storeBoolean(KEY_MERGE_IGNORE_EOL, mergeIgnoreEol);
 		storeBoolean(KEY_GLOBAL_UPDATE_IGNORE_EOL, globalIgnoreEol);
 		prefs.flush();
 	}
 
-	public void load() throws BackingStoreException, GeneralSecurityException, IOException {
+	public void load() throws BackingStoreException, GeneralSecurityException,
+			IOException {
 		mapUsername = loadMap(KEY_USERNAME, false);
 		mapPassword = loadMap(KEY_PASSWORD, true);
 		lstCommitMessages = loadList(KEY_COMMIT_MESSAGES);
@@ -121,7 +125,8 @@ public class SettingsStore {
 		return resultList;
 	}
 
-	private void storeList(String mapName, List<String> data) throws BackingStoreException {
+	private void storeList(String mapName, List<String> data)
+			throws BackingStoreException {
 		Preferences node = prefs.node(mapName);
 		node.clear();
 		int index = 0;
@@ -131,7 +136,8 @@ public class SettingsStore {
 		}
 	}
 
-	private Map<String, String> loadMap(String mapName, boolean encoded) throws BackingStoreException, GeneralSecurityException, IOException {
+	private Map<String, String> loadMap(String mapName, boolean encoded)
+			throws BackingStoreException, GeneralSecurityException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		Preferences node = prefs.node(mapName);
 		for (String key : node.keys()) {
@@ -144,7 +150,9 @@ public class SettingsStore {
 		return result;
 	}
 
-	private void storeMap(String mapName, Map<String, String> data, boolean encoded) throws BackingStoreException, GeneralSecurityException {
+	private void storeMap(String mapName, Map<String, String> data,
+			boolean encoded) throws BackingStoreException,
+			GeneralSecurityException {
 		Preferences node = prefs.node(mapName);
 		node.clear();
 		for (Entry<String, String> entry : data.entrySet()) {
@@ -275,12 +283,14 @@ public class SettingsStore {
 
 	private Rectangle stringToRectangle(String s) {
 		String[] v = s.split(" ");
-		return new Rectangle(Integer.valueOf(v[0]), Integer.valueOf(v[1]), Integer.valueOf(v[2]), Integer.valueOf(v[3]));
+		return new Rectangle(Integer.valueOf(v[0]), Integer.valueOf(v[1]),
+				Integer.valueOf(v[2]), Integer.valueOf(v[3]));
 	}
 
 	public Rectangle getWindowBounds(Window parent, String windowName) {
 		if (parent != null) {
-			Rectangle result = getWindowBounds(parent.getName() + "->" + windowName);
+			Rectangle result = getWindowBounds(parent.getName() + "->"
+					+ windowName);
 			if (result != null) {
 				Point parentLocation = parent.getLocationOnScreen();
 				result.x += parentLocation.getX();
@@ -300,7 +310,8 @@ public class SettingsStore {
 		}
 	}
 
-	public void setWindowBounds(Window parent, String windowName, Rectangle bounds) {
+	public void setWindowBounds(Window parent, String windowName,
+			Rectangle bounds) {
 		if (parent != null) {
 			Point parentLocation = parent.getLocationOnScreen();
 			bounds.x -= parentLocation.getX();
@@ -347,7 +358,8 @@ public class SettingsStore {
 		this.rememberPassword = rememberPassword;
 	}
 
-	public void setCommitCompletedMessageTemplates(String commitCompletedMessageTemplates) {
+	public void setCommitCompletedMessageTemplates(
+			String commitCompletedMessageTemplates) {
 		this.commitCompletedMessageTemplates = commitCompletedMessageTemplates;
 	}
 
@@ -359,7 +371,8 @@ public class SettingsStore {
 		return this.autoCopyCommitRevisionToClipboard;
 	}
 
-	public void setAutoCopyCommitRevisionToClipboard(Boolean autoCopyCommitRevisionToClipboard) {
+	public void setAutoCopyCommitRevisionToClipboard(
+			Boolean autoCopyCommitRevisionToClipboard) {
 		this.autoCopyCommitRevisionToClipboard = autoCopyCommitRevisionToClipboard;
 	}
 

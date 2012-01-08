@@ -9,8 +9,8 @@ import hu.pagavcs.client.gui.platform.TableModel;
 import hu.pagavcs.client.gui.platform.TextArea;
 import hu.pagavcs.client.operation.PropertiesOperation;
 
-import java.awt.Point;
 import java.awt.Dialog.ModalityType;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -48,15 +48,15 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class PropertiesGui {
 
-	private Table<PropertiesListItem>      tblProperties;
+	private Table<PropertiesListItem> tblProperties;
 	private TableModel<PropertiesListItem> tmdlProperties;
-	private JButton                        btnSave;
-	private Label                          lblWorkingCopy;
-	private Label                          lblRepo;
-	private Frame                          frame;
-	private SaveAction                     actSave;
-	private Label                          lblInfo;
-	private PropertiesOperation            propertiesOperation;
+	private JButton btnSave;
+	private Label lblWorkingCopy;
+	private Label lblRepo;
+	private Frame frame;
+	private SaveAction actSave;
+	private Label lblInfo;
+	private PropertiesOperation propertiesOperation;
 
 	public PropertiesGui(PropertiesOperation propertiesOperation) {
 		this.propertiesOperation = propertiesOperation;
@@ -70,7 +70,8 @@ public class PropertiesGui {
 		FormLayout lyBottom = new FormLayout("p,2dlu,1dlu:g,2dlu,p", "p");
 		JPanel pnlBottom = new JPanel(lyBottom);
 
-		FormLayout lyMain = new FormLayout("200dlu:g", "p,2dlu,fill:60dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("200dlu:g",
+				"p,2dlu,fill:60dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 
 		CellConstraints cc = new CellConstraints();
@@ -78,7 +79,8 @@ public class PropertiesGui {
 		lblWorkingCopy = new Label();
 		lblRepo = new Label();
 
-		tmdlProperties = new TableModel<PropertiesListItem>(new PropertiesListItem());
+		tmdlProperties = new TableModel<PropertiesListItem>(
+				new PropertiesListItem());
 
 		tblProperties = new Table<PropertiesListItem>(tmdlProperties);
 		tblProperties.addMouseListener(new PopupupMouseListener());
@@ -101,15 +103,17 @@ public class PropertiesGui {
 		pnlMain.add(scrollPane, cc.xy(1, 3));
 		pnlMain.add(pnlBottom, cc.xy(1, 5));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Properties", "/hu/pagavcs/resources/other-app-icon.png", false);
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Properties",
+				"other-app-icon.png", false);
 
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
-			// TODO do you want to save?
+				// TODO do you want to save?
 			}
 
-			public void windowClosed(WindowEvent e) {}
+			public void windowClosed(WindowEvent e) {
+			}
 		});
 
 	}
@@ -135,7 +139,8 @@ public class PropertiesGui {
 	}
 
 	private PropertiesListItem getSelectedPropertyListItem() {
-		return tmdlProperties.getRow(tblProperties.convertRowIndexToModel(tblProperties.getSelectedRow()));
+		return tmdlProperties.getRow(tblProperties
+				.convertRowIndexToModel(tblProperties.getSelectedRow()));
 	}
 
 	private class CopyAllToClipboard extends AbstractAction {
@@ -174,8 +179,10 @@ public class PropertiesGui {
 		public void actionPerformed(ActionEvent e) {
 			PropertiesListItem li = getSelectedPropertyListItem();
 
-			int choice = JOptionPane.showConfirmDialog(frame, "Delete <" + li.getKey() + "> property?", "Delete property", JOptionPane.YES_NO_CANCEL_OPTION,
-			        JOptionPane.QUESTION_MESSAGE);
+			int choice = JOptionPane.showConfirmDialog(frame,
+					"Delete <" + li.getKey() + "> property?",
+					"Delete property", JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
 			if (choice == JOptionPane.YES_OPTION) {
 				li.setRecoursively(true);
 				propertiesOperation.removeProperty(li);
@@ -190,10 +197,10 @@ public class PropertiesGui {
 
 	private class EditAction extends AbstractAction {
 
-		JDialog                    dlgEditProp;
+		JDialog dlgEditProp;
 		private PropertiesListItem propertiesListItem;
-		private TextArea           taValue;
-		private JCheckBox          cbRecursively;
+		private TextArea taValue;
+		private JCheckBox cbRecursively;
 
 		public EditAction() {
 			super("Edit");
@@ -203,7 +210,8 @@ public class PropertiesGui {
 			propertiesListItem = getSelectedPropertyListItem();
 
 			CellConstraints cc = new CellConstraints();
-			FormLayout lyMain = new FormLayout("f:200:g,p,2dlu,p", "f:200:g,2dlu,p");
+			FormLayout lyMain = new FormLayout("f:200:g,p,2dlu,p",
+					"f:200:g,2dlu,p");
 			JPanel pnlMain = new JPanel(lyMain);
 			taValue = new TextArea();
 			taValue.setColumns(40);
@@ -214,12 +222,15 @@ public class PropertiesGui {
 
 				public void actionPerformed(ActionEvent e) {
 					String value = taValue.getText();
-					if (propertiesOperation.needsValueValidation(propertiesListItem.getKey())) {
+					if (propertiesOperation
+							.needsValueValidation(propertiesListItem.getKey())) {
 						value = propertiesOperation.validateProperty(value);
 					}
 					propertiesListItem.setValue(value);
-					propertiesListItem.setDisplayValue(propertiesOperation.valueToDisplayValue(value));
-					propertiesListItem.setRecoursively(cbRecursively.isSelected());
+					propertiesListItem.setDisplayValue(propertiesOperation
+							.valueToDisplayValue(value));
+					propertiesListItem.setRecoursively(cbRecursively
+							.isSelected());
 					propertiesOperation.modifyProperty(propertiesListItem);
 					tmdlProperties.fireTableDataChanged();
 					dlgEditProp.setVisible(false);
@@ -228,11 +239,13 @@ public class PropertiesGui {
 
 			cbRecursively = new JCheckBox("Apply recursively");
 
-			pnlMain.add(new JScrollPane(taValue), cc.xywh(1, 1, 4, 1, CellConstraints.FILL, CellConstraints.FILL));
+			pnlMain.add(new JScrollPane(taValue), cc.xywh(1, 1, 4, 1,
+					CellConstraints.FILL, CellConstraints.FILL));
 			pnlMain.add(btnOk, cc.xy(4, 3));
 			pnlMain.add(cbRecursively, cc.xy(2, 3));
 
-			dlgEditProp = GuiHelper.createDialog(frame, pnlMain, "Edit svn property");
+			dlgEditProp = GuiHelper.createDialog(frame, pnlMain,
+					"Edit svn property");
 			dlgEditProp.setModalityType(ModalityType.DOCUMENT_MODAL);
 			dlgEditProp.setTitle("Edit " + propertiesListItem.getKey());
 			dlgEditProp.setVisible(true);
@@ -258,7 +271,8 @@ public class PropertiesGui {
 				if (row == -1) {
 					return;
 				}
-				tblProperties.getSelectionModel().setSelectionInterval(row, row);
+				tblProperties.getSelectionModel()
+						.setSelectionInterval(row, row);
 				new EditAction().actionPerformed(null);
 			}
 		}

@@ -7,8 +7,8 @@ import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
 import hu.pagavcs.client.gui.platform.MessagePane;
-import hu.pagavcs.client.gui.platform.ProgressBar;
 import hu.pagavcs.client.gui.platform.MessagePane.OPTIONS;
+import hu.pagavcs.client.gui.platform.ProgressBar;
 import hu.pagavcs.client.operation.CopyMoveRename;
 import hu.pagavcs.client.operation.CopyMoveRename.CopyMoveRenameStatus;
 
@@ -45,21 +45,22 @@ import com.jgoodies.forms.layout.FormLayout;
 public class CopyMoveRenameGui implements Working, Cancelable {
 
 	private CopyMoveRename other;
-	private JLabel         lblStatus;
-	private Frame          frame;
-	private EditField      sfRepo;
-	private EditField      sfNewPath;
-	private JCheckBox      cbCopy;
-	private EditField      sfWorkingCopy;
-	private ProgressBar    prgBusy;
-	private JButton        btnCopyMoveRename;
+	private JLabel lblStatus;
+	private Frame frame;
+	private EditField sfRepo;
+	private EditField sfNewPath;
+	private JCheckBox cbCopy;
+	private EditField sfWorkingCopy;
+	private ProgressBar prgBusy;
+	private JButton btnCopyMoveRename;
 
 	public CopyMoveRenameGui(CopyMoveRename other) {
 		this.other = other;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p", "p,2dlu,p,2dlu,4dlu,p,2dlu,p,4dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
+				"p,2dlu,p,2dlu,4dlu,p,2dlu,p,4dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -120,7 +121,8 @@ public class CopyMoveRenameGui implements Working, Cancelable {
 						btnCopyMoveRename.setText("Already exists");
 					} else {
 						if (!cbCopy.isSelected()) {
-							if (origFile.getParent().equals(newFile.getParent())) {
+							if (origFile.getParent()
+									.equals(newFile.getParent())) {
 								btnCopyMoveRename.setText("Rename");
 							} else {
 								btnCopyMoveRename.setText("Move");
@@ -154,7 +156,8 @@ public class CopyMoveRenameGui implements Working, Cancelable {
 		pnlMain.add(prgBusy, cc.xywh(1, 10, 3, 1));
 		pnlMain.add(lblStatus, cc.xywh(4, 10, 1, 1));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Copy-Move-Rename", "/hu/pagavcs/resources/other-app-icon.png");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Copy-Move-Rename",
+				"other-app-icon.png");
 		frame.setTitlePrefix(other.getPath());
 	}
 
@@ -174,7 +177,8 @@ public class CopyMoveRenameGui implements Working, Cancelable {
 	private void copyMoveRename() throws Exception {
 		try {
 			prgBusy.startProgress();
-			other.copyMoveRename(sfWorkingCopy.getText(), sfNewPath.getText().trim(), cbCopy.isSelected());
+			other.copyMoveRename(sfWorkingCopy.getText(), sfNewPath.getText()
+					.trim(), cbCopy.isSelected());
 		} finally {
 			prgBusy.stopProgress();
 		}
@@ -197,8 +201,13 @@ public class CopyMoveRenameGui implements Working, Cancelable {
 	}
 
 	public boolean exportPathExistsOverride(String filePathExport) {
-		OPTIONS choice = MessagePane.showWarning(frame, "Directory exists", "Directory " + filePathExport
-		        + " is already exist,\ndo you really want to export there?");
+		OPTIONS choice = MessagePane
+				.showWarning(
+						frame,
+						"Directory exists",
+						"Directory "
+								+ filePathExport
+								+ " is already exist,\ndo you really want to export there?");
 		return OPTIONS.OK.equals(choice);
 	}
 

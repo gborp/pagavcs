@@ -5,6 +5,7 @@ import hu.pagavcs.client.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.client.gui.LoginGui;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.operation.ContentStatus;
+import hu.pagavcs.common.ResourceBundleAccessor;
 import hu.pagavcs.server.FileStatusCache;
 
 import java.awt.Color;
@@ -29,7 +30,6 @@ import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -77,30 +77,31 @@ import org.tmatesoft.svn.util.SVNDebugLog;
  */
 public class Manager {
 
-	public static final long        REVALIDATE_DELAY                    = 500;
-	public static final long        TABLE_RESIZE_DELAY                  = 50;
+	public static final long REVALIDATE_DELAY = 500;
+	public static final long TABLE_RESIZE_DELAY = 50;
 
-	private static Icon             ICON_ERROR;
-	private static Icon             ICON_INFORMATION;
-	private static Icon             ICON_PASSWORD;
-	private static Icon             ICON_QUESTION;
-	private static Icon             ICON_WARNING;
+	private static Icon ICON_ERROR;
+	private static Icon ICON_INFORMATION;
+	private static Icon ICON_PASSWORD;
+	private static Icon ICON_QUESTION;
+	private static Icon ICON_WARNING;
 
-	public static final String      COMMIT_COMPLETED_TEMPLATE_SEPARATOR = ">>>";
+	public static final String COMMIT_COMPLETED_TEMPLATE_SEPARATOR = ">>>";
 
-	private static final Color      COLOR_PURPLE                        = new Color(100, 0, 100);
-	private static final Color      COLOR_GREEN                         = new Color(20, 80, 25);
+	private static final Color COLOR_PURPLE = new Color(100, 0, 100);
+	private static final Color COLOR_GREEN = new Color(20, 80, 25);
 
-	private static String           tempDir;
-	private static boolean          inited                              = false;
+	private static String tempDir;
+	private static boolean inited = false;
 	private static ExceptionHandler exceptionHandler;
-	private static boolean          forceShowingLoginDialogNextTime;
+	private static boolean forceShowingLoginDialogNextTime;
 
-	private static boolean          shutdown;
+	private static boolean shutdown;
 
-	private static BandwidthMeter   bandwidthMeter;
+	private static BandwidthMeter bandwidthMeter;
 
-	public static void init() throws BackingStoreException, GeneralSecurityException, IOException {
+	public static void init() throws BackingStoreException,
+			GeneralSecurityException, IOException {
 		if (!inited) {
 			bandwidthMeter = new BandwidthMeter();
 			SVNDebugLog.setDefaultLog(bandwidthMeter);
@@ -109,13 +110,15 @@ public class Manager {
 			// Enable full HTTP request spooling to prevent "svn: REPORT request
 			// failed on '/svn/VSMRepo/!svn/vcc/default'"
 			// http://old.nabble.com/REPORT-request-failed-accessing-Sourceforge-Subversion-td14733189.html
-			IHTTPConnectionFactory factory = new DefaultHTTPConnectionFactory(null, true, null);
+			IHTTPConnectionFactory factory = new DefaultHTTPConnectionFactory(
+					null, true, null);
 			DAVRepositoryFactory.setup(factory);
 			FSRepositoryFactory.setup();
 			FileRevisionCache.getInstance().init();
 			inited = true;
 			getSettings().load();
-			Runtime.getRuntime().addShutdownHook(new Thread(new ShutDownRunnable()));
+			Runtime.getRuntime().addShutdownHook(
+					new Thread(new ShutDownRunnable()));
 			exceptionHandler = new ExceptionHandler();
 			Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 			GuiHelper.initGui();
@@ -138,10 +141,13 @@ public class Manager {
 		return tempDir;
 	}
 
-	public static File getAbsoluteFile(String path, String relativeUrl) throws SVNException, PagaException {
+	public static File getAbsoluteFile(String path, String relativeUrl)
+			throws SVNException, PagaException {
 
-		ArrayList<String> lstPath = new ArrayList<String>(Arrays.asList(path.split("/")));
-		ArrayList<String> lstRelative = new ArrayList<String>(Arrays.asList(relativeUrl.split("/")));
+		ArrayList<String> lstPath = new ArrayList<String>(Arrays.asList(path
+				.split("/")));
+		ArrayList<String> lstRelative = new ArrayList<String>(
+				Arrays.asList(relativeUrl.split("/")));
 		if (lstRelative.get(0).isEmpty()) {
 			lstRelative.remove(0);
 		}
@@ -152,7 +158,8 @@ public class Manager {
 
 		while (!success && offset1 < lstPath.size()) {
 			success = true;
-			for (int i = 0; i < lstRelative.size() && (offset1 + i) < lstPath.size(); i++) {
+			for (int i = 0; i < lstRelative.size()
+					&& (offset1 + i) < lstPath.size(); i++) {
 				if (!lstPath.get(i + offset1).equals(lstRelative.get(i))) {
 					success = false;
 					break;
@@ -174,11 +181,14 @@ public class Manager {
 		return new File(sbResult.toString());
 	}
 
-	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl) throws SVNException, PagaException {
+	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl)
+			throws SVNException, PagaException {
 
 		SVNClientManager mgr = Manager.getSVNClientManager(path);
 		try {
-			SVNURL rootUrl = mgr.getWCClient().doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED).getRepositoryRootURL();
+			SVNURL rootUrl = mgr.getWCClient()
+					.doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED)
+					.getRepositoryRootURL();
 			return rootUrl.appendPath(relativeUrl, true);
 		} finally {
 			mgr.dispose();
@@ -192,7 +202,8 @@ public class Manager {
 	public static SVNURL getSvnUrlByFile(File path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING).getURL();
+			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING)
+					.getURL();
 		} finally {
 			mgrSvn.dispose();
 		}
@@ -201,17 +212,20 @@ public class Manager {
 	public static SVNURL getSvnRootUrlByFile(File path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL();
+			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING)
+					.getRepositoryRootURL();
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public static SVNClientManager getSVNClientManager(File path) throws SVNException, PagaException {
+	public static SVNClientManager getSVNClientManager(File path)
+			throws SVNException, PagaException {
 		return getSVNClientManager(getSvnRootUrlByFile(path));
 	}
 
-	public static synchronized SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
+	public static synchronized SVNClientManager getSVNClientManager(
+			SVNURL repositoryUrl) throws SVNException, PagaException {
 
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 		SVNClientManager result = null;
@@ -220,7 +234,8 @@ public class Manager {
 
 			String username = getSettings().getUsername(repoid);
 			String password = getSettings().getPassword(repoid);
-			if (forceShowingLoginDialogNextTime || password == null || username == null || reTryLogin) {
+			if (forceShowingLoginDialogNextTime || password == null
+					|| username == null || reTryLogin) {
 				forceShowingLoginDialogNextTime = false;
 				final LoginGui loginGui = new LoginGui(username, password);
 				SwingUtilities.invokeLater(new Runnable() {
@@ -253,18 +268,22 @@ public class Manager {
 			if (username == null || username.isEmpty()) {
 				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager();
 			} else {
-				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
+				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager(
+						username, password);
 			}
-			ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(defAuthManager, readTimeout, connectionTimeout);
+			ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(
+					defAuthManager, readTimeout, connectionTimeout);
 			result = SVNClientManager.newInstance(null, authManager);
 			reTryLogin = false;
 			try {
-				result.getRepositoryPool().createRepository(repositoryUrl, true).testConnection();
+				result.getRepositoryPool()
+						.createRepository(repositoryUrl, true).testConnection();
 			} catch (SVNException ex) {
 				ex.printStackTrace();
 
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
-				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode) || SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
+				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode)
+						|| SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
 					throw new PagaException(PagaExceptionType.CONNECTION_ERROR);
 				}
 				result = null;
@@ -282,14 +301,18 @@ public class Manager {
 	 * it returns null.
 	 */
 	public static String getClipboard() {
-		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard()
+				.getContents(null);
 
 		try {
 			if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-				String text = (String) t.getTransferData(DataFlavor.stringFlavor);
+				String text = (String) t
+						.getTransferData(DataFlavor.stringFlavor);
 				return text;
 			}
-		} catch (UnsupportedFlavorException e) {} catch (IOException e) {}
+		} catch (UnsupportedFlavorException e) {
+		} catch (IOException e) {
+		}
 		return null;
 	}
 
@@ -301,24 +324,22 @@ public class Manager {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
 	}
 
-	public static long getPreviousRevisionNumber(SVNURL svnUrl, long revision) throws SVNException, PagaException {
+	public static long getPreviousRevisionNumber(SVNURL svnUrl, long revision)
+			throws SVNException, PagaException {
 		PreviousRevisionFetcher fetcher = new PreviousRevisionFetcher();
 		fetcher.execute(svnUrl, revision);
 		return fetcher.getPreviousRevision();
 	}
 
 	public static SVNInfo getInfo(File path) throws SVNException {
-		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			return wcClient.doInfo(path, SVNRevision.WORKING);
 		} finally {
 			mgrSvn.dispose();
 		}
-	}
-
-	public static Icon loadIcon(String path) {
-		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource(path)));
 	}
 
 	public static JFrame getRootFrame() {
@@ -361,20 +382,24 @@ public class Manager {
 
 	}
 
-	public static void resolveConflictUsingTheirs(String path) throws SVNException {
+	public static void resolveConflictUsingTheirs(String path)
+			throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.THEIRS_FULL);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
+					SVNConflictChoice.THEIRS_FULL);
 		} finally {
 			mgrSvn.dispose();
 		}
 
 	}
 
-	public static void resolveConflictUsingMine(String path) throws SVNException {
+	public static void resolveConflictUsingMine(String path)
+			throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.MINE_FULL);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
+					SVNConflictChoice.MINE_FULL);
 		} finally {
 			mgrSvn.dispose();
 		}
@@ -383,7 +408,8 @@ public class Manager {
 	public static SVNInfo getInfo(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			SVNInfo info = mgrSvn.getWCClient().doInfo(new File(path), SVNRevision.WORKING);
+			SVNInfo info = mgrSvn.getWCClient().doInfo(new File(path),
+					SVNRevision.WORKING);
 			return info;
 		} finally {
 			mgrSvn.dispose();
@@ -392,46 +418,48 @@ public class Manager {
 
 	public static Color getColorByContentStatus(ContentStatus status) {
 		switch (status) {
-			case ADDED:
-				return COLOR_PURPLE;
-			case CONFLICTED:
-				return Color.RED;
-			case DELETED:
-				return Color.RED;
-			case EXTERNAL:
-				return Color.DARK_GRAY;
-			case IGNORED:
-				return Color.ORANGE;
-			case INCOMPLETE:
-				return Color.RED;
-			case MERGED:
-				return COLOR_GREEN;
-			case MISSING:
-				return Color.RED;
-			case MODIFIED:
-				return Color.BLUE;
-			case NONE:
-				return Color.BLACK;
-			case NORMAL:
-				return Color.BLACK;
-			case OBSTRUCTED:
-				return Color.RED;
-			case REPLACED:
-				return Color.RED;
-			case UNVERSIONED:
-				return Color.BLACK;
-			case RESOLVED:
-				return Color.decode("923700");
-			default:
-				return null;
+		case ADDED:
+			return COLOR_PURPLE;
+		case CONFLICTED:
+			return Color.RED;
+		case DELETED:
+			return Color.RED;
+		case EXTERNAL:
+			return Color.DARK_GRAY;
+		case IGNORED:
+			return Color.ORANGE;
+		case INCOMPLETE:
+			return Color.RED;
+		case MERGED:
+			return COLOR_GREEN;
+		case MISSING:
+			return Color.RED;
+		case MODIFIED:
+			return Color.BLUE;
+		case NONE:
+			return Color.BLACK;
+		case NORMAL:
+			return Color.BLACK;
+		case OBSTRUCTED:
+			return Color.RED;
+		case REPLACED:
+			return Color.RED;
+		case UNVERSIONED:
+			return Color.BLACK;
+		case RESOLVED:
+			return Color.decode("923700");
+		default:
+			return null;
 		}
 	}
 
-	public static File getFile(SVNURL svnUrl, SVNRevision revision) throws Exception {
+	public static File getFile(SVNURL svnUrl, SVNRevision revision)
+			throws Exception {
 		return FileRevisionCache.getInstance().getFile(svnUrl, revision);
 	}
 
-	public static void releaseFile(SVNURL svnUrl, SVNRevision revision) throws Exception {
+	public static void releaseFile(SVNURL svnUrl, SVNRevision revision)
+			throws Exception {
 		FileRevisionCache.getInstance().releaseFile(svnUrl, revision);
 	}
 
@@ -451,13 +479,16 @@ public class Manager {
 		FileStatusCache.getInstance().invalidateAll();
 	}
 
-	public static String getOsCommandResult(File baseDir, String... args) throws IOException {
+	public static String getOsCommandResult(File baseDir, String... args)
+			throws IOException {
 
 		ProcessBuilder pb = new ProcessBuilder(args);
 		pb.directory(baseDir);
 		pb.redirectErrorStream(true);
 		Process process = pb.start();
-		BufferedReader commandResult = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
+		BufferedReader commandResult = new BufferedReader(
+				new InputStreamReader(process.getInputStream(),
+						Charset.defaultCharset()));
 		String line = "";
 		StringBuilder sb = new StringBuilder();
 		while ((line = commandResult.readLine()) != null) {
@@ -472,7 +503,8 @@ public class Manager {
 		Charset charSet = Charset.defaultCharset();
 
 		StringBuilder text = new StringBuilder();
-		InputStreamReader input = new InputStreamReader(new FileInputStream(file), charSet);
+		InputStreamReader input = new InputStreamReader(new FileInputStream(
+				file), charSet);
 		char[] buffer = new char[16384];
 		int length;
 		while ((length = input.read(buffer)) != -1) {
@@ -484,13 +516,15 @@ public class Manager {
 		return text.toString();
 	}
 
-	public static void saveStringToFile(File file, String data) throws IOException {
+	public static void saveStringToFile(File file, String data)
+			throws IOException {
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 		out.write(data);
 		out.close();
 	}
 
-	public static void setForceShowingLoginDialogNextTime(boolean forceShowingLoginDialogNextTime) {
+	public static void setForceShowingLoginDialogNextTime(
+			boolean forceShowingLoginDialogNextTime) {
 		Manager.forceShowingLoginDialogNextTime = forceShowingLoginDialogNextTime;
 	}
 
@@ -560,8 +594,10 @@ public class Manager {
 			myConflictResolver = resolver;
 		}
 
-		public ISVNMerger createMerger(byte[] conflictStart, byte[] conflictSeparator, byte[] conflictEnd) {
-			return new SVNMergerIgnoreEol(new DefaultSVNMerger(conflictStart, conflictSeparator, conflictEnd, myConflictResolver));
+		public ISVNMerger createMerger(byte[] conflictStart,
+				byte[] conflictSeparator, byte[] conflictEnd) {
+			return new SVNMergerIgnoreEol(new DefaultSVNMerger(conflictStart,
+					conflictSeparator, conflictEnd, myConflictResolver));
 		}
 	}
 
@@ -573,13 +609,21 @@ public class Manager {
 			this.delegate = delegate;
 		}
 
-		public SVNMergeResult mergeProperties(String localPath, SVNProperties workingProperties, SVNProperties baseProperties, SVNProperties serverBaseProps,
-		        SVNProperties propDiff, SVNAdminArea adminArea, SVNLog log, boolean baseMerge, boolean dryRun) throws SVNException {
-			return this.delegate.mergeProperties(localPath, workingProperties, baseProperties, serverBaseProps, propDiff, adminArea, log, baseMerge, dryRun);
+		public SVNMergeResult mergeProperties(String localPath,
+				SVNProperties workingProperties, SVNProperties baseProperties,
+				SVNProperties serverBaseProps, SVNProperties propDiff,
+				SVNAdminArea adminArea, SVNLog log, boolean baseMerge,
+				boolean dryRun) throws SVNException {
+			return this.delegate.mergeProperties(localPath, workingProperties,
+					baseProperties, serverBaseProps, propDiff, adminArea, log,
+					baseMerge, dryRun);
 		}
 
-		public SVNMergeResult mergeText(SVNMergeFileSet files, boolean dryRun, SVNDiffOptions options) throws SVNException {
-			if (options == null && Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol())) {
+		public SVNMergeResult mergeText(SVNMergeFileSet files, boolean dryRun,
+				SVNDiffOptions options) throws SVNException {
+			if (options == null
+					&& Boolean.TRUE.equals(SettingsStore.getInstance()
+							.getGlobalIgnoreEol())) {
 				options = new SVNDiffOptions(false, false, true);
 			}
 			return this.delegate.mergeText(files, dryRun, options);
@@ -588,35 +632,39 @@ public class Manager {
 
 	public static Icon getIconError() {
 		if (ICON_ERROR == null) {
-			ICON_ERROR = Manager.loadIcon("/hu/pagavcs/resources/dialog-error.png");
+			ICON_ERROR = ResourceBundleAccessor.getImage("dialog-error.png");
 		}
 		return ICON_ERROR;
 	}
 
 	public static Icon getIconInformation() {
 		if (ICON_INFORMATION == null) {
-			ICON_INFORMATION = Manager.loadIcon("/hu/pagavcs/resources/dialog-information.png");
+			ICON_INFORMATION = ResourceBundleAccessor
+					.getImage("dialog-information.png");
 		}
 		return ICON_INFORMATION;
 	}
 
 	public static Icon getIconPassword() {
 		if (ICON_PASSWORD == null) {
-			ICON_PASSWORD = Manager.loadIcon("/hu/pagavcs/resources/dialog-password.png");
+			ICON_PASSWORD = ResourceBundleAccessor
+					.getImage("dialog-password.png");
 		}
 		return ICON_PASSWORD;
 	}
 
 	public static Icon getIconQuestion() {
 		if (ICON_QUESTION == null) {
-			ICON_QUESTION = Manager.loadIcon("/hu/pagavcs/resources/dialog-question.png");
+			ICON_QUESTION = ResourceBundleAccessor
+					.getImage("dialog-question.png");
 		}
 		return ICON_QUESTION;
 	}
 
 	public static Icon getIconWarning() {
 		if (ICON_WARNING == null) {
-			ICON_WARNING = Manager.loadIcon("/hu/pagavcs/resources/dialog-warning.png");
+			ICON_WARNING = ResourceBundleAccessor
+					.getImage("dialog-warning.png");
 		}
 		return ICON_WARNING;
 	}

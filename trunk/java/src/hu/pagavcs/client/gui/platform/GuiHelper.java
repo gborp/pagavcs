@@ -2,8 +2,8 @@ package hu.pagavcs.client.gui.platform;
 
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.WindowPreferencesSaverOnClose;
-import hu.pagavcs.client.gui.CommitListItem;
 import hu.pagavcs.client.operation.ContentStatus;
+import hu.pagavcs.common.ResourceBundleAccessor;
 
 import java.awt.AWTEvent;
 import java.awt.Color;
@@ -60,17 +60,18 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class GuiHelper {
 
-	private static HashMap<ContentStatus, ImageIcon> mapContentStatusIcon;
-	private static HashMap<ContentStatus, ImageIcon> mapPropertyContentStatusIcon;
+	private static HashMap<ContentStatus, ImageIcon> mapContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();;
+	private static HashMap<ContentStatus, ImageIcon> mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
 
-	private static boolean                           guiInitialized;
-	private static boolean                           iconsInitialized;
+	private static boolean guiInitialized;
 
 	public static void initGui() {
 		if (!guiInitialized) {
 			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e) {}
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+			}
 			guiInitialized = true;
 		}
 	}
@@ -80,44 +81,101 @@ public class GuiHelper {
 		Integer width = 12;
 		Integer height = 12;
 
-		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CommitListItem.class.getResource("/hu/pagavcs/resources/emblems/" + name + ".png")));
-		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
+		ImageIcon ii = ResourceBundleAccessor.getImage("emblems/" + name
+				+ ".png");
+		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(
+				width, height, Image.SCALE_SMOOTH));
 
 		return imageIcon;
 	}
 
-	private static void initIcons() {
-		if (!iconsInitialized) {
-			mapContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
-			mapContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
-			mapContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
-			mapContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
-			mapContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
-			mapContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
-			mapContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
-			mapContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
-			mapContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
-
-			mapPropertyContentStatusIcon = new HashMap<ContentStatus, ImageIcon>();
-			mapPropertyContentStatusIcon.put(ContentStatus.ADDED, loadEmblem("added"));
-			mapPropertyContentStatusIcon.put(ContentStatus.CONFLICTED, loadEmblem("conflict"));
-			mapPropertyContentStatusIcon.put(ContentStatus.DELETED, loadEmblem("deleted"));
-			mapPropertyContentStatusIcon.put(ContentStatus.IGNORED, loadEmblem("ignored"));
-			mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED, loadEmblem("modified"));
-			mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED, loadEmblem("obstructed"));
-			mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED, loadEmblem("unversioned"));
-			mapPropertyContentStatusIcon.put(ContentStatus.MISSING, loadEmblem("missing"));
-			iconsInitialized = true;
-		}
-	}
-
 	public static ImageIcon getContentStatusIcon(ContentStatus contentStatus) {
-		initIcons();
+		ImageIcon result = mapContentStatusIcon.get(contentStatus);
+		if (result != null) {
+			return result;
+		}
+		synchronized (mapContentStatusIcon) {
+			switch (contentStatus) {
+			case ADDED:
+				mapContentStatusIcon.put(ContentStatus.ADDED,
+						loadEmblem("added"));
+				break;
+			case CONFLICTED:
+				mapContentStatusIcon.put(ContentStatus.CONFLICTED,
+						loadEmblem("conflict"));
+				break;
+			case DELETED:
+				mapContentStatusIcon.put(ContentStatus.DELETED,
+						loadEmblem("deleted"));
+				break;
+			case IGNORED:
+				mapContentStatusIcon.put(ContentStatus.IGNORED,
+						loadEmblem("ignored"));
+				break;
+			case MODIFIED:
+				mapContentStatusIcon.put(ContentStatus.MODIFIED,
+						loadEmblem("modified"));
+			case OBSTRUCTED:
+				mapContentStatusIcon.put(ContentStatus.OBSTRUCTED,
+						loadEmblem("obstructed"));
+				break;
+			case UNVERSIONED:
+				mapContentStatusIcon.put(ContentStatus.UNVERSIONED,
+						loadEmblem("unversioned"));
+				break;
+			case MISSING:
+				mapContentStatusIcon.put(ContentStatus.MISSING,
+						loadEmblem("missing"));
+				break;
+			}
+		}
 		return mapContentStatusIcon.get(contentStatus);
 	}
 
-	public static ImageIcon getPropertyContentStatusIcon(ContentStatus contentStatus) {
-		initIcons();
+	public static ImageIcon getPropertyContentStatusIcon(
+			ContentStatus contentStatus) {
+		ImageIcon result = mapPropertyContentStatusIcon.get(contentStatus);
+		if (result != null) {
+			return result;
+		}
+
+		synchronized (mapPropertyContentStatusIcon) {
+			switch (contentStatus) {
+			case ADDED:
+				mapPropertyContentStatusIcon.put(ContentStatus.ADDED,
+						loadEmblem("added"));
+				break;
+			case CONFLICTED:
+				mapPropertyContentStatusIcon.put(ContentStatus.CONFLICTED,
+						loadEmblem("conflict"));
+				break;
+			case DELETED:
+				mapPropertyContentStatusIcon.put(ContentStatus.DELETED,
+						loadEmblem("deleted"));
+
+				break;
+			case IGNORED:
+				mapPropertyContentStatusIcon.put(ContentStatus.IGNORED,
+						loadEmblem("ignored"));
+				break;
+			case MODIFIED:
+				mapPropertyContentStatusIcon.put(ContentStatus.MODIFIED,
+						loadEmblem("modified"));
+				break;
+			case OBSTRUCTED:
+				mapPropertyContentStatusIcon.put(ContentStatus.OBSTRUCTED,
+						loadEmblem("obstructed"));
+				break;
+			case UNVERSIONED:
+				mapPropertyContentStatusIcon.put(ContentStatus.UNVERSIONED,
+						loadEmblem("unversioned"));
+				break;
+			case MISSING:
+				mapPropertyContentStatusIcon.put(ContentStatus.MISSING,
+						loadEmblem("missing"));
+				break;
+			}
+		}
 		return mapPropertyContentStatusIcon.get(contentStatus);
 	}
 
@@ -135,7 +193,8 @@ public class GuiHelper {
 		addPopupMenu(component, contextMenu);
 	}
 
-	public static void addPopupMenu(JComponent component, final JPopupMenu contextMenu) {
+	public static void addPopupMenu(JComponent component,
+			final JPopupMenu contextMenu) {
 
 		component.addMouseListener(new MouseAdapter() {
 
@@ -245,7 +304,8 @@ public class GuiHelper {
 		if (parent != null) {
 			dim = new Rectangle(parent.getLocationOnScreen(), parent.getSize());
 		} else {
-			dim = new Rectangle(new Point(0, 0), Toolkit.getDefaultToolkit().getScreenSize());
+			dim = new Rectangle(new Point(0, 0), Toolkit.getDefaultToolkit()
+					.getScreenSize());
 		}
 
 		Rectangle bounds = child.getBounds();
@@ -254,19 +314,22 @@ public class GuiHelper {
 		setBounds(child, bounds);
 	}
 
-	public static Frame createFrame(JComponent pnlMain, String applicationName, String iconName) {
+	public static Frame createFrame(JComponent pnlMain, String applicationName,
+			String iconName) {
 		return createFrame(pnlMain, applicationName, iconName, true);
 	}
 
-	public static Frame createFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
+	public static Frame createFrame(JComponent pnlMain, String applicationName,
+			String iconName, boolean addScrollPane) {
 		initGui();
 		if (iconName == null) {
-			iconName = "/hu/pagavcs/resources/icon.png";
+			iconName = "icon.png";
 		}
 		Frame frame = new Frame(applicationName, iconName);
 		frame.getContentPane().add(addBorder(pnlMain, addScrollPane));
 
-		frame.setTitle(applicationName + " [" + Manager.getApplicationRootName() + "]");
+		frame.setTitle(applicationName + " ["
+				+ Manager.getApplicationRootName() + "]");
 
 		frame.addWindowListener(new WindowAdapter() {
 
@@ -278,51 +341,61 @@ public class GuiHelper {
 		return frame;
 	}
 
-	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName) {
+	public static Frame createAndShowFrame(JComponent pnlMain,
+			String applicationName) {
 		return createAndShowFrame(pnlMain, applicationName, null);
 	}
 
-	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName) {
+	public static Frame createAndShowFrame(JComponent pnlMain,
+			String applicationName, String iconName) {
 		return createAndShowFrame(pnlMain, applicationName, iconName, true);
 	}
 
-	public static Frame createAndShowFrame(JComponent pnlMain, String applicationName, String iconName, boolean addScrollPane) {
+	public static Frame createAndShowFrame(JComponent pnlMain,
+			String applicationName, String iconName, boolean addScrollPane) {
 		initGui();
-		Frame frame = createFrame(pnlMain, applicationName, iconName, addScrollPane);
+		Frame frame = createFrame(pnlMain, applicationName, iconName,
+				addScrollPane);
 		frame.invalidate();
 		frame.pack();
 		Dimension prefSize = frame.getPreferredSize();
 		frame.setMinimumSize(prefSize);
 
-		Rectangle bounds = Manager.getSettings().getWindowBounds(applicationName);
+		Rectangle bounds = Manager.getSettings().getWindowBounds(
+				applicationName);
 		if (bounds != null) {
 			setBounds(frame, bounds);
 		} else {
 			centerScreen(frame);
 		}
 
-		frame.addWindowListener(new WindowPreferencesSaverOnClose(null, applicationName));
+		frame.addWindowListener(new WindowPreferencesSaverOnClose(null,
+				applicationName));
 		frame.setVisible(true);
 
 		return frame;
 	}
 
-	public static JDialog createDialog(Window parent, JComponent main, String title) {
+	public static JDialog createDialog(Window parent, JComponent main,
+			String title) {
 		initGui();
 		final JDialog dialog = new JDialog(parent);
 		dialog.getContentPane().add(addBorder(main, true));
 		dialog.setTitle(title);
-		dialog.setIconImage(Toolkit.getDefaultToolkit().getImage(Manager.class.getResource("/hu/pagavcs/resources/icon.png")));
+		dialog.setIconImage(ResourceBundleAccessor.getImage("icon.png")
+				.getImage());
 		dialog.pack();
 
-		dialog.addWindowListener(new WindowPreferencesSaverOnClose(parent, title));
+		dialog.addWindowListener(new WindowPreferencesSaverOnClose(parent,
+				title));
 
 		dialog.getRootPane().registerKeyboardAction(new ActionListener() {
 
 			public void actionPerformed(ActionEvent actionEvent) {
 				dialog.setVisible(false);
 			}
-		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 		Rectangle bounds = Manager.getSettings().getWindowBounds(parent, title);
 		if (bounds != null) {
@@ -374,14 +447,17 @@ public class GuiHelper {
 	}
 
 	public static void closeWindow(Window window) {
-		AWTEvent windowEvenet = new WindowEvent(window, WindowEvent.WINDOW_CLOSING);
+		AWTEvent windowEvenet = new WindowEvent(window,
+				WindowEvent.WINDOW_CLOSING);
 		window.dispatchEvent(windowEvenet);
 		window.setVisible(false);
 		window.dispose();
 	}
 
-	private static JComponent addBorder(JComponent pnlMain, boolean addScrollPane) {
-		JPanel pnlBorder = new JPanel(new FormLayout("2dlu,fill:p:g,2dlu", "2dlu,fill:p:g,2dlu"));
+	private static JComponent addBorder(JComponent pnlMain,
+			boolean addScrollPane) {
+		JPanel pnlBorder = new JPanel(new FormLayout("2dlu,fill:p:g,2dlu",
+				"2dlu,fill:p:g,2dlu"));
 
 		pnlBorder.add(pnlMain, new CellConstraints(2, 2));
 
@@ -410,7 +486,8 @@ public class GuiHelper {
 					if (undo.canUndo()) {
 						undo.undo();
 					}
-				} catch (CannotUndoException e) {}
+				} catch (CannotUndoException e) {
+				}
 			}
 		});
 		inputMap.put(KeyStroke.getKeyStroke("control Z"), "Undo");
@@ -421,7 +498,8 @@ public class GuiHelper {
 					if (undo.canRedo()) {
 						undo.redo();
 					}
-				} catch (CannotRedoException e) {}
+				} catch (CannotRedoException e) {
+				}
 			}
 		});
 		inputMap.put(KeyStroke.getKeyStroke("control Y"), "Redo");
@@ -436,7 +514,8 @@ public class GuiHelper {
 	 */
 	public static Color getColorMix(Color color1, Color color2, float mix) {
 		int red = (int) ((1 - mix) * color1.getRed() + mix * color2.getRed());
-		int green = (int) ((1 - mix) * color1.getGreen() + mix * color2.getGreen());
+		int green = (int) ((1 - mix) * color1.getGreen() + mix
+				* color2.getGreen());
 		int blue = (int) ((1 - mix) * color1.getBlue() + mix * color2.getBlue());
 		return new Color(red, green, blue, color1.getAlpha());
 	}
