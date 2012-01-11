@@ -46,6 +46,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -266,22 +267,45 @@ public class Communication {
 				}
 
 				boolean waitSyncMode = false;
-				if (line.startsWith("wait ")) {
-					waitSyncMode = true;
-					line = line.substring("wait ".length());
-				}
-
-				int commandEndIndex = line.indexOf(' ');
-				String command = line.substring(0,
-						commandEndIndex > -1 ? commandEndIndex : line.length());
-
+				boolean autoClose = false;
+				String command;
 				String arg = null;
-				if (commandEndIndex > -1) {
-					arg = line.substring(commandEndIndex + 1);
-				}
+				List<String> lstArg = null;
+				if (line.startsWith("\"")) {
 
-				if (command.charAt(0) == '"') {
-					command = command.substring(1, command.length() - 1);
+					String[] elements = line.split("\\\" \\\"");
+					elements[0] = elements[0].substring(1);
+					int eLastIndex = elements.length - 1;
+					String eLast = elements[eLastIndex];
+					elements[eLastIndex] = eLast.substring(0,
+							eLast.length() - 2);
+
+					ArrayList<String> lstElements = new ArrayList<String>(
+							Arrays.asList(elements));
+
+					if (lstElements.get(0).equals("wait")) {
+						waitSyncMode = true;
+						lstElements.remove(0);
+					}
+					if (lstElements.get(0).equals("autoclose")) {
+						autoClose = true;
+						lstElements.remove(0);
+					}
+					command = lstElements.get(0);
+					lstElements.remove(0);
+					lstArg = lstElements;
+					if (lstElements.size() > 0) {
+						arg = lstArg.get(0);
+					}
+				} else {
+					int commandEndIndex = line.indexOf(' ');
+					command = line.substring(
+							0,
+							commandEndIndex > -1 ? commandEndIndex : line
+									.length());
+					if (commandEndIndex > -1) {
+						arg = line.substring(commandEndIndex + 1);
+					}
 				}
 
 				if (command.equals("getfileinfo")) {
@@ -295,53 +319,56 @@ public class Communication {
 				} else if (command.equals("getemblem")) {
 					outCommEmblem(socket, arg);
 				} else {
-					List<String> lstArg = new ArrayList<String>();
+
 					if (arg != null) {
-						boolean inQuote = false;
-						boolean inBackslash = false;
-						StringBuilder sb = new StringBuilder();
-						for (char c : arg.toCharArray()) {
+						if (lstArg == null) {
+							lstArg = new ArrayList<String>();
+							boolean inQuote = false;
+							boolean inBackslash = false;
+							StringBuilder sb = new StringBuilder();
+							for (char c : arg.toCharArray()) {
 
-							if (!inBackslash) {
-								if (c == '\"') {
+								if (!inBackslash) {
+									if (c == '\"') {
 
-									if (inQuote) {
-										inQuote = false;
-									} else {
-										inQuote = true;
-										sb = new StringBuilder();
-									}
-								} else if (c == ' ' && !inQuote) {
-									lstArg.add(sb.toString());
-									sb = null;
-								} else {
-									if (c == '\\') {
-										inBackslash = true;
-									} else {
-										if (sb == null) {
-											// wrong file url
-											break;
+										if (inQuote) {
+											inQuote = false;
+										} else {
+											inQuote = true;
+											sb = new StringBuilder();
 										}
-										sb.append(c);
+									} else if (c == ' ' && !inQuote) {
+										lstArg.add(sb.toString());
+										sb = null;
+									} else {
+										if (c == '\\') {
+											inBackslash = true;
+										} else {
+											if (sb == null) {
+												// wrong file url
+												break;
+											}
+											sb.append(c);
+										}
 									}
+								} else {
+									sb.append(c);
+									inBackslash = false;
 								}
-							} else {
-								sb.append(c);
-								inBackslash = false;
 							}
-						}
 
-						if (sb != null) {
-							lstArg.add(sb.toString());
+							if (sb != null) {
+								lstArg.add(sb.toString());
+							}
 						}
 					}
 
 					if (command.equals("getmenuitems")) {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
-						new Thread(new ProcessInput(command, lstArg), line)
-								.start();
-						outComm(socket, "Processing...\n");
+						new Thread(new ProcessInput(command, lstArg,
+								waitSyncMode, autoClose), line).start();
+						outComm(socket, "Processing " + command + "...\n");
 					}
 				}
 
@@ -537,10 +564,15 @@ public class Communication {
 
 		private final String command;
 		private final List<String> lstArg;
+		private final boolean waitSyncMode;
+		private final boolean autoClose;
 
-		public ProcessInput(String command, List<String> lstArg) {
+		public ProcessInput(String command, List<String> lstArg,
+				boolean waitSyncMode, boolean autoClose) {
 			this.command = command;
 			this.lstArg = lstArg;
+			this.waitSyncMode = waitSyncMode;
+			this.autoClose = autoClose;
 		}
 
 		public void run() {
@@ -569,11 +601,13 @@ public class Communication {
 					}
 				} else if (COMMAND_UPDATE.equals(command)) {
 					Update update = new Update(lstArg);
+					update.setAutoClose(autoClose);
 					update.execute();
 				} else if (COMMAND_UPDATE_TO_REVISION.equals(command)) {
 					for (String path : lstArg) {
 						UpdateToRevisionOperation updateToRevision = new UpdateToRevisionOperation(
 								path);
+						updateToRevision.setAutoClose(autoClose);
 						updateToRevision.execute();
 					}
 				} else if (COMMAND_LOG.equals(command)) {
@@ -608,6 +642,7 @@ public class Communication {
 				} else if (COMMAND_CLEANUP.equals(command)) {
 					for (String path : lstArg) {
 						Cleanup cleanup = new Cleanup(path);
+						cleanup.setAutoClose(autoClose);
 						cleanup.execute();
 					}
 				} else if (COMMAND_LOCK.equals(command)) {
@@ -677,7 +712,8 @@ public class Communication {
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
 				} else {
-					throw new RuntimeException("unimplemented command");
+					throw new RuntimeException("unimplemented command: "
+							+ command);
 				}
 			} catch (Exception ex) {
 				Manager.handle(ex);

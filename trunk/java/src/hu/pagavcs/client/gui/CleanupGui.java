@@ -32,8 +32,8 @@ import com.jgoodies.forms.layout.FormLayout;
 public class CleanupGui {
 
 	private Cleanup cleanup;
-	private JLabel  lblStatus;
-	private Frame   frame;
+	private JLabel lblStatus;
+	private Frame frame;
 
 	public CleanupGui(Cleanup cleanup) {
 		this.cleanup = cleanup;
@@ -41,7 +41,8 @@ public class CleanupGui {
 
 	public void display() throws SVNException {
 
-		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu,p:g", "p,2dlu:g,p,2dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu,p:g",
+				"p,2dlu:g,p,2dlu,p"));
 		CellConstraints cc = new CellConstraints();
 		frame = GuiHelper.createFrame(pnlMain, "Cleanup", null);
 
@@ -52,8 +53,10 @@ public class CleanupGui {
 
 		pnlMain.add(lblWorkingCopy, cc.xy(1, 1));
 		pnlMain.add(sfWorkingCopy, cc.xy(3, 1));
-		pnlMain.add(btnClose, cc.xywh(1, 3, 3, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
-		pnlMain.add(lblStatus, cc.xywh(1, 5, 3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+		pnlMain.add(btnClose, cc.xywh(1, 3, 3, 1, CellConstraints.CENTER,
+				CellConstraints.DEFAULT));
+		pnlMain.add(lblStatus, cc.xywh(1, 5, 3, 1, CellConstraints.LEFT,
+				CellConstraints.DEFAULT));
 
 		frame.execute();
 	}
@@ -65,7 +68,6 @@ public class CleanupGui {
 	}
 
 	public void close() {
-		frame.setVisible(false);
 		frame.dispose();
 	}
 
