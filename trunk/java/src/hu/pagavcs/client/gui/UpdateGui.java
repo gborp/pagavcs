@@ -662,4 +662,19 @@ public class UpdateGui implements Working {
 				+ ((int) (totalReceived / 1024)) + " kB)");
 	}
 
+	public void close() {
+		frame.dispose();
+	}
+
+	public boolean needUserInteraction() {
+		for (UpdateListItem uli : tmdlUpdate.getAllData()) {
+			UpdateContentStatus updateContentStatus = uli.getContentStatus();
+			ContentStatus contentStatus = uli.getStatus();
+			if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)
+					|| ContentStatus.CONFLICTED.equals(contentStatus)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

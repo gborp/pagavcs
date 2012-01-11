@@ -41,12 +41,13 @@ public class Update implements Cancelable {
 		NONE, CONFLICTED, MERGED, RESOLVED
 	}
 
-	private List<File>  lstFile;
-	private boolean     cancel;
-	private UpdateGui   gui;
+	private List<File> lstFile;
+	private boolean cancel;
+	private UpdateGui gui;
 	private SVNRevision updateToRevision;
-	private File        baseDir;
-	private boolean     baseDirIsNotSvned;
+	private File baseDir;
+	private boolean baseDirIsNotSvned;
+	private boolean autoClose;
 
 	public Update(List<String> lstArg) throws Exception {
 		lstFile = new ArrayList<File>();
@@ -54,11 +55,20 @@ public class Update implements Cancelable {
 			lstFile.add(new File(fileName));
 		}
 		baseDir = Manager.getCommonBaseDir(lstFile);
-		if (FileStatusCache.getInstance().getStatus(baseDir).equals(STATUS.NONE)) {
+		if (FileStatusCache.getInstance().getStatus(baseDir)
+				.equals(STATUS.NONE)) {
 			baseDirIsNotSvned = true;
 		}
 		setCancel(false);
 		setUpdateToRevision(SVNRevision.HEAD);
+	}
+
+	public void setAutoClose(boolean autoClose) {
+		this.autoClose = autoClose;
+	}
+
+	public boolean isAutoClose() {
+		return autoClose;
 	}
 
 	public SVNRevision getUpdateToRevision() {
@@ -73,7 +83,8 @@ public class Update implements Cancelable {
 		gui = new UpdateGui(this);
 		gui.display();
 
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
+				1);
 		executor.scheduleAtFixedRate(new Runnable() {
 
 			public void run() {
@@ -105,16 +116,23 @@ public class Update implements Cancelable {
 			boolean successOrExit = false;
 			while (!successOrExit) {
 				try {
-					updateClient.doUpdate(lstFile.toArray(new File[0]), updateToRevision, SVNDepth.INFINITY, true, true);
+					updateClient.doUpdate(lstFile.toArray(new File[0]),
+							updateToRevision, SVNDepth.INFINITY, true, true);
 					successOrExit = true;
 				} catch (SVNCancelException ex) {
 					successOrExit = true;
 				} catch (SVNException ex) {
-					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
+					SVNErrorCode errorCode = ex.getErrorMessage()
+							.getErrorCode();
 					if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-						File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
-						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
-						        "Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
+						File file = (File) ex.getErrorMessage()
+								.getRelatedObjects()[0];
+						int choosed = JOptionPane.showConfirmDialog(
+								Manager.getRootFrame(),
+								"Working copy " + file.getPath()
+										+ " is locked, do cleanup?",
+								"Working copy locked, cleanup?",
+								JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
 							Cleanup cleanup = new Cleanup(file.getPath());
 							cleanup.setAutoClose(true);
@@ -128,6 +146,9 @@ public class Update implements Cancelable {
 					}
 
 				}
+			}
+			if (autoClose && !gui.needUserInteraction()) {
+				gui.close();
 			}
 		} catch (Exception ex) {
 			gui.setStatus(ContentStatus.FAILED);

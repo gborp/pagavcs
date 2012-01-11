@@ -31,16 +31,18 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class UpdateToRevisionOperation implements Cancelable {
 
-	private String              path;
+	private String path;
 	private UpdateToRevisionGui gui;
-	private boolean             autoClose;
-	private boolean             cancel;
+	private boolean autoClose;
+	private boolean cancel;
 
-	public UpdateToRevisionOperation(String path) throws BackingStoreException, SVNException {
+	public UpdateToRevisionOperation(String path) throws BackingStoreException,
+			SVNException {
 		this.path = path;
 	}
 
-	public void execute() throws SVNException, BackingStoreException, PagaException {
+	public void execute() throws SVNException, BackingStoreException,
+			PagaException {
 		gui = new UpdateToRevisionGui(this);
 		gui.display();
 		gui.setStatus(GeneralStatus.INIT);
@@ -61,7 +63,7 @@ public class UpdateToRevisionOperation implements Cancelable {
 			mgrSvn.dispose();
 		}
 		if (autoClose) {
-			gui.close();
+			// gui.close();
 		}
 	}
 
@@ -90,7 +92,8 @@ public class UpdateToRevisionOperation implements Cancelable {
 		return cancel;
 	}
 
-	public void doUpdateToRevision(String wc, String toRevision) throws Exception {
+	public void doUpdateToRevision(String wc, String toRevision)
+			throws Exception {
 		SVNRevision revision;
 		if (toRevision.isEmpty()) {
 			revision = SVNRevision.HEAD;
@@ -102,7 +105,8 @@ public class UpdateToRevisionOperation implements Cancelable {
 		update.execute();
 	}
 
-	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {
+	public void doShowLog(String pathToShowLog) throws SVNException,
+			BackingStoreException, Exception {
 		new Log(pathToShowLog).execute();
 	}
 
