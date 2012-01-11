@@ -1,3 +1,11 @@
+pagavcs (1.4.57) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Issue 119:	Window sizes are not correct (small) --- merge-gui, resolve-conflict-gui, fix saving window bounds when closing by ESC
+  *  Issue 140:	Use less memory on 64bit OS (using java's compressed pointers) --- reverting
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 08 Jan 2012 11:29:15 +0100
+
 pagavcs (1.4.56) karmic; urgency=low
 
   [ Gábor Pápai ]
