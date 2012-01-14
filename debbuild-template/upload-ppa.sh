@@ -1,14 +1,17 @@
 #!/bin/sh
 
-APPNAME=pagavcs
-VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
-WDIRNAMESHORT=${APPNAME}_${VERSION}
-WDIRNAME=${WDIRNAMESHORT}~all
+if [ "$1" = "" ]; then
+	echo Usage: ./cmd [distribution-code-name]
+	exit 1
+fi
 
-./common.sh
+. ./common.sh $1
+
 cd $WDIR
 debuild -S -sa
 
 cd ..
-#cp ${WDIRNAMESHORT}_source.changes ${WDIRNAME}_source.changes 
 dput ppa:gaborgabor/pagavcs ${WDIRNAME}_source.changes 
+
+
+rm -r -f $WDIRNAME
