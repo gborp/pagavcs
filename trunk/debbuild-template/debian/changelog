@@ -1,3 +1,11 @@
+pagavcs (1.4.60-2karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  packaging issues
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 14 Jan 2012 16:11:41 +0100
+
+
 pagavcs (1.4.60-1~all) karmic; urgency=low
 
   [ Gábor Pápai ]

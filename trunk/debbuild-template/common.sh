@@ -1,20 +1,32 @@
 #!/bin/sh
 
+if [ "$1" = "" ]; then
+	echo Usage: ./cmd [distribution-code-name]
+	exit 1
+fi
+
+OWNDIR=`pwd`
+DIST=$1
+
 APPNAME=pagavcs
 VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
-WDIRNAME=$APPNAME_${VERSION}
+WDIRNAME=${APPNAME}_${VERSION}${DIST}~all
 WDIR=../$WDIRNAME
 export WDIR
+export APPNAME
+export VERSION
+export WDIRNAME
 
-rm -r $WDIR
-rmdir $WDIR
+rm -r -f $WDIR
 mkdir $WDIR
 
 cd ../java
 ./build.sh
-cd ../debbuild-template
+cd $OWNDIR
 
 cp -r debian $WDIR/debian
+
+sed -i "s/karmic/$DIST/g" $WDIR/debian/changelog
 
 mkdir $WDIR/debian/input
 mkdir $WDIR/debian/input/gnome3
