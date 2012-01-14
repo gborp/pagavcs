@@ -1,15 +1,15 @@
 #!/bin/sh
 
-APPNAME=pagavcs
-VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
-WDIRNAME=$APPNAME-${VERSION}
-WDIR=../$WDIRNAME
+if [ "$1" = "" ]; then
+	echo Usage: ./cmd [distribution-code-name]
+	exit 1
+fi
 
-./common.sh
+. ./common.sh $1
 
+
+echo wdir: $WDIR
 cd $WDIR
 debuild -sa
 
-rm -r $WDIR
-rmdir $WDIR
-
+rm -r -f $WDIR
