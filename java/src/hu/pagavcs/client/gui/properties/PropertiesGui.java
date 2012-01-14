@@ -6,13 +6,10 @@ import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
 import hu.pagavcs.client.gui.platform.Table;
 import hu.pagavcs.client.gui.platform.TableModel;
-import hu.pagavcs.client.gui.platform.TextArea;
 import hu.pagavcs.client.operation.PropertiesOperation;
 
-import java.awt.Dialog.ModalityType;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -21,8 +18,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -195,73 +190,46 @@ public class PropertiesGui {
 		}
 	}
 
-	private class EditAction extends AbstractAction {
+	private class AddAction extends AbstractAction {
 
-		JDialog dlgEditProp;
-		private PropertiesListItem propertiesListItem;
-		private TextArea taValue;
-		private JCheckBox cbRecursively;
+		public AddAction() {
+			super("Add");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			new EditAddProperty().execute(propertiesOperation, frame,
+					tmdlProperties, new PropertiesListItem());
+		}
+	}
+
+	private class EditAction extends AbstractAction {
 
 		public EditAction() {
 			super("Edit");
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			propertiesListItem = getSelectedPropertyListItem();
-
-			CellConstraints cc = new CellConstraints();
-			FormLayout lyMain = new FormLayout("f:200:g,p,2dlu,p",
-					"f:200:g,2dlu,p");
-			JPanel pnlMain = new JPanel(lyMain);
-			taValue = new TextArea();
-			taValue.setColumns(40);
-			taValue.setRows(10);
-			taValue.setText(propertiesListItem.getValue());
-			JButton btnOk = new JButton("Ok");
-			btnOk.addActionListener(new ActionListener() {
-
-				public void actionPerformed(ActionEvent e) {
-					String value = taValue.getText();
-					if (propertiesOperation
-							.needsValueValidation(propertiesListItem.getKey())) {
-						value = propertiesOperation.validateProperty(value);
-					}
-					propertiesListItem.setValue(value);
-					propertiesListItem.setDisplayValue(propertiesOperation
-							.valueToDisplayValue(value));
-					propertiesListItem.setRecoursively(cbRecursively
-							.isSelected());
-					propertiesOperation.modifyProperty(propertiesListItem);
-					tmdlProperties.fireTableDataChanged();
-					dlgEditProp.setVisible(false);
-				}
-			});
-
-			cbRecursively = new JCheckBox("Apply recursively");
-
-			pnlMain.add(new JScrollPane(taValue), cc.xywh(1, 1, 4, 1,
-					CellConstraints.FILL, CellConstraints.FILL));
-			pnlMain.add(btnOk, cc.xy(4, 3));
-			pnlMain.add(cbRecursively, cc.xy(2, 3));
-
-			dlgEditProp = GuiHelper.createDialog(frame, pnlMain,
-					"Edit svn property");
-			dlgEditProp.setModalityType(ModalityType.DOCUMENT_MODAL);
-			dlgEditProp.setTitle("Edit " + propertiesListItem.getKey());
-			dlgEditProp.setVisible(true);
+			new EditAddProperty().execute(propertiesOperation, frame,
+					tmdlProperties, getSelectedPropertyListItem());
 		}
 	}
 
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu popup;
+		private JPopupMenu popupAdd;
 
 		public PopupupMouseListener() {
 			popup = new JPopupMenu();
+			popup.add(new AddAction());
 			popup.add(new EditAction());
 			popup.add(new DeleteAction());
 			popup.add(new CopyLineToClipboard());
 			popup.add(new CopyAllToClipboard());
+
+			popupAdd = new JPopupMenu();
+			popupAdd.add(new AddAction());
+
 		}
 
 		public void mouseClicked(MouseEvent e) {
@@ -281,6 +249,10 @@ public class PropertiesGui {
 			Point p = new Point(e.getX(), e.getY());
 			int row = tblProperties.rowAtPoint(p);
 			if (row == -1) {
+				popupAdd.setInvoker(tblProperties);
+				popupAdd.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				popupAdd.setVisible(true);
+				e.consume();
 				return;
 			}
 			tblProperties.getSelectionModel().setSelectionInterval(row, row);

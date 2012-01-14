@@ -5,12 +5,12 @@ import hu.pagavcs.client.gui.properties.PropertiesGui;
 import hu.pagavcs.client.gui.properties.PropertiesListItem;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNPropertyValue;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.ISVNPropertyHandler;
@@ -34,8 +34,8 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class PropertiesOperation {
 
-	private PropertiesGui            gui;
-	private File                     file;
+	private PropertiesGui gui;
+	private File file;
 	private List<PropertiesListItem> lstCurrentProperties;
 	private List<PropertiesListItem> lstModifiedProperties;
 	private List<PropertiesListItem> lstDeletedProperties;
@@ -58,24 +58,32 @@ public class PropertiesOperation {
 	}
 
 	private List<PropertiesListItem> getProperties() throws SVNException {
-		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 
 			File dir = file.getAbsoluteFile();
 
 			final List<SVNPropertyData> lstSvnProperties = new ArrayList<SVNPropertyData>();
-			wcClient.doGetProperty(dir, null, SVNRevision.WORKING, SVNRevision.WORKING, SVNDepth.EMPTY, new ISVNPropertyHandler() {
+			wcClient.doGetProperty(dir, null, SVNRevision.WORKING,
+					SVNRevision.WORKING, SVNDepth.EMPTY,
+					new ISVNPropertyHandler() {
 
-				public void handleProperty(File path, SVNPropertyData property) throws SVNException {
-					lstSvnProperties.add(property);
-				}
+						public void handleProperty(File path,
+								SVNPropertyData property) throws SVNException {
+							lstSvnProperties.add(property);
+						}
 
-				public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {}
+						public void handleProperty(SVNURL url,
+								SVNPropertyData property) throws SVNException {
+						}
 
-				public void handleProperty(long revision, SVNPropertyData property) throws SVNException {}
+						public void handleProperty(long revision,
+								SVNPropertyData property) throws SVNException {
+						}
 
-			}, null);
+					}, null);
 
 			List<PropertiesListItem> lstProperties = new ArrayList<PropertiesListItem>();
 			for (SVNPropertyData svnPropertyData : lstSvnProperties) {
@@ -84,8 +92,33 @@ public class PropertiesOperation {
 				if (svnPropertyData.getValue().isString()) {
 					property.setKey(svnPropertyData.getName());
 					property.setValue(svnPropertyData.getValue().getString());
-					property.setDisplayValue(valueToDisplayValue(property.getValue()));
+					property.setDisplayValue(valueToDisplayValue(property
+							.getValue()));
 					lstProperties.add(property);
+				} else if (svnPropertyData.getValue().getBytes().length == 0) {
+					property.setKey(svnPropertyData.getName());
+					property.setValue("");
+					property.setDisplayValue("");
+					lstProperties.add(property);
+				} else {
+					String value = null;
+					try {
+						try {
+							value = new String(svnPropertyData.getValue()
+									.getBytes(), "UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							value = new String(svnPropertyData.getValue()
+									.getBytes());
+						}
+					} catch (Throwable t) {
+						// ignoring
+					}
+					if (value != null) {
+						property.setKey(svnPropertyData.getName());
+						property.setValue(value);
+						property.setDisplayValue(valueToDisplayValue(value));
+						lstProperties.add(property);
+					}
 				}
 			}
 
@@ -119,7 +152,7 @@ public class PropertiesOperation {
 	}
 
 	public boolean needsValueValidation(String key) {
-		return key.startsWith("svn:");
+		return key != null && key.startsWith("svn:");
 	}
 
 	public String validateProperty(String value) {
@@ -134,6 +167,10 @@ public class PropertiesOperation {
 	}
 
 	public void modifyProperty(PropertiesListItem modifyLi) {
+		if (modifyLi.getKey() == null) {
+			return;
+		}
+
 		for (PropertiesListItem li : lstModifiedProperties) {
 			if (modifyLi.getKey().equals(li.getKey())) {
 				lstModifiedProperties.remove(li);
@@ -150,19 +187,24 @@ public class PropertiesOperation {
 	}
 
 	public void commitChanges() throws SVNException {
-		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 
 			File dir = file.getAbsoluteFile();
 
 			for (PropertiesListItem li : lstModifiedProperties) {
-				wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(li.getValue()), false, li.isRecoursively() ? SVNDepth.INFINITY
-				        : SVNDepth.EMPTY, null, null);
+				wcClient.doSetProperty(dir, li.getKey(), SVNPropertyValue
+						.create(li.getValue()), false,
+						li.isRecoursively() ? SVNDepth.INFINITY
+								: SVNDepth.EMPTY, null, null);
 			}
 			for (PropertiesListItem li : lstDeletedProperties) {
-				wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(li.getValue()), false, li.isRecoursively() ? SVNDepth.INFINITY
-				        : SVNDepth.EMPTY, null, null);
+				wcClient.doSetProperty(dir, li.getKey(), SVNPropertyValue
+						.create(li.getValue()), false,
+						li.isRecoursively() ? SVNDepth.INFINITY
+								: SVNDepth.EMPTY, null, null);
 			}
 			Manager.invalidateAllFiles();
 		} finally {
