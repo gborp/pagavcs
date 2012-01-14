@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+#-*- makefile -*-
+
+export DH_VERBOSE=1
+
+build-indep: build
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_install
+	dh_installchangelogs
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+source diff:                                                                  
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep
+.PHONY: build clean binary-indep binary
