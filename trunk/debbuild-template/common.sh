@@ -2,8 +2,9 @@
 
 APPNAME=pagavcs
 VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
-WDIRNAME=$APPNAME-${VERSION}
+WDIRNAME=$APPNAME_${VERSION}
 WDIR=../$WDIRNAME
+export WDIR
 
 rm -r $WDIR
 rmdir $WDIR
@@ -31,13 +32,3 @@ cp ../icons/hicolor/scalable/actions/* $WDIR/debian/input/icons/hicolor/scalable
 #cp ../icons/hicolor/scalable/apps/*    $WDIR/debian/input/icons/hicolor/scalable/apps
 cp ../icons/hicolor/scalable/emblems/* $WDIR/debian/input/icons/hicolor/scalable/emblems
 
-cd $WDIR
-debuild -sa
-debuild -S -sa
-
-
-rm -r $WDIR
-rmdir $WDIR
-
-#user=`whoami`
-#sudo chown -R $user *
