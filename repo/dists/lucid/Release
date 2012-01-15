@@ -1,0 +1,29 @@
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: lucid
+Date: Sun, 15 Jan 2012 09:18:25 UTC
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+MD5Sum:
+ 8045d82593a04359b1d2b87f2340d035 824 main/binary-amd64/Packages
+ 1a79613ca60e32c046ea34ca80ba173e 562 main/binary-amd64/Packages.gz
+ 2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
+ 8045d82593a04359b1d2b87f2340d035 824 main/binary-i386/Packages
+ 1a79613ca60e32c046ea34ca80ba173e 562 main/binary-i386/Packages.gz
+ 059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
+SHA1:
+ 0c187636f08fd94464e1bf6c4bac66097a219d68 824 main/binary-amd64/Packages
+ 91471264a492945215f27bf89b045527d22a3b48 562 main/binary-amd64/Packages.gz
+ 3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
+ 0c187636f08fd94464e1bf6c4bac66097a219d68 824 main/binary-i386/Packages
+ 91471264a492945215f27bf89b045527d22a3b48 562 main/binary-i386/Packages.gz
+ f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
+SHA256:
+ 786eba7a69cfa8640367d9c158bc8d688f7cbd3bbe6f06f0e490662a1b83568e 824 main/binary-amd64/Packages
+ bee346dbf003728d065cf9e5d9f0a96b34cc60a52928c5251971bcb311b0163a 562 main/binary-amd64/Packages.gz
+ 994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
+ 786eba7a69cfa8640367d9c158bc8d688f7cbd3bbe6f06f0e490662a1b83568e 824 main/binary-i386/Packages
+ bee346dbf003728d065cf9e5d9f0a96b34cc60a52928c5251971bcb311b0163a 562 main/binary-i386/Packages.gz
+ 6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release

@@ -1,0 +1,39 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: maverick
+Date: Sun, 15 Jan 2012 09:18:26 UTC
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+MD5Sum:
+ 9ca379e89a35e6a884dd9eec4d422dba 830 main/binary-amd64/Packages
+ 300c1f1e3afcf9ca7d505d3ed01f1c38 563 main/binary-amd64/Packages.gz
+ 2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
+ 9ca379e89a35e6a884dd9eec4d422dba 830 main/binary-i386/Packages
+ 300c1f1e3afcf9ca7d505d3ed01f1c38 563 main/binary-i386/Packages.gz
+ 059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
+SHA1:
+ e53aadc1d7dee982553ba4d453a8037549d0bef0 830 main/binary-amd64/Packages
+ 6973d5055fed8af88f313146ad8f8a99851a9327 563 main/binary-amd64/Packages.gz
+ 3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
+ e53aadc1d7dee982553ba4d453a8037549d0bef0 830 main/binary-i386/Packages
+ 6973d5055fed8af88f313146ad8f8a99851a9327 563 main/binary-i386/Packages.gz
+ f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
+SHA256:
+ ae781e89c987e3bd38ec47270e2e07c8502000d114f3dea891e6eddf5fcda3cb 830 main/binary-amd64/Packages
+ 29fdf04149948ee796f9b541bb7440df3fc4f7d67b3cbf2b1c6011b9b77c7827 563 main/binary-amd64/Packages.gz
+ 994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
+ ae781e89c987e3bd38ec47270e2e07c8502000d114f3dea891e6eddf5fcda3cb 830 main/binary-i386/Packages
+ 29fdf04149948ee796f9b541bb7440df3fc4f7d67b3cbf2b1c6011b9b77c7827 563 main/binary-i386/Packages.gz
+ 6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iEYEARECAAYFAk8SmeIACgkQRsybjT+u4doclgCfaneSDs/TMgpUuMsYthoh+wBE
+b+kAn2AdmvGNQtSpSWX5/XsPe7csTeFC
+=7X+d
+-----END PGP SIGNATURE-----
