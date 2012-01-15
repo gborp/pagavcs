@@ -1,0 +1,6 @@
+pagavcs-nautilus (1.4.61-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate Nautilus and core package
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 15 Jan 2012 11:11:41 +0100

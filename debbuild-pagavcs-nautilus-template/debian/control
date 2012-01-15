@@ -1,4 +1,4 @@
-Source: pagavcs
+Source: pagavcs-nautilus
 Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
@@ -6,9 +6,9 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.9.2
 Homepage: http://pagavcs.googlecode.com
 
-Package: pagavcs
+Package: pagavcs-nautilus
 Architecture: all
-Depends: pagavcs-core, pagavcs-nautilus
+Depends: pagavcs-core, python-nautilus, ${misc:Depends}
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
  It's written in Java and Python (Nautilus-integration).
