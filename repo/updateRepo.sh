@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function update_pagavcs {
-	ls -1 ../trunk/debbuild-temp/*$1*.deb > /dev/null 2>&1
+	ls -1 ../trunk/temp-build/*$1*.deb > /dev/null 2>&1
 	if [ "$?" = "0" ]; then
-		reprepro --ask-passphrase --keepunreferencedfiles -b . includedeb $1 ../trunk/debbuild-temp/*$1*.deb
+		reprepro --ask-passphrase --keepunreferencedfiles -b . includedeb $1 ../trunk/temp-build/*$1*.deb
 	fi
 }
 
