@@ -1,0 +1,6 @@
+Archive: stable
+Component: main
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Architecture: amd64
+Description: A selection of pagavcs-packages, free to use, without charge!
