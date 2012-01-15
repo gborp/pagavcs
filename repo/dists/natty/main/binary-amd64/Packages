@@ -1,17 +1,55 @@
 Package: pagavcs
-Version: 1.4.60-2natty~all
+Version: 1.4.61-1natty~all
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Installed-Size: 5976
-Depends: sun-java6-jre | default-jre, meld, python-nautilus, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
+Installed-Size: 44
+Depends: pagavcs-core, pagavcs-nautilus
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs/pagavcs_1.4.60-2natty~all_all.deb
-Size: 4573698
-SHA256: d6e424783bcdee40ec1f8a50bd649096b33bf6febaaf2334351861e51ab8094c
-SHA1: 0f6356969e03ccb9297ae454d7cec7c1f0fff5f5
-MD5sum: 9391b84aa12dbc64384ecebd611b91e2
+Filename: pool/main/p/pagavcs/pagavcs_1.4.61-1natty~all_all.deb
+Size: 9698
+SHA256: 5e71b3611e94eca954eca6f1990aa249d0dfd27493c3350c04cd3781bdefe3a5
+SHA1: 9cc973ac6ce3332364c14cfba12dd5b2a0bebd4b
+MD5sum: 1fe7e532bd1a4442d6d2ca8795c9d39f
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
+ It's written in Java and Python (Nautilus-integration).
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
+
+Package: pagavcs-core
+Version: 1.4.61-1natty~all
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 5276
+Depends: sun-java6-jre | default-jre, meld, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.61-1natty~all_all.deb
+Size: 3902610
+SHA256: 8dbf1756d70c8dbefaa3b9f66e5e9e4ce07d7d917cb989ce484f58cf964583e2
+SHA1: ebb8f0ffcf3d29ea88f4b1860190767f60abf57c
+MD5sum: 4e8624f9a12079a312ef28985f8caefc
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
+ It's written in Java and Python (Nautilus-integration).
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
+
+Package: pagavcs-nautilus
+Version: 1.4.61-1natty~all
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 76
+Depends: pagavcs-core, python-nautilus
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/p/pagavcs-nautilus/pagavcs-nautilus_1.4.61-1natty~all_all.deb
+Size: 4130
+SHA256: dd67b9ac8eb35bde308a8b02f0753cb9bfcbf505725bd20d43663616f7ab6512
+SHA1: 866263fb5fd2ac7e4cdef60963fc46bad2ce9750
+MD5sum: 881c2903a62ef36094d0bcc44ffdc42c
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
