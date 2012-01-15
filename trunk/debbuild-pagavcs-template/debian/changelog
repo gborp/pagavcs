@@ -1,7 +1,7 @@
 pagavcs (1.4.61-1karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
-  *  Smaller package size
+  *  pagavcs package is now a meta-package over pagavcs-core and pagavcs-nautilus
 
  -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 15 Jan 2012 11:11:41 +0100
 
