@@ -1,7 +1,0 @@
-debian/input/pagavcs.jar /usr/share/pagavcs/bin
-debian/input/icon.png /usr/share/pagavcs/data
-debian/input/pagavcs /usr/bin
-debian/input/pagavcs-nautilus.py /usr/lib/nautilus/extensions-2.0/python
-debian/input/gnome3/pagavcs-nautilus.py /usr/share/nautilus-python/extensions
-debian/input/doc/* /usr/share/doc/pagavcs
-debian/input/icons/* /usr/share/icons
