@@ -6,3 +6,39 @@ Architectures: amd64 i386
 Components: main
 Description: A selection of pagavcs-packages, free to use, without charge!
 SignWith: gabor.papai@gmail.com
+
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: maverick
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+SignWith: gabor.papai@gmail.com
+
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: lucid
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+SignWith: gabor.papai@gmail.com
+
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: natty
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+SignWith: gabor.papai@gmail.com
+
+Origin: http://pagavcs.googlecode.com
+Label: PagaVCS apt repository
+Suite: stable
+Codename: oneiric
+Architectures: amd64 i386
+Components: main
+Description: A selection of pagavcs-packages, free to use, without charge!
+SignWith: gabor.papai@gmail.com
