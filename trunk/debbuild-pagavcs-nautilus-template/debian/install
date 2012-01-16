@@ -1,2 +1,2 @@
-debian/input/pagavcs-nautilus.py /usr/lib/nautilus/extensions-2.0/python
-debian/input/gnome3/pagavcs-nautilus.py /usr/share/nautilus-python/extensions
+debian/input/pagavcs-nautilus2.py /usr/lib/nautilus/extensions-2.0/python
+debian/input/gnome3/pagavcs-nautilus2.py /usr/share/nautilus-python/extensions
