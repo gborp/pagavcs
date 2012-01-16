@@ -31,6 +31,5 @@ sed -i "s/karmic/$DIST/g" $WDIR/debian/changelog
 
 mkdir $WDIR/debian/input
 mkdir $WDIR/debian/input/gnome3
-mkdir $WDIR/debian/input/doc
 cp ../scripts/pagavcs-nautilus.py $WDIR/debian/input/
 cp ../scripts/gnome3/pagavcs-nautilus.py $WDIR/debian/input/gnome3
