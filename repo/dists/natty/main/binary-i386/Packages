@@ -18,19 +18,38 @@ Description: Desktop integrated Subversion client
  Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
 
 Package: pagavcs-core
-Version: 1.4.62-1natty~all
+Version: 1.4.63-1natty~all
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Installed-Size: 5880
-Depends: sun-java6-jre | default-jre, meld, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
+Installed-Size: 2264
+Depends: pagavcs-core-libs, sun-java6-jre | default-jre, meld, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.62-1natty~all_all.deb
-Size: 4514520
-SHA256: cef24e4f8fc85dd62dde59d97fd3fd188b4d9f76f815ca955d2f267898dba446
-SHA1: 1d8f78800114e291e5a6d56d28c3e20bd1a12630
-MD5sum: 79438bc18b07d715604aefb4dc46aa62
+Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.63-1natty~all_all.deb
+Size: 1021816
+SHA256: 8475b1d4f68307a606d20794baa66c6b5b468a26749d3679308f4953038f3c44
+SHA1: f0713164efeefb838c361da25450aedd5e33abd0
+MD5sum: 875c5da5025e25133338d259d35151b8
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
+ It's written in Java and Python (Nautilus-integration).
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
+
+Package: pagavcs-core-libs
+Version: 1.4.63-1natty~all
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 3708
+Depends: sun-java6-jre | default-jre
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/p/pagavcs-core-libs/pagavcs-core-libs_1.4.63-1natty~all_all.deb
+Size: 3541778
+SHA256: 4e1f154d04ced87c2cb599e71d21933ff2ec89b2d14eece733126734397baf8c
+SHA1: a98c909ee3e6d170eafc44b61e41b767e40efec4
+MD5sum: ae3fbd53ceae27338dde9889d5221758
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
