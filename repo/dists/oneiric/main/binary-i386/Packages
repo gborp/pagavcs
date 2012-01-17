@@ -18,19 +18,38 @@ Description: Desktop integrated Subversion client
  Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
 
 Package: pagavcs-core
-Version: 1.4.62-1oneiric~all
+Version: 1.4.63-1oneiric~all
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
-Installed-Size: 5880
-Depends: sun-java6-jre | default-jre, meld, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
+Installed-Size: 2264
+Depends: pagavcs-core-libs, sun-java6-jre | default-jre, meld, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.62-1oneiric~all_all.deb
-Size: 4514492
-SHA256: e6a0f7bb4bffa15aab844d2e280877c00f2c3110f525fbbc6740e01649497801
-SHA1: 4da72630bc54720d2365afb88f00210bcf84fe21
-MD5sum: ffb3d13d0fc713e8f93096eab9c45f49
+Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.63-1oneiric~all_all.deb
+Size: 1021862
+SHA256: 2e7332830e85e438e399c5899e1dd5e44db37e5fc51684ab108210f2f096e9a1
+SHA1: 7ee19edea6a1a59d0173815b17efb4721be560d7
+MD5sum: e036ad46e1ef18e2563b11bd26e84d25
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
+ It's written in Java and Python (Nautilus-integration).
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
+
+Package: pagavcs-core-libs
+Version: 1.4.63-1oneiric~all
+Architecture: all
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Installed-Size: 3708
+Depends: sun-java6-jre | default-jre
+Homepage: http://pagavcs.googlecode.com
+Priority: optional
+Section: devel
+Filename: pool/main/p/pagavcs-core-libs/pagavcs-core-libs_1.4.63-1oneiric~all_all.deb
+Size: 3541774
+SHA256: d19274ab51df6b8879bc3f7fdfa8361b505fc3e35d2af7e74e81a697ede37680
+SHA1: 56a30ed4a9ae8f344a42446a5ba33f2ccf9c3684
+MD5sum: 8f087937de674c45e35e8c178b5bc955
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
