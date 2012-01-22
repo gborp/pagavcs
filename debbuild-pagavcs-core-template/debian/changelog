@@ -1,3 +1,12 @@
+pagavcs-core (1.4.64-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Issue 147: [log] show differences on double-clicking on the upper table too
+  *  Issue 148: [log] exception on "show changes" on a newly created directory
+  *  Issue 136: [log] "show log" on a file in the bottom detail log table too
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 22 Jan 2012 14:20:31 +0100
+
 pagavcs-core (1.4.63-1karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
