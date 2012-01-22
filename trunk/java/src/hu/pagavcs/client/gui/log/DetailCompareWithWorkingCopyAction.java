@@ -4,7 +4,6 @@
 package hu.pagavcs.client.gui.log;
 
 import hu.pagavcs.client.bl.ThreadAction;
-import hu.pagavcs.client.gui.LogDetailListItem;
 
 import java.awt.event.ActionEvent;
 

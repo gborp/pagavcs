@@ -1,6 +1,7 @@
 package hu.pagavcs.client.gui;
 
 import hu.pagavcs.client.bl.Manager;
+import hu.pagavcs.client.gui.log.LogDetailListItem;
 import hu.pagavcs.client.gui.platform.AbstractCellRendererColorizator;
 import hu.pagavcs.client.gui.platform.Table;
 
