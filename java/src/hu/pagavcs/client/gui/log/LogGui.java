@@ -540,6 +540,10 @@ public class LogGui implements Working {
 		return false;
 	}
 
+	public String getAbsoluteUrl(String detailPath) {
+		return svnRepoRootUrl.toString() + detailPath;
+	}
+
 	public void refreshDetailView() {
 		List<LogListItem> lstSelected = getSelectedLogItems();
 		if (lstSelected.isEmpty()) {
@@ -748,6 +752,7 @@ public class LogGui implements Working {
 			ppModified.add(new DetailShowChangesAction(LogGui.this));
 			ppModified.add(new ShowFileAction(LogGui.this));
 			ppModified.add(new SaveRevisionToAction(LogGui.this));
+			ppModified.add(new ShowLogAction(LogGui.this));
 			ppModified.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
 			ppModified.add(new DetailRevertChangesFromThisRevisionAction(
 					LogGui.this));
@@ -761,6 +766,7 @@ public class LogGui implements Working {
 			ppAdded.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
 			ppAdded.add(new DetailRevertChangesFromThisRevisionAction(
 					LogGui.this));
+			ppAdded.add(new ShowLogAction(LogGui.this));
 			ppAdded.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppAdded.add(new CopyDetailAllToClipboard(LogGui.this));
 			ppAdded.add(new CopyDetailAllGrouppedToClipboard(LogGui.this));
@@ -771,6 +777,7 @@ public class LogGui implements Working {
 			ppDeleted.add(new DetailCompareWithWorkingCopyAction(LogGui.this));
 			ppDeleted.add(new DetailRevertChangesFromThisRevisionAction(
 					LogGui.this));
+			ppDeleted.add(new ShowLogAction(LogGui.this));
 			ppDeleted.add(new CopyDetailLineToClipboard(LogGui.this));
 			ppDeleted.add(new CopyDetailAllToClipboard(LogGui.this));
 			ppDeleted.add(new CopyDetailAllGrouppedToClipboard(LogGui.this));
