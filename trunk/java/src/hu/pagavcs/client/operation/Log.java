@@ -212,8 +212,8 @@ public class Log implements Cancelable {
 			previousRevision = Manager.getPreviousRevisionNumber(svnUrl,
 					revision);
 		}
-		SvnHelper.showPropertyChangesFromRepo(gui, svnUrl, revision,
-				previousRevision, contentStatus);
+		SvnHelper.showPropertyChangesFromRepo(gui, svnUrl, previousRevision,
+				revision, contentStatus);
 	}
 
 	public void showFile(String showChangesPath, long revision)
@@ -226,7 +226,7 @@ public class Log implements Cancelable {
 		try {
 			gui.workStarted();
 			saveRevisionTo(showChangesPath, revision, fileNew);
-			ProcessBuilder processBuilder = new ProcessBuilder("gedit",
+			ProcessBuilder processBuilder = new ProcessBuilder(Manager.GEDIT,
 					tempPrefix + fileNameNew);
 			Process process = processBuilder.start();
 			gui.workEnded();
@@ -333,15 +333,15 @@ public class Log implements Cancelable {
 
 			ProcessBuilder processBuilder;
 			if (contentStatus.equals(ContentStatus.DELETED)) {
-				processBuilder = new ProcessBuilder("gedit", tempPrefix
+				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
 						+ fileNameOld);
 			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				processBuilder = new ProcessBuilder("gedit", tempPrefix
+				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
 						+ fileNameNew);
 			} else {
-				processBuilder = new ProcessBuilder("meld",
-						"-L " + fileNameOld, tempPrefix + fileNameOld, "-L "
-								+ fileNameNew, tempPrefix + fileNameNew);
+				processBuilder = new ProcessBuilder(Manager.MELD, "-L "
+						+ fileNameOld, tempPrefix + fileNameOld, "-L "
+						+ fileNameNew, tempPrefix + fileNameNew);
 			}
 			Process process = processBuilder.start();
 			gui.workEnded();
@@ -410,11 +410,13 @@ public class Log implements Cancelable {
 
 			ProcessBuilder processBuilder;
 			if (contentStatus.equals(ContentStatus.DELETED)) {
-				processBuilder = new ProcessBuilder("gedit", file.toString());
+				processBuilder = new ProcessBuilder(Manager.GEDIT,
+						file.toString());
 			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				processBuilder = new ProcessBuilder("gedit", file.toString());
+				processBuilder = new ProcessBuilder(Manager.GEDIT,
+						file.toString());
 			} else {
-				processBuilder = new ProcessBuilder("meld", "-L "
+				processBuilder = new ProcessBuilder(Manager.MELD, "-L "
 						+ file.getName(), file.toString(), "-L " + fileNameNew,
 						tempPrefix + fileNameNew);
 			}

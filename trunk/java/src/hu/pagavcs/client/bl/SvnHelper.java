@@ -4,6 +4,7 @@ import hu.pagavcs.client.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.client.gui.UpdateGui;
 import hu.pagavcs.client.gui.Working;
 import hu.pagavcs.client.gui.platform.MessagePane;
+import hu.pagavcs.client.gui.platform.StringHelper;
 import hu.pagavcs.client.operation.Cleanup;
 import hu.pagavcs.client.operation.ContentStatus;
 import hu.pagavcs.client.operation.MergeDryRunEventHandler;
@@ -55,7 +56,8 @@ public class SvnHelper {
 		return SVNRevision.create(Long.valueOf(str));
 	}
 
-	public static Collection<SVNRevisionRange> getRevisionRanges(String revisionRange, boolean reverseMerge) throws PagaException {
+	public static Collection<SVNRevisionRange> getRevisionRanges(
+			String revisionRange, boolean reverseMerge) throws PagaException {
 		Collection<SVNRevisionRange> rangesToMerge = new ArrayList<SVNRevisionRange>();
 		for (String range : revisionRange.split(",")) {
 			range = range.trim();
@@ -72,17 +74,21 @@ public class SvnHelper {
 				endRevision = SVNRevision.create(startRevision.getNumber());
 			}
 			if (reverseMerge) {
-				rangesToMerge.add(new SVNRevisionRange(endRevision, SVNRevision.create(startRevision.getNumber() - 1)));
+				rangesToMerge.add(new SVNRevisionRange(endRevision, SVNRevision
+						.create(startRevision.getNumber() - 1)));
 			} else {
-				rangesToMerge.add(new SVNRevisionRange(SVNRevision.create(startRevision.getNumber() - 1), endRevision));
+				rangesToMerge.add(new SVNRevisionRange(SVNRevision
+						.create(startRevision.getNumber() - 1), endRevision));
 			}
 		}
 
 		return rangesToMerge;
 	}
 
-	public static void doMerge(Cancelable cancelable, String urlTo, String pathTo, String urlFrom, String pathFrom, String revisionRange, boolean reverseMerge,
-	        boolean ignoreEolStyle) throws Exception {
+	public static void doMerge(Cancelable cancelable, String urlTo,
+			String pathTo, String urlFrom, String pathFrom,
+			String revisionRange, boolean reverseMerge, boolean ignoreEolStyle)
+			throws Exception {
 
 		cancelable.setCancel(false);
 		UpdateGui updateGui = new UpdateGui(cancelable, "Merge");
@@ -93,16 +99,19 @@ public class SvnHelper {
 			updateGui.setStatus(ContentStatus.INIT);
 			clientMgr = Manager.getSVNClientManager(new File(pathTo));
 			SVNDiffClient diffClient = clientMgr.getDiffClient();
-			diffClient.setMergeOptions(new SVNDiffOptions(false, false, ignoreEolStyle));
+			diffClient.setMergeOptions(new SVNDiffOptions(false, false,
+					ignoreEolStyle));
 			SVNDepth depth = SVNDepth.INFINITY;
 			boolean useAncestry = true;
 			boolean force = true;
 			boolean recordOnly = false;
-			Collection<SVNRevisionRange> rangesToMerge = getRevisionRanges(revisionRange, reverseMerge);
+			Collection<SVNRevisionRange> rangesToMerge = getRevisionRanges(
+					revisionRange, reverseMerge);
 
 			updateGui.setStatus(ContentStatus.STARTED);
 
-			MergeDryRunEventHandler mergeDryRunEventHandler = new MergeDryRunEventHandler(cancelable);
+			MergeDryRunEventHandler mergeDryRunEventHandler = new MergeDryRunEventHandler(
+					cancelable);
 			diffClient.setEventHandler(mergeDryRunEventHandler);
 
 			boolean success = false;
@@ -112,19 +121,26 @@ public class SvnHelper {
 				while (!success && !exit) {
 					try {
 						if (pathFrom == null) {
-							diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force,
-							        true, recordOnly);
+							diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom),
+									SVNRevision.HEAD, rangesToMerge, new File(
+											pathTo), depth, useAncestry, force,
+									true, recordOnly);
 						} else {
-							diffClient.doMerge(new File(pathFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, true,
-							        recordOnly);
+							diffClient.doMerge(new File(pathFrom),
+									SVNRevision.HEAD, rangesToMerge, new File(
+											pathTo), depth, useAncestry, force,
+									true, recordOnly);
 						}
 						success = true;
 					} catch (SVNCancelException ex) {
 						exit = true;
 					} catch (SVNException ex) {
-						if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
-							int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
-							        JOptionPane.YES_NO_OPTION);
+						if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage()
+								.getErrorCode())) {
+							int choosed = JOptionPane.showConfirmDialog(
+									Manager.getRootFrame(),
+									"Working copy is locked, do cleanup?",
+									"Error", JOptionPane.YES_NO_OPTION);
 							if (choosed == JOptionPane.YES_OPTION) {
 								Cleanup cleanup = new Cleanup(pathTo);
 								cleanup.setAutoClose(true);
@@ -139,7 +155,8 @@ public class SvnHelper {
 					}
 				}
 
-				List<File> multiConflictedFiles = mergeDryRunEventHandler.getMultiConflictedFiles();
+				List<File> multiConflictedFiles = mergeDryRunEventHandler
+						.getMultiConflictedFiles();
 				if (!multiConflictedFiles.isEmpty()) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("Cannot perform multi merge,\nbecause the following files are conflicted and in a later revision would be updated:\n");
@@ -148,29 +165,39 @@ public class SvnHelper {
 						sb.append('\n');
 					}
 					sb.append("Please do the merge revision by revision.\n");
-					MessagePane.showError(updateGui.getFrame(), "Cannot perform multi merge", sb.toString());
+					MessagePane.showError(updateGui.getFrame(),
+							"Cannot perform multi merge", sb.toString());
 					cancelable.setCancel(true);
 					exit = true;
 				}
 			}
 
-			diffClient.setEventHandler(new UpdateEventHandler(cancelable, updateGui));
+			diffClient.setEventHandler(new UpdateEventHandler(cancelable,
+					updateGui));
 			success = false;
 			while (!success && !exit) {
 				try {
 					if (pathFrom == null) {
-						diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force,
-						        false, recordOnly);
+						diffClient.doMerge(SVNURL.parseURIDecoded(urlFrom),
+								SVNRevision.HEAD, rangesToMerge, new File(
+										pathTo), depth, useAncestry, force,
+								false, recordOnly);
 					} else {
-						diffClient.doMerge(new File(pathFrom), SVNRevision.HEAD, rangesToMerge, new File(pathTo), depth, useAncestry, force, false, recordOnly);
+						diffClient.doMerge(new File(pathFrom),
+								SVNRevision.HEAD, rangesToMerge, new File(
+										pathTo), depth, useAncestry, force,
+								false, recordOnly);
 					}
 					success = true;
 				} catch (SVNCancelException ex) {
 					exit = true;
 				} catch (SVNException ex) {
-					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
-						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
-						        JOptionPane.YES_NO_OPTION);
+					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage()
+							.getErrorCode())) {
+						int choosed = JOptionPane.showConfirmDialog(
+								Manager.getRootFrame(),
+								"Working copy is locked, do cleanup?", "Error",
+								JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
 							Cleanup cleanup = new Cleanup(pathTo);
 							cleanup.setAutoClose(true);
@@ -196,28 +223,37 @@ public class SvnHelper {
 		}
 	}
 
-	public static void createPatch(File basePath, File[] wcFiles, OutputStream out) throws SVNException {
-		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+	public static void createPatch(File basePath, File[] wcFiles,
+			OutputStream out) throws SVNException {
+		SVNClientManager mgrSvn = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNDiffClient diffClient = mgrSvn.getDiffClient();
 			diffClient.getDiffGenerator().setBasePath(basePath);
 			for (File wcFile : wcFiles) {
-				diffClient.doDiff(wcFile, SVNRevision.BASE, wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, true, out, null);
+				diffClient
+						.doDiff(wcFile, SVNRevision.BASE, wcFile,
+								SVNRevision.WORKING, SVNDepth.INFINITY, true,
+								out, null);
 			}
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public static void showChangesFromBase(Working working, File wcFile) throws Exception {
+	public static void showChangesFromBase(Working working, File wcFile)
+			throws Exception {
 		working.workStarted();
 		try {
 			File fileOld = Manager.getBaseFile(wcFile);
 
 			String wcFilePath = wcFile.getPath();
-			String fileName = wcFilePath.substring(wcFilePath.lastIndexOf('/') + 1);
+			String fileName = wcFilePath
+					.substring(wcFilePath.lastIndexOf('/') + 1);
 
-			ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileOld.getName(), fileOld.getPath(), "-L " + fileName, wcFilePath);
+			ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD,
+					"-L " + fileOld.getName(), fileOld.getPath(), "-L "
+							+ fileName, wcFilePath);
 			Process process = processBuilder.start();
 			working.workEnded();
 			process.waitFor();
@@ -227,8 +263,9 @@ public class SvnHelper {
 		}
 	}
 
-	public static void showChangesBetweenRevisions(Working working, String path, SVNRevision previousRevision, SVNRevision revision, ContentStatus contentStatus)
-	        throws Exception {
+	public static void showChangesBetweenRevisions(Working working,
+			String path, SVNRevision previousRevision, SVNRevision revision,
+			ContentStatus contentStatus) throws Exception {
 
 		FileOutputStream outNewRevision = null;
 		FileOutputStream outOldRevision = null;
@@ -244,7 +281,8 @@ public class SvnHelper {
 			String fileName = path.substring(path.lastIndexOf('/') + 1);
 
 			String fileNameNew = "r" + revision.toString() + "-" + fileName;
-			String fileNameOld = "r" + previousRevision.toString() + "-" + fileName;
+			String fileNameOld = "r" + previousRevision.toString() + "-"
+					+ fileName;
 			String tempPrefix = Manager.getTempDir();
 
 			fileNew = new File(tempPrefix + fileNameNew);
@@ -256,13 +294,17 @@ public class SvnHelper {
 
 			// FIXME it doesn't work for DELETED currently
 			if (!contentStatus.equals(ContentStatus.DELETED)) {
-				wcClient.doGetFileContents(new File(path), revision, revision, false, outNewRevision);
+				wcClient.doGetFileContents(new File(path), revision, revision,
+						false, outNewRevision);
 				if (!contentStatus.equals(ContentStatus.ADDED)) {
-					wcClient.doGetFileContents(new File(path), previousRevision, previousRevision, false, outOldRevision);
+					wcClient.doGetFileContents(new File(path),
+							previousRevision, previousRevision, false,
+							outOldRevision);
 				}
 			} else {
 				SVNURL svnUrl = Manager.getSvnUrlByFile(new File(path));
-				wcClient.doGetFileContents(svnUrl, previousRevision, previousRevision, false, outOldRevision);
+				wcClient.doGetFileContents(svnUrl, previousRevision,
+						previousRevision, false, outOldRevision);
 			}
 
 			fileNew.setReadOnly();
@@ -272,11 +314,15 @@ public class SvnHelper {
 
 			ProcessBuilder processBuilder;
 			if (contentStatus.equals(ContentStatus.DELETED)) {
-				processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameOld);
+				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
+						+ fileNameOld);
 			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				processBuilder = new ProcessBuilder("gedit", tempPrefix + fileNameNew);
+				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
+						+ fileNameNew);
 			} else {
-				processBuilder = new ProcessBuilder("meld", "-L " + fileNameOld, tempPrefix + fileNameOld, "-L " + fileNameNew, tempPrefix + fileNameNew);
+				processBuilder = new ProcessBuilder(Manager.MELD, "-L "
+						+ fileNameOld, tempPrefix + fileNameOld, "-L "
+						+ fileNameNew, tempPrefix + fileNameNew);
 			}
 			Process process = processBuilder.start();
 			working.workEnded();
@@ -307,65 +353,78 @@ public class SvnHelper {
 		}
 	}
 
-	private static List<SVNPropertyData> showPropertyChangesFromBase(Working working, File wcFile, SVNRevision pegRevision, SVNRevision revision)
-	        throws Exception {
+	private static List<SVNPropertyData> showPropertyChangesFromBase(
+			Working working, File wcFile, SVNRevision pegRevision,
+			SVNRevision revision) throws Exception {
 		final List<SVNPropertyData> lstResult = new ArrayList<SVNPropertyData>();
-		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager svnMgr = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = svnMgr.getWCClient();
 			ISVNPropertyHandler handler = new ISVNPropertyHandler() {
 
-				public void handleProperty(long revision, SVNPropertyData property) throws SVNException {
+				public void handleProperty(long revision,
+						SVNPropertyData property) throws SVNException {
 					lstResult.add(property);
 				}
 
-				public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {
+				public void handleProperty(SVNURL url, SVNPropertyData property)
+						throws SVNException {
 					lstResult.add(property);
 				}
 
-				public void handleProperty(File path, SVNPropertyData property) throws SVNException {
+				public void handleProperty(File path, SVNPropertyData property)
+						throws SVNException {
 					lstResult.add(property);
 				}
 			};
-			wcClient.doGetProperty(wcFile, null, pegRevision, revision, SVNDepth.EMPTY, handler, null);
+			wcClient.doGetProperty(wcFile, null, pegRevision, revision,
+					SVNDepth.EMPTY, handler, null);
 			return lstResult;
 		} finally {
 			svnMgr.dispose();
 		}
 	}
 
-	private static List<SVNPropertyData> showPropertyChangesFromBase(Working working, SVNURL svnUrl, SVNRevision pegRevision, SVNRevision revision)
-	        throws Exception {
+	private static List<SVNPropertyData> showPropertyChangesFromBase(
+			Working working, SVNURL svnUrl, SVNRevision pegRevision,
+			SVNRevision revision) throws Exception {
 		final List<SVNPropertyData> lstResult = new ArrayList<SVNPropertyData>();
 		SVNClientManager svnMgr = Manager.getSVNClientManager(svnUrl);
 		try {
 			SVNWCClient wcClient = svnMgr.getWCClient();
 			ISVNPropertyHandler handler = new ISVNPropertyHandler() {
 
-				public void handleProperty(long revision, SVNPropertyData property) throws SVNException {
+				public void handleProperty(long revision,
+						SVNPropertyData property) throws SVNException {
 					lstResult.add(property);
 				}
 
-				public void handleProperty(SVNURL url, SVNPropertyData property) throws SVNException {
+				public void handleProperty(SVNURL url, SVNPropertyData property)
+						throws SVNException {
 					lstResult.add(property);
 				}
 
-				public void handleProperty(File path, SVNPropertyData property) throws SVNException {
+				public void handleProperty(File path, SVNPropertyData property)
+						throws SVNException {
 					lstResult.add(property);
 				}
 			};
-			wcClient.doGetProperty(svnUrl, null, pegRevision, revision, SVNDepth.EMPTY, handler);
+			wcClient.doGetProperty(svnUrl, null, pegRevision, revision,
+					SVNDepth.EMPTY, handler);
 			return lstResult;
 		} finally {
 			svnMgr.dispose();
 		}
 	}
 
-	private static String propertyListToString(List<SVNPropertyData> lstSvnProperty) {
+	private static String propertyListToString(
+			List<SVNPropertyData> lstSvnProperty) {
 		StringBuilder sb = new StringBuilder();
 		for (SVNPropertyData li : lstSvnProperty) {
 			String name = li.getName();
-			String valueAll = SVNPropertyValue.getPropertyAsString(li.getValue());
+			String valueAll = SVNPropertyValue.getPropertyAsString(li
+					.getValue());
 			for (String value : valueAll.split("\n")) {
 				sb.append(name);
 				sb.append("=");
@@ -377,10 +436,13 @@ public class SvnHelper {
 		return sb.toString();
 	}
 
-	public static void showPropertyChangesFromBase(Working working, File wcFile) throws Exception {
+	public static void showPropertyChangesFromBase(Working working, File wcFile)
+			throws Exception {
 		working.workStarted();
-		String strBase = propertyListToString(showPropertyChangesFromBase(working, wcFile, SVNRevision.BASE, SVNRevision.BASE));
-		String strWorking = propertyListToString(showPropertyChangesFromBase(working, wcFile, SVNRevision.WORKING, SVNRevision.WORKING));
+		String strBase = propertyListToString(showPropertyChangesFromBase(
+				working, wcFile, SVNRevision.BASE, SVNRevision.BASE));
+		String strWorking = propertyListToString(showPropertyChangesFromBase(
+				working, wcFile, SVNRevision.WORKING, SVNRevision.WORKING));
 
 		String prefix = wcFile.getName();
 		if (prefix.length() < 3) {
@@ -393,8 +455,9 @@ public class SvnHelper {
 		Manager.saveStringToFile(fileBase, strBase);
 		Manager.saveStringToFile(fileWorking, strWorking);
 
-		ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L " + fileBase.getName(), fileBase.getPath(), "-L " + fileWorking.getName(),
-		        fileWorking.getPath());
+		ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD, "-L "
+				+ fileBase.getName(), fileBase.getPath(), "-L "
+				+ fileWorking.getName(), fileWorking.getPath());
 		Process process = processBuilder.start();
 		working.workEnded();
 		process.waitFor();
@@ -402,25 +465,53 @@ public class SvnHelper {
 		fileWorking.delete();
 	}
 
-	public static void showPropertyChangesFromRepo(Working working, SVNURL svnUrl, long revision1, long revision2, ContentStatus contentStatus)
-	        throws Exception {
+	public static void showPropertyChangesFromRepo(Working working,
+			SVNURL svnUrl, long previousRevision, long revision,
+			ContentStatus contentStatus) throws Exception {
 		working.workStarted();
-		String strBase = propertyListToString(showPropertyChangesFromBase(working, svnUrl, SVNRevision.HEAD, SVNRevision.create(revision1)));
-		String strWorking = propertyListToString(showPropertyChangesFromBase(working, svnUrl, SVNRevision.HEAD, SVNRevision.create(revision2)));
-		File file1 = File.createTempFile("DirProp", "." + revision1);
-		File file2 = File.createTempFile("DirProp", "." + revision2);
-		file1.deleteOnExit();
-		file2.deleteOnExit();
-		Manager.saveStringToFile(file1, strBase);
-		Manager.saveStringToFile(file2, strWorking);
+		File file1 = null;
+		File file2 = null;
+		Process process = null;
+		try {
+			String strWorking = propertyListToString(showPropertyChangesFromBase(
+					working, svnUrl, SVNRevision.HEAD,
+					SVNRevision.create(revision)));
+			file2 = File.createTempFile(
+					"DirProp-" + StringHelper.depathString(svnUrl.toString())
+							+ "_", ".r" + revision);
+			Manager.saveStringToFile(file2, strWorking);
 
-		ProcessBuilder processBuilder = new ProcessBuilder("meld", "-L DirProp-" + revision1, file1.getPath(), "-L DirProp-" + revision2, file2.getPath());
-		Process process = processBuilder.start();
-		working.workEnded();
+			ProcessBuilder processBuilder;
 
-		process.waitFor();
-		file1.delete();
-		file2.delete();
+			if (previousRevision != -1) {
+				String strBase = propertyListToString(showPropertyChangesFromBase(
+						working, svnUrl, SVNRevision.HEAD,
+						SVNRevision.create(previousRevision)));
+				file1 = File.createTempFile(
+						"DirProp-"
+								+ StringHelper.depathString(svnUrl.toString())
+								+ "_", ".r" + previousRevision);
+				Manager.saveStringToFile(file1, strBase);
+				processBuilder = new ProcessBuilder(Manager.MELD, "-L DirProp-"
+						+ previousRevision, file1.getPath(), "-L DirProp-"
+						+ revision, file2.getPath());
+			} else {
+				processBuilder = new ProcessBuilder(Manager.GEDIT,
+						file2.getPath());
+			}
+			process = processBuilder.start();
+		} finally {
+			working.workEnded();
+		}
+		if (process != null) {
+			process.waitFor();
+		}
+		if (file1 != null) {
+			file1.delete();
+		}
+		if (file2 != null) {
+			file2.delete();
+		}
 	}
 
 	public static String[] getRepoUrlHistory() {

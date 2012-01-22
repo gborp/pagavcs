@@ -15,10 +15,10 @@ package hu.pagavcs.client.gui.platform;
  */
 public class StringHelper {
 
-	private static final String TAG_HTML_START   = "<html>";
-	private static final String TAG_HTML_END     = "</html>";
+	private static final String TAG_HTML_START = "<html>";
+	private static final String TAG_HTML_END = "</html>";
 	private static final String TAG_CENTER_START = "<center>";
-	private static final String TAG_CENTER_END   = "</center>";
+	private static final String TAG_CENTER_END = "</center>";
 
 	public static String toNullAware(String str) {
 		return str == null ? "" : str;
@@ -38,10 +38,18 @@ public class StringHelper {
 
 	public static String convertMultilineTextToHtmlCenter(String str) {
 		if ((str != null) && !str.isEmpty() && !str.startsWith(TAG_HTML_START)) {
-			str = TAG_HTML_START + TAG_CENTER_START + str.replaceAll("\n", "<br>") + TAG_CENTER_END + TAG_HTML_END;
+			str = TAG_HTML_START + TAG_CENTER_START
+					+ str.replaceAll("\n", "<br>") + TAG_CENTER_END
+					+ TAG_HTML_END;
 		}
 
 		return str;
 	}
 
+	public static String depathString(String str) {
+		str = str.replace("/", "_");
+		str = str.replace("\\", "_");
+		str = str.replace(":", "_");
+		return str;
+	}
 }
