@@ -3,7 +3,6 @@ package hu.pagavcs.client.gui.log;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.OnSwing;
 import hu.pagavcs.client.bl.SettingsStore;
-import hu.pagavcs.client.gui.LogDetailListItem;
 import hu.pagavcs.client.gui.LogListItem;
 import hu.pagavcs.client.gui.StatusCellRendererForLogDetailListItem;
 import hu.pagavcs.client.gui.Working;
@@ -588,6 +587,9 @@ public class LogGui implements Working {
 		}
 
 		tmdlLogDetail.addLines(lstResult);
+		if (!lstResult.isEmpty()) {
+			tblDetailLog.getSelectionModel().setSelectionInterval(0, 0);
+		}
 	}
 
 	List<LogListItem> getSelectedLogItems() {
@@ -872,6 +874,24 @@ public class LogGui implements Working {
 			if (e.isPopupTrigger()) {
 				showPopup(e);
 			}
+		}
+
+		public void mouseClicked(MouseEvent e) {
+
+			if (e.getClickCount() == 2) {
+				new Thread(new Runnable() {
+
+					public void run() {
+						try {
+							new DetailShowChangesAction(LogGui.this)
+									.actionProcess(null);
+						} catch (Exception e1) {
+							Manager.handle(e1);
+						}
+					}
+				}).start();
+			}
+
 		}
 
 	}

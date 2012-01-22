@@ -6,7 +6,6 @@ package hu.pagavcs.client.gui.log;
 import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.bl.ThreadAction;
 import hu.pagavcs.client.bl.PagaException.PagaExceptionType;
-import hu.pagavcs.client.gui.LogDetailListItem;
 import hu.pagavcs.client.gui.platform.MessagePane;
 import hu.pagavcs.client.operation.ContentStatus;
 
