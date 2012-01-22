@@ -80,6 +80,9 @@ public class Manager {
 	public static final long REVALIDATE_DELAY = 500;
 	public static final long TABLE_RESIZE_DELAY = 50;
 
+	public static final String MELD = "meld";
+	public static final String GEDIT = "gedit";
+
 	private static Icon ICON_ERROR;
 	private static Icon ICON_INFORMATION;
 	private static Icon ICON_PASSWORD;
