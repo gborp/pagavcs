@@ -5,35 +5,35 @@ Origin: http://pagavcs.googlecode.com
 Label: PagaVCS apt repository
 Suite: stable
 Codename: lucid
-Date: Tue, 17 Jan 2012 22:08:55 UTC
+Date: Sun, 22 Jan 2012 13:26:43 UTC
 Architectures: amd64 i386
 Components: main
 Description: A selection of pagavcs-packages, free to use, without charge!
 MD5Sum:
- fb78e22abaee0f42b66b2cb54ecd924f 3131 main/binary-amd64/Packages
- 2c2634a4a8b13395db8f2e61c057bad1 961 main/binary-amd64/Packages.gz
+ 3f333ee7b609616e9452492b4e991206 3131 main/binary-amd64/Packages
+ da1c9350c7daa9bbb95dbe1e171d6165 969 main/binary-amd64/Packages.gz
  2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
- fb78e22abaee0f42b66b2cb54ecd924f 3131 main/binary-i386/Packages
- 2c2634a4a8b13395db8f2e61c057bad1 961 main/binary-i386/Packages.gz
+ 3f333ee7b609616e9452492b4e991206 3131 main/binary-i386/Packages
+ da1c9350c7daa9bbb95dbe1e171d6165 969 main/binary-i386/Packages.gz
  059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
 SHA1:
- a652cb9bedbbd18c447a0127c07baec1313ad247 3131 main/binary-amd64/Packages
- 84a8dd878d00e49e3553f060f883e492e2f118d4 961 main/binary-amd64/Packages.gz
+ 1994a666f4c25938a1ad52b987cd4830d14a70ac 3131 main/binary-amd64/Packages
+ 7664562a282d9add16e21fd393ca8dee26e70652 969 main/binary-amd64/Packages.gz
  3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
- a652cb9bedbbd18c447a0127c07baec1313ad247 3131 main/binary-i386/Packages
- 84a8dd878d00e49e3553f060f883e492e2f118d4 961 main/binary-i386/Packages.gz
+ 1994a666f4c25938a1ad52b987cd4830d14a70ac 3131 main/binary-i386/Packages
+ 7664562a282d9add16e21fd393ca8dee26e70652 969 main/binary-i386/Packages.gz
  f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
 SHA256:
- 8765a759956f97e7b49b26aa00aa81b9b6ec1ca1ea28ebc941c4d693b12289b8 3131 main/binary-amd64/Packages
- 7adb42e416f3e5acc89e73fd202ef2dee48a7285db1bdc8d7d68b3627d9fac5a 961 main/binary-amd64/Packages.gz
+ 6e629639a1c5ac8bd1f803c1acca07eead462625f70448720eb3fb3c38283f1a 3131 main/binary-amd64/Packages
+ 7d3861864a435d010680dd7a1c1eef4868a465b448a8f4410d7b8a648bc33ab9 969 main/binary-amd64/Packages.gz
  994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
- 8765a759956f97e7b49b26aa00aa81b9b6ec1ca1ea28ebc941c4d693b12289b8 3131 main/binary-i386/Packages
- 7adb42e416f3e5acc89e73fd202ef2dee48a7285db1bdc8d7d68b3627d9fac5a 961 main/binary-i386/Packages.gz
+ 6e629639a1c5ac8bd1f803c1acca07eead462625f70448720eb3fb3c38283f1a 3131 main/binary-i386/Packages
+ 7d3861864a435d010680dd7a1c1eef4868a465b448a8f4410d7b8a648bc33ab9 969 main/binary-i386/Packages.gz
  6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 
-iEYEARECAAYFAk8V8XcACgkQRsybjT+u4drTsQCfdD7Q4JJUkxBkU8oJQnQmE2Ms
-QiUAnj1FHP7f1gN8OgBPdWINJpvU/GR8
-=edAc
+iEYEARECAAYFAk8cDpMACgkQRsybjT+u4dpOxwCfYJWUNZWSLBOro9e9dx2wc09U
+V6AAnipAIsYKrQFffrGqX5K8RPQ1Yz4M
+=5sgj
 -----END PGP SIGNATURE-----

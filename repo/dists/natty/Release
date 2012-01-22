@@ -2,28 +2,28 @@ Origin: http://pagavcs.googlecode.com
 Label: PagaVCS apt repository
 Suite: stable
 Codename: natty
-Date: Tue, 17 Jan 2012 22:08:55 UTC
+Date: Sun, 22 Jan 2012 13:26:44 UTC
 Architectures: amd64 i386
 Components: main
 Description: A selection of pagavcs-packages, free to use, without charge!
 MD5Sum:
- 3b79c55967beea1955d166fec1a4a8b2 3131 main/binary-amd64/Packages
- 43dfb282960db330f62d0ea80bc545d8 963 main/binary-amd64/Packages.gz
+ 23b514848e8a99c266b3ef0adcddfd9f 3131 main/binary-amd64/Packages
+ ce5805a56193102c6e7ae0654b527597 968 main/binary-amd64/Packages.gz
  2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
- 3b79c55967beea1955d166fec1a4a8b2 3131 main/binary-i386/Packages
- 43dfb282960db330f62d0ea80bc545d8 963 main/binary-i386/Packages.gz
+ 23b514848e8a99c266b3ef0adcddfd9f 3131 main/binary-i386/Packages
+ ce5805a56193102c6e7ae0654b527597 968 main/binary-i386/Packages.gz
  059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
 SHA1:
- 2d0abba58e556b826ec28b44a776708984965fd4 3131 main/binary-amd64/Packages
- 7f06cb80cba2bb9f259fff19ecab405150fef9fa 963 main/binary-amd64/Packages.gz
+ 553558d1c26bd596f36006120166aa87419954d2 3131 main/binary-amd64/Packages
+ da908504487e841a1a5048f9b027f438b2abc048 968 main/binary-amd64/Packages.gz
  3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
- 2d0abba58e556b826ec28b44a776708984965fd4 3131 main/binary-i386/Packages
- 7f06cb80cba2bb9f259fff19ecab405150fef9fa 963 main/binary-i386/Packages.gz
+ 553558d1c26bd596f36006120166aa87419954d2 3131 main/binary-i386/Packages
+ da908504487e841a1a5048f9b027f438b2abc048 968 main/binary-i386/Packages.gz
  f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
 SHA256:
- 46d752bb528b056ecba493aeb9f1f30bfbb8b460dd7bae82b1d145082b5d2982 3131 main/binary-amd64/Packages
- 700618d82c5b3bc0e2491f620f75abe0e0244a4a3ac272e25bfaa3507c4afe0e 963 main/binary-amd64/Packages.gz
+ 13f23d516e6f1accae6565fe7101076c01d390bc70bf5ea7b10839488eb0ed8f 3131 main/binary-amd64/Packages
+ 5ab1dfe9dc5975889e1bf077906aba19013be42f75435f2b7181dbbb43deccbf 968 main/binary-amd64/Packages.gz
  994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
- 46d752bb528b056ecba493aeb9f1f30bfbb8b460dd7bae82b1d145082b5d2982 3131 main/binary-i386/Packages
- 700618d82c5b3bc0e2491f620f75abe0e0244a4a3ac272e25bfaa3507c4afe0e 963 main/binary-i386/Packages.gz
+ 13f23d516e6f1accae6565fe7101076c01d390bc70bf5ea7b10839488eb0ed8f 3131 main/binary-i386/Packages
+ 5ab1dfe9dc5975889e1bf077906aba19013be42f75435f2b7181dbbb43deccbf 968 main/binary-i386/Packages.gz
  6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release
