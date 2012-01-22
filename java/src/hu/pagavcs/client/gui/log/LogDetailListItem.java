@@ -1,4 +1,4 @@
-package hu.pagavcs.client.gui;
+package hu.pagavcs.client.gui.log;
 
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.ListItem;
