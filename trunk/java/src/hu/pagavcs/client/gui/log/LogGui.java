@@ -475,7 +475,14 @@ public class LogGui implements Working {
 							}
 						}
 
+						boolean firstData = tmdlLog.getAllData().isEmpty()
+								&& !lstLi.isEmpty();
+
 						tmdlLog.addLines(lstLi);
+						if (firstData) {
+							tblLog.getSelectionModel().setSelectionInterval(0,
+									0);
+						}
 					}
 				}.run();
 			} catch (Exception e) {
