@@ -64,25 +64,41 @@ function startserver {
 	done
 }
 
+function sendToServer {
+	for x in "$@"; do
+		echo -n '"'  >&5 2> /dev/null
+		if [[ $x == .* ]];
+		then
+			echo -n `readlink -f $x`   >&5 2> /dev/null
+		else		
+			echo -n $x   >&5 2> /dev/null
+		fi
+		echo -n '" ' >&5 2> /dev/null
+	done
+}
+
 # display help
-if [ "x$1" == "x" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+if [ "x$1" == "x" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "help" ] || [ "$1" == "h" ];
 then
 	echo "usage: pagavcs [command] [argument(s)]"
-	echo "  update        Update working copy."
-	echo "  commit        Show commit dialog for working copy."
-	echo "  log           Show log for working copy."
-	echo "  ignore        Add file or directory to ignore list."
-	echo "  unignore      Remove file or directory from ignore list."
-	echo "  delete        Delete file or directory."
-	echo "  revert        Revert file or directory."
-	echo "  checkout      Checkout a working copy."
-	echo "  cleanup       Cleanup working copy."
-	echo "  resolve       Resolve conflict."
-	echo "  other         Display other window."
-	echo "  settings      Display settings window."
-	echo "  stop          Stop PagaVCS server."
-	echo "  getmenuitems  Get menuitems for file or directory. It is used by the nautilus-plugin."
-	echo "  -h, --help    Display this help."
+	echo "  update         Update working copy."
+	echo "  commit         Show commit dialog for working copy."
+	echo "  log            Show log for working copy."
+	echo "  ignore         Add file or directory to ignore list."
+	echo "  unignore       Remove file or directory from ignore list."
+	echo "  delete         Delete file or directory."
+	echo "  revert         Revert file or directory."
+	echo "  checkout       Checkout a working copy."
+	echo "  cleanup        Cleanup working copy."
+	echo "  resolve        Resolve conflict."
+	echo "  other          Display other window."
+	echo "  settings       Display settings window."
+	echo "  stop           Stop PagaVCS server."
+	echo "  getmenuitems   Get menuitems for file or directory. It is used by the nautilus-plugin."
+	echo "  -w, -wait      Wait until command finished"
+	echo "  -c, -autoclose Automatically close window after finished sucessfully"
+	echo "  help, h"
+	echo "  -h, --help     Display this help."
 	echo ""
 	echo "Example:"
 	echo "  pagavcs update \"/home/johnny/big-project\" \"/home/johnny/mega-project\""
@@ -121,28 +137,17 @@ then
 	exec 5<>/dev/tcp/localhost/${PORT}
 fi
 
-for x in "$@"; do
-	echo -n '"'  >&5 2> /dev/null
-	echo -n $x   >&5 2> /dev/null
-	echo -n '" ' >&5 2> /dev/null
-done
+sendToServer $@
 echo "" >&5 2> /dev/null
 RETVAL=$?
 cat <&5
 
-#echo "send command to PagaVCS-server: $@"
-#echo $args >&5 2> /dev/null
-#RETVAL=$?
 if [ $RETVAL != 0 ];
 then
 	rm -f /tmp/pagavcs/server-running-indicator
 	startserver
 	exec 5<>/dev/tcp/localhost/${PORT}
-	for x in "$@"; do
-		echo -n '"'  >&5 2> /dev/null
-		echo -n $x   >&5 2> /dev/null
-		echo -n '" ' >&5 2> /dev/null
-	done
+	sendToServer $@
 	echo "" >&5 2> /dev/null
 	cat <&5
 fi
