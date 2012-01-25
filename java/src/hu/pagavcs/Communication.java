@@ -75,6 +75,7 @@ public class Communication {
 	private static final String SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
 
 	private static final String COMMAND_UPDATE = "update";
+	private static final String COMMAND_UPDATE2 = "up";
 	private static final String COMMAND_LOG = "log";
 	private static final String COMMAND_COMMIT = "commit";
 	private static final String COMMAND_SHOWLOCALCHANGES = "showlocalchanges";
@@ -283,11 +284,13 @@ public class Communication {
 					ArrayList<String> lstElements = new ArrayList<String>(
 							Arrays.asList(elements));
 
-					if (lstElements.get(0).equals("wait")) {
+					if (lstElements.get(0).equals("-wait")
+							|| lstElements.get(0).equals("-w")) {
 						waitSyncMode = true;
 						lstElements.remove(0);
 					}
-					if (lstElements.get(0).equals("autoclose")) {
+					if (lstElements.get(0).equals("-autoclose")
+							|| lstElements.get(0).equals("-c")) {
 						autoClose = true;
 						lstElements.remove(0);
 					}
@@ -366,9 +369,11 @@ public class Communication {
 					if (command.equals("getmenuitems")) {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
-						new Thread(new ProcessInput(command, lstArg,
+						new Thread(new ProcessInput(command, lstArg, socket,
 								waitSyncMode, autoClose), line).start();
-						outComm(socket, "Processing " + command + "...\n");
+						if (!waitSyncMode) {
+							outComm(socket, "Processing " + command + "...\n");
+						}
 					}
 				}
 
@@ -560,17 +565,19 @@ public class Communication {
 		return singleton;
 	}
 
-	private static class ProcessInput implements Runnable {
+	private class ProcessInput implements Runnable {
 
 		private final String command;
 		private final List<String> lstArg;
 		private final boolean waitSyncMode;
 		private final boolean autoClose;
+		private final Socket socket;
 
-		public ProcessInput(String command, List<String> lstArg,
+		public ProcessInput(String command, List<String> lstArg, Socket socket,
 				boolean waitSyncMode, boolean autoClose) {
 			this.command = command;
 			this.lstArg = lstArg;
+			this.socket = socket;
 			this.waitSyncMode = waitSyncMode;
 			this.autoClose = autoClose;
 		}
@@ -599,7 +606,8 @@ public class Communication {
 						ExportOperation export = new ExportOperation(path);
 						export.execute();
 					}
-				} else if (COMMAND_UPDATE.equals(command)) {
+				} else if (COMMAND_UPDATE.equals(command)
+						|| COMMAND_UPDATE2.equals(command)) {
 					Update update = new Update(lstArg);
 					update.setAutoClose(autoClose);
 					update.execute();
@@ -712,11 +720,19 @@ public class Communication {
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
 				} else {
-					throw new RuntimeException("unimplemented command: "
+					throw new RuntimeException("Unimplemented command: "
 							+ command);
 				}
 			} catch (Exception ex) {
 				Manager.handle(ex);
+			} finally {
+				if (waitSyncMode) {
+					try {
+						outComm(socket, "Finished.\n");
+					} catch (IOException ex2) {
+						Manager.handle(ex2);
+					}
+				}
 			}
 		}
 	}
