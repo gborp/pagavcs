@@ -60,6 +60,7 @@ public class MergeGui {
 
 				cboUrlMergeFrom = new JComboBox();
 				cboUrlMergeFrom.setEditable(true);
+
 				sfRevisionRange = new EditField();
 				sfRevisionRange
 						.setToolTipText("<html>Example: 4-7,9,11,15-HEAD<br>To merge all revisions, leave the box empty.</html>");
@@ -162,8 +163,6 @@ public class MergeGui {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			String url = cboUrlMergeFrom.getSelectedItem().toString().trim();
-			backend.storeUrlForHistory(url);
-
 			SettingsStore.getInstance().setMergeIgnoreEol(
 					cbIgnoreEolStyle.isSelected());
 
