@@ -1,3 +1,10 @@
+pagavcs-core (1.4.67-karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Artwork refinement
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 21:13:56 +0100
+
 pagavcs-core (1.4.66-2karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
