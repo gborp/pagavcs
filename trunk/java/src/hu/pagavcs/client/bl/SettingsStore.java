@@ -48,11 +48,13 @@ public class SettingsStore {
 	private static final String KEY_LAST_HELP_MERGE_TO_DIR = "last-help-merge-to-dir";
 	private static final String KEY_MERGE_IGNORE_EOL = "merge-ignore-eol";
 	private static final String KEY_GLOBAL_UPDATE_IGNORE_EOL = "global-update-ignore-eol";
+	private static final String KEY_MERGE_URL_HISTORY = "merge-url-history";
 
 	private Map<String, String> mapUsername = new HashMap<String, String>();
 	private Map<String, String> mapPassword = new HashMap<String, String>();
 	private List<String> lstCommitMessages = new ArrayList<String>();
 	private List<String> lstRepoUrl = new ArrayList<String>();
+	private List<String> lstMergeUrlHistory = new ArrayList<String>();
 	private Map<String, String> mapWindowBounds = new HashMap<String, String>();
 	private Integer guiLogSeparatorDetail;
 	private Integer guiLogSeparatorMain;
@@ -89,6 +91,7 @@ public class SettingsStore {
 		storeString(KEY_LAST_HELP_MERGE_TO_DIR, lastHelpMergeToDir);
 		storeBoolean(KEY_MERGE_IGNORE_EOL, mergeIgnoreEol);
 		storeBoolean(KEY_GLOBAL_UPDATE_IGNORE_EOL, globalIgnoreEol);
+		storeList(KEY_MERGE_URL_HISTORY, lstMergeUrlHistory);
 		prefs.flush();
 	}
 
@@ -108,6 +111,7 @@ public class SettingsStore {
 		lastHelpMergeToDir = loadString(KEY_LAST_HELP_MERGE_TO_DIR);
 		mergeIgnoreEol = loadBoolean(KEY_MERGE_IGNORE_EOL);
 		globalIgnoreEol = loadBoolean(KEY_GLOBAL_UPDATE_IGNORE_EOL);
+		lstMergeUrlHistory = loadList(KEY_MERGE_URL_HISTORY);
 	}
 
 	private List<String> loadList(String listName) throws BackingStoreException {
@@ -398,5 +402,13 @@ public class SettingsStore {
 
 	public void setGlobalIgnoreEol(Boolean globalIgnoreEol) {
 		this.globalIgnoreEol = globalIgnoreEol;
+	}
+
+	public List<String> getLstMergeUrlHistory() {
+		return lstMergeUrlHistory;
+	}
+
+	public void setLstMergeUrlHistory(List<String> lstMergeUrlHistory) {
+		this.lstMergeUrlHistory = lstMergeUrlHistory;
 	}
 }

@@ -355,12 +355,12 @@ public class Manager {
 
 	public static int getMaxUrlHistoryItems() {
 		// TODO getMaxUrlHistoryItems set it from preferences
-		return 20;
+		return 30;
 	}
 
 	public static int getMaxMessageHistoryItems() {
 		// TODO getMaxMessageHistoryItems set it from preferences
-		return 20;
+		return 30;
 	}
 
 	public static void handle(Exception ex) {
