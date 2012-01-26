@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -36,6 +37,8 @@ import org.tmatesoft.svn.core.wc.SVNRevisionRange;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 public class SvnHelper {
+
+	private static final String MERGE_URL_KEY_SEPARATOR = " -> ";
 
 	private static SVNRevision decodeSVNRevision(String str) {
 		str = str.trim();
@@ -514,11 +517,11 @@ public class SvnHelper {
 		}
 	}
 
-	public static String[] getRepoUrlHistory() {
+	public synchronized static String[] getRepoUrlHistory() {
 		return Manager.getSettings().getLstRepoUrl().toArray(new String[0]);
 	}
 
-	public static void storeUrlForHistory(String url) {
+	public synchronized static void storeUrlForHistory(String url) {
 		List<String> lstRepoUrl = Manager.getSettings().getLstRepoUrl();
 		lstRepoUrl.remove(url);
 		lstRepoUrl.add(0, url);
@@ -527,5 +530,56 @@ public class SvnHelper {
 		while (lstRepoUrl.size() > maxNo) {
 			lstRepoUrl.remove(lstRepoUrl.size() - 1);
 		}
+	}
+
+	public synchronized static void storeUrlForMergeHistory(String urlFrom,
+			String urlTo) {
+		ArrayList<String> lstUrls = new ArrayList<String>(Manager.getSettings()
+				.getLstMergeUrlHistory());
+		String key = urlTo + MERGE_URL_KEY_SEPARATOR + urlFrom;
+		int oldIndex = lstUrls.indexOf(key);
+		if (oldIndex != -1) {
+			lstUrls.remove(oldIndex);
+		}
+		lstUrls.add(0, key);
+		if (lstUrls.size() > 64) {
+			lstUrls.remove(lstUrls.size() - 1);
+		}
+		Manager.getSettings().setLstMergeUrlHistory(lstUrls);
+	}
+
+	public synchronized static String[] getUrlHistoryForMerge(String urlTo) {
+		ArrayList<String> lstResult = new ArrayList<String>(Manager
+				.getSettings().getLstRepoUrl());
+
+		String searchCriterionReverse = MERGE_URL_KEY_SEPARATOR + urlTo;
+		String searchCriterion = urlTo + MERGE_URL_KEY_SEPARATOR;
+		ArrayList<String> lstMergeUrlHistory = new ArrayList<String>(Manager
+				.getSettings().getLstMergeUrlHistory());
+		Collections.reverse(lstMergeUrlHistory);
+		for (String mergeHistoryLine : lstMergeUrlHistory) {
+			if (mergeHistoryLine.endsWith(searchCriterionReverse)) {
+				String urlFrom = mergeHistoryLine.substring(0,
+						mergeHistoryLine.indexOf(MERGE_URL_KEY_SEPARATOR));
+				int indexInUrlHistory = lstResult.indexOf(urlFrom);
+				if (indexInUrlHistory != -1) {
+					lstResult.remove(indexInUrlHistory);
+					lstResult.add(0, urlFrom);
+				}
+			}
+		}
+		for (String mergeHistoryLine : lstMergeUrlHistory) {
+			if (mergeHistoryLine.startsWith(searchCriterion)) {
+				String urlFrom = mergeHistoryLine.substring(searchCriterion
+						.length());
+				int indexInUrlHistory = lstResult.indexOf(urlFrom);
+				if (indexInUrlHistory != -1) {
+					lstResult.remove(indexInUrlHistory);
+					lstResult.add(0, urlFrom);
+				}
+			}
+		}
+
+		return lstResult.toArray(new String[0]);
 	}
 }

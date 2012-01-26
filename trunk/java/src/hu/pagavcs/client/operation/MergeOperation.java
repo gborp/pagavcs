@@ -58,7 +58,6 @@ public class MergeOperation implements Cancelable {
 			PagaException {
 		gui = new MergeGui(this);
 		gui.display();
-		gui.setUrlHistory(SvnHelper.getRepoUrlHistory());
 
 		if (prefillMergeFromRevision != null) {
 			gui.setPrefillMergeFromRevision(prefillMergeFromRevision);
@@ -75,7 +74,9 @@ public class MergeOperation implements Cancelable {
 		SVNWCClient wcClient = mgrSvn.getWCClient();
 		try {
 			SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
-			gui.setURL(svnInfo.getURL().toDecodedString());
+			String urlTo = svnInfo.getURL().toDecodedString();
+			gui.setURL(urlTo);
+			gui.setUrlHistory(SvnHelper.getUrlHistoryForMerge(urlTo));
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 		} finally {
@@ -99,6 +100,9 @@ public class MergeOperation implements Cancelable {
 	public void doMerge(String urlTo, String pathTo, String urlFrom,
 			String revisionRange, boolean reverseMerge, boolean ignoreEolStyle)
 			throws Exception {
+		SvnHelper.storeUrlForHistory(urlTo);
+		SvnHelper.storeUrlForHistory(urlFrom);
+		SvnHelper.storeUrlForMergeHistory(urlFrom, urlTo);
 		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, null, revisionRange,
 				reverseMerge, ignoreEolStyle);
 	}
@@ -111,10 +115,6 @@ public class MergeOperation implements Cancelable {
 	public void doShowLogUrl(String url) throws SVNException,
 			BackingStoreException, Exception {
 		new Log(url, false).execute();
-	}
-
-	public void storeUrlForHistory(String url) {
-		SvnHelper.storeUrlForHistory(url);
 	}
 
 }
