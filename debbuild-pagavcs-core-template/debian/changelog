@@ -1,9 +1,10 @@
-pagavcs-core (1.4.66-1karmic~all) karmic; urgency=low
+pagavcs-core (1.4.66-2karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
   *  facelift for the cli: up=update; -wait and -autoclose switches; support relative paths
+  *  Intelligent Merge-url History: place on the top the urls which was already used with that merge destination
 
- -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 25 Jan 2012 19:29:34 +0100
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 19:03:56 +0100
 
 pagavcs-core (1.4.65-1karmic~all) karmic; urgency=low
 
