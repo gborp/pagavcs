@@ -5,35 +5,35 @@ Origin: http://pagavcs.googlecode.com
 Label: PagaVCS apt repository
 Suite: stable
 Codename: oneiric
-Date: Thu, 26 Jan 2012 18:21:47 UTC
+Date: Thu, 26 Jan 2012 20:52:13 UTC
 Architectures: amd64 i386
 Components: main
 Description: A selection of pagavcs-packages, free to use, without charge!
 MD5Sum:
- a4b86a680a2540974d8fd462f8268ff2 3146 main/binary-amd64/Packages
- 71890413868e191c16d95c61b1ff271c 970 main/binary-amd64/Packages.gz
+ 605104339c3661aeced1d087276162e0 3145 main/binary-amd64/Packages
+ 73a2a1b58734dc7c04c9323c16a50f8c 973 main/binary-amd64/Packages.gz
  2c16024ff88b73abe7fe2e6161a21b29 195 main/binary-amd64/Release
- a4b86a680a2540974d8fd462f8268ff2 3146 main/binary-i386/Packages
- 71890413868e191c16d95c61b1ff271c 970 main/binary-i386/Packages.gz
+ 605104339c3661aeced1d087276162e0 3145 main/binary-i386/Packages
+ 73a2a1b58734dc7c04c9323c16a50f8c 973 main/binary-i386/Packages.gz
  059c5b752c474bc7bee79cec999d82a7 194 main/binary-i386/Release
 SHA1:
- 5b51524c88b772209e43b3e2d51ced77e9953596 3146 main/binary-amd64/Packages
- e8ae95108b34865919af162003e8b3fcd7f0d575 970 main/binary-amd64/Packages.gz
+ d2d6bf2e77c502f25d47f95e559a738181437c2e 3145 main/binary-amd64/Packages
+ 0203c3d990fe4471baa7c12fdb90653f173fb793 973 main/binary-amd64/Packages.gz
  3718f561e1185f4c98f97838a2465cf43e638603 195 main/binary-amd64/Release
- 5b51524c88b772209e43b3e2d51ced77e9953596 3146 main/binary-i386/Packages
- e8ae95108b34865919af162003e8b3fcd7f0d575 970 main/binary-i386/Packages.gz
+ d2d6bf2e77c502f25d47f95e559a738181437c2e 3145 main/binary-i386/Packages
+ 0203c3d990fe4471baa7c12fdb90653f173fb793 973 main/binary-i386/Packages.gz
  f91e14f443c71466ad09835382b29c3c64b5ffc5 194 main/binary-i386/Release
 SHA256:
- d9b1c8370965085b73f9faf9e37628d0bacf6981828238d4666b4652d0c0153b 3146 main/binary-amd64/Packages
- 10f1b3a2226d688b845da0a4d21d91336bbb79d8677c3f5a69d4036ab474f5f3 970 main/binary-amd64/Packages.gz
+ 972b08480ef12cb01f86d86b31587d0e737b5bdf010dcb8505b5862bc4b13add 3145 main/binary-amd64/Packages
+ c05b2db80f32d55c3228abe61d6815f29ef6a1500711d3f4b13cd477b1223c8a 973 main/binary-amd64/Packages.gz
  994961a471be1ff3134c61d36134775773fd856853b32ffe4510c0963c5960b9 195 main/binary-amd64/Release
- d9b1c8370965085b73f9faf9e37628d0bacf6981828238d4666b4652d0c0153b 3146 main/binary-i386/Packages
- 10f1b3a2226d688b845da0a4d21d91336bbb79d8677c3f5a69d4036ab474f5f3 970 main/binary-i386/Packages.gz
+ 972b08480ef12cb01f86d86b31587d0e737b5bdf010dcb8505b5862bc4b13add 3145 main/binary-i386/Packages
+ c05b2db80f32d55c3228abe61d6815f29ef6a1500711d3f4b13cd477b1223c8a 973 main/binary-i386/Packages.gz
  6ae6bd5fa1cc168ea5a328aab1748896185c7551805ac2cb352e191165b7b30c 194 main/binary-i386/Release
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 
-iEYEARECAAYFAk8hmbsACgkQRsybjT+u4dqjIACfdcsM1oNjwRoETggsYVZysemM
-UVgAnRy2Vf6nd6q/pfwe5bhQpJ7hW3zv
-=0ToS
+iEYEARECAAYFAk8hvP0ACgkQRsybjT+u4dpXWwCfQd7iHZQeIXl/vX4kfRbcqWQH
+M+IAn3B8/cTSs2ivpzWw0VQMQ/fbP2Y8
+=tkFT
 -----END PGP SIGNATURE-----
