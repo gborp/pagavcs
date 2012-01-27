@@ -1,3 +1,10 @@
+pagavcs-core (1.4.68-karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix deb packaging issues
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 22:03:56 +0100
+
 pagavcs-core (1.4.67-karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
