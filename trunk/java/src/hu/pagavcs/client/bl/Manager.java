@@ -419,6 +419,18 @@ public class Manager {
 		}
 	}
 
+	public static SVNInfo getInfo(SVNURL url, SVNRevision revision)
+			throws SVNException, PagaException {
+		SVNClientManager mgrSvn = getSVNClientManager(url);
+		try {
+			SVNInfo info = mgrSvn.getWCClient().doInfo(url, SVNRevision.HEAD,
+					revision);
+			return info;
+		} finally {
+			mgrSvn.dispose();
+		}
+	}
+
 	public static Color getColorByContentStatus(ContentStatus status) {
 		switch (status) {
 		case ADDED:
