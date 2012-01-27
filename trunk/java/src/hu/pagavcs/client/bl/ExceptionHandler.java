@@ -39,20 +39,38 @@ import com.jgoodies.forms.layout.FormLayout;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandler {
+public class ExceptionHandler implements
+		java.lang.Thread.UncaughtExceptionHandler {
 
 	public void uncaughtException(Thread t, Throwable ex) {
 		handle(ex);
 	}
 
-	public void handle(Throwable ex) {
+	public void handle(final Throwable ex) {
 
 		if (Manager.isShutdown()) {
 			return;
 		}
 
+		try {
+			new OnSwing() {
+
+				@Override
+				protected void process() throws Exception {
+					handle2(ex);
+				}
+
+			}.run();
+		} catch (Exception ex2) {
+			Manager.handle(ex2);
+		}
+	}
+
+	private void handle2(Throwable ex) {
+
 		if (ex instanceof SVNException) {
-			SVNErrorMessage errorMessage = ((SVNException) ex).getErrorMessage();
+			SVNErrorMessage errorMessage = ((SVNException) ex)
+					.getErrorMessage();
 
 			SVNErrorCode errorCode = errorMessage.getErrorCode();
 
@@ -62,21 +80,25 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 
 			String errorString = errorMessage.getFullMessage();
 			if (SVNErrorCode.UNVERSIONED_RESOURCE.equals(errorCode)) {
-				MessagePane.showError(null, "Not under version control", ex.getMessage());
+				MessagePane.showError(null, "Not under version control",
+						ex.getMessage());
 				return;
 			} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
 				MessagePane.showError(null, "Working Copy Locked", errorString);
 				return;
 			} else if (SVNErrorCode.ENTRY_NOT_FOUND.equals(errorCode)) {
-				MessagePane.showError(null, "Not under version control", errorString);
+				MessagePane.showError(null, "Not under version control",
+						errorString);
 				return;
 			} else if (SVNErrorCode.WC_CORRUPT_TEXT_BASE.equals(errorCode)) {
 				try {
 					Object[] relObjects = errorMessage.getRelatedObjects();
 					File file = (File) relObjects[0];
 
-					File dir = file.getParentFile().getParentFile().getParentFile();
-					String fileRealName = file.getName().substring(0, file.getName().length() - ".svn-base".length());
+					File dir = file.getParentFile().getParentFile()
+							.getParentFile();
+					String fileRealName = file.getName().substring(0,
+							file.getName().length() - ".svn-base".length());
 
 					SVNClientManager mgr = Manager.getSVNClientManager(dir);
 					try {
@@ -86,13 +108,19 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 
 						File realFile = new File(dir, fileRealName);
 
-						SVNRevision revision = mgr.getWCClient().doInfo(realFile, SVNRevision.WORKING).getRevision();
+						SVNRevision revision = mgr.getWCClient()
+								.doInfo(realFile, SVNRevision.WORKING)
+								.getRevision();
 
-						mgr.getWCClient().doGetFileContents(realFile, SVNRevision.HEAD, revision, false, out);
+						mgr.getWCClient().doGetFileContents(realFile,
+								SVNRevision.HEAD, revision, false, out);
 						out.close();
 
-						MessagePane.showError(null, "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")",
-						        "Local-checksum check failed, please rerun your operation. \n(" + realFile.getPath() + ")");
+						MessagePane.showError(null,
+								"Local-checksum check failed, please rerun your operation. \n("
+										+ realFile.getPath() + ")",
+								"Local-checksum check failed, please rerun your operation. \n("
+										+ realFile.getPath() + ")");
 
 						return;
 					} finally {
@@ -104,38 +132,44 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 				}
 			}
 
-			SVNErrorCode rootErrorCode = errorMessage.getRootErrorMessage().getErrorCode();
+			SVNErrorCode rootErrorCode = errorMessage.getRootErrorMessage()
+					.getErrorCode();
 
 			if (rootErrorCode == SVNErrorCode.RA_DAV_REQUEST_FAILED) {
-				MessagePane.showError(null, "Locking is not supperted by the host", errorString);
+				MessagePane.showError(null,
+						"Locking is not supperted by the host", errorString);
 				return;
 			} else if (rootErrorCode == SVNErrorCode.RA_NOT_AUTHORIZED) {
-				MessagePane.showError(null, "Authorization failed", errorString);
+				MessagePane
+						.showError(null, "Authorization failed", errorString);
 				return;
 			}
 
-			LogHelper.GENERAL.error("SVNexception. category: " + errorCode.getCategory() + " code:" + errorCode.getCode() + " description:"
-			        + errorCode.getDescription() + "\n");
+			LogHelper.GENERAL.error("SVNexception. category: "
+					+ errorCode.getCategory() + " code:" + errorCode.getCode()
+					+ " description:" + errorCode.getDescription() + "\n");
 		}
 
 		if (ex instanceof PagaException) {
 			PagaException pex = (PagaException) ex;
 			switch (pex.getType()) {
-				case LOGIN_FAILED:
-					MessagePane.showError(null, "Login failed", "Login failed");
-					return;
-				case CONNECTION_ERROR:
-					MessagePane.showError(null, "Connection Error", "Error in Communication");
-					return;
-				case UNIMPLEMENTED:
-					MessagePane.showError(null, "Unimplemented", "Unimplemented");
-					return;
-				case INVALID_PARAMETERS:
-					MessagePane.showError(null, "Invalid parameters", "Invalid parameters");
-					return;
-				case NOT_DIRECTORY:
-					MessagePane.showError(null, "Not directory", "Not directory");
-					return;
+			case LOGIN_FAILED:
+				MessagePane.showError(null, "Login failed", "Login failed");
+				return;
+			case CONNECTION_ERROR:
+				MessagePane.showError(null, "Connection Error",
+						"Error in Communication");
+				return;
+			case UNIMPLEMENTED:
+				MessagePane.showError(null, "Unimplemented", "Unimplemented");
+				return;
+			case INVALID_PARAMETERS:
+				MessagePane.showError(null, "Invalid parameters",
+						"Invalid parameters");
+				return;
+			case NOT_DIRECTORY:
+				MessagePane.showError(null, "Not directory", "Not directory");
+				return;
 			}
 		}
 
@@ -156,6 +190,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 			e.printStackTrace();
 		}
 		taStacktrace.setText(writer.getBuffer().toString());
+		taStacktrace.setLineWrap(true);
 
 		JButton btnRestart = new JButton(new RestartPagaVcsAction());
 
@@ -165,7 +200,7 @@ public class ExceptionHandler implements java.lang.Thread.UncaughtExceptionHandl
 		pnlTop.add(sfMessage, cc.xy(1, 1));
 		pnlTop.add(btnRestart, cc.xy(3, 1));
 
-		FormLayout lyMain = new FormLayout("f:20dlu:g", "p,2dlu,p");
+		FormLayout lyMain = new FormLayout("f:20dlu:g", "p,2dlu,f:p");
 		JPanel pnlMain = new JPanel(lyMain);
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(new JScrollPane(taStacktrace), cc.xy(1, 3));
