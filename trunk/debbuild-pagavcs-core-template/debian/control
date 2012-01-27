@@ -8,6 +8,8 @@ Homepage: http://pagavcs.googlecode.com
 
 Package: pagavcs-core
 Architecture: all
+Replaces: pagavcs (<<1.4.61)
+Breaks: pagavcs (<<1.4.61)
 Depends: pagavcs-core-libs, sun-java6-jre | default-jre, meld,  hicolor-icon-theme, zenity, wiggle, gedit, patchutils, ${misc:Depends}
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
