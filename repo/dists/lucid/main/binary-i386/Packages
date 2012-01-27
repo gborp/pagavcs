@@ -18,19 +18,21 @@ Description: Desktop integrated Subversion client
  Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
 
 Package: pagavcs-core
-Version: 1.4.67-lucid~all
+Version: 1.4.68-lucid~all
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
 Installed-Size: 2376
 Depends: pagavcs-core-libs, sun-java6-jre | default-jre, meld, hicolor-icon-theme, zenity, wiggle, gedit, patchutils
+Breaks: pagavcs (<< 1.4.61)
+Replaces: pagavcs (<< 1.4.61)
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.67-lucid~all_all.deb
-Size: 1087650
-SHA256: 6f009520de3c6dfb44d5d5953080fa6d8a80b392af1a4bf5004ebf193eb02b90
-SHA1: b0128fc2a76209a659f7c5d1c22af63178cdde7f
-MD5sum: 9a63d2de8ef002de3fcf057236e5793a
+Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.68-lucid~all_all.deb
+Size: 1087676
+SHA256: 4f7713363eb8888a3787bdb4f9f87c0b49acf609140f75e27280929840a0a4ca
+SHA1: 592a61b051dee61f825ec3c2a59a6c2251e1cc1d
+MD5sum: 464d936aa10fab26ca6b9ec1bdbbfae0
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
