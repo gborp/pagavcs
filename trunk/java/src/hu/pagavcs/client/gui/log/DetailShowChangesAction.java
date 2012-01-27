@@ -19,13 +19,22 @@ class DetailShowChangesAction extends ThreadAction {
 	}
 
 	public void actionProcess(ActionEvent e) throws Exception {
-		for (LogDetailListItem liDetail : this.logGui.getSelectedDetailLogItems()) {
+		for (LogDetailListItem liDetail : this.logGui
+				.getSelectedDetailLogItems()) {
+			if (!SVNNodeKind.DIR.equals(liDetail.getKind())
+					|| !SVNNodeKind.FILE.equals(liDetail.getKind())) {
+				liDetail.setKind(logGui.getNodeKind(liDetail.getPath(),
+						liDetail.getRevision()));
+			}
 			if (SVNNodeKind.DIR.equals(liDetail.getKind())) {
-				logGui.showDirChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
+				logGui.showDirChanges(liDetail.getPath(),
+						liDetail.getRevision(), liDetail.getAction());
 			} else if (SVNNodeKind.FILE.equals(liDetail.getKind())) {
-				logGui.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
+				logGui.showChanges(liDetail.getPath(), liDetail.getRevision(),
+						liDetail.getAction());
 			} else {
-				logGui.showChanges(liDetail.getPath(), liDetail.getRevision(), liDetail.getAction());
+				logGui.showChanges(liDetail.getPath(), liDetail.getRevision(),
+						liDetail.getAction());
 			}
 		}
 	}
