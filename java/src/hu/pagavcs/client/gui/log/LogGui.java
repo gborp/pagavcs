@@ -2,6 +2,7 @@ package hu.pagavcs.client.gui.log;
 
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.OnSwing;
+import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.bl.SettingsStore;
 import hu.pagavcs.client.gui.LogListItem;
 import hu.pagavcs.client.gui.StatusCellRendererForLogDetailListItem;
@@ -58,7 +59,9 @@ import javax.swing.table.TableRowSorter;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
+import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -908,5 +911,15 @@ public class LogGui implements Working {
 
 		}
 
+	}
+
+	public SVNNodeKind getNodeKind(String path, long revision)
+			throws SVNException, PagaException {
+		if (svnRepoRootUrl != null) {
+			SVNURL url = Manager.getAbsoluteUrl(svnRepoRootUrl, path);
+			SVNInfo info = Manager.getInfo(url, SVNRevision.create(revision));
+			return info.getKind();
+		}
+		return null;
 	}
 }
