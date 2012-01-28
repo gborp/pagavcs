@@ -1,3 +1,10 @@
+pagavcs-core (1.4.70-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  [log-gui] fix memory leak
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 28 Jan 2012 11:12:18 +0100
+
 pagavcs-core (1.4.69-1karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
