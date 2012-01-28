@@ -343,6 +343,9 @@ public class LogGui implements Working {
 			settingsStore.setGuiLogSeparatorDetail(splDetail
 					.getDividerLocation());
 			settingsStore.setGuiLogSeparatorMain(splMain.getDividerLocation());
+			calFrom.cleanup();
+			calTo.cleanup();
+
 			shuttingDown = true;
 		}
 
