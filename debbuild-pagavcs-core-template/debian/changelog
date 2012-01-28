@@ -1,11 +1,18 @@
-pagavcs-core (1.4.68-karmic~all) karmic; urgency=low
+pagavcs-core (1.4.69-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  [log-gui] better recognize the entry type on show-diff (query it again if it's "unknown", preventing trying to show file-diff for a directory)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 28 Jan 2012 09:12:18 +0100
+
+pagavcs-core (1.4.68-1karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
   *  Fix deb packaging issues
 
  -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 22:03:56 +0100
 
-pagavcs-core (1.4.67-karmic~all) karmic; urgency=low
+pagavcs-core (1.4.67-1karmic~all) karmic; urgency=low
 
   [ Gábor Pápai ]
   *  Artwork refinement
