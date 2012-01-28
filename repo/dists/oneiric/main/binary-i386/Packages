@@ -18,7 +18,7 @@ Description: Desktop integrated Subversion client
  Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild/debian/changelog
 
 Package: pagavcs-core
-Version: 1.4.68-oneiric~all
+Version: 1.4.69-1oneiric~all
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
 Installed-Size: 2376
@@ -28,11 +28,11 @@ Replaces: pagavcs (<< 1.4.61)
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.68-oneiric~all_all.deb
-Size: 1087774
-SHA256: 167fb542afaba44c61b26853ce061ed82cd6394d9b1fb00d6318848d78108648
-SHA1: 7da0a2054144f73a2b8eaa9c064cbb1c8c72c692
-MD5sum: ba3b02d5aaff1f60f6bc7cc80599b1cb
+Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.69-1oneiric~all_all.deb
+Size: 1088780
+SHA256: 92080554cdc59a1aa7b40d36e82e644067034e9b57ec6e757f069e4a867ab06b
+SHA1: c6c3de21b9e886beca0f28da9b2f72bbd10869c6
+MD5sum: a0e42647fd7d9d2b3a1b0873b7f27c5c
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).

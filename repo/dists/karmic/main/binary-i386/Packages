@@ -107,7 +107,7 @@ Description: PagaVCS bigmemory
  Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild-bigmem/debian/changelog
 
 Package: pagavcs-core
-Version: 1.4.68-karmic~all
+Version: 1.4.69-1karmic~all
 Architecture: all
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
 Installed-Size: 2376
@@ -117,11 +117,11 @@ Replaces: pagavcs (<< 1.4.61)
 Homepage: http://pagavcs.googlecode.com
 Priority: optional
 Section: devel
-Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.68-karmic~all_all.deb
-Size: 1087680
-SHA256: 64cc886c40409dbe72b9c38ce2963c1ea9bc500f1501aaf8d8d6f032effb77ea
-SHA1: 7d89666447b0f7068f85b4d664cb8d937577fdb4
-MD5sum: 3fc03e2a3400dac9f597c1c5145d1361
+Filename: pool/main/p/pagavcs-core/pagavcs-core_1.4.69-1karmic~all_all.deb
+Size: 1088740
+SHA256: d1651bdddab3593162296c8ca12f2049d3d09e8e5100039a3fa9f1b27f3e32de
+SHA1: 8d7c5d90552ea14535aacaeb284f9bd6a2cafb81
+MD5sum: d895b46d7bd35885e314523e1e069528
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
  It's written in Java and Python (Nautilus-integration).
