@@ -1,3 +1,10 @@
+pagavcs-cli (1.5.2-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Bigmem for 1.5.x series
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 30 Jan 2012 19:47:44 +0100
+
 pagavcs-cli (1.5.1-3karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
