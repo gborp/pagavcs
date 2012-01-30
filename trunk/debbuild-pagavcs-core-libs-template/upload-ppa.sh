@@ -8,7 +8,7 @@ fi
 . ./common.sh $1
 
 cd $WDIR
-debuild -S -sa
+echo y | debuild -S -sa
 
 cd ..
 dput ppa:gaborgabor/pagavcs ${WDIRNAME}_source.changes 

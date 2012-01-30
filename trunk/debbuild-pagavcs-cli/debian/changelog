@@ -1,0 +1,8 @@
+pagavcs-cli (1.5.1-3karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate package for the CLI client
+  *  Using Unix Domain Socket instead of plain Socket
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 29 Jan 2012 14:13:31 +0100
+

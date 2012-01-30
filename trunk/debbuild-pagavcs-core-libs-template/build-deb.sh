@@ -10,6 +10,6 @@ fi
 
 echo wdir: $WDIR
 cd $WDIR
-debuild -sa
+echo y | debuild -sa
 
 rm -r -f $WDIR

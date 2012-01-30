@@ -1,0 +1,133 @@
+#define _GNU_SOURCE
+
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pwd.h>
+#include <string.h>
+#include <sys/socket.h>
+//#include <sys/un.h>
+#include <linux/un.h>
+#include <unistd.h>
+#include <errno.h>
+
+#define SOCKET_FILENAME "/.pagavcs/socket"
+#define LOG_FILENAME "/.pagavcs/pagavcs.log"
+
+void connectServer(int socket_fd, struct sockaddr_un address,
+		char *fullLogFilename) {
+	int first = 1;
+	while (connect(socket_fd, (struct sockaddr *) &address,
+			sizeof(struct sockaddr_un)) != 0) {
+		if (first == 1) {
+
+			char command[2048];
+
+			strcpy(command, "nohup java -Xms16m -Xmx99m -XX:PermSize=16M");
+			strcat(command, " -XX:MaxPermSize=32M");
+			strcat(command, " -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20");
+			strcat(command, " -Djava.library.path=/usr/lib/jni -jar");
+			strcat(command, " /usr/share/pagavcs/bin/pagavcs.jar >> ");
+			strcat(command, fullLogFilename);
+			strcat(command, " 2>&1 &");
+
+			system(command);
+
+			first = 0;
+		}
+		sleep(1);
+	}
+}
+
+int main(int argc, char *argv[]) {
+	int uid;
+	struct passwd *pw;
+	struct sockaddr_un address;
+	int socket_fd, nbytes;
+	int argIndex;
+	char buffer[1024];
+	char fullSocketFilename[512];
+	char fullLogFilename[512];
+	char argument[512];
+	char argumentToUse[512];
+
+	if (argc == 1 || strcmp(argv[1], "help") == 0
+			|| strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "-h") == 0
+			|| strcmp(argv[1], "-?") == 0) {
+		printf("usage: pagavcs [command] [argument(s)]\n");
+		printf("  update         Update working copy.\n");
+		printf("  commit         Show commit dialog for working copy.\n");
+		printf("  log            Show log for working copy.\n");
+		printf("  ignore         Add file or directory to ignore list.\n");
+		printf("  unignore       Remove file or directory from ignore list.\n");
+		printf("  delete         Delete file or directory.\n");
+		printf("  revert         Revert file or directory.\n");
+		printf("  checkout       Checkout a working copy.\n");
+		printf("  cleanup        Cleanup working copy.\n");
+		printf("  resolve        Resolve conflict.\n");
+		printf("  other          Display other window.\n");
+		printf("  settings       Display settings window.\n");
+		printf("  stop           Stop PagaVCS server.\n");
+		printf(
+				"  getmenuitems   (For internal use.) Get menuitems for file or directory.\n");
+		printf("  -w, -wait      Wait until command finished\n");
+		printf(
+				"  -c, -autoclose Automatically close window after finished sucessfully\n");
+		printf("  help, h\n");
+		printf("  -h, --help     Display this help.\n");
+		printf("\n");
+		printf("Example:\n");
+		printf(
+				"  pagavcs update \"/home/johnny/big-project\" \"/home/johnny/mega-project\"\n");
+		return 0;
+	}
+
+	uid = getuid();
+	pw = getpwuid(uid);
+
+	strcpy(fullSocketFilename, "/home/");
+	strcat(fullSocketFilename, pw->pw_name);
+	strcat(fullSocketFilename, SOCKET_FILENAME);
+
+	strcpy(fullLogFilename, "/home/");
+	strcat(fullLogFilename, pw->pw_name);
+	strcat(fullLogFilename, LOG_FILENAME);
+
+	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
+	if (socket_fd < 0) {
+		printf("socket() failed\n");
+		return 1;
+	}
+
+	memset(&address, 0, sizeof(struct sockaddr_un));
+
+	address.sun_family = AF_UNIX;
+	strcpy(address.sun_path, fullSocketFilename);
+
+	connectServer(socket_fd, address, fullLogFilename);
+
+	for (argIndex = 1; argIndex < argc; argIndex++) {
+		write(socket_fd, "\"", strlen("\""));
+
+		strcpy(argument, argv[argIndex]);
+		if (argument[0] == '.') {
+			strcpy(argumentToUse, canonicalize_file_name(argument));
+		} else {
+			strcpy(argumentToUse, argument);
+		}
+
+		write(socket_fd, argumentToUse, strlen(argumentToUse));
+		write(socket_fd, "\"", strlen("\""));
+		write(socket_fd, " ", strlen(" "));
+	}
+	write(socket_fd, "\n", strlen("\n"));
+
+	nbytes = read(socket_fd, buffer, 256);
+	buffer[nbytes] = 0;
+
+	printf("%s\n", buffer);
+
+	close(socket_fd);
+
+	return 0;
+}
