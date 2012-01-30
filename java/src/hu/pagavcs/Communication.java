@@ -42,18 +42,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import javax.net.ServerSocketFactory;
 import javax.swing.ImageIcon;
 
 import org.tmatesoft.svn.core.SVNException;
+
+import cx.ath.matthew.unix.UnixServerSocket;
+import cx.ath.matthew.unix.UnixSocket;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -71,8 +71,10 @@ import org.tmatesoft.svn.core.SVNException;
 
 public class Communication {
 
-	private static final int DEFAULT_PORT = 12905;
-	private static final String SERVER_RUNNING_INDICATOR_FILE = "server-running-indicator";
+	private static final String SERVER_RUNNING_INDICATOR_FILE = System
+			.getProperty("user.home") + "/.pagavcs/server-running.lock";
+	private static final String UNIX_SOCKET = System.getProperty("user.home")
+			+ "/.pagavcs/socket";
 
 	private static final String COMMAND_UPDATE = "update";
 	private static final String COMMAND_UPDATE2 = "up";
@@ -105,13 +107,12 @@ public class Communication {
 	private static final String COMMAND_EXPORT = "export";
 	private static final String COMMAND_PROPERTIES = "properties";
 
-	private static final String CFG_COMMUNICATION_PORT_KEY = "port";
 	private static final String CFG_DEBUG_MODE_KEY = "debug";
 
 	private static Communication singleton;
 	private boolean shutdown;
 	private File running;
-	private ServerSocket serverSocket;
+	private UnixServerSocket serverSocket;
 	private FileStatusCache fileStatusCache;
 
 	private Communication() {
@@ -153,14 +154,15 @@ public class Communication {
 		}
 	}
 
-	private void outComm(Socket socket, String strOut) throws IOException {
+	private void outComm(UnixSocket socket, String strOut) throws IOException {
 		BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(
 				socket.getOutputStream()));
 		outToClient.write(strOut);
 		outToClient.close();
 	}
 
-	private void outCommEmblem(Socket socket, String arg) throws IOException {
+	private void outCommEmblem(UnixSocket socket, String arg)
+			throws IOException {
 
 		String name = null;
 		Integer width = null;
@@ -200,11 +202,9 @@ public class Communication {
 	}
 
 	public void execute() throws Exception {
-		String tempDir = Manager.getTempDir();
-		running = new File(tempDir + SERVER_RUNNING_INDICATOR_FILE);
+		running = new File(SERVER_RUNNING_INDICATOR_FILE);
 		running.createNewFile();
 
-		int port = DEFAULT_PORT;
 		boolean debugMode = false;
 		File cfgFile = new File(System.getProperty("user.home"),
 				".pagavcs/config.properties");
@@ -214,10 +214,6 @@ public class Communication {
 				FileReader reader = new FileReader(cfgFile);
 				prop.load(reader);
 				reader.close();
-				if (prop.containsKey(CFG_COMMUNICATION_PORT_KEY)) {
-					port = Integer.valueOf((String) prop
-							.get(CFG_COMMUNICATION_PORT_KEY));
-				}
 				if (prop.containsKey(CFG_DEBUG_MODE_KEY)) {
 					debugMode = Boolean.valueOf((String) prop
 							.get(CFG_DEBUG_MODE_KEY));
@@ -233,7 +229,6 @@ public class Communication {
 			}
 
 			Properties prop = new Properties();
-			prop.put(CFG_COMMUNICATION_PORT_KEY, Integer.toString(port));
 			prop.put(CFG_DEBUG_MODE_KEY, Boolean.toString(debugMode));
 			FileWriter writer = new FileWriter(cfgFile);
 			prop.store(writer, null);
@@ -243,12 +238,20 @@ public class Communication {
 		}
 
 		try {
-			serverSocket = ServerSocketFactory.getDefault().createServerSocket(
-					port);
+			serverSocket = new UnixServerSocket(UNIX_SOCKET);
+			new File(UNIX_SOCKET).deleteOnExit();
 		} catch (IOException ex) {
-			LogHelper.GENERAL
-					.fatal("Port is not free, maybe PagaVCS is already running?");
-			System.exit(-5);
+			try {
+				UnixSocket clientSocket = new UnixSocket(UNIX_SOCKET);
+				clientSocket.setSoTimeout(2000);
+				clientSocket.connect(UNIX_SOCKET);
+				LogHelper.GENERAL.fatal("PagaVCS is already running");
+				System.exit(-5);
+			} catch (IOException ex2) {
+				new File(UNIX_SOCKET).delete();
+				serverSocket = new UnixServerSocket(UNIX_SOCKET);
+				new File(UNIX_SOCKET).deleteOnExit();
+			}
 		}
 
 		Manager.init();
@@ -257,7 +260,7 @@ public class Communication {
 
 		while (!shutdown) {
 			try {
-				Socket socket = serverSocket.accept();
+				UnixSocket socket = serverSocket.accept();
 
 				BufferedReader br = new BufferedReader(new InputStreamReader(
 						socket.getInputStream()));
@@ -571,10 +574,10 @@ public class Communication {
 		private final List<String> lstArg;
 		private final boolean waitSyncMode;
 		private final boolean autoClose;
-		private final Socket socket;
+		private final UnixSocket socket;
 
-		public ProcessInput(String command, List<String> lstArg, Socket socket,
-				boolean waitSyncMode, boolean autoClose) {
+		public ProcessInput(String command, List<String> lstArg,
+				UnixSocket socket, boolean waitSyncMode, boolean autoClose) {
 			this.command = command;
 			this.lstArg = lstArg;
 			this.socket = socket;

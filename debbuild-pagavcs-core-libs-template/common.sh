@@ -11,7 +11,7 @@ DIST=$1
 APPNAME=pagavcs-core-libs
 COMMONBUILDDIR=temp-build
 VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
-WDIRNAME=${APPNAME}_${VERSION}${DIST}~all
+WDIRNAME=${APPNAME}_${VERSION}${DIST}
 WDIR=../$COMMONBUILDDIR/$WDIRNAME
 export WDIR
 export APPNAME
