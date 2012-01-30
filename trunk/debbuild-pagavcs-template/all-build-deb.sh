@@ -2,7 +2,7 @@
 
 rm -f -r ../temp-build
 
-for dist in karmic lucid maverick natty oneiric
+for dist in lucid maverick natty oneiric precise
 do
 	./build-deb.sh $dist
 done

@@ -11,7 +11,7 @@ DIST=$1
 APPNAME=pagavcs-nautilus
 COMMONBUILDDIR=temp-build
 VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
-WDIRNAME=${APPNAME}_${VERSION}${DIST}~all
+WDIRNAME=${APPNAME}_${VERSION}${DIST}
 WDIR=../$COMMONBUILDDIR/$WDIRNAME
 export WDIR
 export APPNAME
@@ -31,5 +31,4 @@ sed -i "s/karmic/$DIST/g" $WDIR/debian/changelog
 
 mkdir $WDIR/debian/input
 mkdir $WDIR/debian/input/gnome3
-cp ../scripts/pagavcs-nautilus2.py $WDIR/debian/input/
 cp ../scripts/gnome3/pagavcs-nautilus2.py $WDIR/debian/input/gnome3
