@@ -4,7 +4,7 @@
 AC_PREREQ([2.68])
 AC_INIT([pagavcs-cli], [1.5.1], [pagavcs@gmail.com])
 
-AM_INIT_AUTOMAKE(pippo, 2.6)
+AM_INIT_AUTOMAKE(pagavcs-cli, 1.5.1)
 AC_OUTPUT(Makefile src/Makefile)
 
 
