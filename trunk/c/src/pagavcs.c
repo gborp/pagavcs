@@ -26,12 +26,12 @@ void connectServer(int socket_fd, struct sockaddr_un address,
 			strcpy(command, "nohup java -Xms16m");
 
 			if (access("usr/share/pagavcs/data/pagavcs-bigmem", F_OK) != -1) {
-				strcpy(command, " -Xmx199m -XX:MaxPermSize=64M");
+				strcat(command, " -Xmx199m -XX:MaxPermSize=64M");
 			} else {
-				strcpy(command, " -Xmx99m -XX:MaxPermSize=32M");
+				strcat(command, " -Xmx99m -XX:MaxPermSize=32M");
 			}
 
-			strcpy(command, " -XX:PermSize=16M");
+			strcat(command, " -XX:PermSize=16M");
 			strcat(command, " -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20");
 			strcat(command, " -Djava.library.path=/usr/lib/jni -jar");
 			strcat(command, " /usr/share/pagavcs/bin/pagavcs.jar >> ");
