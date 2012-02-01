@@ -99,6 +99,8 @@ public class Communication {
 	private static final String COMMAND_REPOBROWSER = "repobrowser";
 	private static final String COMMAND_CREATEREPO = "createrepo";
 	private static final String COMMAND_STOP = "stop";
+	private static final String COMMAND_EXIT = "exit";
+	private static final String COMMAND_QUIT = "quit";
 	private static final String COMMAND_PING = "ping";
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_APPLY_PATCH = "applypatch";
@@ -287,15 +289,22 @@ public class Communication {
 					ArrayList<String> lstElements = new ArrayList<String>(
 							Arrays.asList(elements));
 
-					if (lstElements.get(0).equals("-wait")
-							|| lstElements.get(0).equals("-w")) {
-						waitSyncMode = true;
-						lstElements.remove(0);
-					}
-					if (lstElements.get(0).equals("-autoclose")
-							|| lstElements.get(0).equals("-c")) {
-						autoClose = true;
-						lstElements.remove(0);
+					boolean foundSwitch = true;
+
+					while (foundSwitch) {
+						foundSwitch = false;
+						if (lstElements.get(0).equals("-wait")
+								|| lstElements.get(0).equals("-w")) {
+							waitSyncMode = true;
+							lstElements.remove(0);
+							foundSwitch = true;
+						}
+						if (lstElements.get(0).equals("-autoclose")
+								|| lstElements.get(0).equals("-c")) {
+							autoClose = true;
+							lstElements.remove(0);
+							foundSwitch = true;
+						}
 					}
 					command = lstElements.get(0);
 					lstElements.remove(0);
@@ -718,7 +727,9 @@ public class Communication {
 						CreateRepo createRepo = new CreateRepo(path);
 						createRepo.execute();
 					}
-				} else if (COMMAND_STOP.equals(command)) {
+				} else if (COMMAND_STOP.equals(command)
+						|| COMMAND_EXIT.equals(command)
+						|| COMMAND_QUIT.equals(command)) {
 					System.exit(0);
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
