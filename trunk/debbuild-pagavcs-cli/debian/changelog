@@ -1,3 +1,10 @@
+pagavcs-cli (1.5.3-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  If path argument is not present use the current directory
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 01 Feb 2012 20:09:34 +0100
+
 pagavcs-cli (1.5.2-2karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
