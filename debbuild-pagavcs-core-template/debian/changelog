@@ -1,3 +1,11 @@
+pagavcs-core (1.5.4-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  The order of command line options (-w, -c) can be any now
+  *  New commands: exit and quit: they do the same as stop command
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 01 Feb 2012 20:10:34 +0100
+
 pagavcs-core (1.5.1-4karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
