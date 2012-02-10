@@ -71,8 +71,6 @@ import cx.ath.matthew.unix.UnixSocket;
 
 public class Communication {
 
-	private static final String SERVER_RUNNING_INDICATOR_FILE = System
-			.getProperty("user.home") + "/.pagavcs/server-running.lock";
 	private static final String UNIX_SOCKET = System.getProperty("user.home")
 			+ "/.pagavcs/socket";
 
@@ -204,8 +202,6 @@ public class Communication {
 	}
 
 	public void execute() throws Exception {
-		running = new File(SERVER_RUNNING_INDICATOR_FILE);
-		running.createNewFile();
 
 		boolean debugMode = false;
 		File cfgFile = new File(System.getProperty("user.home"),
@@ -283,8 +279,9 @@ public class Communication {
 					elements[0] = elements[0].substring(1);
 					int eLastIndex = elements.length - 1;
 					String eLast = elements[eLastIndex];
+					eLast = eLast.trim();
 					elements[eLastIndex] = eLast.substring(0,
-							eLast.length() - 2);
+							eLast.length() - 1);
 
 					ArrayList<String> lstElements = new ArrayList<String>(
 							Arrays.asList(elements));
@@ -330,6 +327,10 @@ public class Communication {
 				} else if (command.equals("getfileinfonl")) {
 					String outStr = getFileEmblem(fileStatusCache
 							.getStatusFast(new File(arg))) + "\n";
+					outComm(socket, outStr);
+				} else if (command.equals("getfileinfonlnow")) {
+					String outStr = getFileEmblem(fileStatusCache
+							.getStatus(new File(arg))) + "\n";
 					outComm(socket, outStr);
 				} else if (command.equals("getemblem")) {
 					outCommEmblem(socket, arg);
@@ -402,7 +403,7 @@ public class Communication {
 
 	private void makeMenuItem(StringBuilder sb, String label, String tooltip,
 			String icon, String mode, String command) {
-		sb.append("NautilusPython::PagaVCS::");
+		sb.append("PagaVCS::");
 		sb.append(command);
 		sb.append('\n');
 
@@ -494,7 +495,7 @@ public class Communication {
 		if (hasSvned) {
 			makeMenuItem(sb, "Update to revision", "Update to revision",
 					"pagavcs-update", "", COMMAND_UPDATE_TO_REVISION);
-			makeMenuItem(sb, "Blame", "Blame", "pagavcs-other", "",
+			makeMenuItem(sb, "Blame", "Blame", "pagavcs-blame", "",
 					COMMAND_BLAME);
 		}
 
