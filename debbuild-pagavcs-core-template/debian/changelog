@@ -1,3 +1,10 @@
+pagavcs-core (1.5.5-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix some minor internal communication issues
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Fri, 10 Feb 2012 22:11:41 +0100
+
 pagavcs-core (1.5.4-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
