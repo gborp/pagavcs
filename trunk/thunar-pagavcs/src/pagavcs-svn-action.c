@@ -121,7 +121,7 @@ static void add_subaction(GtkAction *action, GtkMenuShell *menu,
 	GtkWidget *subitem;
 
 	subaction = gtk_action_new(name, text, tooltip, stock);
-	g_object_set_qdata(G_OBJECT (subaction), pagavcs_action_arg_quark, command);
+	g_object_set_qdata(G_OBJECT (subaction), pagavcs_action_arg_quark, g_strdup(command));
 	g_signal_connect_after(subaction, "activate",
 			G_CALLBACK (pagavcs_action_exec), action);
 
