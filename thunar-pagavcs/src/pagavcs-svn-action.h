@@ -37,8 +37,7 @@ typedef struct _PagavcsSvnAction PagavcsSvnAction;
 GType pagavcs_svn_action_get_type(void) G_GNUC_CONST G_GNUC_INTERNAL;
 void pagavcs_svn_action_register_type(ThunarxProviderPlugin *) G_GNUC_INTERNAL;
 
-GtkAction *pagavcs_svn_action_new(const gchar*, const gchar*, GList *,
-		GtkWidget *) G_GNUC_MALLOC G_GNUC_INTERNAL;
+GtkAction *pagavcs_svn_action_new(const gchar*, const gchar*, GList *) G_GNUC_MALLOC G_GNUC_INTERNAL;
 
 G_END_DECLS;
 
