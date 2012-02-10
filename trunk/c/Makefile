@@ -15,10 +15,10 @@
 
 
 
-pkgdatadir = $(datadir)/pippo
-pkgincludedir = $(includedir)/pippo
-pkglibdir = $(libdir)/pippo
-pkglibexecdir = $(libexecdir)/pippo
+pkgdatadir = $(datadir)/pagavcs-cli
+pkgincludedir = $(includedir)/pagavcs-cli
+pkglibdir = $(libdir)/pagavcs-cli
+pkglibexecdir = $(libexecdir)/pagavcs-cli
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -130,7 +130,7 @@ LTLIBOBJS =
 MAKEINFO = ${SHELL} /home/susw/projects/pagavcs/trunk/c/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
-PACKAGE = pippo
+PACKAGE = pagavcs-cli
 PACKAGE_BUGREPORT = pagavcs@gmail.com
 PACKAGE_NAME = pagavcs-cli
 PACKAGE_STRING = pagavcs-cli 1.5.1
@@ -141,7 +141,7 @@ PATH_SEPARATOR = :
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = 
-VERSION = 2.6
+VERSION = 1.5.1
 abs_builddir = /home/susw/projects/pagavcs/trunk/c
 abs_srcdir = /home/susw/projects/pagavcs/trunk/c
 abs_top_builddir = /home/susw/projects/pagavcs/trunk/c
