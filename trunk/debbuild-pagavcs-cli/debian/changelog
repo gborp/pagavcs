@@ -1,3 +1,10 @@
+pagavcs-cli (1.5.7-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix: fresh installed pagavcs doesn't start (if it hasn't been installed before)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 11 Feb 2012 17:39:45 +0100
+
 pagavcs-cli (1.5.3-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
