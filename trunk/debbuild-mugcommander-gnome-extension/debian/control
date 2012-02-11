@@ -1,0 +1,14 @@
+Source: mugcommander-gnome-extensions
+Section: devel
+Priority: optional
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Build-Depends: debhelper (>= 5), sun-java6-jdk | default-jdk
+Standards-Version: 3.8.3
+Homepage: http://pagavcs.googlecode.com
+
+Package: mugcommander-gnome-extensions
+Architecture: all
+Depends: sun-java6-jre | default-jre, mugcommander (>= 1.0.3), xdg-utils, gedit, meld
+Description: Gnome extension for mugCommander
+ It provides the ability to interact with Gnome from mugCommander
+ It's written in Java.
