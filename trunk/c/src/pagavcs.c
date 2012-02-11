@@ -6,10 +6,12 @@
 #include <pwd.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <linux/un.h>
 #include <unistd.h>
 #include <errno.h>
 
+#define PAGAVCS_DIRECTORY "/.pagavcs"
 #define SOCKET_FILENAME "/.pagavcs/socket"
 #define LOG_FILENAME "/.pagavcs/pagavcs.log"
 
@@ -52,6 +54,7 @@ int main(int argc, char *argv[]) {
 	int socket_fd, nbytes;
 	int argIndex;
 	char buffer[1024];
+	char fullPagavcsDir[512];
 	char fullSocketFilename[512];
 	char fullLogFilename[512];
 	char argument[512];
@@ -92,6 +95,12 @@ if(	argc == 1 || strcmp(argv[1], "help") == 0
 
 	uid = getuid();
 	pw = getpwuid(uid);
+
+	strcpy(fullPagavcsDir, "/home/");
+	strcat(fullPagavcsDir, pw->pw_name);
+	strcat(fullPagavcsDir, PAGAVCS_DIRECTORY);
+
+	mkdir(fullPagavcsDir, S_IRWXU);
 
 	strcpy(fullSocketFilename, "/home/");
 	strcat(fullSocketFilename, pw->pw_name);
