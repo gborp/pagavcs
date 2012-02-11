@@ -12,6 +12,9 @@
 		<fileset dir="../../mugcommander/java/dist">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="/usr/share/java">
+			<include name="unix.jar"/>
+		</fileset>
 	</path>
 
 

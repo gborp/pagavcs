@@ -7,7 +7,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -19,11 +18,13 @@ import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.main.WindowManager;
 import com.mucommander.ui.main.table.FileTable;
 
+import cx.ath.matthew.unix.UnixSocket;
+
 public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 
 	private static PagaVcsFileEmblemExtension singleton;
 
-	private Object                            doPanelRefresh;
+	private Object doPanelRefresh;
 
 	private PagaVcsFileEmblemExtension() {
 		doPanelRefresh = new Object();
@@ -40,7 +41,8 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 		return singleton;
 	}
 
-	public synchronized Icon getDecoratedAbstractFileIcon(Icon icon, AbstractFile file) {
+	public synchronized Icon getDecoratedAbstractFileIcon(Icon icon,
+			AbstractFile file) {
 		File f = new File(file.getAbsolutePath());
 		if (f.exists()) {
 			return getDecoratedFileIcon(icon, f);
@@ -53,10 +55,12 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 			String status = null;
 			synchronized (CustomFileIconProvider.class) {
 
-				Socket socket = PagaVcsIntegration.getSocket();
+				UnixSocket socket = PagaVcsIntegration.getSocket();
 				String strOut = "getfileinfonl " + file.getPath() + "\n";
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						socket.getInputStream()));
+				BufferedWriter outToClient = new BufferedWriter(
+						new OutputStreamWriter(socket.getOutputStream()));
 				outToClient.write(strOut);
 				outToClient.flush();
 
@@ -71,10 +75,14 @@ public class PagaVcsFileEmblemExtension implements FileEmblemExtension {
 						doPanelRefresh.notifyAll();
 					}
 				} else {
-					ImageIcon overlayIcon = PagaVcsIntegration.getIcon("emblems/" + status.substring("pagavcs-".length()));
+					ImageIcon overlayIcon = PagaVcsIntegration
+							.getIcon("emblems/"
+									+ status.substring("pagavcs-".length()));
 
 					if (overlayIcon != null) {
-						BufferedImage bi = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+						BufferedImage bi = new BufferedImage(
+								icon.getIconWidth(), icon.getIconHeight(),
+								BufferedImage.TYPE_INT_ARGB);
 
 						Graphics g = bi.getGraphics();
 						icon.paintIcon(null, g, 0, 0);
