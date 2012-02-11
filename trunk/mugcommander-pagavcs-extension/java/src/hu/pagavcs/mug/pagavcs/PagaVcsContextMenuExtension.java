@@ -28,6 +28,8 @@ import com.mucommander.file.util.FileSet;
 import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.main.menu.TablePopupMenu;
 
+import cx.ath.matthew.unix.UnixSocket;
+
 public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 
 	public int getPriority() {
@@ -38,8 +40,9 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 		return ContextMenuExtensionPositions.TOP;
 	}
 
-	public void addMenu(TablePopupMenu tablePopupMenu, MainFrame mainFrame, AbstractFile currentFolder, AbstractFile clickedFile, boolean parentFolderClicked,
-	        FileSet markedFiles) {
+	public void addMenu(TablePopupMenu tablePopupMenu, MainFrame mainFrame,
+			AbstractFile currentFolder, AbstractFile clickedFile,
+			boolean parentFolderClicked, FileSet markedFiles) {
 		try {
 			ArrayList<String> lstFile = new ArrayList<String>();
 
@@ -77,10 +80,12 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 			}
 			String fileParamsString = sb.toString();
 
-			Socket socket = PagaVcsIntegration.getSocket();
+			UnixSocket socket = PagaVcsIntegration.getSocket();
 			String strOut = "getmenuitems " + fileParamsString + "\n";
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					socket.getInputStream()));
+			BufferedWriter outToClient = new BufferedWriter(
+					new OutputStreamWriter(socket.getOutputStream()));
 			outToClient.write(strOut);
 			outToClient.flush();
 
@@ -103,8 +108,10 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 						menuPagaVcs.add(new JSeparator());
 					}
 
-					ImageIcon icon = PagaVcsIntegration.getIcon("actions/" + iconName);
-					PagaVcsAction action = new PagaVcsAction(label, icon, command + " " + fileParamsString + "\n");
+					ImageIcon icon = PagaVcsIntegration.getIcon("actions/"
+							+ iconName);
+					PagaVcsAction action = new PagaVcsAction(label, icon,
+							command + " " + fileParamsString + "\n");
 					if (hints.contains("p")) {
 						tablePopupMenu.add(action);
 					} else {
@@ -133,7 +140,8 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 			AbstractArchiveEntryFile a = ((AbstractArchiveEntryFile) file);
 			ArchiveEntry entry = a.getEntry();
 			if (entry instanceof RealFileProvider) {
-				AbstractFile realFile = ((RealFileProvider) entry).getRealFile();
+				AbstractFile realFile = ((RealFileProvider) entry)
+						.getRealFile();
 				return realFile;
 			}
 		}
@@ -152,7 +160,8 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				Socket socket = new Socket("localhost", 12905);
-				BufferedWriter outToClient = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				BufferedWriter outToClient = new BufferedWriter(
+						new OutputStreamWriter(socket.getOutputStream()));
 				outToClient.write(command);
 				outToClient.flush();
 				socket.close();
