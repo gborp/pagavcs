@@ -1,3 +1,10 @@
+pagavcs-core (1.5.8-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix issues with file and difference viewing
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 12 Feb 2012 18:22:29 +0100
+
 pagavcs-core (1.5.5-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
