@@ -1,4 +1,4 @@
-pagavcs-core (1.5.8-1karmic) karmic; urgency=low
+pagavcs-core (1.5.8-2karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
   *  Fix issues with file and difference viewing
