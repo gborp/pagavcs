@@ -1,4 +1,4 @@
-mugcommander (1.0.9-2karmic) karmic; urgency=low
+mugcommander (1.0.9-3karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
   * Add dependency to libunixsocket-java.deb for PagaVCS-extension
