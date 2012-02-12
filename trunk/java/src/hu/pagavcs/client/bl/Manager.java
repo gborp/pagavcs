@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -94,6 +95,8 @@ public class Manager {
 	private static final Color COLOR_PURPLE = new Color(100, 0, 100);
 	private static final Color COLOR_GREEN = new Color(20, 80, 25);
 
+	private static File tempFileDirectory;
+
 	private static String tempDir;
 	private static boolean inited = false;
 	private static ExceptionHandler exceptionHandler;
@@ -117,7 +120,8 @@ public class Manager {
 					null, true, null);
 			DAVRepositoryFactory.setup(factory);
 			FSRepositoryFactory.setup();
-			FileRevisionCache.getInstance().init();
+			tempFileDirectory = new File(Manager.getTempDir() + "f/");
+			tempFileDirectory.mkdirs();
 			inited = true;
 			getSettings().load();
 			Runtime.getRuntime().addShutdownHook(
@@ -138,10 +142,28 @@ public class Manager {
 
 	public static String getTempDir() {
 		if (tempDir == null) {
-			tempDir = System.getProperty("java.io.tmpdir") + "/pagavcs/";
+			tempDir = System.getProperty("java.io.tmpdir") + "/"
+					+ System.getProperty("user.name") + "/pagavcs/";
+			new File(tempDir).mkdirs();
+			deleteAll(new File(tempDir));
 			new File(tempDir).mkdirs();
 		}
 		return tempDir;
+	}
+
+	private static void deleteAll(File directory) {
+		File[] lstFilesW = directory.listFiles();
+		if (lstFilesW != null) {
+			for (File f : lstFilesW) {
+				f.setWritable(true);
+				if (f.isDirectory()) {
+					deleteAll(f);
+				} else {
+					f.delete();
+				}
+			}
+		}
+		directory.delete();
 	}
 
 	public static File getAbsoluteFile(String path, String relativeUrl)
@@ -468,22 +490,31 @@ public class Manager {
 		}
 	}
 
-	public static File getFile(SVNURL svnUrl, SVNRevision revision)
-			throws Exception {
-		return FileRevisionCache.getInstance().getFile(svnUrl, revision);
-	}
-
-	public static void releaseFile(SVNURL svnUrl, SVNRevision revision)
-			throws Exception {
-		FileRevisionCache.getInstance().releaseFile(svnUrl, revision);
-	}
-
 	public static File getBaseFile(File wcFile) throws Exception {
-		return FileRevisionCache.getInstance().getBaseFile(wcFile);
-	}
+		String tempPrefix = tempFileDirectory.getAbsolutePath() + "/";
+		String fileNameRoot = tempPrefix + wcFile.getName();
+		File file = new File(fileNameRoot);
+		int counter = 0;
+		while (file.exists()) {
+			file = new File(fileNameRoot + "-" + counter);
+			counter++;
+		}
 
-	public static void releaseBaseFile(File wcFile) throws Exception {
-		FileRevisionCache.getInstance().releaseBase(wcFile);
+		SVNClientManager svnMgr = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
+		try {
+			SVNWCClient wcClient = svnMgr.getWCClient();
+
+			FileOutputStream outOldRevision = new FileOutputStream(
+					file.getPath());
+			wcClient.doGetFileContents(wcFile, SVNRevision.BASE,
+					SVNRevision.BASE, false, outOldRevision);
+			outOldRevision.close();
+
+			return file;
+		} finally {
+			svnMgr.dispose();
+		}
 	}
 
 	public static void invalidate(File file) {
@@ -682,5 +713,28 @@ public class Manager {
 					.getImage("dialog-warning.png");
 		}
 		return ICON_WARNING;
+	}
+
+	public static void viewFile(String filename) throws IOException {
+		ProcessBuilder processBuilder = new ProcessBuilder(Manager.GEDIT,
+				filename);
+		processBuilder.start();
+	}
+
+	public static void compareTextFiles(String filename1, String filename2)
+			throws IOException {
+
+		String label1 = filename1;
+		if (label1.lastIndexOf('/') != -1) {
+			label1 = label1.substring(label1.lastIndexOf('/'));
+		}
+		String label2 = filename1;
+		if (label2.lastIndexOf('/') != -1) {
+			label2 = label1.substring(label2.lastIndexOf('/'));
+		}
+
+		ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD, "-L "
+				+ label1, filename1, "-L " + label2, filename2);
+		processBuilder.start();
 	}
 }

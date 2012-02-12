@@ -245,9 +245,7 @@ public class Communication {
 				LogHelper.GENERAL.fatal("PagaVCS is already running");
 				System.exit(-5);
 			} catch (IOException ex2) {
-				new File(UNIX_SOCKET).delete();
 				serverSocket = new UnixServerSocket(UNIX_SOCKET);
-				new File(UNIX_SOCKET).deleteOnExit();
 			}
 		}
 

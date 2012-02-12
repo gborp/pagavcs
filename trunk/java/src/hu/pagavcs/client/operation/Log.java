@@ -227,11 +227,9 @@ public class Log implements Cancelable {
 		try {
 			gui.workStarted();
 			saveRevisionTo(showChangesPath, revision, fileNew);
-			ProcessBuilder processBuilder = new ProcessBuilder(Manager.GEDIT,
-					tempPrefix + fileNameNew);
-			Process process = processBuilder.start();
+
+			Manager.viewFile(tempPrefix + fileNameNew);
 			gui.workEnded();
-			process.waitFor();
 		} catch (Exception e) {
 			try {
 				gui.workEnded();
@@ -239,8 +237,6 @@ public class Log implements Cancelable {
 				Manager.handle(e1);
 			}
 			throw e;
-		} finally {
-			fileNew.delete();
 		}
 	}
 
@@ -332,21 +328,15 @@ public class Log implements Cancelable {
 			fileOld.setReadOnly();
 			fileOld.deleteOnExit();
 
-			ProcessBuilder processBuilder;
 			if (contentStatus.equals(ContentStatus.DELETED)) {
-				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
-						+ fileNameOld);
+				Manager.viewFile(tempPrefix + fileNameOld);
 			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
-						+ fileNameNew);
+				Manager.viewFile(tempPrefix + fileNameNew);
 			} else {
-				processBuilder = new ProcessBuilder(Manager.MELD, "-L "
-						+ fileNameOld, tempPrefix + fileNameOld, "-L "
-						+ fileNameNew, tempPrefix + fileNameNew);
+				Manager.compareTextFiles(tempPrefix + fileNameOld, tempPrefix
+						+ fileNameNew);
 			}
-			Process process = processBuilder.start();
 			gui.workEnded();
-			process.waitFor();
 		} catch (Exception e) {
 			try {
 				gui.workEnded();
@@ -360,12 +350,6 @@ public class Log implements Cancelable {
 			}
 			if (outOldRevision != null) {
 				outOldRevision.close();
-			}
-			if (fileNew != null) {
-				fileNew.delete();
-			}
-			if (fileOld != null) {
-				fileOld.delete();
 			}
 			if (mgrSvn != null) {
 				mgrSvn.dispose();
@@ -409,21 +393,15 @@ public class Log implements Cancelable {
 			fileNew.setReadOnly();
 			fileNew.deleteOnExit();
 
-			ProcessBuilder processBuilder;
 			if (contentStatus.equals(ContentStatus.DELETED)) {
-				processBuilder = new ProcessBuilder(Manager.GEDIT,
-						file.toString());
+				Manager.viewFile(file.getAbsolutePath());
 			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				processBuilder = new ProcessBuilder(Manager.GEDIT,
-						file.toString());
+				Manager.viewFile(file.getAbsolutePath());
 			} else {
-				processBuilder = new ProcessBuilder(Manager.MELD, "-L "
-						+ file.getName(), file.toString(), "-L " + fileNameNew,
-						tempPrefix + fileNameNew);
+				Manager.compareTextFiles(file.getAbsolutePath(), tempPrefix
+						+ fileNameNew);
 			}
-			Process process = processBuilder.start();
 			gui.workEnded();
-			process.waitFor();
 		} catch (Exception e) {
 			try {
 				gui.workEnded();
@@ -434,9 +412,6 @@ public class Log implements Cancelable {
 		} finally {
 			if (outNewRevision != null) {
 				outNewRevision.close();
-			}
-			if (fileNew != null) {
-				fileNew.delete();
 			}
 			if (mgrSvn != null) {
 				mgrSvn.dispose();

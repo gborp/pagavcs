@@ -251,18 +251,9 @@ public class SvnHelper {
 			File fileOld = Manager.getBaseFile(wcFile);
 
 			String wcFilePath = wcFile.getPath();
-			String fileName = wcFilePath
-					.substring(wcFilePath.lastIndexOf('/') + 1);
-
-			ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD,
-					"-L " + fileOld.getName(), fileOld.getPath(), "-L "
-							+ fileName, wcFilePath);
-			Process process = processBuilder.start();
-			working.workEnded();
-			process.waitFor();
-
+			Manager.compareTextFiles(fileOld.getPath(), wcFilePath);
 		} finally {
-			Manager.releaseBaseFile(wcFile);
+			working.workEnded();
 		}
 	}
 
@@ -311,25 +302,17 @@ public class SvnHelper {
 			}
 
 			fileNew.setReadOnly();
-			fileNew.deleteOnExit();
 			fileOld.setReadOnly();
-			fileOld.deleteOnExit();
 
-			ProcessBuilder processBuilder;
 			if (contentStatus.equals(ContentStatus.DELETED)) {
-				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
-						+ fileNameOld);
+				Manager.viewFile(tempPrefix + fileNameOld);
 			} else if (contentStatus.equals(ContentStatus.ADDED)) {
-				processBuilder = new ProcessBuilder(Manager.GEDIT, tempPrefix
-						+ fileNameNew);
+				Manager.viewFile(tempPrefix + fileNameNew);
 			} else {
-				processBuilder = new ProcessBuilder(Manager.MELD, "-L "
-						+ fileNameOld, tempPrefix + fileNameOld, "-L "
-						+ fileNameNew, tempPrefix + fileNameNew);
+				Manager.compareTextFiles(tempPrefix + fileNameOld, tempPrefix
+						+ fileNameNew);
+
 			}
-			Process process = processBuilder.start();
-			working.workEnded();
-			process.waitFor();
 		} catch (Exception e) {
 			try {
 				working.workEnded();
@@ -343,12 +326,6 @@ public class SvnHelper {
 			}
 			if (outOldRevision != null) {
 				outOldRevision.close();
-			}
-			if (fileNew != null) {
-				fileNew.delete();
-			}
-			if (fileOld != null) {
-				fileOld.delete();
 			}
 			if (mgrSvn != null) {
 				mgrSvn.dispose();
@@ -458,14 +435,8 @@ public class SvnHelper {
 		Manager.saveStringToFile(fileBase, strBase);
 		Manager.saveStringToFile(fileWorking, strWorking);
 
-		ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD, "-L "
-				+ fileBase.getName(), fileBase.getPath(), "-L "
-				+ fileWorking.getName(), fileWorking.getPath());
-		Process process = processBuilder.start();
+		Manager.compareTextFiles(fileBase.getPath(), fileWorking.getPath());
 		working.workEnded();
-		process.waitFor();
-		fileBase.delete();
-		fileWorking.delete();
 	}
 
 	public static void showPropertyChangesFromRepo(Working working,
@@ -484,8 +455,6 @@ public class SvnHelper {
 							+ "_", ".r" + revision);
 			Manager.saveStringToFile(file2, strWorking);
 
-			ProcessBuilder processBuilder;
-
 			if (previousRevision != -1) {
 				String strBase = propertyListToString(showPropertyChangesFromBase(
 						working, svnUrl, SVNRevision.HEAD,
@@ -495,25 +464,13 @@ public class SvnHelper {
 								+ StringHelper.depathString(svnUrl.toString())
 								+ "_", ".r" + previousRevision);
 				Manager.saveStringToFile(file1, strBase);
-				processBuilder = new ProcessBuilder(Manager.MELD, "-L DirProp-"
-						+ previousRevision, file1.getPath(), "-L DirProp-"
-						+ revision, file2.getPath());
+				Manager.compareTextFiles(file1.getAbsolutePath(),
+						file2.getAbsolutePath());
 			} else {
-				processBuilder = new ProcessBuilder(Manager.GEDIT,
-						file2.getPath());
+				Manager.viewFile(file2.getAbsolutePath());
 			}
-			process = processBuilder.start();
 		} finally {
 			working.workEnded();
-		}
-		if (process != null) {
-			process.waitFor();
-		}
-		if (file1 != null) {
-			file1.delete();
-		}
-		if (file2 != null) {
-			file2.delete();
 		}
 	}
 
