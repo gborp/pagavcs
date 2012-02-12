@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -159,7 +158,7 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Socket socket = new Socket("localhost", 12905);
+				UnixSocket socket = PagaVcsIntegration.getSocket();
 				BufferedWriter outToClient = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
 				outToClient.write(command);
