@@ -111,7 +111,6 @@ public class Communication {
 
 	private static Communication singleton;
 	private boolean shutdown;
-	private File running;
 	private UnixServerSocket serverSocket;
 	private FileStatusCache fileStatusCache;
 
@@ -398,7 +397,6 @@ public class Communication {
 				Manager.handle(ex);
 			}
 		}
-		running.delete();
 	}
 
 	private void makeMenuItem(StringBuilder sb, String label, String tooltip,
@@ -560,9 +558,6 @@ public class Communication {
 
 	public void shutdown() {
 		shutdown = true;
-		if (running != null) {
-			running.delete();
-		}
 		if (serverSocket != null) {
 			try {
 				serverSocket.close();
