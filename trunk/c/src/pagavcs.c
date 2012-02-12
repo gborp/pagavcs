@@ -96,18 +96,20 @@ if(	argc == 1 || strcmp(argv[1], "help") == 0
 	uid = getuid();
 	pw = getpwuid(uid);
 
-	strcpy(fullPagavcsDir, "/home/");
-	strcat(fullPagavcsDir, pw->pw_name);
+	if (strcmp(pw->pw_name, "root") == 0) {
+		printf("Running PagaVCS as root user is prohibited.\n");
+		return -2;
+	}
+
+	strcpy(fullPagavcsDir, pw->pw_dir);
 	strcat(fullPagavcsDir, PAGAVCS_DIRECTORY);
 
 	mkdir(fullPagavcsDir, S_IRWXU);
 
-	strcpy(fullSocketFilename, "/home/");
-	strcat(fullSocketFilename, pw->pw_name);
+	strcpy(fullSocketFilename, pw->pw_dir);
 	strcat(fullSocketFilename, SOCKET_FILENAME);
 
-	strcpy(fullLogFilename, "/home/");
-	strcat(fullLogFilename, pw->pw_name);
+	strcpy(fullLogFilename, pw->pw_dir);
 	strcat(fullLogFilename, LOG_FILENAME);
 
 	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
