@@ -8,6 +8,6 @@ Homepage: http://pagavcs.googlecode.com
 
 Package: mugcommander
 Architecture: all
-Depends: sun-java6-jre | default-jre
+Depends: sun-java6-jre | default-jre, libunixsocket-java
 Description: File Browser
  Total Commander styled file browser, forked from the muCommander
