@@ -44,13 +44,15 @@ public class MiniImmutableMap<K, V> implements Map<K, V> {
 
 	public boolean containsValue(Object value) {
 		for (Object li : values) {
-			if ((value == null && li == null) || (value != null && value.equals(li))) {
+			if ((value == null && li == null)
+					|| (value != null && value.equals(li))) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public V get(Object key) {
 		int size = size();
 		for (int i = 0; i < size; i++) {
@@ -70,7 +72,7 @@ public class MiniImmutableMap<K, V> implements Map<K, V> {
 		throw new RuntimeException("Not implemented");
 	}
 
-	public void putAll(Map m) {
+	public void putAll(Map<? extends K, ? extends V> m) {
 		throw new RuntimeException("Not implemented");
 	}
 
@@ -78,10 +80,12 @@ public class MiniImmutableMap<K, V> implements Map<K, V> {
 		throw new RuntimeException("Not implemented");
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Set<K> keySet() {
 		return new HashSet(Arrays.asList(keys));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Collection<V> values() {
 		return (Collection<V>) Arrays.asList(values);
 	}
@@ -90,7 +94,9 @@ public class MiniImmutableMap<K, V> implements Map<K, V> {
 		HashSet<Entry<K, V>> result = new HashSet<Entry<K, V>>();
 		int size = size();
 		for (int i = 0; i < size; i++) {
-			SimpleImmutableEntry<K, V> entry = new AbstractMap.SimpleImmutableEntry<K, V>((K) keys[i], (V) values[i]);
+			@SuppressWarnings("unchecked")
+			SimpleImmutableEntry<K, V> entry = new AbstractMap.SimpleImmutableEntry<K, V>(
+					(K) keys[i], (V) values[i]);
 			result.add(entry);
 		}
 		return result;
