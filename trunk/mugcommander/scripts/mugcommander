@@ -13,5 +13,5 @@
 # You should have received a copy of the GNU General Public License
 # along with PagaVCS;  If not, see <http://www.gnu.org/licenses/>.
 
-java -Xmx142m -server -DGNOME_DESKTOP_SESSION_ID=$GNOME_DESKTOP_SESSION_ID -DKDE_FULL_SESSION=$KDE_FULL_SESSION -DKDE_SESSION_VERSION=$KDE_SESSION_VERSION -Djava.library.path=/usr/lib/jni -Dextensions.cfg.dir=/usr/share/mugcommander/cfg -classpath "/usr/share/mugcommander/bin/mugcommander.jar:/usr/share/mugcommander/bin/extensions/*"  com.mucommander.Launcher
+java -Xmx142m -server -DGNOME_DESKTOP_SESSION_ID=$GNOME_DESKTOP_SESSION_ID -DKDE_FULL_SESSION=$KDE_FULL_SESSION -DKDE_SESSION_VERSION=$KDE_SESSION_VERSION -Djava.library.path=/usr/lib/jni -Dextensions.cfg.dir=/usr/share/mugcommander/cfg -classpath "/usr/share/mugcommander/bin/mugcommander.jar:/usr/share/mugcommander/bin/extensions/*:/usr/share/java/unix.jar"  com.mucommander.Launcher
 
