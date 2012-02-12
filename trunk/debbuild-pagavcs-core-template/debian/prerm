@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# stop running instance
-pagavcs exit
-
-# no error
-exit 0
