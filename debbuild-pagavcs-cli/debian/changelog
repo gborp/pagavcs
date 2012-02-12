@@ -1,3 +1,10 @@
+pagavcs-cli (1.5.9-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Don't do anything if running as root user
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 12 Feb 2012 19:00:52 +0100
+
 pagavcs-cli (1.5.7-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
