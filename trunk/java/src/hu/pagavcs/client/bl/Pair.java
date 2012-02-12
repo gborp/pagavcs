@@ -47,9 +47,10 @@ public class Pair<A, B> {
 		return (x == null && y == null) || (x != null && x.equals(y));
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean equals(Object other) {
-		return other instanceof Pair && equals(first, ((Pair) other).first) && equals(second, ((Pair) other).second);
+		return other instanceof Pair
+				&& equals(first, ((Pair<?, ?>) other).first)
+				&& equals(second, ((Pair<?, ?>) other).second);
 	}
 
 	public int hashCode() {
