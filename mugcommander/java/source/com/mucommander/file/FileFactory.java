@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import com.mucommander.auth.AuthException;
 import com.mucommander.auth.CredentialsManager;
@@ -87,42 +88,48 @@ import com.mucommander.runtime.OsFamilies;
 public class FileFactory {
 
 	/** All registered protocol providers. */
-	private static Hashtable<String, ProtocolProvider> protocolProviders       = new Hashtable<String, ProtocolProvider>();
+	private static Hashtable<String, ProtocolProvider> protocolProviders = new Hashtable<String, ProtocolProvider>();
 
 	/** Local file provider to avoid hashtable lookups (faster). */
-	private static ProtocolProvider                    localFileProvider;
+	private static ProtocolProvider localFileProvider;
 
 	/** Vector of registered ArchiveFormatMapping instances */
-	private static Vector<ArchiveFormatProvider>       archiveFormatProvidersV = new Vector<ArchiveFormatProvider>();
+	private static Vector<ArchiveFormatProvider> archiveFormatProvidersV = new Vector<ArchiveFormatProvider>();
 
 	/** Array of registered FileProtocolMapping instances, for quicker access */
-	private static ArchiveFormatProvider[]             archiveFormatProviders;
+	private static ArchiveFormatProvider[] archiveFormatProviders;
 
 	/**
 	 * Contains raw file (as opposed to archives) pools for each registered
 	 * scheme
 	 */
-	private final static HashMap<String, FilePool>     rawFilePoolMap          = new HashMap<String, FilePool>();
+	private final static HashMap<String, FilePool> rawFilePoolMap = new HashMap<String, FilePool>();
 
 	/** Contains archive file pools for each registered archive format */
-	private final static HashMap<String, FilePool>     archiveFilePoolMap      = new HashMap<String, FilePool>();
+	private final static HashMap<String, FilePool> archiveFilePoolMap = new HashMap<String, FilePool>();
 
 	/** System temp directory */
-	private final static AbstractFile                  TEMP_DIRECTORY;
+	private final static AbstractFile TEMP_DIRECTORY;
 
 	/** Default file icon provider, initialized in static block */
-	private static FileIconProvider                    defaultFileIconProvider;
+	private static FileIconProvider defaultFileIconProvider;
 
 	static {
 		// Register built-in file protocols.
 		ProtocolProvider protocolProvider;
 		registerProtocol(FileProtocols.FILE, new LocalProtocolProvider());
-		registerProtocol(FileProtocols.SMB, new com.mucommander.file.impl.smb.SMBProtocolProvider());
-		registerProtocol(FileProtocols.HTTP, protocolProvider = new com.mucommander.file.impl.http.HTTPProtocolProvider());
+		registerProtocol(FileProtocols.SMB,
+				new com.mucommander.file.impl.smb.SMBProtocolProvider());
+		registerProtocol(
+				FileProtocols.HTTP,
+				protocolProvider = new com.mucommander.file.impl.http.HTTPProtocolProvider());
 		registerProtocol(FileProtocols.HTTPS, protocolProvider);
-		registerProtocol(FileProtocols.FTP, new com.mucommander.file.impl.ftp.FTPProtocolProvider());
-		registerProtocol(FileProtocols.NFS, new com.mucommander.file.impl.nfs.NFSProtocolProvider());
-		registerProtocol(FileProtocols.SFTP, new com.mucommander.file.impl.sftp.SFTPProtocolProvider());
+		registerProtocol(FileProtocols.FTP,
+				new com.mucommander.file.impl.ftp.FTPProtocolProvider());
+		registerProtocol(FileProtocols.NFS,
+				new com.mucommander.file.impl.nfs.NFSProtocolProvider());
+		registerProtocol(FileProtocols.SFTP,
+				new com.mucommander.file.impl.sftp.SFTPProtocolProvider());
 
 		// Register built-in archive file formats, order for TarArchiveFile and
 		// GzipArchiveFile/Bzip2ArchiveFile is important:
@@ -152,7 +159,8 @@ public class FileFactory {
 	/**
 	 * Makes sure no instance of <code>FileFactory</code> is created.
 	 */
-	private FileFactory() {}
+	private FileFactory() {
+	}
 
 	/**
 	 * Registers a new file protocol.
@@ -182,7 +190,8 @@ public class FileFactory {
 	 * @return the previously registered protocol provider if any,
 	 *         <code>null</code> otherwise.
 	 */
-	public static ProtocolProvider registerProtocol(String protocol, ProtocolProvider provider) {
+	public static ProtocolProvider registerProtocol(String protocol,
+			ProtocolProvider provider) {
 		protocol = protocol.toLowerCase();
 
 		// Create raw and archive file pools
@@ -302,7 +311,8 @@ public class FileFactory {
 	 * contents of the Vector.
 	 */
 	private static void updateArchiveFormatProviderArray() {
-		archiveFormatProviders = new ArchiveFormatProvider[archiveFormatProvidersV.size()];
+		archiveFormatProviders = new ArchiveFormatProvider[archiveFormatProvidersV
+				.size()];
 		archiveFormatProvidersV.toArray(archiveFormatProviders);
 	}
 
@@ -391,7 +401,8 @@ public class FileFactory {
 	 *             if additionnal authentication information is required to
 	 *             create the file
 	 */
-	public static AbstractFile getFile(String absPath, boolean throwException) throws AuthException, IOException {
+	public static AbstractFile getFile(String absPath, boolean throwException)
+			throws AuthException, IOException {
 		try {
 			return getFile(absPath, null);
 		} catch (IOException e) {
@@ -421,7 +432,8 @@ public class FileFactory {
 	 *             if additionnal authentication information is required to
 	 *             create the file
 	 */
-	public static AbstractFile getFile(String absPath, AbstractFile parent) throws AuthException, IOException {
+	public static AbstractFile getFile(String absPath, AbstractFile parent)
+			throws AuthException, IOException {
 		return getFile(FileURL.getFileURL(absPath), parent);
 	}
 
@@ -454,7 +466,8 @@ public class FileFactory {
 	 * @throws java.io.IOException
 	 *             if something went wrong during file creation
 	 */
-	public static AbstractFile getFile(FileURL fileURL, boolean throwException) throws IOException {
+	public static AbstractFile getFile(FileURL fileURL, boolean throwException)
+			throws IOException {
 		try {
 			return getFile(fileURL, null);
 		} catch (IOException e) {
@@ -484,7 +497,8 @@ public class FileFactory {
 	 * @throws java.io.IOException
 	 *             if something went wrong during file creation.
 	 */
-	public static AbstractFile getFile(FileURL fileURL, AbstractFile parent, Object... instantiationParams) throws IOException {
+	public static AbstractFile getFile(FileURL fileURL, AbstractFile parent,
+			Object... instantiationParams) throws IOException {
 		String protocol = fileURL.getScheme();
 		if (!isRegisteredProtocol(protocol))
 			throw new IOException("Unsupported file protocol: " + protocol);
@@ -492,7 +506,8 @@ public class FileFactory {
 		String filePath = fileURL.getPath();
 		// For local paths under Windows (e.g. "/C:\temp"), remove the leading
 		// '/' character
-		if (OsFamilies.WINDOWS.isCurrent() && FileProtocols.FILE.equals(protocol))
+		if (OsFamilies.WINDOWS.isCurrent()
+				&& FileProtocols.FILE.equals(protocol))
 			filePath = PathUtils.removeLeadingSeparator(filePath, "/");
 
 		String pathSeparator = fileURL.getPathSeparator();
@@ -517,23 +532,32 @@ public class FileFactory {
 				// as SFTP don't like trailing separators.
 				// On the contrary, directories without a trailing slash are
 				// fine.
-				String currentPath = PathUtils.removeTrailingSeparator(pt.getCurrentPath(), pathSeparator);
+				String currentPath = PathUtils.removeTrailingSeparator(
+						pt.getCurrentPath(), pathSeparator);
 
 				// Test if current file is an archive file and if it is, create
 				// an archive entry file instead of a raw
 				// protocol file
-				if (currentFile == null || !(currentFile instanceof AbstractArchiveFile)) {
+				if (currentFile == null
+						|| !(currentFile instanceof AbstractArchiveFile)) {
 					// Create a fresh FileURL with the current path
 					FileURL clonedURL = (FileURL) fileURL.clone();
 					clonedURL.setPath(currentPath);
-					currentFile = wrapArchive(createRawFile(clonedURL, instantiationParams));
+					currentFile = wrapArchive(createRawFile(clonedURL,
+							instantiationParams));
 
 					lastFileResolved = true;
 				} else { // currentFile is an AbstractArchiveFile
 					// Note: wrapArchive() is already called by
 					// AbstractArchiveFile#createArchiveEntryFile()
-					AbstractFile tempEntryFile = ((AbstractArchiveFile) currentFile).getArchiveEntryFile(PathUtils.removeLeadingSeparator(currentPath
-					        .substring(currentFile.getURL().getPath().length(), currentPath.length()), pathSeparator));
+					AbstractFile tempEntryFile = ((AbstractArchiveFile) currentFile)
+							.getArchiveEntryFile(PathUtils
+									.removeLeadingSeparator(
+											currentPath.substring(currentFile
+													.getURL().getPath()
+													.length(),
+													currentPath.length()),
+											pathSeparator));
 					if (tempEntryFile instanceof AbstractArchiveFile) {
 						currentFile = tempEntryFile;
 						lastFileResolved = true;
@@ -554,13 +578,17 @@ public class FileFactory {
 			// problems with root resources
 			String currentPath = pt.getCurrentPath();
 
-			if (currentFile == null || !(currentFile instanceof AbstractArchiveFile)) {
+			if (currentFile == null
+					|| !(currentFile instanceof AbstractArchiveFile)) {
 				FileURL clonedURL = (FileURL) fileURL.clone();
 				clonedURL.setPath(currentPath);
 				currentFile = createRawFile(clonedURL, instantiationParams);
 			} else { // currentFile is an AbstractArchiveFile
-				currentFile = ((AbstractArchiveFile) currentFile).getArchiveEntryFile(PathUtils.removeLeadingSeparator(currentPath.substring(currentFile
-				        .getURL().getPath().length(), currentPath.length()), pathSeparator));
+				currentFile = ((AbstractArchiveFile) currentFile)
+						.getArchiveEntryFile(PathUtils.removeLeadingSeparator(
+								currentPath.substring(currentFile.getURL()
+										.getPath().length(),
+										currentPath.length()), pathSeparator));
 			}
 		}
 
@@ -571,17 +599,15 @@ public class FileFactory {
 		return currentFile;
 	}
 
-	public static AbstractFile getFileNotInArchive(FileURL fileURL, AbstractFile parent, Object... instantiationParams) throws IOException {
+	public static AbstractFile getFileNotInArchive(FileURL fileURL,
+			AbstractFile parent, Object... instantiationParams)
+			throws IOException {
 		String protocol = fileURL.getScheme();
 		if (!isRegisteredProtocol(protocol)) {
 			throw new IOException("Unsupported file protocol: " + protocol);
 		}
 
 		String filePath = fileURL.getPath();
-		// For local paths under Windows (e.g. "/C:\temp"), remove the leading
-		// '/' character
-		if (OsFamilies.WINDOWS.isCurrent() && FileProtocols.FILE.equals(protocol))
-			filePath = PathUtils.removeLeadingSeparator(filePath, "/");
 
 		String pathSeparator = fileURL.getPathSeparator();
 
@@ -609,7 +635,8 @@ public class FileFactory {
 		return currentFile;
 	}
 
-	private static AbstractFile createRawFile(FileURL fileURL, Object... instantiationParams) throws IOException {
+	private static AbstractFile createRawFile(FileURL fileURL,
+			Object... instantiationParams) throws IOException {
 		String scheme = fileURL.getScheme().toLowerCase();
 		FilePool rawFilePool = rawFilePoolMap.get(scheme);
 
@@ -667,7 +694,9 @@ public class FileFactory {
 		// an archive.
 		// Note: the URL should always be free of a trailing separator
 		rawFilePool.put(fileURL, file);
-		FileLogger.finest("Added to file pool: " + file);
+		if (FileLogger.isLoggable(Level.FINEST)) {
+			FileLogger.finest("Added to file pool: " + file);
+		}
 
 		return file;
 	}
@@ -682,12 +711,14 @@ public class FileFactory {
 	private static String getFilenameVariation(String filename) {
 		int lastDotPos = filename.lastIndexOf('.');
 		int len = filename.length();
-		String nameSuffix = "_" + System.currentTimeMillis() + (new Random().nextInt(10000));
+		String nameSuffix = "_" + System.currentTimeMillis()
+				+ (new Random().nextInt(10000));
 
 		if (lastDotPos == -1)
 			filename += nameSuffix;
 		else
-			filename = filename.substring(0, lastDotPos) + nameSuffix + filename.substring(lastDotPos, len);
+			filename = filename.substring(0, lastDotPos) + nameSuffix
+					+ filename.substring(lastDotPos, len);
 
 		return filename;
 	}
@@ -718,7 +749,8 @@ public class FileFactory {
 	 *             if an error occurred while instanciating the temporary file.
 	 *             This should not happen under normal circumstances.
 	 */
-	public static AbstractFile getTemporaryFile(String desiredFilename, boolean deleteOnExit) throws IOException {
+	public static AbstractFile getTemporaryFile(String desiredFilename,
+			boolean deleteOnExit) throws IOException {
 		if (desiredFilename == null || desiredFilename.equals(""))
 			desiredFilename = "temp";
 
@@ -726,7 +758,8 @@ public class FileFactory {
 		AbstractFile tempFile = TEMP_DIRECTORY.getDirectChild(desiredFilename);
 
 		if (tempFile.exists())
-			tempFile = TEMP_DIRECTORY.getDirectChild(getFilenameVariation(desiredFilename));
+			tempFile = TEMP_DIRECTORY
+					.getDirectChild(getFilenameVariation(desiredFilename));
 
 		if (deleteOnExit)
 			((java.io.File) tempFile.getUnderlyingFileObject()).deleteOnExit();
@@ -749,7 +782,8 @@ public class FileFactory {
 	 *             if an error occurred while instanciating the temporary file.
 	 *             This should not happen under normal circumstances.
 	 */
-	public static AbstractFile getTemporaryFile(boolean deleteOnExit) throws IOException {
+	public static AbstractFile getTemporaryFile(boolean deleteOnExit)
+			throws IOException {
 		return getTemporaryFile(null, deleteOnExit);
 	}
 
@@ -784,7 +818,8 @@ public class FileFactory {
 	 * to a registered archive format or is a directory), the provided
 	 * <code>AbstractFile</code> instance is returned.
 	 */
-	public static AbstractFile wrapArchive(AbstractFile file) throws IOException {
+	public static AbstractFile wrapArchive(AbstractFile file)
+			throws IOException {
 		String filename = file.getName();
 
 		// Looks for an archive FilenameFilter that matches the given filename.
@@ -801,7 +836,8 @@ public class FileFactory {
 			if (file instanceof AbstractArchiveEntryFile)
 				archiveFilePool = null;
 			else
-				archiveFilePool = archiveFilePoolMap.get(file.getURL().getScheme());
+				archiveFilePool = archiveFilePoolMap.get(file.getURL()
+						.getScheme());
 
 			if (archiveFilePool != null) {
 				archiveFile = archiveFilePool.get(file.getURL());
@@ -817,7 +853,8 @@ public class FileFactory {
 			if ((provider = getArchiveFormatProvider(filename)) != null) {
 				archiveFile = provider.getFile(file);
 				if (archiveFilePool != null) {
-					FileLogger.finest("Adding archive file to pool: " + file.getAbsolutePath());
+					FileLogger.finest("Adding archive file to pool: "
+							+ file.getAbsolutePath());
 					archiveFilePool.put(file.getURL(), archiveFile);
 				}
 				return archiveFile;

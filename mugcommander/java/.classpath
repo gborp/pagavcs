@@ -14,9 +14,6 @@
 	<classpathentry kind="lib" path="lib/include/jcifs.jar"/>
 	<classpathentry kind="lib" path="lib/include/jna.jar"/>
 	<classpathentry kind="lib" path="lib/include/yanfs.jar"/>
-	<classpathentry kind="lib" path="lib/noinclude/junit.jar"/>
-	<classpathentry kind="lib" path="lib/noinclude/osx-eawt-stubs.jar"/>
-	<classpathentry kind="lib" path="lib/noinclude/servlet-api.jar"/>
 	<classpathentry kind="lib" path="tools/ant-contrib.jar"/>
 	<classpathentry kind="lib" path="tools/antdoclet.jar"/>
 	<classpathentry kind="lib" path="tools/doccheck.jar"/>
@@ -28,5 +25,7 @@
 	<classpathentry kind="lib" path="tools/velocity.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/usr/share/ant/lib/ant.jar"/>
+	<classpathentry kind="lib" path="lib/noinclude/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/noinclude/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -18,16 +18,17 @@
 
 package com.mucommander.job.progress;
 
-import com.mucommander.job.FileJob;
-import com.mucommander.job.FileJobListener;
-
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.event.EventListenerList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.event.EventListenerList;
+
+import com.mucommander.job.FileJob;
+import com.mucommander.job.FileJobListener;
 
 /**
  * A class that monitors jobs progress.
@@ -37,13 +38,13 @@ import java.util.List;
 public class JobProgressMonitor implements FileJobListener {
 	
     /** Controls how often should current file label be refreshed (in ms) */
-	private final static int CURRENT_FILE_LABEL_REFRESH_RATE = 100;
+	private final static int CURRENT_FILE_LABEL_REFRESH_RATE = 150;
 	
 	/** Controls how often should progress information be refreshed */
-    private final static int MAIN_REFRESH_RATE = 10;
+	private final static int MAIN_REFRESH_RATE = 7;
     
     /** Time after which remove finished job from a monitor */
-    private final static int FINISHED_JOB_REMOVE_TIME = 1500;
+	private final static int FINISHED_JOB_REMOVE_TIME = 100;
 
     /** Timer used to monitor jobs progress */
     private Timer progressTimer;

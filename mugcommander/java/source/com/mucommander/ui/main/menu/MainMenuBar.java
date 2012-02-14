@@ -55,7 +55,6 @@ import com.mucommander.ui.action.impl.CalculateChecksumAction;
 import com.mucommander.ui.action.impl.ChangeDateAction;
 import com.mucommander.ui.action.impl.ChangeLocationAction;
 import com.mucommander.ui.action.impl.ChangePermissionsAction;
-import com.mucommander.ui.action.impl.CheckForUpdatesAction;
 import com.mucommander.ui.action.impl.CloseWindowAction;
 import com.mucommander.ui.action.impl.CombineFilesAction;
 import com.mucommander.ui.action.impl.CompareFoldersAction;
@@ -102,7 +101,6 @@ import com.mucommander.ui.action.impl.RevealInDesktopAction;
 import com.mucommander.ui.action.impl.ReverseSortOrderAction;
 import com.mucommander.ui.action.impl.RunCommandAction;
 import com.mucommander.ui.action.impl.SetSameFolderAction;
-import com.mucommander.ui.action.impl.ShowAboutAction;
 import com.mucommander.ui.action.impl.ShowBookmarksQLAction;
 import com.mucommander.ui.action.impl.ShowDebugConsoleAction;
 import com.mucommander.ui.action.impl.ShowFilePropertiesAction;
@@ -457,16 +455,6 @@ public class MainMenuBar extends JMenuBar implements ActionListener, MenuListene
 			MenuToolkit.addMenuItem(helpMenu, ActionManager.getActionInstance(GoToForumsAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
 			MenuToolkit.addMenuItem(helpMenu, ActionManager.getActionInstance(ReportBugAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
 			MenuToolkit.addMenuItem(helpMenu, ActionManager.getActionInstance(DonateAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
-
-			helpMenu.add(new JSeparator());
-			MenuToolkit.addMenuItem(helpMenu, ActionManager.getActionInstance(CheckForUpdatesAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
-		}
-
-		// Under Mac OS X, 'About' already appears in the application
-		// (muCommander) menu, do not display it again
-		if (!OsFamilies.MAC_OS_X.isCurrent()) {
-			helpMenu.add(new JSeparator());
-			MenuToolkit.addMenuItem(helpMenu, ActionManager.getActionInstance(ShowAboutAction.Descriptor.ACTION_ID, mainFrame), menuItemMnemonicHelper);
 		}
 
 		add(helpMenu);
