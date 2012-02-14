@@ -71,7 +71,6 @@ public class ActionManager {
 		registerAction(new ChangeDateAction.Descriptor(), new ChangeDateAction.Factory());
 		registerAction(new ChangeLocationAction.Descriptor(), new ChangeLocationAction.Factory());
 		registerAction(new ChangePermissionsAction.Descriptor(), new ChangePermissionsAction.Factory());
-		registerAction(new CheckForUpdatesAction.Descriptor(), new CheckForUpdatesAction.Factory());
 		registerAction(new CloseWindowAction.Descriptor(), new CloseWindowAction.Factory());
 		// registerAction(new CommandAction.Descriptor(), new
 		// CommandAction.Factory());

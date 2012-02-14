@@ -24,12 +24,10 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.apple.eio.FileManager;
 import com.mucommander.AppLogger;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileOperation;
 import com.mucommander.file.FilePermissions;
-import com.mucommander.file.impl.local.LocalFile;
 import com.mucommander.file.util.FileSet;
 import com.mucommander.io.ByteCounter;
 import com.mucommander.io.ChecksumInputStream;
@@ -37,7 +35,6 @@ import com.mucommander.io.CounterInputStream;
 import com.mucommander.io.FileTransferException;
 import com.mucommander.io.ThroughputLimitInputStream;
 import com.mucommander.io.security.MuProvider;
-import com.mucommander.runtime.OsFamilies;
 import com.mucommander.text.Translator;
 import com.mucommander.ui.dialog.file.ProgressDialog;
 import com.mucommander.ui.main.MainFrame;
@@ -201,20 +198,6 @@ public abstract class TransferFileJob extends FileJob {
             }
         }
 
-        // Under Mac OS X only, preserving the file type and creator
-        if(OsFamilies.MAC_OS_X.isCurrent()
-            && sourceFile.hasAncestor(LocalFile.class)
-            && destFile.hasAncestor(LocalFile.class)) {
-
-            String sourcePath = sourceFile.getAbsolutePath();
-            try {
-                FileManager.setFileTypeAndCreator(destFile.getAbsolutePath(), FileManager.getFileType(sourcePath), FileManager.getFileCreator(sourcePath));
-            }
-            catch(IOException e) {
-                // Swallow the exception and do not interrupt the transfer
-                AppLogger.fine("Error while setting Mac OS X file type and creator on destination", e);
-            }
-        }
 
         // This block is executed only if integrity check has been enabled (disabled by default)
         if(integrityCheckEnabled) {
