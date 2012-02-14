@@ -730,7 +730,7 @@ public class Manager {
 		}
 		String label2 = filename1;
 		if (label2.lastIndexOf('/') != -1) {
-			label2 = label1.substring(label2.lastIndexOf('/'));
+			label2 = label2.substring(label2.lastIndexOf('/'));
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD, "-L "
