@@ -1,3 +1,15 @@
+mugcommander (1.1.0-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Remove some OSX and Windows specific part
+  * Remove muCommander update checker
+  * Remap unpack-archive-action to ALT+F9 (from ALT+F5, which was the same as pack-archive-action's one)
+  * Faster file operations
+  * Update the file transfer/pack/unpack dialogs in slower rate
+  * Close the file transfer/pack/unpack dialogs after 100ms instead of 1500ms (so you don't have to wait long after you deleted a file)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 14 Feb 2012 21:29:31 +0100
+
 mugcommander (1.0.9-3karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
