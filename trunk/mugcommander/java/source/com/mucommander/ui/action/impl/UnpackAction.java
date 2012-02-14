@@ -74,7 +74,8 @@ public class UnpackAction extends SelectedFilesAction implements InvokesDialog {
 		}
 
 		public KeyStroke getDefaultKeyStroke() {
-			return KeyStroke.getKeyStroke(KeyEvent.VK_F5, KeyEvent.ALT_DOWN_MASK);
+			return KeyStroke.getKeyStroke(KeyEvent.VK_F9,
+					KeyEvent.ALT_DOWN_MASK);
 		}
 	}
 }
