@@ -130,6 +130,10 @@ public class ExceptionHandler implements
 				} catch (Exception ex2) {
 					Manager.handle(ex2);
 				}
+			} else if (SVNErrorCode.FS_NO_SUCH_REVISION.equals(errorCode)) {
+				MessagePane.showError(null, "Invalid revision number",
+						errorString);
+				return;
 			}
 
 			SVNErrorCode rootErrorCode = errorMessage.getRootErrorMessage()
