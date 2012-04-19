@@ -88,10 +88,12 @@ public class SvnHelper {
 		return rangesToMerge;
 	}
 
-	public static void doMerge(Cancelable cancelable, String urlTo,
+	public static int doMerge(Cancelable cancelable, String urlTo,
 			String pathTo, String urlFrom, String pathFrom,
 			String revisionRange, boolean reverseMerge, boolean ignoreEolStyle)
 			throws Exception {
+
+		UpdateEventHandler evHandler = null;
 
 		cancelable.setCancel(false);
 		UpdateGui updateGui = new UpdateGui(cancelable, "Merge");
@@ -175,8 +177,8 @@ public class SvnHelper {
 				}
 			}
 
-			diffClient.setEventHandler(new UpdateEventHandler(cancelable,
-					updateGui));
+			evHandler = new UpdateEventHandler(cancelable, updateGui);
+			diffClient.setEventHandler(evHandler);
 			success = false;
 			while (!success && !exit) {
 				try {
@@ -224,6 +226,8 @@ public class SvnHelper {
 				clientMgr.dispose();
 			}
 		}
+
+		return evHandler != null ? evHandler.getCount() : -1;
 	}
 
 	public static void createPatch(File basePath, File[] wcFiles,
