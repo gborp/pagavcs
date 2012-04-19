@@ -97,14 +97,15 @@ public class MergeOperation implements Cancelable {
 		return cancel;
 	}
 
-	public void doMerge(String urlTo, String pathTo, String urlFrom,
+	public int doMerge(String urlTo, String pathTo, String urlFrom,
 			String revisionRange, boolean reverseMerge, boolean ignoreEolStyle)
 			throws Exception {
 		SvnHelper.storeUrlForHistory(urlTo);
 		SvnHelper.storeUrlForHistory(urlFrom);
 		SvnHelper.storeUrlForMergeHistory(urlFrom, urlTo);
-		SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, null, revisionRange,
-				reverseMerge, ignoreEolStyle);
+		int count = SvnHelper.doMerge(this, urlTo, pathTo, urlFrom, null,
+				revisionRange, reverseMerge, ignoreEolStyle);
+		return count;
 	}
 
 	public void doShowLog(String pathToShowLog) throws SVNException,
