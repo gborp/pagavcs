@@ -59,16 +59,6 @@ public class MergeOperation implements Cancelable {
 		gui = new MergeGui(this);
 		gui.display();
 
-		if (prefillMergeFromRevision != null) {
-			gui.setPrefillMergeFromRevision(prefillMergeFromRevision);
-		}
-		if (prefillMergeFromUrl != null) {
-			gui.setPrefillMergeFromUrl(prefillMergeFromUrl);
-		}
-		if (prefillCommitToo != null) {
-			gui.setPrefillCommitToo(prefillCommitToo);
-		}
-
 		File wcFile = new File(path);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
 		SVNWCClient wcClient = mgrSvn.getWCClient();
@@ -77,6 +67,16 @@ public class MergeOperation implements Cancelable {
 			String urlTo = svnInfo.getURL().toDecodedString();
 			gui.setURL(urlTo);
 			gui.setUrlHistory(SvnHelper.getUrlHistoryForMerge(urlTo));
+
+			if (prefillMergeFromRevision != null) {
+				gui.setPrefillMergeFromRevision(prefillMergeFromRevision);
+			}
+			if (prefillMergeFromUrl != null) {
+				gui.setPrefillMergeFromUrl(prefillMergeFromUrl);
+			}
+			if (prefillCommitToo != null) {
+				gui.setPrefillCommitToo(prefillCommitToo);
+			}
 		} catch (SVNException ex) {
 			Manager.handle(ex);
 		} finally {
