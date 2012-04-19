@@ -1,3 +1,13 @@
+pagavcs-core (1.6.0-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [context menu] add some separators
+  * [exception] handle better the "no such revision" type exceptions
+  * [merge] display warning dialog if nothing has been merged
+  * [merge] select the [commit]'s url if coming from the [commit] by "merge too" function
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 19 Apr 2012 20:10:00 +0200
+
 pagavcs-core (1.5.11-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
