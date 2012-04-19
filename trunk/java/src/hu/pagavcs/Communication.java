@@ -482,7 +482,7 @@ public class Communication {
 			makeMenuItem(sb, "Log", "Log", "pagavcs-log", "t", COMMAND_LOG);
 		}
 
-		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "",
+		makeMenuItem(sb, "Repo Browser", "Repo Browser", "pagavcs-drive", "s",
 				COMMAND_REPOBROWSER);
 		if (!hasSvned && hasDir && !hasFile) {
 			makeMenuItem(sb, "Create Repository here",
