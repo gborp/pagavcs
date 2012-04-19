@@ -261,6 +261,12 @@ pagavcs_svn_action_create_menu_item(GtkAction *action) {
 			stock = GTK_STOCK_SPELL_CHECK;
 		}
 
+		if (strchr(mode,'s')!= NULL) {
+			GtkToolItem *separator = gtk_separator_menu_item_new();
+			gtk_menu_shell_append(menu, separator);
+			gtk_widget_show(separator);
+		}
+
 		add_subaction(action, GTK_MENU_SHELL (menu), id, label, tooltip, stock,
 				command);
 	}
