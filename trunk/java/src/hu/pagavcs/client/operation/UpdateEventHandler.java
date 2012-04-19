@@ -30,7 +30,8 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
  */
 public class UpdateEventHandler implements ISVNEventHandler {
 
-	private UpdateGui        gui;
+	private int count;
+	private UpdateGui gui;
 	private final Cancelable cancelable;
 
 	public UpdateEventHandler(Cancelable cancelable, UpdateGui gui) {
@@ -38,8 +39,11 @@ public class UpdateEventHandler implements ISVNEventHandler {
 		this.gui = gui;
 	}
 
-	public void handleEvent(SVNEvent event, double progress) throws SVNException {
+	public void handleEvent(SVNEvent event, double progress)
+			throws SVNException {
 		try {
+			count++;
+
 			Manager.invalidate(event.getFile());
 			SVNEventAction action = event.getAction();
 			SVNStatusType contentStatus = event.getContentsStatus();
@@ -50,34 +54,50 @@ public class UpdateEventHandler implements ISVNEventHandler {
 				updateContentStatus = UpdateContentStatus.MERGED;
 			}
 
-			String fileName = event.getFile() != null ? event.getFile().getAbsolutePath() : null;
+			String fileName = event.getFile() != null ? event.getFile()
+					.getAbsolutePath() : null;
 			if (SVNEventAction.UPDATE_NONE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.NONE, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus, ContentStatus.NONE,
+						event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_ADD.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.ADDED, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus, ContentStatus.ADDED,
+						event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_DELETE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.DELETED, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus,
+						ContentStatus.DELETED, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_EXISTS.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.EXISTS, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus,
+						ContentStatus.EXISTS, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_EXTERNAL.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.EXTERNAL, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus,
+						ContentStatus.EXTERNAL, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_REPLACE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.REPLACED, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus,
+						ContentStatus.REPLACED, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_UPDATE.equals(action)) {
-				gui.addItem(fileName, updateContentStatus, ContentStatus.UPDATE, event.getPreviousRevision());
+				gui.addItem(fileName, updateContentStatus,
+						ContentStatus.UPDATE, event.getPreviousRevision());
 			} else if (SVNEventAction.UPDATE_COMPLETED.equals(action)) {
-				gui.addItem(event.getFile() + " - Revision number: " + event.getRevision(), updateContentStatus, ContentStatus.COMPLETED, -1);
+				gui.addItem(
+						event.getFile() + " - Revision number: "
+								+ event.getRevision(), updateContentStatus,
+						ContentStatus.COMPLETED, -1);
 			} else if (SVNEventAction.TREE_CONFLICT.equals(action)) {
-				gui.addItem("Tree conflict: " + event.getFile(), updateContentStatus, ContentStatus.MISSING, -1);
+				gui.addItem("Tree conflict: " + event.getFile(),
+						updateContentStatus, ContentStatus.MISSING, -1);
+			} else if (SVNEventAction.MERGE_COMPLETE.equals(action)) {
+				count--;
 			}
-
-			// TODO SVNEventAction.MERGE_COMPLETE
 		} catch (SVNException e) {
 			throw e;
 		} catch (Exception e) {
 			Manager.handle(e);
 		}
 
+	}
+
+	public int getCount() {
+		return count;
 	}
 
 	public void checkCancelled() throws SVNCancelException {

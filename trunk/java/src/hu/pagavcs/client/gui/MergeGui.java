@@ -7,6 +7,8 @@ import hu.pagavcs.client.gui.platform.EditField;
 import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
+import hu.pagavcs.client.gui.platform.MessagePane;
+import hu.pagavcs.client.operation.Commit;
 import hu.pagavcs.client.operation.MergeOperation;
 
 import java.awt.event.ActionEvent;
@@ -37,6 +39,7 @@ public class MergeGui {
 	private JButton btnMergeRevisions;
 	private Frame frame;
 	private JCheckBox cbIgnoreEolStyle;
+	private JCheckBox cbCommitToo;
 
 	public MergeGui(MergeOperation backend) {
 		this.backend = backend;
@@ -46,7 +49,7 @@ public class MergeGui {
 		new OnSwingWait<Object, Object>() {
 			protected Object process() throws Exception {
 				FormLayout layout = new FormLayout("right:p, 2dlu,p:g, p",
-						"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p");
+						"p,2dlu,p,2dlu,p,4dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p");
 				JPanel pnlMain = new JPanel(layout);
 				CellConstraints cc = new CellConstraints();
 
@@ -70,6 +73,7 @@ public class MergeGui {
 				cbIgnoreEolStyle = new JCheckBox("Ignore EOL style");
 				cbIgnoreEolStyle
 						.setToolTipText("Ignore end-of-line style (eg. windows or unix style)");
+				cbCommitToo = new JCheckBox("Commit too");
 
 				if (!Boolean.FALSE.equals(SettingsStore.getInstance()
 						.getAutoCopyCommitRevisionToClipboard())) {
@@ -93,6 +97,7 @@ public class MergeGui {
 				pnlMain.add(btnShowLogFrom, cc.xywh(4, 11, 1, 1));
 				pnlMain.add(cbIgnoreEolStyle, cc.xywh(3, 13, 1, 1));
 				pnlMain.add(btnMergeRevisions, cc.xywh(4, 13, 1, 1));
+				pnlMain.add(cbCommitToo, cc.xywh(3, 15, 1, 1));
 
 				frame = GuiHelper.createAndShowFrame(pnlMain, "Merge Settings",
 						"other-app-icon.png");
@@ -166,9 +171,18 @@ public class MergeGui {
 			SettingsStore.getInstance().setMergeIgnoreEol(
 					cbIgnoreEolStyle.isSelected());
 
-			backend.doMerge(sfRepo.getText(), sfWorkingCopy.getText(), url,
-					sfRevisionRange.getText().trim(),
+			int count = backend.doMerge(sfRepo.getText(), sfWorkingCopy
+					.getText(), url, sfRevisionRange.getText().trim(),
 					cbReverseMerge.isSelected(), cbIgnoreEolStyle.isSelected());
+
+			if (count < 1) {
+				MessagePane.showWarning(frame, "Nothing merged",
+						"Nothing has been merged!");
+			}
+
+			if (cbCommitToo.isSelected()) {
+				new Commit(sfWorkingCopy.getText()).execute();
+			}
 		}
 
 	}
