@@ -536,11 +536,11 @@ public class Communication {
 					COMMAND_RESOLVE);
 		}
 		if (hasSvned) {
-			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "t",
+			makeMenuItem(sb, "Switch", "Switch", "pagavcs-switch", "ts",
 					COMMAND_SWITCH);
 			makeMenuItem(sb, "Merge", "Merge", "pagavcs-merge", "t",
 					COMMAND_MERGE);
-			makeMenuItem(sb, "Export", "Export", "pagavcs-export", "",
+			makeMenuItem(sb, "Export", "Export", "pagavcs-export", "s",
 					COMMAND_EXPORT);
 			makeMenuItem(sb, "Apply patch", "Apply patch",
 					"pagavcs-applypatch", "", COMMAND_APPLY_PATCH);
