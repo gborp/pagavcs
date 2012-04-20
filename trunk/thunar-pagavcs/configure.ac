@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([thunar-plugin], [1.5.2], [pagavcs@gmail.com])
+AC_INIT([thunar-plugin], [1.6.0], [pagavcs@gmail.com])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
 

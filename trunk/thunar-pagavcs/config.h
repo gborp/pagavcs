@@ -48,7 +48,7 @@
 #define PACKAGE_NAME "thunar-plugin"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "thunar-plugin 1.5.2"
+#define PACKAGE_STRING "thunar-plugin 1.6.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "thunar-plugin"
@@ -57,16 +57,16 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.5.2"
+#define PACKAGE_VERSION "1.6.0"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Thunar's extensions directory */
-#define THUNARX_EXTENSION_DIR "/usr/lib/thunarx-2"
+#define THUNARX_EXTENSION_DIR "/usr/lib/x86_64-linux-gnu/thunarx-2"
 
 /* Thunarx libdir */
-#define THUNARX_LIBDIR "/usr/lib"
+#define THUNARX_LIBDIR "/usr/lib/x86_64-linux-gnu"
 
 /* Version number of package */
-#define VERSION "1.5.2"
+#define VERSION "1.6.0"
