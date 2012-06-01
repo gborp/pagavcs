@@ -132,8 +132,8 @@ public class SettingsGui {
 	}
 
 	private boolean isShowIconsInContextMenus() throws IOException {
-		String result = Manager.getOsCommandResult(null, "gconftool-2", "-g",
-				"/desktop/gnome/interface/menus_have_icons");
+		String result = Manager.getOsCommandResult(null, "dconf", "read",
+				"/org/gnome/desktop/interface/menus-have-icons");
 		return Boolean.valueOf(result.trim());
 	}
 
@@ -189,7 +189,7 @@ public class SettingsGui {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			Runtime.getRuntime().exec(
-					"gconftool-2 -t bool -s /desktop/gnome/interface/menus_have_icons "
+					"dconf read /org/gnome/desktop/interface/menus-have-icons "
 							+ Boolean.toString(cbShowIconsInContextMenu
 									.isSelected()));
 		}
