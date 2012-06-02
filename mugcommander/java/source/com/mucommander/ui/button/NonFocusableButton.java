@@ -18,66 +18,64 @@
 
 package com.mucommander.ui.button;
 
-import com.mucommander.runtime.OsFamilies;
-
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.UIManager;
 
 /**
- * NonFocusableButton is a JButton which is non focusable, i.e. that cannot hold keyboard focus.
- *
+ * NonFocusableButton is a JButton which is non focusable, i.e. that cannot hold
+ * keyboard focus.
+ * 
  * @author Maxence Bernard
  */
 public class NonFocusableButton extends JButton {
 
-    public NonFocusableButton() {
-        setLookAndFeelProperties();
-    }
+	public NonFocusableButton() {
+		setLookAndFeelProperties();
+	}
 
-    public NonFocusableButton(Action a) {
-        super(a);
-        setLookAndFeelProperties();
-    }
+	public NonFocusableButton(Action a) {
+		super(a);
+		setLookAndFeelProperties();
+	}
 
-    public NonFocusableButton(Icon icon) {
-        super(icon);
-        setLookAndFeelProperties();
-    }
+	public NonFocusableButton(Icon icon) {
+		super(icon);
+		setLookAndFeelProperties();
+	}
 
-    public NonFocusableButton(String text) {
-        super(text);
-        setLookAndFeelProperties();
-    }
+	public NonFocusableButton(String text) {
+		super(text);
+		setLookAndFeelProperties();
+	}
 
-    public NonFocusableButton(String text, Icon icon) {
-        super(text, icon);
-        setLookAndFeelProperties();
-    }
+	public NonFocusableButton(String text, Icon icon) {
+		super(text, icon);
+		setLookAndFeelProperties();
+	}
 
+	private void setLookAndFeelProperties() {
+		// Fill the content area under the Windows L&F only, required for the
+		// borders to be painted.
+		// Note: filing the content area under Metal L&F looks like absolute
+		// crap.
+		setContentAreaFilled(false);
+	}
 
-    private void setLookAndFeelProperties() {
-        // Fill the content area under the Windows L&F only, required for the borders to be painted.
-        // Note: filing the content area under Metal L&F looks like absolute crap.
-        setContentAreaFilled(OsFamilies.WINDOWS.isCurrent() && "Windows".equals(UIManager.getLookAndFeel().getName()));
-    }
+	// //////////////////////
+	// Overridden methods //
+	// //////////////////////
 
+	@Override
+	public boolean isFocusable() {
+		return false;
+	}
 
-    ////////////////////////
-    // Overridden methods //
-    ////////////////////////
+	@Override
+	public void updateUI() {
+		super.updateUI();
 
-    @Override
-    public boolean isFocusable() {
-        return false;
-    }
-
-    @Override
-    public void updateUI() {
-        super.updateUI();
-
-        // Update L&F properties 
-        setLookAndFeelProperties();
-    }
+		// Update L&F properties
+		setLookAndFeelProperties();
+	}
 }

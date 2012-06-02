@@ -33,7 +33,6 @@ import com.mucommander.file.impl.local.LocalProtocolProvider;
 import com.mucommander.file.util.FilePool;
 import com.mucommander.file.util.PathTokenizer;
 import com.mucommander.file.util.PathUtils;
-import com.mucommander.runtime.OsFamilies;
 
 /**
  * FileFactory is an abstract class that provides static methods to get a
@@ -504,11 +503,6 @@ public class FileFactory {
 			throw new IOException("Unsupported file protocol: " + protocol);
 
 		String filePath = fileURL.getPath();
-		// For local paths under Windows (e.g. "/C:\temp"), remove the leading
-		// '/' character
-		if (OsFamilies.WINDOWS.isCurrent()
-				&& FileProtocols.FILE.equals(protocol))
-			filePath = PathUtils.removeLeadingSeparator(filePath, "/");
 
 		String pathSeparator = fileURL.getPathSeparator();
 
