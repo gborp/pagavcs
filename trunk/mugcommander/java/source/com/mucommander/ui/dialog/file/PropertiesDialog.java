@@ -33,19 +33,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.ArchiveEntry;
-import com.mucommander.file.impl.local.LocalFile;
 import com.mucommander.file.util.FileSet;
-import com.mucommander.file.util.OSXFileUtils;
 import com.mucommander.job.FileJob;
 import com.mucommander.job.PropertiesJob;
-import com.mucommander.runtime.OsFamilies;
-import com.mucommander.runtime.OsVersions;
 import com.mucommander.text.SizeFormat;
 import com.mucommander.text.Translator;
 import com.mucommander.ui.action.ActionProperties;
@@ -59,186 +54,190 @@ import com.mucommander.ui.layout.XAlignedComponentPanel;
 import com.mucommander.ui.layout.YBoxPanel;
 import com.mucommander.ui.main.MainFrame;
 import com.mucommander.ui.text.FileLabel;
-import com.mucommander.ui.text.MultiLineLabel;
 
 /**
- * This dialog shows properties of a file or a group of files : number of files, file kind,
- * combined size and location.
- *
+ * This dialog shows properties of a file or a group of files : number of files,
+ * file kind, combined size and location.
+ * 
  * @author Maxence Bernard
  */
-public class PropertiesDialog extends FocusDialog implements Runnable, ActionListener {
-    private PropertiesJob job;
-    private Thread repaintThread;
-    private SpinningDial dial;
-	
-    private JLabel counterLabel;
-    private JLabel sizeLabel;
+public class PropertiesDialog extends FocusDialog implements Runnable,
+		ActionListener {
+	private PropertiesJob job;
+	private Thread repaintThread;
+	private SpinningDial dial;
 
-    private JButton okCancelButton;
+	private JLabel counterLabel;
+	private JLabel sizeLabel;
 
-    // Dialog width is constrained to 320, height is not an issue (always the same)
-    private final static Dimension MINIMUM_DIALOG_DIMENSION = new Dimension(360,0);
-    private final static Dimension MAXIMUM_DIALOG_DIMENSION = new Dimension(450,10000);	
+	private JButton okCancelButton;
 
-    /** How often should progress information be refreshed (in ms) */
-    private final static int REFRESH_RATE = 500;
+	// Dialog width is constrained to 320, height is not an issue (always the
+	// same)
+	private final static Dimension MINIMUM_DIALOG_DIMENSION = new Dimension(
+			360, 0);
+	private final static Dimension MAXIMUM_DIALOG_DIMENSION = new Dimension(
+			450, 10000);
 
-    /** Dimension of the large file icon displayed on left side of the dialog */
-    private final static Dimension ICON_DIMENSION = new Dimension(64, 64);
+	/** How often should progress information be refreshed (in ms) */
+	private final static int REFRESH_RATE = 500;
 
-	
-    public PropertiesDialog(MainFrame mainFrame, FileSet files) {
-        super(mainFrame,
-              files.size() > 1 ? ActionProperties.getActionLabel(ShowFilePropertiesAction.Descriptor.ACTION_ID) :
-              Translator.get("properties_dialog.file_properties", files.elementAt(0).getName()), mainFrame);
+	/** Dimension of the large file icon displayed on left side of the dialog */
+	private final static Dimension ICON_DIMENSION = new Dimension(64, 64);
 
-        this.job = new PropertiesJob(files, mainFrame);
-		
-        Container contentPane = getContentPane();
+	public PropertiesDialog(MainFrame mainFrame, FileSet files) {
+		super(mainFrame, files.size() > 1 ? ActionProperties
+				.getActionLabel(ShowFilePropertiesAction.Descriptor.ACTION_ID)
+				: Translator.get("properties_dialog.file_properties", files
+						.elementAt(0).getName()), mainFrame);
 
-        JPanel fileDetailsPanel = new JPanel(new BorderLayout());
+		this.job = new PropertiesJob(files, mainFrame);
 
-        Icon icon;
-        boolean isSingleFile = files.size()==1;
-        AbstractFile singleFile = isSingleFile?files.elementAt(0):null;
-        if(isSingleFile) {
-            icon = FileIcons.getFileIcon(singleFile, ICON_DIMENSION);
-        }
-        else {
-            ImageIcon imageIcon = IconManager.getIcon(IconManager.COMMON_ICON_SET, "many_files.png");
-            icon = IconManager.getScaledIcon(imageIcon, (float)ICON_DIMENSION.getWidth()/imageIcon.getIconWidth());
-        }
+		Container contentPane = getContentPane();
 
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setVerticalAlignment(JLabel.TOP);
-        iconLabel.setBorder(new EmptyBorder(0, 0, 0, 8));
+		JPanel fileDetailsPanel = new JPanel(new BorderLayout());
 
-        fileDetailsPanel.add(iconLabel, BorderLayout.WEST);
+		Icon icon;
+		boolean isSingleFile = files.size() == 1;
+		AbstractFile singleFile = isSingleFile ? files.elementAt(0) : null;
+		if (isSingleFile) {
+			icon = FileIcons.getFileIcon(singleFile, ICON_DIMENSION);
+		} else {
+			ImageIcon imageIcon = IconManager.getIcon(
+					IconManager.COMMON_ICON_SET, "many_files.png");
+			icon = IconManager.getScaledIcon(
+					imageIcon,
+					(float) ICON_DIMENSION.getWidth()
+							/ imageIcon.getIconWidth());
+		}
 
-        XAlignedComponentPanel labelPanel = new XAlignedComponentPanel(10);
+		JLabel iconLabel = new JLabel(icon);
+		iconLabel.setVerticalAlignment(JLabel.TOP);
+		iconLabel.setBorder(new EmptyBorder(0, 0, 0, 8));
 
-        // Contents (set later)
-        counterLabel = new JLabel("");
-        labelPanel.addRow(Translator.get("properties_dialog.contents")+":", counterLabel, 6);
+		fileDetailsPanel.add(iconLabel, BorderLayout.WEST);
 
-        // Location (set here)
+		XAlignedComponentPanel labelPanel = new XAlignedComponentPanel(10);
+
+		// Contents (set later)
+		counterLabel = new JLabel("");
+		labelPanel.addRow(Translator.get("properties_dialog.contents") + ":",
+				counterLabel, 6);
+
+		// Location (set here)
 		AbstractFile baseFolder = files.getBaseFolder();
 
 		if (isSingleFile) {
 			AbstractFile ancestorSingleFile = singleFile.getAncestor();
 			if (ancestorSingleFile instanceof AbstractArchiveEntryFile) {
 
-				ArchiveEntry entry = ((AbstractArchiveEntryFile) ancestorSingleFile).getEntry();
+				ArchiveEntry entry = ((AbstractArchiveEntryFile) ancestorSingleFile)
+						.getEntry();
 				if (entry instanceof RealFileProvider) {
-					baseFolder = ((RealFileProvider) entry).getRealFile().getParent();
+					baseFolder = ((RealFileProvider) entry).getRealFile()
+							.getParent();
 				}
 			}
 		}
-		labelPanel.addRow(Translator.get("location") + ":", new FileLabel(baseFolder, true), 6);
+		labelPanel.addRow(Translator.get("location") + ":", new FileLabel(
+				baseFolder, true), 6);
 
-        // Combined size (set later)
-        JPanel sizePanel;
-        sizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        sizePanel.add(sizeLabel = new JLabel(""));
-        sizePanel.add(new JLabel(dial = new SpinningDial()));
-        labelPanel.addRow(Translator.get("size")+":", sizePanel, 6);
+		// Combined size (set later)
+		JPanel sizePanel;
+		sizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		sizePanel.add(sizeLabel = new JLabel(""));
+		sizePanel.add(new JLabel(dial = new SpinningDial()));
+		labelPanel.addRow(Translator.get("size") + ":", sizePanel, 6);
 
-        if(OsFamilies.MAC_OS_X.isCurrent() && OsVersions.MAC_OS_X_10_4.isCurrentOrHigher()
-        && isSingleFile && singleFile.hasAncestor(LocalFile.class)) {
-            String comment = OSXFileUtils.getSpotlightComment(singleFile);
-            JLabel commentLabel = new JLabel(Translator.get("comment")+":");
-            commentLabel.setAlignmentY(JLabel.TOP_ALIGNMENT);
-            commentLabel.setVerticalAlignment(SwingConstants.TOP);
+		updateLabels();
 
-            labelPanel.addRow(commentLabel, new MultiLineLabel(comment), 6);
-        }
+		fileDetailsPanel.add(labelPanel, BorderLayout.CENTER);
 
-        updateLabels();
+		YBoxPanel yPanel = new YBoxPanel(5);
+		yPanel.add(fileDetailsPanel);
+		contentPane.add(yPanel, BorderLayout.NORTH);
 
-        fileDetailsPanel.add(labelPanel, BorderLayout.CENTER);
+		okCancelButton = new JButton(Translator.get("cancel"));
+		contentPane.add(DialogToolkit.createOKPanel(okCancelButton,
+				getRootPane(), this), BorderLayout.SOUTH);
 
-        YBoxPanel yPanel = new YBoxPanel(5);
-        yPanel.add(fileDetailsPanel);
-        contentPane.add(yPanel, BorderLayout.NORTH);
+		// OK button will receive initial focus
+		setInitialFocusComponent(okCancelButton);
 
-        okCancelButton = new JButton(Translator.get("cancel"));
-        contentPane.add(DialogToolkit.createOKPanel(okCancelButton, getRootPane(), this), BorderLayout.SOUTH);
+		setMinimumSize(MINIMUM_DIALOG_DIMENSION);
+		setMaximumSize(MAXIMUM_DIALOG_DIMENSION);
 
-        // OK button will receive initial focus
-        setInitialFocusComponent(okCancelButton);		
-		
-        setMinimumSize(MINIMUM_DIALOG_DIMENSION);
-        setMaximumSize(MAXIMUM_DIALOG_DIMENSION);
-		
-        start();
-    }
+		start();
+	}
 
+	private void updateLabels() {
+		int nbFiles = job.getNbFilesRecurse();
+		int nbFolders = job.getNbFolders();
+		counterLabel.setText((nbFiles > 0 ? Translator.get("nb_files", ""
+				+ nbFiles) : "")
+				+ (nbFiles > 0 && nbFolders > 0 ? ", " : "")
+				+ (nbFolders > 0 ? Translator.get("nb_folders", "" + nbFolders)
+						: ""));
+		sizeLabel.setText(SizeFormat.format(job.getTotalBytes(),
+				SizeFormat.DIGITS_MEDIUM | SizeFormat.UNIT_LONG
+						| SizeFormat.INCLUDE_SPACE | SizeFormat.ROUND_TO_KB)
+				+ " ("
+				+ SizeFormat.format(job.getTotalBytes(), SizeFormat.DIGITS_FULL
+						| SizeFormat.UNIT_LONG | SizeFormat.INCLUDE_SPACE)
+				+ ")");
 
-    private void updateLabels() {
-        int nbFiles = job.getNbFilesRecurse();
-        int nbFolders = job.getNbFolders();
-        counterLabel.setText(
-                             (nbFiles>0?Translator.get("nb_files", ""+nbFiles):"")
-                             +(nbFiles>0&&nbFolders>0?", ":"")
-                             +(nbFolders>0?Translator.get("nb_folders", ""+nbFolders):"")
-                             );
-        sizeLabel.setText(SizeFormat.format(job.getTotalBytes(), SizeFormat.DIGITS_MEDIUM | SizeFormat.UNIT_LONG | SizeFormat.INCLUDE_SPACE| SizeFormat.ROUND_TO_KB) +
-			  " (" + SizeFormat.format(job.getTotalBytes(), SizeFormat.DIGITS_FULL | SizeFormat.UNIT_LONG | SizeFormat.INCLUDE_SPACE) + ")");
+		counterLabel.repaint(REFRESH_RATE);
+		sizeLabel.repaint(REFRESH_RATE);
+	}
 
-        counterLabel.repaint(REFRESH_RATE);
-        sizeLabel.repaint(REFRESH_RATE);
-    }
+	public void start() {
+		job.start();
 
+		repaintThread = new Thread(this,
+				"com.mucommander.ui.dialog.file.PropertiesDialog's Thread");
+		repaintThread.start();
+	}
 
-    public void start() {
-        job.start();
-		
-        repaintThread = new Thread(this, "com.mucommander.ui.dialog.file.PropertiesDialog's Thread");
-        repaintThread.start();
-    }
+	// ////////////////////
+	// Runnable methods //
+	// ////////////////////
 
-	
-    //////////////////////
-    // Runnable methods //
-    //////////////////////
+	public void run() {
+		dial.setAnimated(true);
+		while (repaintThread != null && job.getState() != FileJob.FINISHED) {
+			updateLabels();
 
-    public void run() {
-        dial.setAnimated(true);
-        while(repaintThread!=null && job.getState()!= FileJob.FINISHED) {
-            updateLabels();
-			
-            try { Thread.sleep(REFRESH_RATE); }
-            catch(InterruptedException e) {}
-        }
+			try {
+				Thread.sleep(REFRESH_RATE);
+			} catch (InterruptedException e) {
+			}
+		}
 
-        // Updates button labels and stops spinning dial.
-        updateLabels();
-        okCancelButton.setText(Translator.get("ok"));
-        dial.setAnimated(false);
-    }
+		// Updates button labels and stops spinning dial.
+		updateLabels();
+		okCancelButton.setText(Translator.get("ok"));
+		dial.setAnimated(false);
+	}
 
+	// //////////////////////////
+	// ActionListener methods //
+	// //////////////////////////
 
-    ////////////////////////////
-    // ActionListener methods //
-    ////////////////////////////
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == okCancelButton)
+			dispose();
+	}
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource()==okCancelButton)
-            dispose();
-    }
+	// /////////////////////////////////////
+	// Overridden WindowListener methods //
+	// /////////////////////////////////////
 
+	@Override
+	public void windowClosed(WindowEvent e) {
+		super.windowClosed(e);
 
-    ///////////////////////////////////////
-    // Overridden WindowListener methods // 
-    ///////////////////////////////////////
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-        super.windowClosed(e);
-		
-        // Stop threads
-        job.interrupt();
-        repaintThread = null;
-    }
+		// Stop threads
+		job.interrupt();
+		repaintThread = null;
+	}
 }
