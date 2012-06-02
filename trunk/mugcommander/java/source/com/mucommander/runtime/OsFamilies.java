@@ -26,8 +26,6 @@ package com.mucommander.runtime;
  */
 public interface OsFamilies {
 
-    /** Windows */
-    public static final OsFamily WINDOWS    =        new OsFamily("Windows");
 
     /** Mac OS X */
     public static final OsFamily MAC_OS_X   =        new OsFamily("Mac OS X");
