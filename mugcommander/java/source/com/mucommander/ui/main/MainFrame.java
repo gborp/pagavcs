@@ -44,7 +44,6 @@ import com.mucommander.conf.impl.MuConfiguration;
 import com.mucommander.file.AbstractArchiveEntryFile;
 import com.mucommander.file.AbstractFile;
 import com.mucommander.file.FileProtocols;
-import com.mucommander.runtime.JavaVersions;
 import com.mucommander.runtime.OsFamilies;
 import com.mucommander.runtime.OsVersions;
 import com.mucommander.ui.action.ActionKeymap;
@@ -125,37 +124,29 @@ public class MainFrame extends JFrame implements LocationListener {
 		if (OsFamilies.MAC_OS_X.isCurrent())
 			return;
 
-		// Use Java 1.6 's new Window#setIconImages(List<Image>) when available
-		if (JavaVersions.JAVA_1_6.isCurrentOrHigher()) {
-			Vector<Image> icons = new Vector<Image>();
+		Vector<Image> icons = new Vector<Image>();
 
-			// Start by adding a 16x16 image with 1-bit transparency, any OS
-			// should support that.
-			icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon16_8.png").getImage());
+		// Start by adding a 16x16 image with 1-bit transparency, any OS
+		// should support that.
+		icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
+				"icon16_8.png").getImage());
 
-			// - GNOME and KDE support 8-bit transparency.
+		// - GNOME and KDE support 8-bit transparency.
 
-			// Add PNG 24 images (8-bit transparency)
-			icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon16_24.png").getImage());
-			icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon32_24.png").getImage());
-			icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon48_24.png").getImage());
-			icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon128_24.png").getImage());
-			icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon256_24.png").getImage());
+		// Add PNG 24 images (8-bit transparency)
+		icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
+				"icon16_24.png").getImage());
+		icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
+				"icon32_24.png").getImage());
+		icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
+				"icon48_24.png").getImage());
+		icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
+				"icon128_24.png").getImage());
+		icons.add(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
+				"icon256_24.png").getImage());
 
-			setIconImages(icons);
-		} else { // Java 1.5 or lower
-			// Err on the safe side by assuming that 8-bit transparency is not
-			// supported.
-			// Any OS should support 16x16 icons with 1-bit transparency.
-			setIconImage(IconManager.getIcon(IconManager.MUCOMMANDER_ICON_SET,
-					"icon16_8.png").getImage());
-		}
+		setIconImages(icons);
+
 	}
 
 	private void init(FolderPanel leftFolderPanel, FolderPanel rightFolderPanel) {
