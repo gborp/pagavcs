@@ -22,43 +22,56 @@ import com.mucommander.file.AbstractFile;
 import com.mucommander.file.PermissionAccesses;
 import com.mucommander.file.PermissionTypes;
 import com.mucommander.file.filter.AbstractFileFilter;
-import com.mucommander.runtime.JavaVersions;
 
 /**
  * Filter on a file's permissions.
+ * 
  * @author Nicolas Rinaudo
  */
-public class PermissionsFileFilter extends AbstractFileFilter implements PermissionTypes, PermissionAccesses {
-    private int     permission;
-    private boolean filter;
+public class PermissionsFileFilter extends AbstractFileFilter implements
+		PermissionTypes, PermissionAccesses {
+	private int permission;
+	private boolean filter;
 
-    /**
-     * Creates a new <code>PermissionsFileFilter</code>.
-     * @param permission permission that will be checked against as defined in {@link com.mucommander.file.FilePermissions}.
-     * @param filter     whether or not the specified permission flag must be set for a file to be accepted.
-     */
-    public PermissionsFileFilter(int permission, boolean filter) {
-        this.permission = permission;
-        this.filter     = filter;
-    }
+	/**
+	 * Creates a new <code>PermissionsFileFilter</code>.
+	 * 
+	 * @param permission
+	 *            permission that will be checked against as defined in
+	 *            {@link com.mucommander.file.FilePermissions}.
+	 * @param filter
+	 *            whether or not the specified permission flag must be set for a
+	 *            file to be accepted.
+	 */
+	public PermissionsFileFilter(int permission, boolean filter) {
+		this.permission = permission;
+		this.filter = filter;
+	}
 
-    public boolean accept(AbstractFile file) {
-        if(permission== EXECUTE_PERMISSION && JavaVersions.JAVA_1_5.isCurrentOrLower())
-            return true;
+	public boolean accept(AbstractFile file) {
 
-        return filter ? file.getPermissions().getBitValue(USER_ACCESS, permission) : !file.getPermissions().getBitValue(USER_ACCESS, permission);
-    }
+		return filter ? file.getPermissions().getBitValue(USER_ACCESS,
+				permission) : !file.getPermissions().getBitValue(USER_ACCESS,
+				permission);
+	}
 
-    /**
-     * Returns the permission that this filter will check.
-     * @return the permission that this filter will check.
-     */
-    public int getPermission() {return permission;}
+	/**
+	 * Returns the permission that this filter will check.
+	 * 
+	 * @return the permission that this filter will check.
+	 */
+	public int getPermission() {
+		return permission;
+	}
 
-    /**
-     * Returns <code>true</code> if files must have the filter's permission flag set in order to be accepted.
-     * @return <code>true</code> if files must have the filter's permission flag set in order to be accepted, <code>false</code> otherwise.
-     */
-    public boolean getFilter() {return filter;}
+	/**
+	 * Returns <code>true</code> if files must have the filter's permission flag
+	 * set in order to be accepted.
+	 * 
+	 * @return <code>true</code> if files must have the filter's permission flag
+	 *         set in order to be accepted, <code>false</code> otherwise.
+	 */
+	public boolean getFilter() {
+		return filter;
+	}
 }
-

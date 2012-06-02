@@ -54,7 +54,6 @@ import com.mucommander.io.BufferPool;
 import com.mucommander.io.FilteredOutputStream;
 import com.mucommander.io.RandomAccessInputStream;
 import com.mucommander.io.RandomAccessOutputStream;
-import com.mucommander.runtime.JavaVersions;
 import com.mucommander.runtime.OsFamilies;
 import com.mucommander.runtime.OsFamily;
 
@@ -272,13 +271,7 @@ public class LocalFile extends ProtocolFile {
 	 *             if an I/O error occurred
 	 */
 	public long[] getVolumeInfo() throws IOException {
-		// Under Java 1.6 and up, use the (new) java.io.File methods
-		if (JavaVersions.JAVA_1_6.isCurrentOrHigher()) {
-			return new long[] { getTotalSpace(), getFreeSpace() };
-		}
-
-		// Under Java 1.5 or lower, use native methods
-		return getNativeVolumeInfo();
+		return new long[] { getTotalSpace(), getFreeSpace() };
 	}
 
 	/**
@@ -673,9 +666,6 @@ public class LocalFile extends ProtocolFile {
 	@Override
 	public void changePermission(int access, int permission, boolean enabled)
 			throws IOException {
-		// Only the 'user' permissions under Java 1.6 are supported
-		if (access != USER_ACCESS || JavaVersions.JAVA_1_6.isCurrentLower())
-			throw new IOException();
 
 		boolean success = false;
 		if (permission == READ_PERMISSION)
@@ -854,18 +844,12 @@ public class LocalFile extends ProtocolFile {
 
 	@Override
 	public long getFreeSpace() throws IOException {
-		if (JavaVersions.JAVA_1_6.isCurrentOrHigher())
-			return file.getUsableSpace();
-
-		return getVolumeInfo()[1];
+		return file.getUsableSpace();
 	}
 
 	@Override
 	public long getTotalSpace() throws IOException {
-		if (JavaVersions.JAVA_1_6.isCurrentOrHigher())
-			return file.getTotalSpace();
-
-		return getVolumeInfo()[0];
+		return file.getTotalSpace();
 	}
 
 	// Unsupported file operations
@@ -1303,13 +1287,7 @@ public class LocalFile extends ProtocolFile {
 		private static PermissionBits JAVA_1_6_PERMISSIONS = new GroupedPermissionBits(
 				448); // rwx------ (700 octal)
 
-		/** Mask for supported permissions under Java 1.5 */
-		private static PermissionBits JAVA_1_5_PERMISSIONS = new GroupedPermissionBits(
-				384); // rw------- (300 octal)
-
-		private final static PermissionBits MASK = JavaVersions.JAVA_1_6
-				.isCurrentOrHigher() ? JAVA_1_6_PERMISSIONS
-				: JAVA_1_5_PERMISSIONS;
+		private final static PermissionBits MASK = JAVA_1_6_PERMISSIONS;
 
 		private LocalFilePermissions(java.io.File file) {
 			this.file = file;
@@ -1324,9 +1302,7 @@ public class LocalFile extends ProtocolFile {
 				return file.canRead();
 			else if (type == WRITE_PERMISSION)
 				return file.canWrite();
-			// Execute permission can only be retrieved under Java 1.6 and up
-			else if (type == EXECUTE_PERMISSION
-					&& JavaVersions.JAVA_1_6.isCurrentOrHigher())
+			else if (type == EXECUTE_PERMISSION)
 				return file.canExecute();
 
 			return false;
