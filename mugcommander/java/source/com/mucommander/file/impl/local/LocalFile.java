@@ -32,7 +32,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.mucommander.file.AbstractFile;
@@ -119,12 +118,6 @@ public class LocalFile extends ProtocolFile {
 	 */
 	public final static String SEPARATOR = File.separator;
 
-	/**
-	 * True if the underlying local filesystem uses drives assigned to letters
-	 * (e.g. A:\, C:\, ...) instead of having single a root folder '/'
-	 */
-	public final static boolean USES_ROOT_DRIVES = OsFamilies.OS_2.isCurrent();
-
 	/** Pattern matching Windows-like drives' root, e.g. C:\ */
 	final static Pattern driveRootPattern = Pattern
 			.compile("^[a-zA-Z]{1}[:]{1}[\\\\]{1}");
@@ -175,18 +168,8 @@ public class LocalFile extends ProtocolFile {
 			// If the URL denotes a Windows UNC file, translate the path back
 			// into a Windows-style UNC path in the form
 			// \\hostname\share\path .
-			if (isUncFile(fileURL)) {
-				path = "\\\\" + fileURL.getHost()
-						+ fileURL.getPath().replace('/', '\\'); // Replace
-																// leading /
-																// char by \
-			} else {
-				path = fileURL.getPath();
 
-				// Remove the leaading '/' for Windows-like paths
-				if (USES_ROOT_DRIVES)
-					path = path.substring(1, path.length());
-			}
+			path = fileURL.getPath();
 
 			// Create the java.io.File instance and throw an exception if the
 			// path is not absolute.
@@ -199,15 +182,11 @@ public class LocalFile extends ProtocolFile {
 			// Remove the trailing separator if present
 			if (absPath.endsWith(SEPARATOR))
 				absPath = absPath.substring(0, absPath.length() - 1);
-		}
-		// the java.io.File instance was created by ls(), no need to re-create
-		// it or call the costly File#getAbsolutePath()
-		else {
+		} else {
+			// the java.io.File instance was created by ls(), no need to
+			// re-create
+			// it or call the costly File#getAbsolutePath()
 			this.absPath = fileURL.getPath();
-
-			// Remove the leading '/' for Windows-like paths
-			if (USES_ROOT_DRIVES)
-				absPath = absPath.substring(1, absPath.length());
 		}
 
 		this.file = file;
@@ -217,28 +196,6 @@ public class LocalFile extends ProtocolFile {
 	// //////////////////////////////
 	// LocalFile-specific methods //
 	// //////////////////////////////
-
-	/**
-	 * Returns <code>true</code> if the specified {@link FileURL} denotes a
-	 * Windows UNC file.
-	 * 
-	 * @param fileURL
-	 *            the {@link FileURL} to test
-	 * @return <code>true</code> if the specified {@link FileURL} denotes a
-	 *         Windows UNC file.
-	 */
-	private static boolean isUncFile(FileURL fileURL) {
-		return false;
-	}
-
-	/**
-	 * Returns <code>true</code> if this file's URL denotes a Windows UNC file.
-	 * 
-	 * @return <code>true</code> if this file's URL denotes a Windows UNC file.
-	 */
-	public boolean isUncFile() {
-		return isUncFile(fileURL);
-	}
 
 	/**
 	 * Returns the user home folder. Most if not all OSes have one, but in the
@@ -939,24 +896,15 @@ public class LocalFile extends ProtocolFile {
 		int nbFiles = files.length;
 		AbstractFile children[] = new AbstractFile[nbFiles];
 		FileURL childURL;
-		File file;
-
-		boolean isUNC = isUncFile();
 
 		for (int i = 0; i < nbFiles; i++) {
-			file = files[i];
 
 			// Clone the FileURL of this file and set the child's path, this is
 			// more efficient than creating a new
 			// FileURL instance from scratch.
 			childURL = (FileURL) fileURL.clone();
 
-			if (isUNC) // Special case for UNC paths which include the hostname
-						// in it
-				childURL.setPath(addTrailingSeparator(fileURL.getPath())
-						+ file.getName());
-			else
-				childURL.setPath(absPath + SEPARATOR + files[i].getName());
+			childURL.setPath(absPath + SEPARATOR + files[i].getName());
 
 			// Retrieves an AbstractFile (LocalFile or AbstractArchiveFile)
 			// instance that's potentially already in
@@ -972,42 +920,6 @@ public class LocalFile extends ProtocolFile {
 	@Override
 	public boolean isHidden() {
 		return file.isHidden();
-	}
-
-	/**
-	 * Overridden to play nice with platforms that have root drives -- for
-	 * those, the drive's root (e.g. <code>C:\</code>) is returned instead of
-	 * <code>/</code>.
-	 */
-	@Override
-	public AbstractFile getRoot() {
-		if (USES_ROOT_DRIVES) {
-			Matcher matcher = driveRootPattern.matcher(absPath + SEPARATOR);
-
-			// Test if this file already is the root folder
-			if (matcher.matches())
-				return this;
-
-			// Extract the drive from the path
-			matcher.reset();
-			if (matcher.find())
-				return FileFactory.getFile(matcher.group());
-		}
-
-		return super.getRoot();
-	}
-
-	/**
-	 * Overridden to play nice with platforms that have root drives -- for
-	 * those, <code>true</code> is returned if this file's path matches the
-	 * drive root's (e.g. <code>C:\</code>).
-	 */
-	@Override
-	public boolean isRoot() {
-		if (USES_ROOT_DRIVES)
-			return driveRootPattern.matcher(absPath + SEPARATOR).matches();
-
-		return super.isRoot();
 	}
 
 	/**
