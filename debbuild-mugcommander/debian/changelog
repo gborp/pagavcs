@@ -1,3 +1,11 @@
+mugcommander (1.1.1-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Remove some OSX and Windows specific part
+  * fix regression of 1.0.6: the find in archive files function works again
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 03 Jun 2012 14:28:13 +0200
+
 mugcommander (1.1.0-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
