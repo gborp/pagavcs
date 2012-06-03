@@ -910,8 +910,7 @@ public class LocalFile extends ProtocolFile {
 			// instance that's potentially already in
 			// the cache, reuse this file as the file's parent, and the
 			// already-created java.io.File instance.
-			children[i] = FileFactory.getFileNotInArchive(childURL, this,
-					files[i]);
+			children[i] = FileFactory.getFile(childURL, this, files[i]);
 		}
 
 		return children;
