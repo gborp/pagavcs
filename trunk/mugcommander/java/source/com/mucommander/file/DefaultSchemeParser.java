@@ -23,7 +23,6 @@ import java.net.URLDecoder;
 import java.util.logging.Level;
 
 import com.mucommander.auth.Credentials;
-import com.mucommander.file.impl.local.LocalFile;
 
 /**
  * This class provides a default {@link SchemeParser} implementation. Certain
@@ -193,19 +192,7 @@ public class DefaultSchemeParser implements SchemeParser {
 				// - a drive letter and OS uses root drives (Windows-style)
 				// [support both C:\ and C:/ style]
 				// - a ~ character (refers to the user home folder)
-				if ((!LocalFile.USES_ROOT_DRIVES && url.startsWith("/"))
-						|| url.startsWith("~")) {
-					handleLocalFilePath(url, fileURL);
-
-					// All done, return
-					return;
-				} else if (LocalFile.USES_ROOT_DRIVES
-						&& (url.indexOf(":\\") == 1 || url.indexOf(":/") == 1)) {
-					// Turn forward slash-separated paths into their
-					// backslash-separated counterparts.
-					if (url.charAt(2) == '/')
-						url = url.replace('/', '\\');
-
+				if ((url.startsWith("/")) || url.startsWith("~")) {
 					handleLocalFilePath(url, fileURL);
 
 					// All done, return
