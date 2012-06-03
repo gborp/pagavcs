@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="source"/>
-	<classpathentry kind="src" path="srctst"/>
 	<classpathentry kind="lib" path="lib/include/ant-bzip2.jar"/>
 	<classpathentry kind="lib" path="lib/include/commons-codec.jar"/>
 	<classpathentry kind="lib" path="lib/include/commons-httpclient.jar"/>
