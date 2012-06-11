@@ -22,7 +22,7 @@ class DetailShowChangesAction extends ThreadAction {
 		for (LogDetailListItem liDetail : this.logGui
 				.getSelectedDetailLogItems()) {
 			if (!SVNNodeKind.DIR.equals(liDetail.getKind())
-					|| !SVNNodeKind.FILE.equals(liDetail.getKind())) {
+					&& !SVNNodeKind.FILE.equals(liDetail.getKind())) {
 				liDetail.setKind(logGui.getNodeKind(liDetail.getPath(),
 						liDetail.getRevision()));
 			}
