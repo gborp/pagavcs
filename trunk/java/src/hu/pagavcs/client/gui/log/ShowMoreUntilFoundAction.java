@@ -3,6 +3,7 @@
  */
 package hu.pagavcs.client.gui.log;
 
+import hu.pagavcs.client.bl.OnSwing;
 import hu.pagavcs.client.bl.ThreadAction;
 import hu.pagavcs.client.gui.LogListItem;
 import hu.pagavcs.client.operation.Log;
@@ -12,12 +13,12 @@ import java.util.List;
 
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
-public class ShowMoreAction extends ThreadAction {
+public class ShowMoreUntilFoundAction extends ThreadAction {
 
 	private final LogGui logGui;
 
-	public ShowMoreAction(LogGui logGui) {
-		super("Show more");
+	public ShowMoreUntilFoundAction(LogGui logGui) {
+		super("More until found");
 		this.logGui = logGui;
 	}
 
@@ -38,6 +39,14 @@ public class ShowMoreAction extends ThreadAction {
 				logGui.doShowLog(SVNRevision.HEAD, Log.LIMIT);
 			}
 			this.logGui.workEnded();
+			new OnSwing(true) {
+
+				@Override
+				protected void process() throws Exception {
+					// TODO Auto-generated method stub
+
+				}
+			};
 		} catch (Exception ex) {
 			this.logGui.workEnded();
 			throw ex;
