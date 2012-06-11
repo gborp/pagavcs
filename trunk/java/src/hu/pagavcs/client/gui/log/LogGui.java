@@ -39,8 +39,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
@@ -94,11 +92,10 @@ public class LogGui implements Working {
 	private Label lblUrl;
 	private JSplitPane splDetail;
 	private JSplitPane splMain;
-	private Timer tmrTableRevalidate;
-	private volatile boolean revalidateIsTimed;
 	private JButton btnShowMore;
 	private JButton btnShowAll;
 	private ConcurrentLinkedQueue<LogListItem> quNewItems = new ConcurrentLinkedQueue<LogListItem>();
+	private Object quNewItemsNotify = new Object();
 	private JDateChooser calFrom;
 	private JDateChooser calTo;
 	private EditField sfFilter;
@@ -116,7 +113,6 @@ public class LogGui implements Working {
 
 		CellConstraints cc = new CellConstraints();
 
-		tmrTableRevalidate = new Timer("Revalidate table", true);
 		SettingsStore settingsStore = Manager.getSettings();
 		tmdlLog = new TableModel<LogListItem>(new LogListItem());
 		tblLog = new Table<LogListItem>(tmdlLog);
@@ -241,11 +237,18 @@ public class LogGui implements Working {
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Show Log",
 				"showlog-app-icon.png", false);
 		frame.addWindowListener(new FrameWindowListener());
+		new Thread(new DoRevalidateTask()).start();
 	}
 
 	private void filterChanged() {
 		filterLog.sort();
 		tblLog.resizeColumns();
+		// int enabledRows = tblLog.getRowCount();
+		// if (enabledRows == 0) {
+		// btnShowMore.setAction(new ShowMoreUntilFoundAction(this));
+		// } else {
+		// btnShowMore.setAction(new ShowMoreAction(this));
+		// }
 	}
 
 	public void setUrlLabel(String urlLabel) {
@@ -323,16 +326,8 @@ public class LogGui implements Working {
 		li.setActions(actions);
 
 		quNewItems.add(li);
-		doRevalidateTable();
-	}
-
-	private void doRevalidateTable() {
-		synchronized (quNewItems) {
-			if (!revalidateIsTimed && !shuttingDown) {
-				revalidateIsTimed = true;
-				tmrTableRevalidate.schedule(new DoRevalidateTask(),
-						Manager.REVALIDATE_DELAY);
-			}
+		synchronized (quNewItemsNotify) {
+			quNewItemsNotify.notifyAll();
 		}
 	}
 
@@ -347,11 +342,17 @@ public class LogGui implements Working {
 			calTo.cleanup();
 
 			shuttingDown = true;
+			synchronized (quNewItemsNotify) {
+				quNewItemsNotify.notifyAll();
+			}
 		}
 
 		public void windowClosed(WindowEvent e) {
-			tmrTableRevalidate.cancel();
-			tmrTableRevalidate.purge();
+			shuttingDown = true;
+			synchronized (quNewItemsNotify) {
+				quNewItemsNotify.notifyAll();
+			}
+			log.setCancel(true);
 		}
 	}
 
@@ -455,42 +456,58 @@ public class LogGui implements Working {
 		}
 	}
 
-	private class DoRevalidateTask extends TimerTask {
+	private class DoRevalidateTask implements Runnable {
 
 		public void run() {
 			try {
-				new OnSwing() {
 
-					protected void process() throws Exception {
-
-						ArrayList<LogListItem> lstLi = new ArrayList<LogListItem>();
-						synchronized (quNewItems) {
-							revalidateIsTimed = false;
-							LogListItem li;
-							while ((li = quNewItems.poll()) != null) {
-								lstLi.add(li);
-							}
-						}
-						if (lstLi.size() == 1) {
-							List<LogListItem> lines = tmdlLog.getAllData();
-							if (!lines.isEmpty()
-									&& lines.get(lines.size() - 1)
-											.getRevision() == lstLi.get(0)
-											.getRevision()) {
-								lstLi.clear();
-							}
-						}
-
-						boolean firstData = tmdlLog.getAllData().isEmpty()
-								&& !lstLi.isEmpty();
-
-						tmdlLog.addLines(lstLi);
-						if (firstData) {
-							tblLog.getSelectionModel().setSelectionInterval(0,
-									0);
+				while (true) {
+					if (quNewItems.isEmpty()) {
+						synchronized (quNewItemsNotify) {
+							quNewItemsNotify.wait(5000);
 						}
 					}
-				}.run();
+					if (shuttingDown) {
+						return;
+					}
+
+					final ArrayList<LogListItem> lstLi = new ArrayList<LogListItem>();
+					synchronized (quNewItems) {
+						LogListItem li;
+						while ((li = quNewItems.poll()) != null) {
+							lstLi.add(li);
+						}
+					}
+
+					if (lstLi.size() == 1) {
+						List<LogListItem> lines = tmdlLog.getAllData();
+						if (!lines.isEmpty()
+								&& lines.get(lines.size() - 1).getRevision() == lstLi
+										.get(0).getRevision()) {
+							lstLi.clear();
+						}
+					}
+
+					if (!lstLi.isEmpty()) {
+
+						new OnSwing() {
+
+							protected void process() throws Exception {
+
+								boolean firstData = tmdlLog.getAllData()
+										.isEmpty() && !lstLi.isEmpty();
+
+								tmdlLog.addLines(lstLi);
+								if (firstData) {
+									tblLog.getSelectionModel()
+											.setSelectionInterval(0, 0);
+								}
+							}
+						}.run();
+					}
+					Thread.sleep(100);
+				}
+
 			} catch (Exception e) {
 				Manager.handle(e);
 			}
@@ -613,7 +630,10 @@ public class LogGui implements Working {
 		ArrayList<LogListItem> lstResult = new ArrayList<LogListItem>();
 		for (int row : tblLog.getSelectedRows()) {
 
-			lstResult.add(tmdlLog.getRow(tblLog.convertRowIndexToModel(row)));
+			if (tblLog.getRowCount() > 0) {
+				lstResult
+						.add(tmdlLog.getRow(tblLog.convertRowIndexToModel(row)));
+			}
 		}
 		return lstResult;
 	}
