@@ -35,6 +35,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -619,6 +620,24 @@ public class LogGui implements Working {
 			}
 			lstResult = lstPrioResult;
 		}
+
+		Collections.sort(lstResult, new Comparator<LogDetailListItem>() {
+
+			@Override
+			public int compare(LogDetailListItem o1, LogDetailListItem o2) {
+				if (o1.getPath() == null && o2.getPath() == null) {
+					return 0;
+				}
+				if (o1.getPath() == null) {
+					return -1;
+				}
+				if (o2.getPath() == null) {
+					return 1;
+				}
+				return o1.getPath().compareTo(o2.getPath());
+			}
+
+		});
 
 		tmdlLogDetail.addLines(lstResult);
 		if (!lstResult.isEmpty()) {
