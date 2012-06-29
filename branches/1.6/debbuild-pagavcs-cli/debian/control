@@ -1,0 +1,17 @@
+Source: pagavcs-cli
+Section: devel
+Priority: optional
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Build-Depends: debhelper (>= 5), automake, build-essential
+Standards-Version: 3.9.2
+Homepage: http://pagavcs.googlecode.com
+
+Package: pagavcs-cli
+Architecture: i386 amd64
+Replaces: pagavcs (<<1.5.1)
+Breaks: pagavcs (<<1.5.0)
+Depends: pagavcs-core (>=1.5), ${misc:Depends}
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN.
+ It's written in Java and Python (Nautilus-integration).
+ Changelog: http://code.google.com/p/pagavcs

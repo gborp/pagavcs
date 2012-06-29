@@ -1,0 +1,143 @@
+pagavcs-core (1.6.2-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [log gui] fix slow "show changes", and it haven't displayed the progressbar immediately
+  * Issue 122: "when I select multiple lines of the log, it does not group by path"
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 11 Jun 2012 21:53:04 +0200
+
+pagavcs-core (1.6.1-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 152: No context menu icons in Nautilus on 11.10, 12.04 etc
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Fri, 01 Jun 2012 17:55:02 +0200
+
+pagavcs-core (1.6.0-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * [context menu] add some separators
+  * [exception] handle better the "no such revision" type exceptions
+  * [merge] display warning dialog if nothing has been merged
+  * [merge] select the [commit]'s url if coming from the [commit] by "merge too" function
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 19 Apr 2012 20:10:00 +0200
+
+pagavcs-core (1.5.11-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix issue in file-comparing function
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 14 Feb 2012 20:45:27 +0100
+
+pagavcs-core (1.5.10-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix some minor internal communication issues
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 12 Feb 2012 20:22:29 +0100
+
+pagavcs-core (1.5.8-2karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix issues with file and difference viewing
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 12 Feb 2012 18:22:29 +0100
+
+pagavcs-core (1.5.5-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix some minor internal communication issues
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Fri, 10 Feb 2012 22:11:41 +0100
+
+pagavcs-core (1.5.4-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  The order of command line options (-w, -c) can be any now
+  *  New commands: exit and quit: they do the same as stop command
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 01 Feb 2012 20:10:34 +0100
+
+pagavcs-core (1.5.1-4karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate package for the CLI client
+  *  Using Unix Domain Socket instead of plain Socket
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 29 Jan 2012 14:13:31 +0100
+
+pagavcs-core (1.4.70-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  [log-gui] fix memory leak
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 28 Jan 2012 11:12:18 +0100
+
+pagavcs-core (1.4.69-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  [log-gui] better recognize the entry type on show-diff (query it again if it's "unknown", preventing trying to show file-diff for a directory)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 28 Jan 2012 09:12:18 +0100
+
+pagavcs-core (1.4.68-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix deb packaging issues
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 22:03:56 +0100
+
+pagavcs-core (1.4.67-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Artwork refinement
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 21:13:56 +0100
+
+pagavcs-core (1.4.66-2karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  facelift for the cli: up=update; -wait and -autoclose switches; support relative paths
+  *  Intelligent Merge-url History: place on the top the urls which was already used with that merge destination
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 26 Jan 2012 19:03:56 +0100
+
+pagavcs-core (1.4.65-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  new artwork
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 22 Jan 2012 20:20:31 +0100
+
+pagavcs-core (1.4.64-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Issue 147: [log] show differences on double-clicking on the upper table too
+  *  Issue 148: [log] exception on "show changes" on a newly created directory
+  *  Issue 136: [log] "show log" on a file in the bottom detail log table too
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 22 Jan 2012 14:20:31 +0100
+
+pagavcs-core (1.4.63-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate the used java libraries into a package
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 17 Jan 2012 21:05:42 +0100
+
+pagavcs-core (1.4.62-1karmic~all) karmic; urgency=high
+
+  [ Gábor Pápai ]
+  *  Fix issues with smaller package size
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 16 Jan 2012 18:23:30 +0100
+
+
+pagavcs-core (1.4.61-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Smaller package size
+  *  Separate Nautilus and core package
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 15 Jan 2012 11:11:41 +0100
