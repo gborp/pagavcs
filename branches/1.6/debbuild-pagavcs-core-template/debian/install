@@ -1,0 +1,4 @@
+debian/input/pagavcs.jar /usr/share/pagavcs/bin
+debian/input/icon.png /usr/share/pagavcs/data
+debian/input/doc/* /usr/share/doc/pagavcs-core
+debian/input/icons/* /usr/share/icons

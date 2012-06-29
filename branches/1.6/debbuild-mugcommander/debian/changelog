@@ -1,0 +1,99 @@
+mugcommander (1.1.1-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Remove some OSX and Windows specific part
+  * fix regression of 1.0.6: the find in archive files function works again
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 03 Jun 2012 14:28:13 +0200
+
+mugcommander (1.1.0-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Remove some OSX and Windows specific part
+  * Remove muCommander update checker
+  * Remap unpack-archive-action to ALT+F9 (from ALT+F5, which was the same as pack-archive-action's one)
+  * Faster file operations
+  * Update the file transfer/pack/unpack dialogs in slower rate
+  * Close the file transfer/pack/unpack dialogs after 100ms instead of 1500ms (so you don't have to wait long after you deleted a file)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 14 Feb 2012 21:29:31 +0100
+
+mugcommander (1.0.9-3karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Add dependency to libunixsocket-java.deb for PagaVCS-extension
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 12 Feb 2012 12:40:21 +0100
+
+mugcommander (1.0.8-2karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Change the deb packaging method
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 11 Feb 2012 14:45:15 +0100
+
+mugcommander (1.0.8) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 97: [mugCommander] find file malfunction
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 27 Oct 2010 07:25:26 +0200
+
+mugcommander (1.0.7) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * even faster local not-in-archive file search
+  * fix find dialog closing resulted 100% cpu usage (regression in 1.0.6)
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Oct 2010 21:43:26 +0200
+
+mugcommander (1.0.6) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * faster file search
+  * remember last searched patterns
+  * feedback search progress
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 24 Oct 2010 20:23:26 +0200
+
+mugcommander (1.0.5) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * Issue 82: error starting mugcommander without extensions
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 17 Aug 2010 07:45:14 +0200
+
+mugcommander (1.0.4) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * the real file can be deleted in the search results
+  
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 10 Jun 2010 07:31:43 +0200
+
+mugcommander (1.0.3) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * new feature: more extensions support (eg.: for Bonjour extension)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 08 Apr 2010 19:19:21 +0200
+
+mugcommander (1.0.2) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * new feature: Compare files by content (using "meld" utility)
+  * merged from muCommander: svn#3598 - Transformed enum-style NotificationTypes interface into enum.
+  * merged from muCommander: svn#3599 - minor changes at TextEditorImpl class
+  * merged from muCommander: svn#3601 - Improved natural file ordering (#346).
+  * merged from muCommander: svn#3605 - A couple minor changes.
+  * merged from muCommander: svn#3606 - fixed #345 (regression caused by #167); - fixed spinning dial icon that kept spinning when the destination was invalid.
+  * merged from muCommander: svn#3607 - The text-area at TextEditorImpl is no longer wrapped by a JPanel at FileEditor & FileViewer classes, and it's inserted as-is to the scrollpane at EditorFrame & ViewerFrame. In order to access the text-area an abstract method getViewedComponent was added to FileEditor & FileViewer classes.
+  * merged from muCommander: svn#3607 - Change ImageViewer such that it would support the previous change at FileViewer and be more symmetric to TextViewer class.
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 06 Apr 2010 20:01:13 +0200
+
+mugcommander (1.0.1) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * mugCommander: initial separete release
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 29 Mar 2010 20:53:02 +0200

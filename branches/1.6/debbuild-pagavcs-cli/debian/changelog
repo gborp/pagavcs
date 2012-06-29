@@ -1,0 +1,36 @@
+pagavcs-cli (1.5.9-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Don't do anything if running as root user
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 12 Feb 2012 19:00:52 +0100
+
+pagavcs-cli (1.5.7-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Fix: fresh installed pagavcs doesn't start (if it hasn't been installed before)
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 11 Feb 2012 17:39:45 +0100
+
+pagavcs-cli (1.5.3-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  If path argument is not present use the current directory
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 01 Feb 2012 20:09:34 +0100
+
+pagavcs-cli (1.5.2-2karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Bigmem for 1.5.x series
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 30 Jan 2012 19:47:44 +0100
+
+pagavcs-cli (1.5.1-3karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate package for the CLI client
+  *  Using Unix Domain Socket instead of plain Socket
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 29 Jan 2012 14:13:31 +0100
+
