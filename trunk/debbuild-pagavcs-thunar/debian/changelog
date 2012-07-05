@@ -1,3 +1,10 @@
+pagavcs-thunar (1.6.3-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Issue 154: Thunar crash: on trying to display context menu
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Thu, 05 Jul 2012 18:39:51 +0200
+ 
 pagavcs-thunar (1.6.0-3karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
