@@ -40,6 +40,7 @@
 
 #define SOCKET_FILENAME "/.pagavcs/socket"
 #define LOG_FILENAME "/.pagavcs/pagavcs.log"
+#define BUFFER_SIZE 256*256*4
 
 struct _PagavcsSvnActionClass {
 	GtkActionClass __parent__;
@@ -136,7 +137,7 @@ static gchar *getFilesAsString(GList *files) {
 	GList *lp;
 	gchar *path;
 	gchar *uri;
-	char argumentToSend[16384];
+	char argumentToSend[BUFFER_SIZE];
 
 	strcpy(argumentToSend, "");
 
@@ -307,7 +308,7 @@ static char* sendToServerCommand(char *command) {
 	struct passwd *pw;
 	struct sockaddr_un address;
 	int socket_fd, nbytes;
-	char buffer[16384];
+	char buffer[BUFFER_SIZE];
 	char fullSocketFilename[512];
 
 	uid = getuid();
@@ -342,7 +343,7 @@ static char* sendToServerCommand(char *command) {
 }
 
 static char* sendToServer(char *command, char *path) {
-	char buffer[1024];
+	char buffer[BUFFER_SIZE];
 	strcpy(buffer, "\"");
 	strcat(buffer, command);
 	strcat(buffer, "\"");
