@@ -66,6 +66,8 @@ static void pagavcs_svn_action_set_property(GObject*, guint, const GValue*,
 
 static void pagavcs_action_exec(GtkAction *item,
 		PagavcsSvnAction *pagavcs_action);
+		
+static gboolean isServerRunning();
 
 static char* sendToServer(char *command, char *path);
 
@@ -166,113 +168,120 @@ pagavcs_svn_action_create_menu_item(GtkAction *action) {
 
 	menu = gtk_menu_new();
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM (item), menu);
+	
+	if (isServerRunning()) {
+		gchar *argumentToSend = getFilesAsString(PAGAVCS_SVN_ACTION(action)->files);
+		gchar *response = sendToServer("getmenuitems", argumentToSend);
+		g_free(argumentToSend);
 
-	gchar *argumentToSend = getFilesAsString(PAGAVCS_SVN_ACTION(action)->files);
-	gchar *response = sendToServer("getmenuitems", argumentToSend);
-	g_free(argumentToSend);
+		char *lines[4024];
+		int lineCount = 0;
 
-	char *lines[4024];
-	int lineCount = 0;
+		char delims[] = "\n";
+		char *result = response;
+		char *nextEnter;
+		while ((nextEnter = strchr(result, '\n')) != NULL) {
+			lines[lineCount] = calloc(1, (nextEnter - result) + 2);
+			lines[lineCount] = strncpy(lines[lineCount], result,
+					(nextEnter - result));
+			nextEnter++;
+			result = nextEnter;
+			lineCount++;
+		}
 
-	char delims[] = "\n";
-	char *result = response;
-	char *nextEnter;
-	while ((nextEnter = strchr(result, '\n')) != NULL) {
-		lines[lineCount] = calloc(1, (nextEnter - result) + 2);
-		lines[lineCount] = strncpy(lines[lineCount], result,
-				(nextEnter - result));
-		nextEnter++;
-		result = nextEnter;
-		lineCount++;
+		int lineIndex = 0;
+
+		while (1) {
+
+			if (strcmp(lines[lineIndex], "--end--") == 0) {
+				break;
+			}
+
+			gchar *id;
+			char *command;
+			char *label;
+			char *tooltip;
+			char *icon;
+			char *mode;
+			id = g_strdup(lines[lineIndex]);
+			lineIndex++;
+			label = g_strdup(lines[lineIndex]);
+			lineIndex++;
+			tooltip = g_strdup(lines[lineIndex]);
+			lineIndex++;
+			icon = g_strdup(lines[lineIndex]);
+			lineIndex++;
+			mode = g_strdup(lines[lineIndex]);
+			lineIndex++;
+			command = g_strdup(lines[lineIndex]);
+			lineIndex++;
+
+			gchar *stock = GTK_STOCK_NETWORK;
+			if (strcmp(icon, "pagavcs-other") == 0) {
+				stock = GTK_STOCK_NETWORK;
+			} else if (strcmp(icon, "pagavcs-update") == 0) {
+				stock = GTK_STOCK_REFRESH;
+			} else if (strcmp(icon, "pagavcs-commit") == 0) {
+				stock = GTK_STOCK_APPLY;
+			} else if (strcmp(icon, "pagavcs-difficon") == 0) {
+				stock = GTK_STOCK_FIND_AND_REPLACE;
+			} else if (strcmp(icon, "pagavcs-log") == 0) {
+				stock = GTK_STOCK_INDEX;
+			} else if (strcmp(icon, "pagavcs-drive") == 0) {
+				stock = GTK_STOCK_NETWORK;
+			} else if (strcmp(icon, "pagavcs-ignore") == 0) {
+				stock = GTK_STOCK_MISSING_IMAGE;
+			} else if (strcmp(icon, "pagavcs-unignore") == 0) {
+				stock = GTK_STOCK_UNDELETE;
+			} else if (strcmp(icon, "pagavcs-rename") == 0) {
+				stock = GTK_STOCK_EDIT;
+			} else if (strcmp(icon, "pagavcs-delete") == 0) {
+				stock = GTK_STOCK_DELETE;
+			} else if (strcmp(icon, "pagavcs-revert") == 0) {
+				stock = GTK_STOCK_REDO;
+			} else if (strcmp(icon, "pagavcs-checkout") == 0) {
+				stock = GTK_STOCK_CONNECT;
+			} else if (strcmp(icon, "pagavcs-cleanup") == 0) {
+				stock = GTK_STOCK_CLEAR;
+			} else if (strcmp(icon, "pagavcs-lock") == 0) {
+				stock = GTK_STOCK_DIALOG_AUTHENTICATION;
+			} else if (strcmp(icon, "pagavcs-unlock") == 0) {
+				stock = GTK_STOCK_DIALOG_AUTHENTICATION;
+			} else if (strcmp(icon, "pagavcs-resolve") == 0) {
+				stock = GTK_STOCK_YES;
+			} else if (strcmp(icon, "pagavcs-switch") == 0) {
+				stock = GTK_STOCK_JUMP_TO;
+			} else if (strcmp(icon, "pagavcs-merge") == 0) {
+				stock = GTK_STOCK_CONVERT;
+			} else if (strcmp(icon, "pagavcs-export") == 0) {
+				stock = GTK_STOCK_COPY;
+			} else if (strcmp(icon, "pagavcs-applypatch") == 0) {
+				stock = GTK_STOCK_PASTE;
+			} else if (strcmp(icon, "pagavcs-properties") == 0) {
+				stock = GTK_STOCK_PROPERTIES;
+			} else if (strcmp(icon, "pagavcs-settings") == 0) {
+				stock = GTK_STOCK_PREFERENCES;
+			} else if (strcmp(icon, "pagavcs-blame") == 0) {
+				stock = GTK_STOCK_SPELL_CHECK;
+			}
+
+			if (strchr(mode,'s')!= NULL) {
+				GtkToolItem *separator = gtk_separator_menu_item_new();
+				gtk_menu_shell_append(menu, separator);
+				gtk_widget_show(separator);
+			}
+
+			add_subaction(action, GTK_MENU_SHELL (menu), id, label, tooltip, stock,
+					command);
+		}
+
+		g_free(response);
+	} else {
+		system("pagavcs ping &");
+		GtkToolItem *loading = gtk_menu_item_new_with_label ("Loading...");
+		gtk_menu_shell_append(menu, loading);
+		gtk_widget_show(loading);
 	}
-
-	int lineIndex = 0;
-
-	while (1) {
-
-		if (strcmp(lines[lineIndex], "--end--") == 0) {
-			break;
-		}
-
-		gchar *id;
-		char *command;
-		char *label;
-		char *tooltip;
-		char *icon;
-		char *mode;
-		id = g_strdup(lines[lineIndex]);
-		lineIndex++;
-		label = g_strdup(lines[lineIndex]);
-		lineIndex++;
-		tooltip = g_strdup(lines[lineIndex]);
-		lineIndex++;
-		icon = g_strdup(lines[lineIndex]);
-		lineIndex++;
-		mode = g_strdup(lines[lineIndex]);
-		lineIndex++;
-		command = g_strdup(lines[lineIndex]);
-		lineIndex++;
-
-		gchar *stock = GTK_STOCK_NETWORK;
-		if (strcmp(icon, "pagavcs-other") == 0) {
-			stock = GTK_STOCK_NETWORK;
-		} else if (strcmp(icon, "pagavcs-update") == 0) {
-			stock = GTK_STOCK_REFRESH;
-		} else if (strcmp(icon, "pagavcs-commit") == 0) {
-			stock = GTK_STOCK_APPLY;
-		} else if (strcmp(icon, "pagavcs-difficon") == 0) {
-			stock = GTK_STOCK_FIND_AND_REPLACE;
-		} else if (strcmp(icon, "pagavcs-log") == 0) {
-			stock = GTK_STOCK_INDEX;
-		} else if (strcmp(icon, "pagavcs-drive") == 0) {
-			stock = GTK_STOCK_NETWORK;
-		} else if (strcmp(icon, "pagavcs-ignore") == 0) {
-			stock = GTK_STOCK_MISSING_IMAGE;
-		} else if (strcmp(icon, "pagavcs-unignore") == 0) {
-			stock = GTK_STOCK_UNDELETE;
-		} else if (strcmp(icon, "pagavcs-rename") == 0) {
-			stock = GTK_STOCK_EDIT;
-		} else if (strcmp(icon, "pagavcs-delete") == 0) {
-			stock = GTK_STOCK_DELETE;
-		} else if (strcmp(icon, "pagavcs-revert") == 0) {
-			stock = GTK_STOCK_REDO;
-		} else if (strcmp(icon, "pagavcs-checkout") == 0) {
-			stock = GTK_STOCK_CONNECT;
-		} else if (strcmp(icon, "pagavcs-cleanup") == 0) {
-			stock = GTK_STOCK_CLEAR;
-		} else if (strcmp(icon, "pagavcs-lock") == 0) {
-			stock = GTK_STOCK_DIALOG_AUTHENTICATION;
-		} else if (strcmp(icon, "pagavcs-unlock") == 0) {
-			stock = GTK_STOCK_DIALOG_AUTHENTICATION;
-		} else if (strcmp(icon, "pagavcs-resolve") == 0) {
-			stock = GTK_STOCK_YES;
-		} else if (strcmp(icon, "pagavcs-switch") == 0) {
-			stock = GTK_STOCK_JUMP_TO;
-		} else if (strcmp(icon, "pagavcs-merge") == 0) {
-			stock = GTK_STOCK_CONVERT;
-		} else if (strcmp(icon, "pagavcs-export") == 0) {
-			stock = GTK_STOCK_COPY;
-		} else if (strcmp(icon, "pagavcs-applypatch") == 0) {
-			stock = GTK_STOCK_PASTE;
-		} else if (strcmp(icon, "pagavcs-properties") == 0) {
-			stock = GTK_STOCK_PROPERTIES;
-		} else if (strcmp(icon, "pagavcs-settings") == 0) {
-			stock = GTK_STOCK_PREFERENCES;
-		} else if (strcmp(icon, "pagavcs-blame") == 0) {
-			stock = GTK_STOCK_SPELL_CHECK;
-		}
-
-		if (strchr(mode,'s')!= NULL) {
-			GtkToolItem *separator = gtk_separator_menu_item_new();
-			gtk_menu_shell_append(menu, separator);
-			gtk_widget_show(separator);
-		}
-
-		add_subaction(action, GTK_MENU_SHELL (menu), id, label, tooltip, stock,
-				command);
-	}
-
-	g_free(response);
 
 	return item;
 }
@@ -287,6 +296,38 @@ static void pagavcs_action_exec(GtkAction *item, PagavcsSvnAction *action) {
 	g_free(command);
 
 	g_free(response);
+}
+
+static gboolean isServerRunning() {
+	int uid;
+	struct passwd *pw;
+	struct sockaddr_un address;
+	int socket_fd, nbytes;
+	char fullSocketFilename[512];
+
+	uid = getuid();
+	pw = getpwuid(uid);
+
+	strcpy(fullSocketFilename, "/home/");
+	strcat(fullSocketFilename, pw->pw_name);
+	strcat(fullSocketFilename, SOCKET_FILENAME);
+	
+	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
+	if (socket_fd < 0) {		
+		return FALSE;
+	}
+
+	memset(&address, 0, sizeof(struct sockaddr_un));
+
+	address.sun_family = AF_UNIX;
+	strcpy(address.sun_path, fullSocketFilename);
+
+	if (connect(socket_fd, (struct sockaddr *) &address,
+			sizeof(struct sockaddr_un)) != 0) {
+		return FALSE;
+	}
+	close(socket_fd);
+	return TRUE;
 }
 
 static void connectServer(int socket_fd, struct sockaddr_un address) {
