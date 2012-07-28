@@ -16,6 +16,9 @@ import hu.pagavcs.client.operation.Checkout;
 import hu.pagavcs.client.operation.RepoBrowser;
 import hu.pagavcs.client.operation.RepoBrowser.RepoBrowserStatus;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -39,6 +42,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
@@ -121,6 +125,8 @@ public class RepoBrowserGui implements Working, Cancelable,
 		tree.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke("control R"), "REFRESH_SVN_TREE");
 		tree.getActionMap().put("REFRESH_SVN_TREE", new RefreshNodeAction());
+
+		tree.setCellRenderer(new RepoTreeCellRender());
 
 		pnlMain.add(new JLabel("URL:"), cc.xywh(1, 1, 1, 1));
 		pnlMain.add(sfUrl, cc.xywh(3, 1, 1, 1));
@@ -327,7 +333,7 @@ public class RepoBrowserGui implements Working, Cancelable,
 			if (loaded) {
 				return svnDirEntry.getName();
 			}
-			return svnDirEntry.getName() + " ...";
+			return svnDirEntry.getName();
 		}
 
 		public SVNDirEntry getSvnDirEntry() {
@@ -532,4 +538,42 @@ public class RepoBrowserGui implements Working, Cancelable,
 		}
 	}
 
+	private static class RepoTreeCellRender extends DefaultTreeCellRenderer {
+
+		private static final Color COLOR_NON_EXPANDED = new Color(27, 0, 116);
+		private Font italicFont;
+		private Font normalFont;
+
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
+				boolean selected, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			Component ret = super.getTreeCellRendererComponent(tree, value,
+					selected, expanded, leaf, row, hasFocus);
+
+			JLabel label = (JLabel) ret;
+
+			// Object userObj = ((DefaultMutableTreeNode)
+			// value).getUserObject();
+
+			if (!selected && !expanded && !leaf) {
+				label.setForeground(COLOR_NON_EXPANDED);
+			}
+
+			if (!expanded && !leaf) {
+				if (italicFont == null) {
+					normalFont = label.getFont();
+					italicFont = normalFont.deriveFont(Font.ITALIC);
+				}
+				label.setFont(italicFont);
+			} else {
+				if (normalFont != null) {
+					label.setFont(normalFont);
+				}
+			}
+
+			return ret;
+		}
+
+	}
 }
