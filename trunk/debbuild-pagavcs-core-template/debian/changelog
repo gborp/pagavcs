@@ -1,3 +1,12 @@
+pagavcs-core (1.6.5-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * (repo browser) add control+R and F5 quickkeys to refresh node
+  * (repo browser) add "show log" to the context menu on repo tree
+  * (repo browser) look'n'feel refinement
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 28 Jul 2012 19:11:58 +0200
+
 pagavcs-core (1.6.2-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
