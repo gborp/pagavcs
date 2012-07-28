@@ -309,7 +309,8 @@ public class Manager {
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode)
 						|| SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
-					throw new PagaException(PagaExceptionType.CONNECTION_ERROR);
+					throw new PagaException(PagaExceptionType.CONNECTION_ERROR,
+							ex.getErrorMessage().getMessage());
 				}
 				result = null;
 				reTryLogin = true;
