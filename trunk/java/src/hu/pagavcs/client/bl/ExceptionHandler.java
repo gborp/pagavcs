@@ -161,8 +161,16 @@ public class ExceptionHandler implements
 				MessagePane.showError(null, "Login failed", "Login failed");
 				return;
 			case CONNECTION_ERROR:
-				MessagePane.showError(null, "Connection Error",
-						"Error in Communication");
+				if (pex.getMessage() != null) {
+					MessagePane.showError(
+							null,
+							"Connection Error",
+							"Error in Communication\n"
+									+ pex.getVerboseMessage());
+				} else {
+					MessagePane.showError(null, "Connection Error",
+							"Error in Communication");
+				}
 				return;
 			case UNIMPLEMENTED:
 				MessagePane.showError(null, "Unimplemented", "Unimplemented");
