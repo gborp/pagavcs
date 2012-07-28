@@ -40,10 +40,10 @@ public class RepoBrowser implements Cancelable {
 		INIT, START, WORKING, COMPLETED, FAILED, CANCEL
 	}
 
-	private String         path;
+	private String path;
 	private RepoBrowserGui gui;
-	private boolean        cancel;
-	private SVNRepository  repo;
+	private boolean cancel;
+	private SVNRepository repo;
 
 	public RepoBrowser(String path) throws BackingStoreException, SVNException {
 		this.path = path;
@@ -58,14 +58,18 @@ public class RepoBrowser implements Cancelable {
 		SVNClientManager mgrSvn = null;
 		try {
 			mgrSvn = Manager.getSVNClientManager(new File(path));
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+			throw ex;
+		}
 
 		if (mgrSvn != null) {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 
 			try {
-				SVNInfo svnInfo = wcClient.doInfo(new File(path), SVNRevision.WORKING);
-				repo = mgrSvn.getRepositoryPool().createRepository(svnInfo.getURL(), true);
+				SVNInfo svnInfo = wcClient.doInfo(new File(path),
+						SVNRevision.WORKING);
+				repo = mgrSvn.getRepositoryPool().createRepository(
+						svnInfo.getURL(), true);
 				gui.setURL(svnInfo.getURL().toDecodedString());
 				gui.setWorkingCopy(path);
 				gui.setStatus(RepoBrowserStatus.COMPLETED);
@@ -93,17 +97,21 @@ public class RepoBrowser implements Cancelable {
 		return cancel;
 	}
 
-	private String getRelativePath(SVNRepository repo, String fullPath) throws SVNException {
-		return fullPath.substring(repo.getRepositoryRoot(true).getPath().length());
+	private String getRelativePath(SVNRepository repo, String fullPath)
+			throws SVNException {
+		return fullPath.substring(repo.getRepositoryRoot(true).getPath()
+				.length());
 	}
 
-	public SVNDirEntry getDirEntry(String url) throws SVNException, PagaException {
+	public SVNDirEntry getDirEntry(String url) throws SVNException,
+			PagaException {
 		SVNURL svnUrl = SVNURL.parseURIDecoded(url);
 		String relativePath = getRelativePath(repo, svnUrl.getPath());
 		return repo.info(relativePath, SVNRevision.HEAD.getNumber());
 	}
 
-	public List<SVNDirEntry> getDirEntryChain(String url) throws SVNException, PagaException {
+	public List<SVNDirEntry> getDirEntryChain(String url) throws SVNException,
+			PagaException {
 		SVNURL svnUrl2 = SVNURL.parseURIDecoded(url);
 		SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl2);
 		try {
@@ -111,16 +119,19 @@ public class RepoBrowser implements Cancelable {
 			String relativePath = repo.getLocation().getPath();
 			repo.setLocation(repo.getRepositoryRoot(false), false);
 			String rootPath = repo.getLocation().getPath();
-			List<SVNDirEntry> result = getDirEntryChain2(repo, relativePath.substring(rootPath.length()));
+			List<SVNDirEntry> result = getDirEntryChain2(repo,
+					relativePath.substring(rootPath.length()));
 			return result;
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	private List<SVNDirEntry> getDirEntryChain2(SVNRepository repo2, String relativePath) throws SVNException, PagaException {
+	private List<SVNDirEntry> getDirEntryChain2(SVNRepository repo2,
+			String relativePath) throws SVNException, PagaException {
 		ArrayList<SVNDirEntry> lstResult = new ArrayList<SVNDirEntry>();
-		SVNDirEntry result = repo2.info(relativePath, SVNRevision.HEAD.getNumber());
+		SVNDirEntry result = repo2.info(relativePath,
+				SVNRevision.HEAD.getNumber());
 		String parentRelativePath = SVNPathUtil.removeTail(relativePath);
 		if (!parentRelativePath.equals(relativePath)) {
 			lstResult.addAll(getDirEntryChain2(repo2, parentRelativePath));
@@ -129,7 +140,8 @@ public class RepoBrowser implements Cancelable {
 		return lstResult;
 	}
 
-	public List<SVNDirEntry> getChilds(String url) throws SVNException, PagaException {
+	public List<SVNDirEntry> getChilds(String url) throws SVNException,
+			PagaException {
 		SVNURL svnUrl = SVNURL.parseURIDecoded(url);
 		String relativePath = getRelativePath(repo, svnUrl.getPath());
 
@@ -138,12 +150,15 @@ public class RepoBrowser implements Cancelable {
 		return entries;
 	}
 
-	public void createFolder(SVNDirEntry svnDirEntry, String folderName, String logMessage) throws SVNException {
-		ISVNEditor editor = repo.getCommitEditor(logMessage, null /* locks */, false /* keepLocks */, null /* mediator */);
+	public void createFolder(SVNDirEntry svnDirEntry, String folderName,
+			String logMessage) throws SVNException {
+		ISVNEditor editor = repo.getCommitEditor(logMessage, null /* locks */,
+				false /* keepLocks */, null /* mediator */);
 		try {
 			editor.openRoot(SVNRepository.INVALID_REVISION);
 
-			editor.addDir(svnDirEntry.getRelativePath() + "/" + folderName, null, -1);
+			editor.addDir(svnDirEntry.getRelativePath() + "/" + folderName,
+					null, -1);
 			editor.closeDir();
 			editor.closeDir();
 

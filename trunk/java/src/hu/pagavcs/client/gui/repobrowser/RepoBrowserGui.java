@@ -6,7 +6,9 @@ import hu.pagavcs.client.bl.OnSwing;
 import hu.pagavcs.client.bl.OnSwingWait;
 import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.bl.ThreadAction;
+import hu.pagavcs.client.gui.LocationCallback;
 import hu.pagavcs.client.gui.Working;
+import hu.pagavcs.client.gui.action.ShowLogAction;
 import hu.pagavcs.client.gui.platform.EditField;
 import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
@@ -140,6 +142,14 @@ public class RepoBrowserGui implements Working, Cancelable,
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
+	}
+
+	private RepoTreeNode getSelectedRepoTreeNode() {
+		TreePath path = tree.getSelectionPath();
+
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
+				.getLastPathComponent();
+		return (RepoTreeNode) node.getUserObject();
 	}
 
 	private class UrlChangedAction extends ThreadAction {
@@ -399,10 +409,7 @@ public class RepoBrowserGui implements Working, Cancelable,
 
 				protected void process() throws Exception {
 					TreePath path = tree.getSelectionPath();
-
-					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
-							.getLastPathComponent();
-					RepoTreeNode li = (RepoTreeNode) node.getUserObject();
+					RepoTreeNode li = getSelectedRepoTreeNode();
 					li.setLoaded(false);
 					tree.collapsePath(path);
 					tree.expandPath(path);
@@ -498,6 +505,19 @@ public class RepoBrowserGui implements Working, Cancelable,
 			ppAll.add(new RefreshNodeAction());
 			ppAll.add(new CopyUrlToClipboard(this));
 			ppAll.add(new CheckoutAction(this));
+			ppAll.add(new ShowLogAction(new LocationCallback() {
+
+				@Override
+				public boolean isFilePath() {
+					return false;
+				}
+
+				@Override
+				public String getLocation() {
+					return getSelectedRepoTreeNode().getSvnDirEntry().getURL()
+							.toString();
+				}
+			}));
 			ppAll.add(new CreateFolderAction(this));
 		}
 
