@@ -29,11 +29,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -61,22 +63,24 @@ import com.jgoodies.forms.layout.FormLayout;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListener {
+public class RepoBrowserGui implements Working, Cancelable,
+		TreeWillExpandListener {
 
 	private RepoBrowser repoBrowser;
-	private Label       lblWorkingCopy;
-	private EditField   sfUrl;
-	private Label       lblStatus;
-	private JTree       tree;
-	private String      rootUrl;
-	private Frame       frame;
+	private Label lblWorkingCopy;
+	private EditField sfUrl;
+	private Label lblStatus;
+	private JTree tree;
+	private String rootUrl;
+	private Frame frame;
 
 	public RepoBrowserGui(RepoBrowser repoBrowser) {
 		this.repoBrowser = repoBrowser;
 	}
 
 	public void display() throws SVNException {
-		FormLayout layout = new FormLayout("right:p, 2dlu,p:g,p", "p,2dlu,p,2dlu,p:g,2dlu,p");
+		FormLayout layout = new FormLayout("right:p, 2dlu,p:g,p",
+				"p,2dlu,p,2dlu,p:g,2dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 		lblWorkingCopy = new Label();
@@ -91,7 +95,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 				}
 			}
 
-			public void focusGained(FocusEvent e) {}
+			public void focusGained(FocusEvent e) {
+			}
 		});
 		sfUrl.addKeyListener(new KeyAdapter() {
 
@@ -111,13 +116,20 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		tree.addTreeWillExpandListener(this);
 		tree.addMouseListener(new PopupupMouseListener());
 
+		tree.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+				KeyStroke.getKeyStroke("F5"), "REFRESH_SVN_TREE");
+		tree.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+				KeyStroke.getKeyStroke("control R"), "REFRESH_SVN_TREE");
+		tree.getActionMap().put("REFRESH_SVN_TREE", new RefreshNodeAction());
+
 		pnlMain.add(new JLabel("URL:"), cc.xywh(1, 1, 1, 1));
 		pnlMain.add(sfUrl, cc.xywh(3, 1, 1, 1));
 
 		pnlMain.add(new JLabel("Working copy:"), cc.xywh(1, 3, 1, 1));
 		pnlMain.add(lblWorkingCopy, cc.xywh(3, 3, 1, 1));
 
-		pnlMain.add(new JScrollPane(tree), cc.xywh(1, 5, 4, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(new JScrollPane(tree),
+				cc.xywh(1, 5, 4, 1, CellConstraints.FILL, CellConstraints.FILL));
 
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
@@ -131,11 +143,14 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			if ((rootUrl == null || !rootUrl.equals(sfUrl.getText())) && !sfUrl.getText().trim().isEmpty()) {
+			if ((rootUrl == null || !rootUrl.equals(sfUrl.getText()))
+					&& !sfUrl.getText().trim().isEmpty()) {
 				rootUrl = sfUrl.getText();
 
-				final List<SVNDirEntry> lstDirChain = repoBrowser.getDirEntryChain(rootUrl);
-				final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root Node");
+				final List<SVNDirEntry> lstDirChain = repoBrowser
+						.getDirEntryChain(rootUrl);
+				final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(
+						"Root Node");
 				new OnSwingWait<Object, Object>(null) {
 
 					protected Object process() throws Exception {
@@ -188,7 +203,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		urlChanged();
 	}
 
-	private DefaultMutableTreeNode addNode(DefaultMutableTreeNode parentNode, SVNDirEntry dirEntry) {
+	private DefaultMutableTreeNode addNode(DefaultMutableTreeNode parentNode,
+			SVNDirEntry dirEntry) {
 		RepoTreeNode treeNode = new RepoTreeNode(dirEntry);
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(treeNode);
 		parentNode.add(node);
@@ -203,7 +219,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		return node;
 	}
 
-	private void addRootNode(DefaultMutableTreeNode parentNode, String url, List<SVNDirEntry> lstDirChain) throws Exception {
+	private void addRootNode(DefaultMutableTreeNode parentNode, String url,
+			List<SVNDirEntry> lstDirChain) throws Exception {
 
 		final DefaultMutableTreeNode realParentNode = parentNode;
 		final ArrayList<DefaultMutableTreeNode> lstPath = new ArrayList<DefaultMutableTreeNode>();
@@ -228,8 +245,10 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 					DefaultMutableTreeNode path = lstPath.get(i);
 
 					for (int c = 0; c < pNode.getChildCount(); c++) {
-						DefaultMutableTreeNode child = (DefaultMutableTreeNode) pNode.getChildAt(c);
-						RepoTreeNode userObject = (RepoTreeNode) child.getUserObject();
+						DefaultMutableTreeNode child = (DefaultMutableTreeNode) pNode
+								.getChildAt(c);
+						RepoTreeNode userObject = (RepoTreeNode) child
+								.getUserObject();
 						if (path.getUserObject().equals(userObject)) {
 							lstNewPath.add(child);
 							pNode = child;
@@ -247,10 +266,12 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	}
 
-	private void loadChildren(DefaultMutableTreeNode parentNode, SVNDirEntry url) throws SVNException, PagaException {
+	private void loadChildren(DefaultMutableTreeNode parentNode, SVNDirEntry url)
+			throws SVNException, PagaException {
 
 		if (url.getKind().equals(SVNNodeKind.DIR)) {
-			List<SVNDirEntry> lstChildren = repoBrowser.getChilds(url.getURL().toDecodedString());
+			List<SVNDirEntry> lstChildren = repoBrowser.getChilds(url.getURL()
+					.toDecodedString());
 			Collections.sort(lstChildren, SvnDirEntryComparator.getInstance());
 			for (SVNDirEntry child : lstChildren) {
 				addNode(parentNode, child);
@@ -267,16 +288,21 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		}.run();
 	}
 
-	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {}
+	public void treeWillCollapse(TreeExpansionEvent event)
+			throws ExpandVetoException {
+	}
 
-	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+	public void treeWillExpand(TreeExpansionEvent event)
+			throws ExpandVetoException {
 		try {
-			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
+			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) event
+					.getPath().getLastPathComponent();
 			if (!(parentNode.getUserObject() instanceof RepoTreeNode)) {
 				return;
 			}
 
-			RepoTreeNode parentTreeNode = (RepoTreeNode) parentNode.getUserObject();
+			RepoTreeNode parentTreeNode = (RepoTreeNode) parentNode
+					.getUserObject();
 
 			if (!parentTreeNode.isLoaded()) {
 				parentNode.removeAllChildren();
@@ -291,7 +317,7 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 	private static class RepoTreeNode {
 
 		private final SVNDirEntry svnDirEntry;
-		private boolean           loaded;
+		private boolean loaded;
 
 		public RepoTreeNode(SVNDirEntry svnDirEntry) {
 			this.svnDirEntry = svnDirEntry;
@@ -320,7 +346,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 			if (!(obj instanceof RepoTreeNode)) {
 				return false;
 			}
-			return ((RepoTreeNode) obj).getSvnDirEntry().getRelativePath().equals(svnDirEntry.getRelativePath());
+			return ((RepoTreeNode) obj).getSvnDirEntry().getRelativePath()
+					.equals(svnDirEntry.getRelativePath());
 		}
 
 		public int hashCode() {
@@ -328,7 +355,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		}
 	}
 
-	private static class SvnDirEntryComparator implements Comparator<SVNDirEntry> {
+	private static class SvnDirEntryComparator implements
+			Comparator<SVNDirEntry> {
 
 		private static SvnDirEntryComparator singleton;
 
@@ -340,10 +368,12 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		}
 
 		public int compare(SVNDirEntry o1, SVNDirEntry o2) {
-			if (o1.getKind().equals(SVNNodeKind.DIR) && !o2.getKind().equals(SVNNodeKind.DIR)) {
+			if (o1.getKind().equals(SVNNodeKind.DIR)
+					&& !o2.getKind().equals(SVNNodeKind.DIR)) {
 				return -1;
 			}
-			if (!o1.getKind().equals(SVNNodeKind.DIR) && o2.getKind().equals(SVNNodeKind.DIR)) {
+			if (!o1.getKind().equals(SVNNodeKind.DIR)
+					&& o2.getKind().equals(SVNNodeKind.DIR)) {
 				return 1;
 			}
 
@@ -354,24 +384,26 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	private class RefreshNodeAction extends ThreadAction {
 
-		private final PopupupMouseListener popupupMouseListener;
-
-		public RefreshNodeAction(PopupupMouseListener popupupMouseListener) {
+		public RefreshNodeAction() {
 			super("Refresh");
-			this.popupupMouseListener = popupupMouseListener;
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			new OnSwing() {
 
 				protected void process() throws Exception {
-					RepoTreeNode li = popupupMouseListener.getSelected();
+					TreePath path = tree.getSelectionPath();
+
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
+							.getLastPathComponent();
+					RepoTreeNode li = (RepoTreeNode) node.getUserObject();
 					li.setLoaded(false);
-					TreePath path = popupupMouseListener.getSelectedPath();
 					tree.collapsePath(path);
 					tree.expandPath(path);
 
-					((DefaultTreeModel) tree.getModel()).nodeStructureChanged((javax.swing.tree.TreeNode) path.getLastPathComponent());
+					((DefaultTreeModel) tree.getModel())
+							.nodeStructureChanged((javax.swing.tree.TreeNode) path
+									.getLastPathComponent());
 
 				}
 			}.run();
@@ -382,9 +414,9 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 	private class CreateFolderAction extends ThreadAction {
 
 		private final PopupupMouseListener popupupMouseListener;
-		private boolean                    doCreate;
-		private String                     folderName;
-		private String                     logMessage;
+		private boolean doCreate;
+		private String folderName;
+		private String logMessage;
 
 		public CreateFolderAction(PopupupMouseListener popupupMouseListener) {
 			super("Create folder");
@@ -409,8 +441,9 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 			if (doCreate) {
 				RepoTreeNode li = popupupMouseListener.getSelected();
-				repoBrowser.createFolder(li.getSvnDirEntry(), folderName, logMessage);
-				new RefreshNodeAction(popupupMouseListener).actionProcess(null);
+				repoBrowser.createFolder(li.getSvnDirEntry(), folderName,
+						logMessage);
+				new RefreshNodeAction().actionProcess(null);
 			}
 		}
 	}
@@ -427,7 +460,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 		public void actionProcess(ActionEvent e) throws Exception {
 			RepoTreeNode li = popupupMouseListener.getSelected();
 
-			Checkout checkout = new Checkout(repoBrowser.getPath(), li.getSvnDirEntry().getURL().toDecodedString());
+			Checkout checkout = new Checkout(repoBrowser.getPath(), li
+					.getSvnDirEntry().getURL().toDecodedString());
 			checkout.execute();
 		}
 	}
@@ -449,13 +483,13 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 	private class PopupupMouseListener extends MouseAdapter {
 
-		private JPopupMenu   ppAll;
+		private JPopupMenu ppAll;
 		private RepoTreeNode selected;
-		private TreePath     path;
+		private TreePath path;
 
 		public PopupupMouseListener() {
 			ppAll = new JPopupMenu();
-			ppAll.add(new RefreshNodeAction(this));
+			ppAll.add(new RefreshNodeAction());
 			ppAll.add(new CopyUrlToClipboard(this));
 			ppAll.add(new CheckoutAction(this));
 			ppAll.add(new CreateFolderAction(this));
@@ -463,10 +497,6 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 		public RepoTreeNode getSelected() {
 			return selected;
-		}
-
-		public TreePath getSelectedPath() {
-			return path;
 		}
 
 		private void showPopup(MouseEvent e) {
@@ -481,7 +511,8 @@ public class RepoBrowserGui implements Working, Cancelable, TreeWillExpandListen
 
 			tree.setSelectionPath(path);
 
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
+					.getLastPathComponent();
 			selected = (RepoTreeNode) node.getUserObject();
 			JPopupMenu ppVisible = ppAll;
 			ppVisible.setInvoker(tree);
