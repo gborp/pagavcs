@@ -19,6 +19,7 @@ import hu.pagavcs.client.operation.RepoBrowser;
 import hu.pagavcs.client.operation.RepoBrowser.RepoBrowserStatus;
 import hu.pagavcs.common.ResourceBundleAccessor;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -35,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,6 +44,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -80,6 +83,7 @@ public class RepoBrowserGui implements Working, Cancelable,
 	private JTree tree;
 	private String rootUrl;
 	private Frame frame;
+	private Label lblTreeWorking;
 
 	public RepoBrowserGui(RepoBrowser repoBrowser) {
 		this.repoBrowser = repoBrowser;
@@ -118,6 +122,8 @@ public class RepoBrowserGui implements Working, Cancelable,
 			}
 		});
 
+		JButton btnRefresh = new JButton(new RefreshNodeAction());
+
 		lblStatus = new Label();
 		tree = new Tree();
 		tree.addTreeWillExpandListener(this);
@@ -130,9 +136,11 @@ public class RepoBrowserGui implements Working, Cancelable,
 		tree.getActionMap().put("REFRESH_SVN_TREE", new RefreshNodeAction());
 
 		tree.setCellRenderer(new RepoTreeCellRender());
+		treeWorking();
 
 		pnlMain.add(new JLabel("URL:"), cc.xywh(1, 1, 1, 1));
 		pnlMain.add(sfUrl, cc.xywh(3, 1, 1, 1));
+		pnlMain.add(btnRefresh, cc.xywh(4, 1, 1, 1));
 
 		pnlMain.add(new JLabel("Working copy:"), cc.xywh(1, 3, 1, 1));
 		pnlMain.add(lblWorkingCopy, cc.xywh(3, 3, 1, 1));
@@ -143,6 +151,25 @@ public class RepoBrowserGui implements Working, Cancelable,
 		pnlMain.add(lblStatus, cc.xywh(4, 7, 1, 1));
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Repository Browser");
+	}
+
+	private void treeWorking() {
+		lblTreeWorking = new Label("Working...");
+		lblTreeWorking.setIcon(Manager.getIconInformation());
+		lblTreeWorking.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTreeWorking.setVerticalAlignment(SwingConstants.CENTER);
+
+		tree.setLayout(new BorderLayout());
+		tree.add(lblTreeWorking, BorderLayout.CENTER);
+		tree.revalidate();
+		tree.repaint();
+	}
+
+	private void treeFinished() {
+		if (lblTreeWorking != null) {
+			tree.remove(lblTreeWorking);
+			lblTreeWorking = null;
+		}
 	}
 
 	private RepoTreeNode getSelectedRepoTreeNode() {
@@ -162,6 +189,12 @@ public class RepoBrowserGui implements Working, Cancelable,
 		public void actionProcess(ActionEvent e) throws Exception {
 			if ((rootUrl == null || !rootUrl.equals(sfUrl.getText()))
 					&& !sfUrl.getText().trim().isEmpty()) {
+				new OnSwing() {
+
+					protected void process() throws Exception {
+						workStarted();
+					}
+				}.run();
 				rootUrl = sfUrl.getText();
 
 				final List<SVNDirEntry> lstDirChain = repoBrowser
@@ -182,13 +215,13 @@ public class RepoBrowserGui implements Working, Cancelable,
 				new OnSwing() {
 
 					protected void process() throws Exception {
-
+						treeFinished();
 						addRootNode(rootNode, rootUrl, lstDirChain);
+						workEnded();
 					}
 				}.run();
 			}
 		}
-
 	}
 
 	public void urlChanged() throws Exception {
