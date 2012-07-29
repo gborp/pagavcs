@@ -17,6 +17,7 @@ import hu.pagavcs.client.gui.platform.Tree;
 import hu.pagavcs.client.operation.Checkout;
 import hu.pagavcs.client.operation.RepoBrowser;
 import hu.pagavcs.client.operation.RepoBrowser.RepoBrowserStatus;
+import hu.pagavcs.common.ResourceBundleAccessor;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -401,7 +402,8 @@ public class RepoBrowserGui implements Working, Cancelable,
 	private class RefreshNodeAction extends ThreadAction {
 
 		public RefreshNodeAction() {
-			super("Refresh");
+			super("Refresh", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-refresh.png"));
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
@@ -432,7 +434,8 @@ public class RepoBrowserGui implements Working, Cancelable,
 		private String logMessage;
 
 		public CreateFolderAction(PopupupMouseListener popupupMouseListener) {
-			super("Create folder");
+			super("Create folder", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-add.png"));
 			this.popupupMouseListener = popupupMouseListener;
 		}
 
@@ -466,7 +469,8 @@ public class RepoBrowserGui implements Working, Cancelable,
 		private final PopupupMouseListener popupupMouseListener;
 
 		public CheckoutAction(PopupupMouseListener popupupMouseListener) {
-			super("Checkout");
+			super("Checkout", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-checkout.png"));
 			this.popupupMouseListener = popupupMouseListener;
 		}
 
@@ -484,7 +488,8 @@ public class RepoBrowserGui implements Working, Cancelable,
 		private final PopupupMouseListener popupupMouseListener;
 
 		public CopyUrlToClipboard(PopupupMouseListener popupupMouseListener) {
-			super("Copy URL to Clipboard");
+			super("Copy URL to Clipboard", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-dbus.png"));
 			this.popupupMouseListener = popupupMouseListener;
 		}
 

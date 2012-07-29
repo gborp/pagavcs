@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -20,8 +21,15 @@ import javax.swing.Action;
  */
 public abstract class ThreadAction extends AbstractAction {
 
-	public ThreadAction(String string) {
+	public ThreadAction(String string, Icon icon) {
 		super(string);
+		if (icon != null) {
+			setIcon(icon);
+		}
+	}
+
+	public ThreadAction(String string) {
+		this(string, null);
 	}
 
 	public void actionPerformed(final ActionEvent e) {
@@ -44,6 +52,10 @@ public abstract class ThreadAction extends AbstractAction {
 
 	public void setTooltip(String label) {
 		putValue(Action.SHORT_DESCRIPTION, label);
+	}
+
+	public void setIcon(Icon icon) {
+		putValue(Action.SMALL_ICON, icon);
 	}
 
 	public abstract void actionProcess(ActionEvent e) throws Exception;
