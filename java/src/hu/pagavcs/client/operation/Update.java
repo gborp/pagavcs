@@ -147,7 +147,7 @@ public class Update implements Cancelable {
 
 				}
 			}
-			if (autoClose && !gui.needUserInteraction()) {
+			if (autoClose && !gui.hasConflicted()) {
 				gui.close();
 			}
 		} catch (Exception ex) {
