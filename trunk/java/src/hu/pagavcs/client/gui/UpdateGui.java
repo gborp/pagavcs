@@ -17,6 +17,7 @@ import hu.pagavcs.client.operation.ResolveConflict;
 import hu.pagavcs.client.operation.Update.UpdateContentStatus;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -57,6 +58,10 @@ import com.jgoodies.forms.layout.FormLayout;
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
 public class UpdateGui implements Working {
+
+	private enum StopExitActionType {
+		STOP, CANCELLED, FAILED, FINISHED, CONFLICT
+	}
 
 	private Table<UpdateListItem> tblUpdate;
 	private TableModel<UpdateListItem> tmdlUpdate;
@@ -201,13 +206,13 @@ public class UpdateGui implements Working {
 				if (ContentStatus.CANCEL.equals(status)) {
 					prgWorking.setIndeterminate(false);
 					prgWorking.setStringPainted(false);
-					actStopFinish.setType(StopExitActionType.Cancelled);
+					actStopFinish.setType(StopExitActionType.CANCELLED);
 				}
 
 				if (ContentStatus.FAILED.equals(status)) {
 					prgWorking.setIndeterminate(false);
 					prgWorking.setStringPainted(false);
-					actStopFinish.setType(StopExitActionType.Failed);
+					actStopFinish.setType(StopExitActionType.FAILED);
 				}
 
 				if (update.isCancel() && !ContentStatus.CANCEL.equals(status)) {
@@ -233,77 +238,114 @@ public class UpdateGui implements Working {
 				doRevalidateTable();
 
 				if (ContentStatus.COMPLETED.equals(status)) {
-					numberOfPathUpdated++;
-					if (numberOfPathUpdated == lstPath.size()) {
+					new Thread(new Runnable() {
 
-						prgWorking.setStringPainted(false);
-						prgWorking.setIndeterminate(false);
-						actStopFinish.setType(StopExitActionType.Finished);
+						@Override
+						public void run() {
+							try {
+								while (!quNewItems.isEmpty()) {
+									Thread.sleep(200);
 
-						int total = 0;
-						int conflicted = 0;
-						for (UpdateListItem uli : tmdlUpdate.getAllData()) {
-							UpdateContentStatus updateContentStatus = uli
-									.getContentStatus();
-							ContentStatus contentStatus = uli.getStatus();
-							if (UpdateContentStatus.CONFLICTED
-									.equals(updateContentStatus)
-									|| ContentStatus.CONFLICTED
-											.equals(contentStatus)) {
-								conflicted++;
-							}
-							if (contentStatus != null) {
-								if (ContentStatus.ADDED.equals(contentStatus)
-										|| ContentStatus.ADDED
-												.equals(contentStatus)
-										|| ContentStatus.CONFLICTED
-												.equals(contentStatus)
-										|| ContentStatus.DELETED
-												.equals(contentStatus)
-										|| ContentStatus.EXTERNAL
-												.equals(contentStatus)
-										|| ContentStatus.IGNORED
-												.equals(contentStatus)
-										|| ContentStatus.INCOMPLETE
-												.equals(contentStatus)
-										|| ContentStatus.MERGED
-												.equals(contentStatus)
-										|| ContentStatus.MISSING
-												.equals(contentStatus)
-										|| ContentStatus.MODIFIED
-												.equals(contentStatus)
-										|| ContentStatus.NONE
-												.equals(contentStatus)
-										|| ContentStatus.NORMAL
-												.equals(contentStatus)
-										|| ContentStatus.OBSTRUCTED
-												.equals(contentStatus)
-										|| ContentStatus.REPLACED
-												.equals(contentStatus)
-										|| ContentStatus.UNVERSIONED
-												.equals(contentStatus)
-										|| ContentStatus.EXISTS
-												.equals(contentStatus)
-										|| ContentStatus.UPDATE
-												.equals(contentStatus)) {
-									total++;
 								}
+
+								new OnSwing() {
+
+									@Override
+									protected void process() throws Exception {
+										numberOfPathUpdated++;
+										if (numberOfPathUpdated == lstPath
+												.size()) {
+
+											prgWorking.setStringPainted(false);
+											prgWorking.setIndeterminate(false);
+											if (!hasConflicted()) {
+												actStopFinish
+														.setType(StopExitActionType.FINISHED);
+											} else {
+												actStopFinish
+														.setType(StopExitActionType.CONFLICT);
+											}
+
+											int total = 0;
+											int conflicted = 0;
+											for (UpdateListItem uli : tmdlUpdate
+													.getAllData()) {
+												UpdateContentStatus updateContentStatus = uli
+														.getContentStatus();
+												ContentStatus contentStatus = uli
+														.getStatus();
+												if (UpdateContentStatus.CONFLICTED
+														.equals(updateContentStatus)
+														|| ContentStatus.CONFLICTED
+																.equals(contentStatus)) {
+													conflicted++;
+												}
+												if (contentStatus != null) {
+													if (ContentStatus.ADDED
+															.equals(contentStatus)
+															|| ContentStatus.ADDED
+																	.equals(contentStatus)
+															|| ContentStatus.CONFLICTED
+																	.equals(contentStatus)
+															|| ContentStatus.DELETED
+																	.equals(contentStatus)
+															|| ContentStatus.EXTERNAL
+																	.equals(contentStatus)
+															|| ContentStatus.IGNORED
+																	.equals(contentStatus)
+															|| ContentStatus.INCOMPLETE
+																	.equals(contentStatus)
+															|| ContentStatus.MERGED
+																	.equals(contentStatus)
+															|| ContentStatus.MISSING
+																	.equals(contentStatus)
+															|| ContentStatus.MODIFIED
+																	.equals(contentStatus)
+															|| ContentStatus.NONE
+																	.equals(contentStatus)
+															|| ContentStatus.NORMAL
+																	.equals(contentStatus)
+															|| ContentStatus.OBSTRUCTED
+																	.equals(contentStatus)
+															|| ContentStatus.REPLACED
+																	.equals(contentStatus)
+															|| ContentStatus.UNVERSIONED
+																	.equals(contentStatus)
+															|| ContentStatus.EXISTS
+																	.equals(contentStatus)
+															|| ContentStatus.UPDATE
+																	.equals(contentStatus)) {
+														total++;
+													}
+												}
+											}
+											String strInfo = "Changed: "
+													+ total;
+											if (conflicted > 0) {
+												strInfo += " Conflicted: "
+														+ conflicted;
+											}
+											lblInfo.setText(strInfo);
+
+											if (conflicted > 0) {
+												JOptionPane.showMessageDialog(
+														Manager.getRootFrame(),
+														"There were "
+																+ conflicted
+																+ " conflicted items!",
+														"Conflict",
+														JOptionPane.WARNING_MESSAGE);
+											}
+										}
+									}
+								}.run();
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
 						}
-						String strInfo = "Changed: " + total;
-						if (conflicted > 0) {
-							strInfo += " Conflicted: " + conflicted;
-						}
-						lblInfo.setText(strInfo);
 
-						if (conflicted > 0) {
-							JOptionPane.showMessageDialog(
-									Manager.getRootFrame(),
-									"There were " + conflicted
-											+ " conflicted items!", "Conflict",
-									JOptionPane.WARNING_MESSAGE);
-						}
-					}
+					}).start();
+
 				}
 			}
 
@@ -435,6 +477,21 @@ public class UpdateGui implements Working {
 				li.setContentStatus(null);
 				li.setStatus(ContentStatus.RESOLVED);
 				tmdlUpdate.fireTableDataChanged();
+
+				boolean hasConflicted = false;
+				for (UpdateListItem uli : tmdlUpdate.getAllData()) {
+					UpdateContentStatus updateContentStatus = uli
+							.getContentStatus();
+					ContentStatus contentStatus = uli.getStatus();
+					if (UpdateContentStatus.CONFLICTED
+							.equals(updateContentStatus)
+							|| ContentStatus.CONFLICTED.equals(contentStatus)) {
+						hasConflicted = true;
+					}
+				}
+				if (!hasConflicted) {
+					actStopFinish.setType(StopExitActionType.FINISHED);
+				}
 			} catch (SVNException e1) {
 				Manager.handle(e1);
 			}
@@ -600,8 +657,30 @@ public class UpdateGui implements Working {
 		}
 	}
 
-	private enum StopExitActionType {
-		Stop, Cancelled, Failed, Finished
+	private void nextConflict() {
+		// int selectedRow = tblUpdate.getSelectedRow();
+		// if (selectedRow<0) {
+		// selectedRow=0;
+		// }
+
+		List<UpdateListItem> lstAllData = tmdlUpdate.getAllData();
+
+		for (int i = 0; i < tblUpdate.getRowCount(); i++) {
+
+			int modelIndex = tblUpdate.convertRowIndexToModel(i);
+			UpdateListItem uli = lstAllData.get(modelIndex);
+
+			UpdateContentStatus updateContentStatus = uli.getContentStatus();
+			ContentStatus contentStatus = uli.getStatus();
+			if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)
+					|| ContentStatus.CONFLICTED.equals(contentStatus)) {
+				int rowIndex = tblUpdate.convertRowIndexToView(i);
+				tblUpdate.getSelectionModel().setSelectionInterval(rowIndex,
+						rowIndex);
+				tblUpdate.scrollRectToVisible(new Rectangle(tblUpdate
+						.getCellRect(rowIndex, 0, true)));
+			}
+		}
 	}
 
 	private class StopExitAction extends ThreadAction {
@@ -610,7 +689,11 @@ public class UpdateGui implements Working {
 
 		public StopExitAction() {
 			super("");
-			setType(StopExitActionType.Stop);
+			setType(StopExitActionType.STOP);
+		}
+
+		public StopExitActionType getType() {
+			return type;
 		}
 
 		public void setType(StopExitActionType type) {
@@ -623,17 +706,20 @@ public class UpdateGui implements Working {
 
 				protected void process() throws Exception {
 					switch (type) {
-					case Stop:
+					case STOP:
 						update.setCancel(true);
-						setType(StopExitActionType.Cancelled);
+						setType(StopExitActionType.CANCELLED);
 						break;
-					case Cancelled:
+					case CANCELLED:
 						exit();
 						break;
-					case Failed:
+					case FAILED:
 						exit();
 						break;
-					case Finished:
+					case CONFLICT:
+						nextConflict();
+						break;
+					case FINISHED:
 						exit();
 						break;
 					}
@@ -666,7 +752,7 @@ public class UpdateGui implements Working {
 		frame.dispose();
 	}
 
-	public boolean needUserInteraction() {
+	public boolean hasConflicted() {
 		for (UpdateListItem uli : tmdlUpdate.getAllData()) {
 			UpdateContentStatus updateContentStatus = uli.getContentStatus();
 			ContentStatus contentStatus = uli.getStatus();
