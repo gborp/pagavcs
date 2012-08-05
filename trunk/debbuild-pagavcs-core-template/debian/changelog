@@ -1,3 +1,12 @@
+pagavcs-core (1.6.6-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * (update) better conflict handling user experience
+  * (file managers) fix: added files' icon was "ignored" instead of "added"
+  * (context menu) Issue 78: add "add" operation to the context menu
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 05 Aug 2012 20:18:23 +0200
+
 pagavcs-core (1.6.5-1karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
