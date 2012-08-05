@@ -89,7 +89,7 @@ public class FileStatusCache {
 
 		SVNStatusType contentStatus = status.getContentsStatus();
 		if (contentStatus.equals(SVNStatusType.STATUS_ADDED)) {
-			result = STATUS.IGNORED;
+			result = STATUS.ADDED;
 		} else if (contentStatus.equals(SVNStatusType.STATUS_CONFLICTED)) {
 			result = STATUS.CONFLICTS;
 		} else if (contentStatus.equals(SVNStatusType.STATUS_DELETED)) {
