@@ -1,6 +1,7 @@
 package hu.pagavcs;
 
 import hu.pagavcs.client.bl.Manager;
+import hu.pagavcs.client.operation.AddOperation;
 import hu.pagavcs.client.operation.ApplyPatchOperation;
 import hu.pagavcs.client.operation.BlameOperation;
 import hu.pagavcs.client.operation.Checkout;
@@ -121,6 +122,7 @@ public class Communication {
 		if (status == null) {
 			return "";
 		}
+
 		switch (status) {
 		case ADDED:
 			return "pagavcs-added";
@@ -430,6 +432,7 @@ public class Communication {
 		boolean hasNotModified = false;
 		boolean hasFile = false;
 		boolean hasDir = false;
+		boolean hasUnversioned = false;
 		for (String fileName : lstArg) {
 			File file = new File(fileName);
 			STATUS status = fileStatusCache.getStatus(file);
@@ -445,6 +448,9 @@ public class Communication {
 					|| status.equals(STATUS.SVNED)
 					|| status.equals(STATUS.UNVERSIONED)) {
 				hasSvned = true;
+			}
+			if (status.equals(STATUS.UNVERSIONED)) {
+				hasUnversioned = true;
 			}
 			if (status.equals(STATUS.CONFLICTS)) {
 				hasConflicted = true;
@@ -465,6 +471,11 @@ public class Communication {
 
 		StringBuilder sb = new StringBuilder(512);
 		boolean showShowChanges = false;
+		if (hasUnversioned) {
+			makeMenuItem(sb, "Add", "Add unversioned item", "pagavcs-add", "",
+					COMMAND_ADD);
+			showShowChanges = true;
+		}
 		if (hasSvned && !hasDir && hasFile && hasModified && !hasNotModified) {
 			makeMenuItem(sb, "Show changes", "Show local changes",
 					"pagavcs-difficon", "", COMMAND_SHOWLOCALCHANGES);
@@ -592,7 +603,10 @@ public class Communication {
 
 		public void run() {
 			try {
-				if (COMMAND_PROPERTIES.equals(command)) {
+				if (COMMAND_ADD.equals(command)) {
+					AddOperation addOperation = new AddOperation(lstArg);
+					addOperation.execute();
+				} else if (COMMAND_PROPERTIES.equals(command)) {
 					for (String path : lstArg) {
 						PropertiesOperation propertiesOperation = new PropertiesOperation(
 								path);
