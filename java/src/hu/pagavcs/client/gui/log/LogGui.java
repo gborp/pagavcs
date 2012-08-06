@@ -641,7 +641,23 @@ public class LogGui implements Working {
 
 		tmdlLogDetail.addLines(lstResult);
 		if (!lstResult.isEmpty()) {
-			tblDetailLog.getSelectionModel().setSelectionInterval(0, 0);
+			if (hasOutOfScope) {
+				int i = 0;
+				for (LogDetailListItem li : lstResult) {
+					if (li.isInScope()) {
+						int viewI = tblDetailLog.convertRowIndexToView(i);
+						tblDetailLog.getSelectionModel().setSelectionInterval(
+								viewI, viewI);
+						tblDetailLog.scrollRectToVisible(tblDetailLog
+								.getCellRect(viewI, 0, true));
+						break;
+					}
+					i++;
+				}
+
+			} else {
+				tblDetailLog.getSelectionModel().setSelectionInterval(0, 0);
+			}
 		}
 	}
 
