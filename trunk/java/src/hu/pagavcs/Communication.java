@@ -100,6 +100,7 @@ public class Communication {
 	private static final String COMMAND_STOP = "stop";
 	private static final String COMMAND_EXIT = "exit";
 	private static final String COMMAND_QUIT = "quit";
+	private static final String COMMAND_KILL = "kill";
 	private static final String COMMAND_PING = "ping";
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_APPLY_PATCH = "applypatch";
@@ -739,7 +740,8 @@ public class Communication {
 					}
 				} else if (COMMAND_STOP.equals(command)
 						|| COMMAND_EXIT.equals(command)
-						|| COMMAND_QUIT.equals(command)) {
+						|| COMMAND_QUIT.equals(command)
+						|| COMMAND_KILL.equals(command)) {
 					System.exit(0);
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
