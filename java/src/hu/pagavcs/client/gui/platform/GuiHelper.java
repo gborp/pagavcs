@@ -219,7 +219,8 @@ public class GuiHelper {
 		private final JLabel target;
 
 		public CopyLabelAction(JLabel target) {
-			super("Copy");
+			super("Copy", ResourceBundleAccessor
+					.getSmallImage("actions/edit-copy.png"));
 			this.target = target;
 		}
 
@@ -233,7 +234,8 @@ public class GuiHelper {
 		private final JTextComponent target;
 
 		public CopyAction(JTextComponent target) {
-			super("Copy");
+			super("Copy", ResourceBundleAccessor
+					.getSmallImage("actions/edit-copy.png"));
 			this.target = target;
 		}
 
@@ -255,7 +257,8 @@ public class GuiHelper {
 		private final JTextComponent target;
 
 		public CutAction(JTextComponent target) {
-			super("Cut");
+			super("Cut", ResourceBundleAccessor
+					.getSmallImage("actions/edit-cut.png"));
 			this.target = target;
 		}
 
@@ -282,7 +285,8 @@ public class GuiHelper {
 		private final JTextComponent target;
 
 		public PasteAction(JTextComponent target) {
-			super("Paste");
+			super("Paste", ResourceBundleAccessor
+					.getSmallImage("actions/edit-paste.png"));
 			this.target = target;
 		}
 
