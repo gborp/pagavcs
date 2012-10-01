@@ -1,4 +1,4 @@
-pagavcs-cli (1.5.9-1karmic) karmic; urgency=low
+pagavcs-cli (1.5.9-2karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
   *  Don't do anything if running as root user
