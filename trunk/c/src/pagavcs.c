@@ -1,5 +1,18 @@
 #define _GNU_SOURCE
 
+//#include <glib.h>
+// FIXME not too nice "solution"...
+typedef int    gint;
+typedef gint   gboolean;
+#ifndef FALSE
+#define FALSE   (0)
+#endif
+#ifndef TRUE
+#define TRUE    (!FALSE)
+#endif
+
+
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,6 +135,9 @@ if(	argc == 1 || strcmp(argv[1], "help") == 0
 
 	address.sun_family = AF_UNIX;
 	strcpy(address.sun_path, fullSocketFilename);
+
+	gboolean exitCommand = FALSE;
+	// TODO check exit command
 
 	connectServer(socket_fd, address, fullLogFilename);
 
