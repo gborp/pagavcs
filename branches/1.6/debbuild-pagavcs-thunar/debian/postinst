@@ -1,3 +1,0 @@
-#!/bin/bash
-
-ldconfig -l /usr/lib/thunarx-2/thunar_pagavcs.so
