@@ -1,0 +1,15 @@
+pagavcs-core-libs (1.5.1-3karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate package for the CLI client
+  *  Using Unix Domain Socket instead of plain Socket
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 29 Jan 2012 14:13:31 +0100
+
+pagavcs-core-libs (1.4.63-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate the used java libraries into a package
+  *  Upgrade JNA library from 3.2.27 to 3.4.0
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 17 Jan 2012 21:05:42 +0100

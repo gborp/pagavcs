@@ -1,0 +1,28 @@
+pagavcs-nautilus (1.5.1-4karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate package for the CLI client
+  *  Using Unix Domain Socket instead of plain Socket
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 29 Jan 2012 14:13:31 +0100
+
+pagavcs-nautilus (1.4.61-3karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Prevent file-conflict with old pagavcs package by renaming the python module
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 15 Jan 2012 22:11:41 +0100
+
+pagavcs-nautilus (1.4.61-2karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Prevent file-conflict with old pagavcs package by renaming the python module
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 15 Jan 2012 21:11:41 +0100
+
+pagavcs-nautilus (1.4.61-1karmic~all) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  *  Separate Nautilus and core package
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 15 Jan 2012 11:11:41 +0100
