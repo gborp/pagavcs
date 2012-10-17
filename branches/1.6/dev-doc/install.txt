@@ -1,1 +1,0 @@
-sudo pbuilder create --distribution $(lsb_release -cs) \     --othermirror "deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs) main restricted universe multiverse"
