@@ -269,7 +269,6 @@ public class Communication {
 					continue;
 				}
 
-				boolean waitSyncMode = false;
 				boolean autoClose = false;
 				String command;
 				String arg = null;
@@ -293,7 +292,6 @@ public class Communication {
 						foundSwitch = false;
 						if (lstElements.get(0).equals("-wait")
 								|| lstElements.get(0).equals("-w")) {
-							waitSyncMode = true;
 							lstElements.remove(0);
 							foundSwitch = true;
 						}
@@ -384,10 +382,7 @@ public class Communication {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
 						new Thread(new ProcessInput(command, lstArg, socket,
-								waitSyncMode, autoClose), line).start();
-						if (!waitSyncMode) {
-							outComm(socket, "Processing " + command + "...\n");
-						}
+								autoClose), line).start();
 					}
 				}
 
@@ -589,20 +584,19 @@ public class Communication {
 
 		private final String command;
 		private final List<String> lstArg;
-		private final boolean waitSyncMode;
 		private final boolean autoClose;
 		private final UnixSocket socket;
 
 		public ProcessInput(String command, List<String> lstArg,
-				UnixSocket socket, boolean waitSyncMode, boolean autoClose) {
+				UnixSocket socket, boolean autoClose) {
 			this.command = command;
 			this.lstArg = lstArg;
 			this.socket = socket;
-			this.waitSyncMode = waitSyncMode;
 			this.autoClose = autoClose;
 		}
 
 		public void run() {
+			boolean needPrintingFinished = true;
 			try {
 				if (COMMAND_ADD.equals(command)) {
 					AddOperation addOperation = new AddOperation(lstArg);
@@ -746,18 +740,18 @@ public class Communication {
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
 				} else {
-					throw new RuntimeException("Unimplemented command: "
-							+ command);
+					outComm(socket, "Error! Unimplemented command: " + command);
+					needPrintingFinished = false;
 				}
 			} catch (Exception ex) {
 				Manager.handle(ex);
 			} finally {
-				if (waitSyncMode) {
-					try {
+				try {
+					if (needPrintingFinished) {
 						outComm(socket, "Finished.\n");
-					} catch (IOException ex2) {
-						Manager.handle(ex2);
 					}
+				} catch (IOException ex2) {
+					Manager.handle(ex2);
 				}
 			}
 		}

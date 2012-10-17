@@ -44,6 +44,7 @@ public abstract class OnSwing {
 			try {
 				OnSwing.this.process();
 			} catch (Exception ex) {
+				ex.printStackTrace();
 				Manager.handle(ex);
 			}
 		}
