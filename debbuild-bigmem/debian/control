@@ -1,0 +1,14 @@
+Source: pagavcs-bigmem
+Section: devel
+Priority: optional
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Build-Depends: 
+Standards-Version: 3.8.4
+Homepage: http://pagavcs.googlecode.com
+
+Package: pagavcs-bigmem
+Architecture: all
+Depends: pagavcs (>= 1.4.40)
+Description: PagaVCS bigmemory 
+ Switcges PagaVCS into bigmemory mode.
+ Changelog: http://code.google.com/p/pagavcs/source/browse/trunk/debbuild-bigmem/debian/changelog
