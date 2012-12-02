@@ -1,4 +1,4 @@
-mugcommander (1.1.1-1karmic) karmic; urgency=low
+mugcommander (1.1.1-2karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
   * Remove some OSX and Windows specific part

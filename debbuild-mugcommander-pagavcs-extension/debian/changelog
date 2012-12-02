@@ -1,4 +1,4 @@
-mugcommander-pagavcs-extensions (1.0.4-4karmic) karmic; urgency=low
+mugcommander-pagavcs-extensions (1.0.4-5karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
   * Change the deb packaging method
