@@ -1,4 +1,4 @@
-Source: pagavcs-bigmem
+Source: pagavcs-17-bigmem
 Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
@@ -6,9 +6,9 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.9.2
 Homepage: http://pagavcs.googlecode.com
 
-Package: pagavcs-bigmem
+Package: pagavcs-17-bigmem
 Architecture: all
-Depends: pagavcs-cli, ${misc:Depends}
+Depends: pagavcs-17-cli, ${misc:Depends}
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
  It's written in Java and Python (Nautilus-integration).

@@ -1,4 +1,4 @@
-Source: pagavcs-core
+Source: pagavcs-17-core
 Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
@@ -6,11 +6,11 @@ Build-Depends: debhelper (>= 5), sun-java6-jdk | default-jdk
 Standards-Version: 3.9.2
 Homepage: http://pagavcs.googlecode.com
 
-Package: pagavcs-core
+Package: pagavcs-17-core
 Architecture: all
 Replaces: pagavcs (<<1.4.61)
 Breaks: pagavcs (<<1.4.61)
-Depends: pagavcs-core-libs (>=1.5), pagavcs-cli (>=1.5), sun-java6-jre | default-jre, meld,  hicolor-icon-theme, wiggle, gedit, patchutils, libunixsocket-java, dconf-tools,${misc:Depends}
+Depends: pagavcs-17-core-libs (>=1.5), pagavcs-17-cli (>=1.5), sun-java6-jre | default-jre, meld,  hicolor-icon-theme, wiggle, gedit, patchutils, libunixsocket-java, dconf-tools,${misc:Depends}
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
  It's written in Java and Python (Nautilus-integration).
