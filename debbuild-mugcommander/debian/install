@@ -1,4 +1,0 @@
-debian/input/mugcommander.jar /usr/share/mugcommander/bin
-debian/input/mugcommander-icon.png /usr/share/mugcommander/data
-debian/input/mugcommander /usr/bin
-debian/input/mugcommander.desktop /usr/share/applications
