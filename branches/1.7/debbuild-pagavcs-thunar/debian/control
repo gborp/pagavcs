@@ -1,4 +1,4 @@
-Source: pagavcs-thunar
+Source: pagavcs-17-thunar
 Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
@@ -6,9 +6,9 @@ Build-Depends: debhelper (>= 5), automake, build-essential, libthunarx-2-dev, li
 Standards-Version: 3.9.2
 Homepage: http://pagavcs.googlecode.com
 
-Package: pagavcs-thunar
+Package: pagavcs-17-thunar
 Architecture: i386 amd64
-Depends: pagavcs-core (>=1.5.5), libthunarx-2-0, ${misc:Depends}
+Depends: pagavcs-17-core (>=1.5.5), libthunarx-2-0, ${misc:Depends}
 Description: Desktop integrated Subversion client
  Thunar plugin for PagaVCS.
  Changelog: http://code.google.com/p/pagavcs

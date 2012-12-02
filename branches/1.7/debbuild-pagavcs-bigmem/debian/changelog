@@ -1,14 +1,6 @@
-pagavcs-bigmem (1.5.2-1karmic) karmic; urgency=low
+pagavcs-17-bigmem (1.7.0-2karmic) karmic; urgency=low
 
-  [ Gábor Pápai ]
-  *  Bigmem for 1.5.x series
+  *  1.7.x series
 
- -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 30 Jan 2012 19:47:44 +0100
-
-pagavcs-bigmem (1.0.0) karmic; urgency=low
-
-  [ Gábor Pápai ]
-  * Initial release
-  
- -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 07 Dec 2010 19:17:16 +0100
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 02 Dec 2012 19:22:45 +0100
 
