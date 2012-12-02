@@ -1,4 +1,4 @@
-Source: pagavcs-core-libs
+Source: pagavcs-17-core-libs
 Section: devel
 Priority: optional
 Maintainer: Gábor Pápai <pagavcs@gmail.com>
@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5), sun-java6-jdk | default-jdk
 Standards-Version: 3.9.2
 Homepage: http://pagavcs.googlecode.com
 
-Package: pagavcs-core-libs
+Package: pagavcs-17-core-libs
 Architecture: all
 Depends: sun-java6-jre | default-jre
 Description: Desktop integrated Subversion client
