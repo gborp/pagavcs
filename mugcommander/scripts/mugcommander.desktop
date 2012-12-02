@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Version=1.0
+Name=mug-Commander
+Comment=Twin-Panel File Manager
+GenericName=File Manager
+Icon=/usr/share/mugcommander/data/mugcommander-icon.png
+Exec=/usr/bin/mugcommander
+Categories=FileManager;Utility
+Terminal=false
