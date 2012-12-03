@@ -15,5 +15,9 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/usr/lib/jni"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/antlr-runtime-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/sequence-library-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/sqljet-1.1.5.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit-javahl16.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
