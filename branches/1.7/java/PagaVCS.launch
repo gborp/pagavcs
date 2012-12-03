@@ -8,4 +8,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="hu.pagavcs.Main"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Pagavcs-1.7"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dsvnkit.http.sslProtocols=&quot;SSLv2Hello,SSLv3&quot;"/>
 </launchConfiguration>
