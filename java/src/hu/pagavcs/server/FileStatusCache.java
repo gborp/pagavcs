@@ -197,47 +197,46 @@ public class FileStatusCache {
 			}
 		}
 
-		File parent = file.getParentFile();
-		File svnDir = new File(parent, ".svn");
-		if (svnDir.exists()) {
-			synchronized (mapCache) {
-				StatusSlot slot = mapCache.get(file);
-				if (slot != null) {
-					return slot.status;
-				}
+		// File parent = file.getParentFile();
+		// File svnDir = new File(parent, ".svn");
+		// if (svnDir.exists()) {
+		synchronized (mapCache) {
+			StatusSlot slot = mapCache.get(file);
+			if (slot != null) {
+				return slot.status;
 			}
-			synchronized (svnStatusHandler) {
-				try {
-					statusClient.doStatus(file, SVNRevision.HEAD,
-							SVNDepth.EMPTY, false, true, true, false,
-							svnStatusHandler, null);
-				} catch (Exception ex) {
-					return STATUS.NONE;
-				}
-			}
-			synchronized (mapCache) {
-				StatusSlot slot = mapCache.get(file);
-				if (mapCache.get(file) != null) {
-					return slot.status;
-				} else {
-					return STATUS.NONE;
-				}
-
-			}
-		} else {
-			StatusSlot slot = new StatusSlot();
-			slot.timestamp = System.currentTimeMillis();
-			slot.lastModified = file.lastModified();
-			slot.fileSize = file.length();
-			if (file.isDirectory() && new File(file, ".svn").exists()) {
-				slot.status = STATUS.NORMAL;
-			} else {
-				slot.status = STATUS.NONE;
-			}
-
-			mapCache.put(file, slot);
-			return slot.status;
 		}
+		synchronized (svnStatusHandler) {
+			try {
+				statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY,
+						false, true, true, false, svnStatusHandler, null);
+			} catch (Exception ex) {
+				return STATUS.NONE;
+			}
+		}
+		synchronized (mapCache) {
+			StatusSlot slot = mapCache.get(file);
+			if (mapCache.get(file) != null) {
+				return slot.status;
+			} else {
+				return STATUS.NONE;
+			}
+
+		}
+		// } else {
+		// StatusSlot slot = new StatusSlot();
+		// slot.timestamp = System.currentTimeMillis();
+		// slot.lastModified = file.lastModified();
+		// slot.fileSize = file.length();
+		// if (file.isDirectory() && new File(file, ".svn").exists()) {
+		// slot.status = STATUS.NORMAL;
+		// } else {
+		// slot.status = STATUS.NONE;
+		// }
+		//
+		// mapCache.put(file, slot);
+		// return slot.status;
+		// }
 	}
 
 	private static class StatusSlot {
