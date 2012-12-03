@@ -66,6 +66,11 @@
     		excludes="com/jgoodies/forms/builder/**" />
     	<zipfileset src="${lib}/trilead.jar" />
     	<zipfileset src="${lib}/jna.jar" />
+    	<zipfileset src="${lib}/antlr-runtime-3.4.jar" />
+    	<zipfileset src="${lib}/sequence-library-1.0.2.jar" />
+    	<zipfileset src="${lib}/sqljet-1.1.5.jar" />
+    	<zipfileset src="${lib}/svnkit-javahl16.jar" />
+    	
     		<!-- excludes="com/sun/jna/darwin/**,com/sun/jna/freebsd-amd64/**,com/sun/jna/freebsd-i386/**,com/sun/jna/ia64/**,com/sun/jna/sunos-amd64/**,com/sun/jna/sunos-sparc/**,com/sun/jna/sunos-sparcv9/**,com/sun/jna/sunos-x86/**,com/sun/jna/win32/**,com/sun/jna/win32-amd64/**,com/sun/jna/win32-x86/**" -->
     	<zipfileset src="${lib}/log4j-1.2.16.jar" 
     		excludes="org/apache/log4j/chainsaw/**"/>    	
