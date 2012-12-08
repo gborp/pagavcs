@@ -8,6 +8,8 @@ Homepage: http://pagavcs.googlecode.com
 
 Package: pagavcs-17-bigmem
 Architecture: all
+Replaces: pagavcs-bigmem
+Breaks: pagavcs-bigmem
 Depends: pagavcs-17-cli, ${misc:Depends}
 Description: Desktop integrated Subversion client
  Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
