@@ -8,7 +8,7 @@ fi
 OWNDIR=`pwd`
 DIST=$1
 
-APPNAME=pagavcs-core
+APPNAME=pagavcs-17-core
 COMMONBUILDDIR=temp-build
 VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
 WDIRNAME=${APPNAME}_${VERSION}${DIST}

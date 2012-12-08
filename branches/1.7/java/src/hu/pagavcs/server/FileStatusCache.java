@@ -14,6 +14,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
+import org.tmatesoft.svn.core.wc2.SvnOperationFactory;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -35,7 +36,7 @@ public class FileStatusCache {
 		ADDED, CONFLICTS, DELETED, IGNORED, LOCKED, MODIFIED, NORMAL, OBSTRUCTED, READONLY, SVNED, NONE, UNVERSIONED, UNKNOWN
 	}
 
-	private static final int CACHE_SIZE = 1000;
+	private static final int CACHE_SIZE = 2000;
 	/** in ms */
 	private static final long CACHE_TOO_OLD = 5 * 60 * 1000;
 
@@ -189,7 +190,7 @@ public class FileStatusCache {
 			if (slot != null) {
 				if (file.lastModified() != slot.lastModified
 						|| file.length() != slot.fileSize
-						|| ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD / 20000)) {
+						|| ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD)) {
 					mapCache.remove(file);
 				} else {
 					return slot.status;
@@ -208,6 +209,21 @@ public class FileStatusCache {
 		}
 		synchronized (svnStatusHandler) {
 			try {
+				File directory = file;
+				if (!file.isDirectory()) {
+					directory = file.getParentFile();
+				}
+				if (!SvnOperationFactory.isVersionedDirectory(directory, false)) {
+					StatusSlot slot = new StatusSlot();
+					slot.status = STATUS.NONE;
+					slot.lastModified = file.lastModified();
+					slot.timestamp = System.currentTimeMillis();
+					slot.fileSize = file.length();
+					synchronized (mapCache) {
+						mapCache.put(file, slot);
+					}
+					return STATUS.NONE;
+				}
 				statusClient.doStatus(file, SVNRevision.HEAD, SVNDepth.EMPTY,
 						false, true, true, false, svnStatusHandler, null);
 			} catch (Exception ex) {

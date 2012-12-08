@@ -1,4 +1,10 @@
-pagavcs-17-nautilus (1.7.0-1karmic) karmic; urgency=low
+pagavcs-17-nautilus (1.7.1-4karmic) karmic; urgency=low
+
+  * Remove old 1.6 backward compatibility socket teardown.
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 08 Dec 2012 06:48:56 +0100
+
+pagavcs-17-nautilus (1.7.0-3karmic) karmic; urgency=low
 
   *  1.7.x series
 
