@@ -45,7 +45,7 @@ void connectServer(int socket_fd, struct sockaddr_un address,
 				strcat(command, " -Xmx99m -XX:MaxPermSize=32M");
 			}
 
-			strcat(command, " -XX:PermSize=16M");
+			strcat(command, " -XX:PermSize=32M");
 			strcat(command, " -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20");
 			strcat(command, " -Djava.library.path=/usr/lib/jni -jar");
 			strcat(command, " /usr/share/pagavcs/bin/pagavcs.jar >> ");
