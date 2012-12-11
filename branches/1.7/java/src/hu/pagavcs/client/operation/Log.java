@@ -124,13 +124,14 @@ public class Log implements Cancelable {
 			throws Exception {
 		gui.workStarted();
 		cancel = false;
-		SVNClientManager mgrSvn;
-		if (path != null) {
-			mgrSvn = Manager.getSVNClientManager(new File(path));
-		} else {
-			mgrSvn = Manager.getSVNClientManager(getRootUrl());
-		}
+		SVNClientManager mgrSvn = null;
 		try {
+			if (path != null) {
+				mgrSvn = Manager.getSVNClientManager(new File(path));
+			} else {
+				mgrSvn = Manager.getSVNClientManager(getRootUrl());
+			}
+
 			SVNLogClient logClient = mgrSvn.getLogClient();
 			logClient.setEventHandler(new LogEventHandler());
 			gui.setStatus(ShowLogStatus.STARTED);
@@ -170,9 +171,12 @@ public class Log implements Cancelable {
 			} catch (SVNCancelException ex) {
 				gui.setStatus(ShowLogStatus.CANCELLED);
 			}
-			gui.workEnded();
+
 		} finally {
-			mgrSvn.dispose();
+			gui.workEnded();
+			if (mgrSvn != null) {
+				mgrSvn.dispose();
+			}
 		}
 	}
 
