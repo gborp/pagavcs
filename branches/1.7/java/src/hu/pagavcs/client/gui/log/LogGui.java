@@ -974,7 +974,8 @@ public class LogGui implements Working {
 	public SVNNodeKind getNodeKind(String path, long revision)
 			throws SVNException, PagaException {
 		if (svnRepoRootUrl != null) {
-			SVNURL url = Manager.getAbsoluteUrl(svnRepoRootUrl, path);
+			SVNURL url = Manager.getAbsoluteUrl(svnRepoRootUrl, path,
+					SVNRevision.create(revision), SVNRevision.create(revision));
 			SVNInfo info = Manager.getInfo(url, SVNRevision.create(revision));
 			return info.getKind();
 		}
