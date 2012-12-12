@@ -1,3 +1,10 @@
+pagavcs-17-core (1.7.1-1karmic) karmic; urgency=low
+
+  *  fix issues with renamed branches
+  *  fix issues with some repo url
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 12 Dec 2012 21:22:24 +0100
+
 pagavcs-17-core (1.7.0-4karmic) karmic; urgency=low
 
   *  1.7.x series
