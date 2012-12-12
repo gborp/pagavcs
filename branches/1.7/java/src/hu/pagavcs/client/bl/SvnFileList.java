@@ -31,9 +31,16 @@ public class SvnFileList {
 			mgrSvn.dispose();
 		}
 
+		String basePath = baseURL.getPath();
+
 		target = new String[lstInfo.size()];
 		for (int i = 0; i < lstInfo.size(); i++) {
-			target[i] = SVNEncodingUtil.uriDecode(lstInfo.get(i).getPath());
+
+			String path = lstInfo.get(i).getPath();
+			if (!basePath.isEmpty() && path.startsWith(basePath)) {
+				path = path.substring(basePath.length());
+			}
+			target[i] = SVNEncodingUtil.uriDecode(path);
 		}
 	}
 
