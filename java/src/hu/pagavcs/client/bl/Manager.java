@@ -206,6 +206,20 @@ public class Manager {
 		return new File(sbResult.toString());
 	}
 
+	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl,
+			SVNRevision pegRevision, SVNRevision revision) throws SVNException,
+			PagaException {
+
+		SVNClientManager mgr = Manager.getSVNClientManager(path);
+		try {
+			SVNURL rootUrl = mgr.getWCClient()
+					.doInfo(path, pegRevision, revision).getRepositoryRootURL();
+			return rootUrl.appendPath(relativeUrl, true);
+		} finally {
+			mgr.dispose();
+		}
+	}
+
 	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl)
 			throws SVNException, PagaException {
 
@@ -446,8 +460,7 @@ public class Manager {
 			throws SVNException, PagaException {
 		SVNClientManager mgrSvn = getSVNClientManager(url);
 		try {
-			SVNInfo info = mgrSvn.getWCClient().doInfo(url, SVNRevision.HEAD,
-					revision);
+			SVNInfo info = mgrSvn.getWCClient().doInfo(url, revision, revision);
 			return info;
 		} finally {
 			mgrSvn.dispose();
