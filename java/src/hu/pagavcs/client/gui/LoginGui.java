@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -37,15 +39,15 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class LoginGui {
 
-	private EditField      sfUsername;
+	private EditField sfUsername;
 	private JPasswordField sfPassword;
-	private JButton        btnLogin;
-	private Object         logMeIn = new Object();
-	private Window         window;
-	private final String   predefinedUsername;
-	private final String   predefinedPassword;
-	private boolean        loginButtonPressed;
-	private JCheckBox      cbRemember;
+	private JButton btnLogin;
+	private Object logMeIn = new Object();
+	private Window window;
+	private final String predefinedUsername;
+	private final String predefinedPassword;
+	private boolean loginButtonPressed;
+	private JCheckBox cbRemember;
 
 	public LoginGui(String username, String password) {
 		this.predefinedUsername = username;
@@ -54,7 +56,8 @@ public class LoginGui {
 	}
 
 	public void display() {
-		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu, p:g,p", "p,2dlu,p,2dlu,p,2dlu,p"));
+		JPanel pnlMain = new JPanel(new FormLayout("r:p,2dlu, p:g,p",
+				"p,2dlu,p,2dlu,p,2dlu,p"));
 		CellConstraints cc = new CellConstraints();
 
 		cbRemember = new JCheckBox();
@@ -68,6 +71,17 @@ public class LoginGui {
 
 		Label lblPassword = new Label("Password:");
 		sfPassword = new JPasswordField(predefinedPassword, 20);
+
+		Label lblRemember = new Label("Remember");
+		lblRemember.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					cbRemember.setSelected(!cbRemember.isSelected());
+				}
+			}
+		});
+
 		btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
 
@@ -88,11 +102,12 @@ public class LoginGui {
 		pnlMain.add(lblPassword, cc.xywh(1, 3, 1, 1));
 		pnlMain.add(sfPassword, cc.xywh(3, 3, 2, 1));
 		pnlMain.add(cbRemember, cc.xywh(1, 5, 1, 1));
-		pnlMain.add(new Label("Remember"), cc.xywh(3, 5, 2, 1));
+		pnlMain.add(lblRemember, cc.xywh(3, 5, 2, 1));
 		pnlMain.add(btnLogin, cc.xywh(4, 7, 1, 1));
 
 		SettingsStore settings = Manager.getSettings();
-		cbRemember.setSelected(Boolean.TRUE.equals(settings.getRememberPassword()));
+		cbRemember.setSelected(Boolean.TRUE.equals(settings
+				.getRememberPassword()));
 
 		sfUsername.addKeyListener(new KeyAdapter() {
 
