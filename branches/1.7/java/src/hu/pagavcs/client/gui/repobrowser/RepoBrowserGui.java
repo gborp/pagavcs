@@ -532,6 +532,24 @@ public class RepoBrowserGui implements Working, Cancelable,
 		}
 	}
 
+	private class CopyAction extends ThreadAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public CopyAction(PopupupMouseListener popupupMouseListener) {
+			super("Copy", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-copy.png"));
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			RepoTreeNode li = popupupMouseListener.getSelected();
+
+			repoBrowser.copy(li.getSvnDirEntry().getURL().toDecodedString());
+
+		}
+	}
+
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppAll;
