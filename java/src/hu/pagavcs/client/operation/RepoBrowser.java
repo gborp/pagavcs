@@ -4,6 +4,7 @@ import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.gui.repobrowser.RepoBrowserGui;
+import hu.pagavcs.client.operation.CopyMoveRename.WorkingMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -169,5 +170,14 @@ public class RepoBrowser implements Cancelable {
 			throw svne;
 		}
 
+	}
+
+	public void copy(String fromUrl) throws SVNException, PagaException,
+			BackingStoreException {
+
+		CopyMoveRename copyMoveRename = new CopyMoveRename();
+		copyMoveRename.setWorkingMode(WorkingMode.REPOSITORY);
+		copyMoveRename.setFromUrl(fromUrl);
+		copyMoveRename.execute();
 	}
 }
