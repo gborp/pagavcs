@@ -1,3 +1,9 @@
+pagavcs-17-nautilus (1.7.2-1karmic) karmic; urgency=low
+
+  * reintroduce asynchron PagaVCS GUI command execution
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 26 Dec 2012 19:38:28 +0100
+
 pagavcs-17-nautilus (1.7.1-4karmic) karmic; urgency=low
 
   * Remove old 1.6 backward compatibility socket teardown.
