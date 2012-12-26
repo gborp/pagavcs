@@ -1,0 +1,60 @@
+#summary Version information, changelogs
+
+=1.7 series (aka pagavcs-17)=
+
+===1.7.2===
+  * reintroduce asynchronic behavior with nautilus on executing a command
+
+=1.6 series (aka pagavcs)
+
+===1.6.8===
+  * reintroduce asynchronic behavior with nautilus on executing a command
+===1.6.7===
+  * (log) fix exception on showing log on a file
+  * (log) scroll to the first file in scope in detail log table
+===1.6.6===
+  * (update) better conflict handling user experience
+  * (file managers) fix: added files' icon was "ignored" instead of "added"
+  * (context menu) Issue 78: add "add" operation to the context menu
+===1.6.5===
+  * (repo browser) add control+R and F5 quickkeys to refresh node
+  * (repo browser) add "show log" to the context menu on repo tree
+  * (repo browser) look'n'feel refinement
+===1.6.4===
+  * (thunar) Issue 156: Thunar: the first display of context menu is too slow
+===1.6.3===
+  * (thunar) Issue 154:	Thunar crash: on trying to display context menu
+===1.6.2===
+  * (log gui) fix slow "show changes", and it haven't displayed the progressbar immediately
+  * Issue 122: "when I select multiple lines of the log, it does not group by path"
+===1.6.1===
+  * Fix: No context menu icons in Nautilus on Ubuntu 11.10, 12.04 etc
+===1.6.0===
+  * _Thunar_ support separators
+  * _context menu_ add some separators
+  * _exception_ handle better the "no such revision" type exceptions
+  * _merge_ display warning dialog if nothing has been merged
+  * _merge_ select the [commit]'s url if coming from the [commit] by "merge too" function
+===1.5.11===
+  * Fix file-comparing function
+===1.5.10===
+  * Don't allow running as root user
+  * Don't attempt to stop pagavcs on package remove, because the new unix-socket infrastructure doesn't allow it
+===1.5.8===
+  * Fix issues with file and difference viewing
+===1.5.7===
+  * Fix: fresh installed pagavcs doesn't start (if it hasn't been installed before)
+===1.5.5===
+  * Thunar support (by installing *pagavcs-thunar* package); file-emblems are not supported by Thunar.
+===1.5.4===
+  * The order of command line options (-w, -c) can be any now
+  * New commands: exit and quit: they do the same as stop command
+===1.5.3===
+  * cli: if path argument is not present use the current directory
+===1.5.2===
+  * pagavcs-bigmem package is support by 1.5 too
+===The PagaVCS 1.5 series is out===
+Main features:  
+  * Without any configuration more than one user can use their own PagaVCS instance. In te 1.4.x series the communicaion port had to be tweaked in the config file. Now the internal communication is based on unix-domain-socket now instead of plain socket.
+  * No longer supported: 9.10 Karmic, 10.04 Lucid, 10.10 Maverick, 11.04 Natty. Use the 1.4.x series with them ([PagaVCS14Series See more])
+  * The Launchpad PPA repository is the only one to use for 1.5.x. The googlecode's repository is still available for 1.4.x.
