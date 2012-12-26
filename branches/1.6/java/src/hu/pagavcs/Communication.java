@@ -8,6 +8,7 @@ import hu.pagavcs.client.operation.Checkout;
 import hu.pagavcs.client.operation.Cleanup;
 import hu.pagavcs.client.operation.Commit;
 import hu.pagavcs.client.operation.CopyMoveRename;
+import hu.pagavcs.client.operation.CopyMoveRename.WorkingMode;
 import hu.pagavcs.client.operation.CreateRepo;
 import hu.pagavcs.client.operation.Delete;
 import hu.pagavcs.client.operation.ExportOperation;
@@ -45,7 +46,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -270,53 +270,45 @@ public class Communication {
 				}
 
 				boolean autoClose = false;
+				boolean async = false;
 				String command;
 				String arg = null;
 				List<String> lstArg = null;
-				if (line.startsWith("\"")) {
-
-					String[] elements = line.split("\\\" \\\"");
-					elements[0] = elements[0].substring(1);
-					int eLastIndex = elements.length - 1;
-					String eLast = elements[eLastIndex];
-					eLast = eLast.trim();
-					elements[eLastIndex] = eLast.substring(0,
-							eLast.length() - 1);
-
-					ArrayList<String> lstElements = new ArrayList<String>(
-							Arrays.asList(elements));
+				if (line.contains("-async") || line.contains("-a")
+						|| line.contains("-autoclose") || line.contains("-c")) {
 
 					boolean foundSwitch = true;
 
 					while (foundSwitch) {
 						foundSwitch = false;
-						if (lstElements.get(0).equals("-wait")
-								|| lstElements.get(0).equals("-w")) {
-							lstElements.remove(0);
+						if (line.startsWith("-async ")) {
+							line = line.substring("-async ".length());
+							async = true;
 							foundSwitch = true;
 						}
-						if (lstElements.get(0).equals("-autoclose")
-								|| lstElements.get(0).equals("-c")) {
+						if (line.startsWith("-a ")) {
+							line = line.substring("-a ".length());
+							async = true;
+							foundSwitch = true;
+						}
+						if (line.startsWith("-autoclose ")) {
+							line = line.substring("-autoclose ".length());
 							autoClose = true;
-							lstElements.remove(0);
+							foundSwitch = true;
+						}
+						if (line.startsWith("-c ")) {
+							line = line.substring("-c ".length());
+							autoClose = true;
 							foundSwitch = true;
 						}
 					}
-					command = lstElements.get(0);
-					lstElements.remove(0);
-					lstArg = lstElements;
-					if (lstElements.size() > 0) {
-						arg = lstArg.get(0);
-					}
-				} else {
-					int commandEndIndex = line.indexOf(' ');
-					command = line.substring(
-							0,
-							commandEndIndex > -1 ? commandEndIndex : line
-									.length());
-					if (commandEndIndex > -1) {
-						arg = line.substring(commandEndIndex + 1);
-					}
+				}
+
+				int commandEndIndex = line.indexOf(' ');
+				command = line.substring(0,
+						commandEndIndex > -1 ? commandEndIndex : line.length());
+				if (commandEndIndex > -1) {
+					arg = line.substring(commandEndIndex + 1);
 				}
 
 				if (command.equals("getfileinfo")) {
@@ -382,7 +374,7 @@ public class Communication {
 						outComm(socket, getMenuItems(lstArg));
 					} else {
 						new Thread(new ProcessInput(command, lstArg, socket,
-								autoClose), line).start();
+								autoClose, async), line).start();
 					}
 				}
 
@@ -586,17 +578,27 @@ public class Communication {
 		private final List<String> lstArg;
 		private final boolean autoClose;
 		private final UnixSocket socket;
+		private boolean needFeedbackOnFinishing;
 
 		public ProcessInput(String command, List<String> lstArg,
-				UnixSocket socket, boolean autoClose) {
+				UnixSocket socket, boolean autoClose, boolean async) {
 			this.command = command;
 			this.lstArg = lstArg;
 			this.socket = socket;
 			this.autoClose = autoClose;
+			this.needFeedbackOnFinishing = true;
+			if (async) {
+				needFeedbackOnFinishing = false;
+				try {
+					outComm(socket, "Processing.\n");
+				} catch (IOException ex) {
+					Manager.handle(ex);
+				}
+			}
 		}
 
 		public void run() {
-			boolean needPrintingFinished = true;
+
 			try {
 				if (COMMAND_ADD.equals(command)) {
 					AddOperation addOperation = new AddOperation(lstArg);
@@ -683,9 +685,10 @@ public class Communication {
 					}
 				} else if (COMMAND_COPYMOVERENAME.equals(command)) {
 					for (String path : lstArg) {
-						CopyMoveRename copyMoveReaname = new CopyMoveRename(
-								path);
-						copyMoveReaname.execute();
+						CopyMoveRename copyMoveRename = new CopyMoveRename();
+						copyMoveRename.setWorkingMode(WorkingMode.WORKING_COPY);
+						copyMoveRename.setFromPath(path);
+						copyMoveRename.execute();
 					}
 				} else if (COMMAND_DELETE.equals(command)) {
 					Delete delete = new Delete(lstArg);
@@ -741,13 +744,13 @@ public class Communication {
 					// do nothing
 				} else {
 					outComm(socket, "Error! Unimplemented command: " + command);
-					needPrintingFinished = false;
+					needFeedbackOnFinishing = false;
 				}
 			} catch (Exception ex) {
 				Manager.handle(ex);
 			} finally {
 				try {
-					if (needPrintingFinished) {
+					if (needFeedbackOnFinishing) {
 						outComm(socket, "Finished.\n");
 					}
 				} catch (IOException ex2) {

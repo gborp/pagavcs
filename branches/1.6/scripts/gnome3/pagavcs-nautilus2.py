@@ -27,6 +27,7 @@ import socket
 import threading
 import urllib
 import socket
+from threading import Thread
 
 
 EXECUTABLE = '/usr/bin/pagavcs'
@@ -41,6 +42,7 @@ def sendRequest(request):
 		return ""
 
 	try:
+		#print ("DEBUG requesting client socket")
 		clientsocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		clientsocket.settimeout(60)
 		clientsocket.connect(os.getenv("HOME")+"/.pagavcs/socket")
@@ -96,7 +98,9 @@ class PagaVCS(GObject.GObject, Nautilus.MenuProvider):
 		pass
 	
 	def _do_command(self, menu, strFiles, command):
-		sendRequest(command+' '+strFiles)
+		# -a for a(sync) operation
+		arg = "-a "+command+' '+strFiles
+		sendRequest(arg)
 	
 	def _get_all_items(self, toolbar, strFiles):
 		lstItems = []
