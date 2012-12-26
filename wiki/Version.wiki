@@ -5,7 +5,7 @@
 ===1.7.2===
   * reintroduce asynchronic behavior with nautilus on executing a command
 
-=1.6 series (aka pagavcs)
+=1.6 series (aka pagavcs)=
 
 ===1.6.8===
   * reintroduce asynchronic behavior with nautilus on executing a command
