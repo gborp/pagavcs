@@ -36,16 +36,30 @@ public class CopyMoveRename implements Cancelable {
 		INIT, START, WORKING, COMPLETED, FAILED, CANCEL
 	}
 
-	private String            path;
-	private CopyMoveRenameGui gui;
-	private boolean           autoClose;
-	private boolean           cancel;
-
-	public CopyMoveRename(String path) throws BackingStoreException, SVNException {
-		this.path = path;
+	public enum WorkingMode {
+		WORKING_COPY, REPOSITORY
 	}
 
-	public void execute() throws SVNException, BackingStoreException, PagaException {
+	private String path;
+	private String fromUrl;
+	private CopyMoveRenameGui gui;
+	private boolean autoClose;
+	private boolean cancel;
+	private WorkingMode workingMode;
+
+	public CopyMoveRename() {
+	}
+
+	public void setFromPath(String fromPath) {
+		this.path = fromPath;
+	}
+
+	public void setFromUrl(String fromUrl) {
+		this.fromUrl = fromUrl;
+	}
+
+	public void execute() throws SVNException, BackingStoreException,
+			PagaException {
 		gui = new CopyMoveRenameGui(this);
 		gui.display();
 		gui.setStatus(CopyMoveRenameStatus.INIT);
@@ -95,11 +109,15 @@ public class CopyMoveRename implements Cancelable {
 		return cancel;
 	}
 
-	public void copyMoveRename(String oldPath, String newPath, boolean copy) throws SVNException {
-		SVNClientManager clientMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
+	public void copyMoveRename(String oldPath, String newPath, boolean copy)
+			throws SVNException {
+		SVNClientManager clientMgr = Manager
+				.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNCopyClient copyClient = clientMgr.getCopyClient();
-			SVNCopySource[] source = new SVNCopySource[] { new SVNCopySource(SVNRevision.UNDEFINED, SVNRevision.UNDEFINED, new File(oldPath)) };
+			SVNCopySource[] source = new SVNCopySource[] { new SVNCopySource(
+					SVNRevision.UNDEFINED, SVNRevision.UNDEFINED, new File(
+							oldPath)) };
 			File dest = new File(newPath);
 			copyClient.doCopy(source, dest, !copy, true, true);
 		} finally {
@@ -110,4 +128,13 @@ public class CopyMoveRename implements Cancelable {
 	public void storeUrlForHistory(String url) {
 		SvnHelper.storeUrlForHistory(url);
 	}
+
+	public WorkingMode getWorkingMode() {
+		return workingMode;
+	}
+
+	public void setWorkingMode(WorkingMode workingMode) {
+		this.workingMode = workingMode;
+	}
+
 }
