@@ -8,7 +8,7 @@
 =1.6 series (aka pagavcs)=
 
 ===1.6.8===
-  * reintroduce asynchronic behavior with nautilus on executing a command
+  * reintroduce asynchronic behavior with nautilus on executing a command (backported from 1.7)
 ===1.6.7===
   * (log) fix exception on showing log on a file
   * (log) scroll to the first file in scope in detail log table
