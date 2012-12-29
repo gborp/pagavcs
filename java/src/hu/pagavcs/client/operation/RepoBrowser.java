@@ -18,6 +18,7 @@ import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
@@ -50,18 +51,18 @@ public class RepoBrowser implements Cancelable {
 		this.path = path;
 	}
 
+	public SVNClientManager getSvnClientManager() throws Exception {
+		SVNClientManager mgrSvn = Manager.getSVNClientManager(new File(path));
+		return mgrSvn;
+	}
+
 	public void execute() throws Exception {
 		gui = new RepoBrowserGui(this);
 		gui.display();
 		gui.setStatus(RepoBrowserStatus.INIT);
 
 		gui.setStatus(RepoBrowserStatus.START);
-		SVNClientManager mgrSvn = null;
-		try {
-			mgrSvn = Manager.getSVNClientManager(new File(path));
-		} catch (Exception ex) {
-			throw ex;
-		}
+		SVNClientManager mgrSvn = getSvnClientManager();
 
 		if (mgrSvn != null) {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
@@ -179,5 +180,10 @@ public class RepoBrowser implements Cancelable {
 		copyMoveRename.setWorkingMode(WorkingMode.REPOSITORY);
 		copyMoveRename.setFromUrl(fromUrl);
 		copyMoveRename.execute();
+	}
+
+	public void delete(SVNURL url, String message) throws Exception {
+		SVNCommitClient commitClient = getSvnClientManager().getCommitClient();
+		commitClient.doDelete(new SVNURL[] { url }, message);
 	}
 }
