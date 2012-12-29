@@ -1,3 +1,10 @@
+pagavcs-17-core (1.7.3-1karmic) karmic; urgency=low
+
+  * Issue 161 (repo browser) add copy/delete operation
+  * fix cli argument passing
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 29 Dec 2012 17:35:28 +0100
+
 pagavcs-17-core (1.7.2-1karmic) karmic; urgency=low
 
   * re/introduce -async/-a -autoclose/-c switches
