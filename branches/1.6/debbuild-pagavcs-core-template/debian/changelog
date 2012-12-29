@@ -1,4 +1,4 @@
-pagavcs-17-core (1.6.9-1karmic) karmic; urgency=low
+pagavcs-core (1.6.9-1karmic) karmic; urgency=low
 
   * Issue 161 (repo browser) add copy/delete operation
   * fix cli argument passing
