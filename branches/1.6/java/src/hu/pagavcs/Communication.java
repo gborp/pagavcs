@@ -281,23 +281,23 @@ public class Communication {
 
 					while (foundSwitch) {
 						foundSwitch = false;
-						if (line.startsWith("-async ")) {
-							line = line.substring("-async ".length());
+						if (isLineStartsWith(line, "-async")) {
+							line = cropLineWithArg(line, "-async");
 							async = true;
 							foundSwitch = true;
 						}
-						if (line.startsWith("-a ")) {
-							line = line.substring("-a ".length());
+						if (isLineStartsWith(line, "-a")) {
+							line = cropLineWithArg(line, "-a");
 							async = true;
 							foundSwitch = true;
 						}
-						if (line.startsWith("-autoclose ")) {
-							line = line.substring("-autoclose ".length());
+						if (isLineStartsWith(line, "-autoclose")) {
+							line = cropLineWithArg(line, "-autoclose");
 							autoClose = true;
 							foundSwitch = true;
 						}
-						if (line.startsWith("-c ")) {
-							line = line.substring("-c ".length());
+						if (isLineStartsWith(line, "-c")) {
+							line = cropLineWithArg(line, "-c");
 							autoClose = true;
 							foundSwitch = true;
 						}
@@ -309,6 +309,10 @@ public class Communication {
 						commandEndIndex > -1 ? commandEndIndex : line.length());
 				if (commandEndIndex > -1) {
 					arg = line.substring(commandEndIndex + 1);
+				}
+
+				if (command.startsWith("\"")) {
+					command = command.substring(1, command.length() - 1);
 				}
 
 				if (command.equals("getfileinfo")) {
@@ -387,6 +391,19 @@ public class Communication {
 			}
 		}
 		new File(UNIX_SOCKET).delete();
+	}
+
+	private boolean isLineStartsWith(String line, String arg) {
+		return line.startsWith(arg + " ")
+				|| line.startsWith("\"" + arg + "\" ");
+	}
+
+	private String cropLineWithArg(String line, String arg) {
+		if (line.startsWith(arg + " ")) {
+			return line.substring((arg + " ").length());
+		} else {
+			return line.substring(("\"" + arg + "\" ").length());
+		}
 	}
 
 	private void makeMenuItem(StringBuilder sb, String label, String tooltip,

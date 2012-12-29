@@ -14,6 +14,7 @@ import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
 import hu.pagavcs.client.gui.platform.MessagePane;
+import hu.pagavcs.client.gui.platform.MessagePane.OPTIONS;
 import hu.pagavcs.client.gui.platform.ProgressBar;
 import hu.pagavcs.client.gui.platform.Table;
 import hu.pagavcs.client.gui.platform.TableModel;
@@ -58,7 +59,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -619,12 +619,12 @@ public class CommitGui implements Working, Refreshable {
 
 		boolean addRecursively = false;
 		if (hasDirectory) {
-			int answer = JOptionPane.showConfirmDialog(frame,
+			OPTIONS answer = MessagePane.executeConfirmDialog(frame,
 					"Do you want to add recursively?");
-			if (answer == JOptionPane.CANCEL_OPTION) {
+			if (answer == OPTIONS.CANCEL) {
 				return false;
 			} else {
-				if (answer == JOptionPane.YES_OPTION) {
+				if (answer == OPTIONS.OK) {
 					addRecursively = true;
 				}
 			}
