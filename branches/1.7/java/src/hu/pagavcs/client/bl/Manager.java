@@ -50,6 +50,7 @@ import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.internal.wc.SVNFileUtil;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminArea;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNLog;
+import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.wc.ISVNConflictHandler;
 import org.tmatesoft.svn.core.wc.ISVNMerger;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
@@ -315,8 +316,9 @@ public class Manager {
 			result = SVNClientManager.newInstance(null, authManager);
 			reTryLogin = false;
 			try {
-				result.getRepositoryPool()
-						.createRepository(repositoryUrl, true).testConnection();
+				SVNRepository svnRepo = result.getRepositoryPool()
+						.createRepository(repositoryUrl, true);
+				svnRepo.testConnection();
 			} catch (SVNException ex) {
 				ex.printStackTrace();
 

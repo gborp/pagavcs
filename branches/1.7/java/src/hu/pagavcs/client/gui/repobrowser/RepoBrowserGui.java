@@ -13,6 +13,8 @@ import hu.pagavcs.client.gui.platform.EditField;
 import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
+import hu.pagavcs.client.gui.platform.MessagePane;
+import hu.pagavcs.client.gui.platform.MessagePane.OPTIONS;
 import hu.pagavcs.client.gui.platform.Tree;
 import hu.pagavcs.client.operation.Checkout;
 import hu.pagavcs.client.operation.RepoBrowser;
@@ -56,6 +58,7 @@ import javax.swing.tree.TreePath;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNURL;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -174,6 +177,10 @@ public class RepoBrowserGui implements Working, Cancelable,
 
 	private RepoTreeNode getSelectedRepoTreeNode() {
 		TreePath path = tree.getSelectionPath();
+
+		if (path == null) {
+			return null;
+		}
 
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
 				.getLastPathComponent();
@@ -445,14 +452,15 @@ public class RepoBrowserGui implements Working, Cancelable,
 				protected void process() throws Exception {
 					TreePath path = tree.getSelectionPath();
 					RepoTreeNode li = getSelectedRepoTreeNode();
-					li.setLoaded(false);
-					tree.collapsePath(path);
-					tree.expandPath(path);
+					if (li != null) {
+						li.setLoaded(false);
+						tree.collapsePath(path);
+						tree.expandPath(path);
 
-					((DefaultTreeModel) tree.getModel())
-							.nodeStructureChanged((javax.swing.tree.TreeNode) path
-									.getLastPathComponent());
-
+						((DefaultTreeModel) tree.getModel())
+								.nodeStructureChanged((javax.swing.tree.TreeNode) path
+										.getLastPathComponent());
+					}
 				}
 			}.run();
 
@@ -532,6 +540,46 @@ public class RepoBrowserGui implements Working, Cancelable,
 		}
 	}
 
+	private class DeleteAction extends AbstractAction {
+
+		private final PopupupMouseListener popupupMouseListener;
+
+		public DeleteAction(PopupupMouseListener popupupMouseListener) {
+			super("Delete", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-delete.png"));
+			this.popupupMouseListener = popupupMouseListener;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			RepoTreeNode li = popupupMouseListener.getSelected();
+			final SVNURL svnUrl = li.getSvnDirEntry().getURL();
+			String url = svnUrl.toDecodedString();
+
+			OPTIONS answer = MessagePane.executeConfirmDialog(frame,
+					"Are you sure you want to delete <" + url + ">?");
+			if (answer == OPTIONS.OK) {
+				final String message = MessagePane.executeInputDialog(frame,
+						"Delete message", "Commit message for the deletion?");
+				if (message == null || message.trim().isEmpty()) {
+					MessagePane.showInfo(frame, "Cancelled",
+							"Deletion is cancelled.");
+				} else {
+					new Thread(new Runnable() {
+						public void run() {
+							try {
+								repoBrowser.delete(svnUrl, message);
+								rootUrl = null;
+								new UrlChangedAction().actionProcess(null);
+							} catch (Exception ex) {
+								Manager.handle(ex);
+							}
+						}
+					}).start();
+				}
+			}
+		}
+	}
+
 	private class CopyAction extends ThreadAction {
 
 		private final PopupupMouseListener popupupMouseListener;
@@ -575,6 +623,7 @@ public class RepoBrowserGui implements Working, Cancelable,
 				}
 			}));
 			ppAll.add(new CreateFolderAction(this));
+			ppAll.add(new DeleteAction(this));
 		}
 
 		public RepoTreeNode getSelected() {
