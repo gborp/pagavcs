@@ -1,3 +1,9 @@
+pagavcs-17-core-libs (1.7.1-3karmic) karmic; urgency=low
+
+  *  SVNkit 1.7.9
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 23 Jun 2013 19:15:35 +0200
+
 pagavcs-17-core-libs (1.7.0-3karmic) karmic; urgency=low
 
   *  1.7.x series
