@@ -2,6 +2,7 @@ package hu.pagavcs.client.gui;
 
 import hu.pagavcs.client.gui.platform.ListItem;
 
+import java.awt.Color;
 import java.util.Date;
 
 /**
@@ -19,10 +20,13 @@ import java.util.Date;
  */
 public class BlameListItem implements ListItem {
 
-	private long   revision;
+	private static final Color[] colors = new Color[] { Color.BLUE,
+			Color.DARK_GRAY, Color.DARK_GRAY, Color.GRAY, Color.BLACK };
+
+	private long revision;
 	private String author;
-	private Date   date;
-	private int    lineNumber; ;
+	private Date date;
+	private int lineNumber;;
 	private String line;
 
 	public String[] getColumnNames() {
@@ -52,7 +56,8 @@ public class BlameListItem implements ListItem {
 		return false;
 	}
 
-	public void setValue(int index, Object value) {}
+	public void setValue(int index, Object value) {
+	}
 
 	public long getRevision() {
 		return this.revision;
@@ -92,6 +97,10 @@ public class BlameListItem implements ListItem {
 
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
+	}
+
+	public static Color getForegroundColor(int column) {
+		return colors[column];
 	}
 
 }
