@@ -46,18 +46,18 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class BlameGui implements Working {
 
-	private Table<BlameListItem>      tblBlame;
+	private Table<BlameListItem> tblBlame;
 	private TableModel<BlameListItem> tableModel;
-	private final BlameOperation      blameOperation;
-	private JButton                   btnBlame;
-	private JButton                   btnStop;
-	private JLabel                    lblStatus;
-	private EditField                 sfRepo;
-	private EditField                 sfRevision;
+	private final BlameOperation blameOperation;
+	private JButton btnBlame;
+	private JButton btnStop;
+	private JLabel lblStatus;
+	private EditField sfRepo;
+	private EditField sfRevision;
 	// TODO use Progress, btnStop make it stop too
-	private ProgressBar               prgBusy;
-	private String                    file;
-	private Frame                     frame;
+	private ProgressBar prgBusy;
+	private String file;
+	private Frame frame;
 
 	public BlameGui(BlameOperation blameOperation) {
 		this.blameOperation = blameOperation;
@@ -65,7 +65,8 @@ public class BlameGui implements Working {
 
 	public void display() {
 
-		FormLayout layout = new FormLayout("p, 2dlu,p:g,2dlu, p", "p,2dlu,p,2dlu,fill:4dlu:g,2dlu,p");
+		FormLayout layout = new FormLayout("p, 2dlu,p:g,2dlu, p",
+				"p,2dlu,p,2dlu,fill:4dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(layout);
 		CellConstraints cc = new CellConstraints();
 
@@ -73,6 +74,7 @@ public class BlameGui implements Working {
 
 		tblBlame = new Table<BlameListItem>(tableModel);
 		tblBlame.addMouseListener(new PopupupMouseListener());
+		new BlameCellRenderer(tblBlame);
 		JScrollPane scrollPane = new JScrollPane(tblBlame);
 
 		btnStop = new JButton("Stop");
@@ -106,10 +108,13 @@ public class BlameGui implements Working {
 						public void run() {
 							try {
 								try {
-									final List<BlameListItem> lstBlame = blameOperation.doBlame(blameOperation.getPath(), sfRevision.getText());
+									final List<BlameListItem> lstBlame = blameOperation
+											.doBlame(blameOperation.getPath(),
+													sfRevision.getText());
 									new OnSwing() {
 
-										protected void process() throws Exception {
+										protected void process()
+												throws Exception {
 											setStatus(GeneralStatus.COMPLETED);
 											tableModel.clear();
 											tableModel.addLines(lstBlame);
@@ -120,7 +125,8 @@ public class BlameGui implements Working {
 								} catch (SVNCancelException ex) {
 									new OnSwing() {
 
-										protected void process() throws Exception {
+										protected void process()
+												throws Exception {
 											btnStop.setEnabled(true);
 											prgBusy.stopProgress();
 										}
@@ -159,7 +165,8 @@ public class BlameGui implements Working {
 		pnlMain.add(prgBusy, cc.xywh(1, 7, 3, 1));
 		pnlMain.add(btnStop, cc.xywh(5, 7, 1, 1));
 
-		tblBlame.showMessage("Click the \"Blame\" button", Manager.getIconInformation());
+		tblBlame.showMessage("Click the \"Blame\" button",
+				Manager.getIconInformation());
 
 		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
 
