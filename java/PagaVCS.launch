@@ -8,5 +8,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="hu.pagavcs.Main"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Pagavcs-1.7"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dsvnkit.http.sslProtocols=&quot;SSLv2Hello,SSLv3&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dsvnkit.http.sslProtocols=&quot;SSLv2Hello,SSLv3&quot;&#10;&#10;-Xmx99m -XX:MaxPermSize=32M -XX:PermSize=32M &#10;-XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 &#10;-Djava.library.path=/usr/lib/jni"/>
 </launchConfiguration>

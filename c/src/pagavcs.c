@@ -102,7 +102,7 @@ if(	argc == 1 || strcmp(argv[1], "help") == 0
 		printf("\n");
 		printf("Example:\n");
 		printf(
-		"  pagavcs update \"/home/johnny/big-project\" \"/home/johnny/mega-project\"\n");
+		"  pagavcs update \"/home/john/project-x\" \"/home/john/project-future\"\n");
 		return 0;
 	}
 
