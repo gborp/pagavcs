@@ -1,3 +1,9 @@
+pagavcs-17-core (1.7.4-1karmic) karmic; urgency=low
+
+  * Blame coloring
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 23 Jun 2013 20:31:05 +0200
+
 pagavcs-17-core (1.7.3-1karmic) karmic; urgency=low
 
   * Issue 161 (repo browser) add copy/delete operation
