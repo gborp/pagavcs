@@ -2,7 +2,7 @@
 
 rm -f -r ../temp-build
 
-for dist in oneiric precise
+for dist in precise quantal raring
 do
 	./build-deb.sh $dist
 done
