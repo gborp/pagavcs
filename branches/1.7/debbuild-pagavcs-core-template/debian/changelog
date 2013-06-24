@@ -1,3 +1,9 @@
+pagavcs-17-core (1.7.5-1karmic) karmic; urgency=low
+
+  * Add functio to Blame: Blame before
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 23 Jun 2013 21:31:05 +0200
+
 pagavcs-17-core (1.7.4-1karmic) karmic; urgency=low
 
   * Blame coloring

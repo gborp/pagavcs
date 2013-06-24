@@ -20,8 +20,8 @@ import java.util.Date;
  */
 public class BlameListItem implements ListItem {
 
-	private static final Color[] colors = new Color[] { Color.BLUE,
-			Color.DARK_GRAY, Color.DARK_GRAY, Color.GRAY, Color.BLACK };
+	private static final Color[] colors = new Color[] { Color.RED,
+			Color.DARK_GRAY, Color.DARK_GRAY, Color.BLUE, Color.BLACK };
 
 	private long revision;
 	private String author;
