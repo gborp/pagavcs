@@ -38,6 +38,17 @@ public abstract class OnSwing {
 
 	protected abstract void process() throws Exception;
 
+	public static void execute(final Runnable runnable) throws Exception {
+		new OnSwing() {
+
+			@Override
+			protected void process() throws Exception {
+				runnable.run();
+			}
+
+		}.run();
+	}
+
 	private class Runner implements Runnable {
 
 		public void run() {

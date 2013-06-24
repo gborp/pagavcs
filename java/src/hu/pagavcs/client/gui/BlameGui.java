@@ -13,6 +13,7 @@ import hu.pagavcs.client.gui.platform.TableModel;
 import hu.pagavcs.client.operation.BlameOperation;
 import hu.pagavcs.client.operation.GeneralStatus;
 import hu.pagavcs.client.operation.Log;
+import hu.pagavcs.common.ResourceBundleAccessor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -168,7 +169,8 @@ public class BlameGui implements Working {
 		tblBlame.showMessage("Click the \"Blame\" button",
 				Manager.getIconInformation());
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame");
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Blame",
+				"other-app-icon.png");
 
 	}
 
@@ -189,7 +191,8 @@ public class BlameGui implements Working {
 	private class ShowLog extends ThreadAction {
 
 		public ShowLog() {
-			super("Show log");
+			super("Show log", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-log.png"));
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
@@ -201,6 +204,31 @@ public class BlameGui implements Working {
 		}
 	}
 
+	private class BlameBefore extends ThreadAction {
+
+		public BlameBefore() {
+			super("Blame before", ResourceBundleAccessor
+					.getSmallImage("actions/pagavcs-blame.png"));
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			OnSwing.execute(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						sfRevision.setText(Long.toString(tblBlame
+								.getSelectedItem().getRevision() - 1));
+						btnBlame.doClick(500);
+					} catch (Exception ex) {
+						Manager.handle(ex);
+					}
+				}
+
+			});
+		}
+	}
+
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppModified;
@@ -208,10 +236,18 @@ public class BlameGui implements Working {
 		public PopupupMouseListener() {
 			ppModified = new JPopupMenu();
 			ppModified.add(new ShowLog());
+			ppModified.add(new BlameBefore());
 		}
 
 		private void showPopup(MouseEvent e) {
 			if (e.isPopupTrigger()) {
+				int r = tblBlame.rowAtPoint(e.getPoint());
+				if (r >= 0 && r < tblBlame.getRowCount()) {
+					tblBlame.setRowSelectionInterval(r, r);
+				} else {
+					tblBlame.clearSelection();
+				}
+
 				JPopupMenu ppVisible = ppModified;
 				if (ppVisible != null) {
 					ppVisible.setInvoker(tblBlame);
