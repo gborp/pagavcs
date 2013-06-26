@@ -382,7 +382,7 @@ public class Commit {
 	private class StatusEventHandler implements ISVNStatusHandler {
 
 		public void handleStatus(SVNStatus status) throws SVNException {
-			SVNStatusType svnContentStatus = status.getContentsStatus();
+			SVNStatusType svnContentStatus = status.getNodeStatus();
 			SVNStatusType svnPropertiesStatus = status.getPropertiesStatus();
 			ContentStatus contentStatus = null;
 
