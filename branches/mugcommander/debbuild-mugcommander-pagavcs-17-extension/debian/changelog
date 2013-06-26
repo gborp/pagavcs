@@ -1,0 +1,7 @@
+mugcommander-pagavcs-17-extensions (1.7.0-1karmic) karmic; urgency=low
+
+  [ Gábor Pápai ]
+  * initial PagaVCS-17 support
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Wed, 26 Jun 2013 19:47:22 +0200
+

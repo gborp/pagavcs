@@ -1,0 +1,13 @@
+Source: mugcommander-pagavcs-17-extensions
+Section: devel
+Priority: optional
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Build-Depends: debhelper (>= 5), sun-java6-jdk | default-jdk
+Standards-Version: 3.8.3
+Homepage: http://pagavcs.googlecode.com
+
+Package: mugcommander-pagavcs-17-extensions
+Architecture: all
+Depends: sun-java6-jre | default-jre, pagavcs-17-cli, mugcommander (>= 1.0.9), libunixsocket-java
+Description: PagaVCS-17 extension for mugCommander
+ It provides the ability to interact with PagaVCS-17 from mugCommander.
