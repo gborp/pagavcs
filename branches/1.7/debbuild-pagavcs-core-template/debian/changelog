@@ -1,4 +1,4 @@
-pagavcs-17-core (1.7.6-1karmic) karmic; urgency=low
+pagavcs-17-core (1.7.6-3karmic) karmic; urgency=low
 
   * Fix commit function recognizing unversioned directories
 
