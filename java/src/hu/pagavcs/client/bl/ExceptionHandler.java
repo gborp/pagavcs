@@ -53,6 +53,7 @@ public class ExceptionHandler implements
 		}
 
 		try {
+			LogHelper.GENERAL.error("Exception occurs", ex);
 			new OnSwing() {
 
 				@Override
