@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# stop running instance
-echo stop > /dev/tcp/localhost/12905 2> /dev/null
-
-# no error
-exit 0
