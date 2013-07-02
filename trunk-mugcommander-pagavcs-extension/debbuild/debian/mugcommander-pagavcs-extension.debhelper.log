@@ -1,5 +1,0 @@
-dh_install
-dh_installchangelogs
-dh_compress
-dh_fixperms
-dh_installdeb
