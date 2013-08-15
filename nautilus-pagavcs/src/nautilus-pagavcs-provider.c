@@ -28,7 +28,7 @@
 
 #include <string.h>
 
-#include <gstring.h>
+#include <glib/gstring.h>
 
 static void nautilus_pagavcs_instance_init(NautilusPagavcs* img);
 static void nautilus_pagavcs_class_init(NautilusPagavcsClass* class);
