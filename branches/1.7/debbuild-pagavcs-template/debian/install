@@ -1,0 +1,3 @@
+src/pagavcs  /usr/bin
+debian/input/pagavcs-libs.jar /usr/share/pagavcs/bin
+
