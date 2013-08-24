@@ -38,13 +38,7 @@ void connectServer(int socket_fd, struct sockaddr_un address,
 			char command[2048];
 
 			strcpy(command, "nohup java -Xms16m");
-
-			if (access("usr/share/pagavcs/data/pagavcs-bigmem", F_OK) != -1) {
-				strcat(command, " -Xmx199m -XX:MaxPermSize=64M");
-			} else {
-				strcat(command, " -Xmx99m -XX:MaxPermSize=32M");
-			}
-
+			strcat(command, " -Xmx256m -XX:MaxPermSize=128M");
 			strcat(command, " -XX:PermSize=32M");
 			strcat(command, " -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20");
 			strcat(command, " -Djava.library.path=/usr/lib/jni -jar");
