@@ -30,15 +30,18 @@ static GType type_list[1];
 
 void nautilus_module_initialize(GTypeModule *module) {
 
+	g_print("Initializing Nautilus-PagaVCS extension\n");
+
+	nautilus_pagavcs_register_type (module);
 	type_list[0] = NAUTILUS_TYPE_PAGAVCS;
 
 }
 
 void nautilus_module_shutdown(void) {
+	g_print("Shutting down Nautilus-PagaVCS extension\n");
 }
 
 void nautilus_module_list_types(const GType **types, int *num_types) {
-
 	*types = type_list;
 	*num_types = G_N_ELEMENTS(type_list);
 }
