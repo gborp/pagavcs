@@ -37,6 +37,10 @@ clean:
 	dh_testroot
 	rm -f build-stamp
 	
+	aclocal
+	automake --add-missing
+	./configure	
+	$(MAKE) CFLAGS="$(CFLAGS)"
 	# Add here commands to clean up after the build process.
 	[ ! -f Makefile ] || $(MAKE) distclean
 	
