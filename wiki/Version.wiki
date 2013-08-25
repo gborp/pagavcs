@@ -2,6 +2,11 @@
 
 =1.7 series (aka pagavcs-17)=
 
+
+===1.7.20===
+  * Subversion 1.8 server support (1.8 working copy is not yet supported)
+  * using SVNkit 1.7.10
+
 ===1.7.3===
   * Issue 161 (repo browser) add copy/delete operation
   * fix cli argument passing
