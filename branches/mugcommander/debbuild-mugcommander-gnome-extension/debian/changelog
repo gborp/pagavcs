@@ -1,4 +1,4 @@
-mugcommander-gnome-extensions (1.0.4-3karmic) karmic; urgency=low
+mugcommander-gnome-extensions (1.0.4-4karmic) karmic; urgency=low
 
   [ Gábor Pápai ]
   * Change the deb packaging method
