@@ -33,5 +33,5 @@ sed -i "s/karmic/$DIST/g" $WDIR/debian/changelog
 mkdir $WDIR/debian/input
 mkdir $WDIR/debian/input/cfg
 
-cp ../mugcommander-pagavcs-extension/java/dist/mugcommander-pagavcs-17-extensions.jar $WDIR/debian/input/
-cp ../mugcommander-pagavcs-extension/mugcommander-config/* $WDIR/debian/input/cfg/
+cp ../mugcommander-pagavcs-17-extension/java/dist/mugcommander-pagavcs-17-extensions.jar $WDIR/debian/input/
+cp ../mugcommander-pagavcs-17-extension/mugcommander-config/* $WDIR/debian/input/cfg/
