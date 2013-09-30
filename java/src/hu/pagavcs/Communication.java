@@ -606,11 +606,6 @@ public class Communication {
 			this.needFeedbackOnFinishing = true;
 			if (async) {
 				needFeedbackOnFinishing = false;
-				try {
-					outComm(socket, "Processing.\n");
-				} catch (IOException ex) {
-					Manager.handle(ex);
-				}
 			}
 		}
 
