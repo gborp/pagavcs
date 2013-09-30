@@ -1,7 +1,7 @@
-pagavcs-17 (1.7.20-2karmic) karmic; urgency=low
+pagavcs-17 (1.7.21-1karmic) karmic; urgency=low
 
   *  upgrade to SVNkit 1.7.10 (svn 1.8 server support)
   *  pagavcs-17 has fewer packages now
 
- -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 24 Aug 2013 20:57:25 +0200
+ -- Gábor Pápai <gabor.papai@gmail.com>  Sat, 29 Aug 2013 20:57:25 +0200
 
