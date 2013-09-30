@@ -35,7 +35,7 @@ SEPARATOR = '-'
 server_creating = False
 
 
-def sendRequest(request):
+def sendRequest(request, hasReturnValue):
 	global server_creating
 	if (server_creating):
 		#print ("DEBUG server is under creating")
@@ -55,15 +55,17 @@ def sendRequest(request):
 		#traceback.print_exc(file=sys.stdout)
 		return ""
 
-	data = ""
-	try:
-		data = clientsocket.recv(8192)
-	except (socket.timeout, socket.error):
-		#print ("DEBUG comm timeout or error")
-		#traceback.print_exc(file=sys.stdout)
-		return  ""
+	if (not hasReturnValue):
+		data = ""
+		try:
+			data = clientsocket.recv(8192)
+		except (socket.timeout, socket.error):
+			#print ("DEBUG comm timeout or error")
+			#traceback.print_exc(file=sys.stdout)
+			return  ""
+		clientsocket.close()
+		return data
 	clientsocket.close()
-	return data
 
 
 class StartPagaVCSServerThread (threading.Thread):
@@ -88,7 +90,7 @@ class EmblemExtensionSignature(GObject.GObject, Nautilus.InfoProvider):
 
 	def update_file_info (self, file):
 		filename = urllib.unquote(file.get_uri()[7:])
-		data = sendRequest('getfileinfo '+filename)
+		data = sendRequest('getfileinfo '+filename, False)
 		if (data != ''):
 			file.add_emblem (data)
 
@@ -100,7 +102,7 @@ class PagaVCS(GObject.GObject, Nautilus.MenuProvider):
 	def _do_command(self, menu, strFiles, command):
 		# -a for a(sync) operation
 		arg = "-a "+command+' '+strFiles
-		sendRequest(arg)
+		sendRequest(arg, True)
 	
 	def _get_all_items(self, toolbar, strFiles):
 		lstItems = []
@@ -114,7 +116,7 @@ class PagaVCS(GObject.GObject, Nautilus.MenuProvider):
 		
 		
 		menuItemsString = ''
-		menuItemsString = sendRequest('getmenuitems '+strFiles)
+		menuItemsString = sendRequest('getmenuitems '+strFiles, False)
 		menuItems = menuItemsString.split('\n')
 		
 		i = 0
