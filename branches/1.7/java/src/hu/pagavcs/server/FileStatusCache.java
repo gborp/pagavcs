@@ -38,7 +38,7 @@ public class FileStatusCache {
 
 	private static final int CACHE_SIZE = 2000;
 	/** in ms */
-	private static final long CACHE_TOO_OLD = 5 * 60 * 1000;
+	private static final long CACHED_ITEM_TOO_OLD = 5 * 60 * 1000;
 
 	private static FileStatusCache singleton;
 
@@ -169,7 +169,7 @@ public class FileStatusCache {
 			if (slot != null) {
 				if (file.lastModified() != slot.lastModified
 						|| file.length() != slot.fileSize
-						|| ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD)) {
+						|| ((System.currentTimeMillis() - slot.timestamp) > CACHED_ITEM_TOO_OLD)) {
 					mapCache.remove(file);
 					startCalcStatus(file);
 				} else {
@@ -190,7 +190,7 @@ public class FileStatusCache {
 			if (slot != null) {
 				if (file.lastModified() != slot.lastModified
 						|| file.length() != slot.fileSize
-						|| ((System.currentTimeMillis() - slot.timestamp) > CACHE_TOO_OLD)) {
+						|| ((System.currentTimeMillis() - slot.timestamp) > CACHED_ITEM_TOO_OLD)) {
 					mapCache.remove(file);
 				} else {
 					return slot.status;
