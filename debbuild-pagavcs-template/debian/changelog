@@ -1,3 +1,9 @@
+pagavcs-17 (1.7.23-1karmic) karmic; urgency=low
+
+  *  [commit] don't display property changes as they were content changes too
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 30 Sep 2013 20:56:15 +0200
+
 pagavcs-17 (1.7.22-1karmic) karmic; urgency=low
 
   *  upgrade to SVNkit 1.7.11
