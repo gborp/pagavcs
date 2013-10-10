@@ -26,7 +26,7 @@
 	<classpathentry kind="lib" path="lib/trilead-ssh2-1.0.0-build217.jar"/>
 	<classpathentry kind="lib" path="lib/sqljet-1.1.8.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-1.7.11-sources.jar"/>
-	<classpathentry kind="lib" path="lib/svnkit-1.7.11.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit-1.7.11.jar" sourcepath="lib/svnkit-1.7.11-sources.jar"/>
 	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.7.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

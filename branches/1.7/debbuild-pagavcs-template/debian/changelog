@@ -1,3 +1,10 @@
+pagavcs-17 (1.7.22-1karmic) karmic; urgency=low
+
+  *  upgrade to SVNkit 1.7.11
+  *  minor fixes
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 30 Sep 2013 20:56:15 +0200
+
 pagavcs-17 (1.7.21-1karmic) karmic; urgency=low
 
   *  upgrade to SVNkit 1.7.10 (svn 1.8 server support)
