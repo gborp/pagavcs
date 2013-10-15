@@ -1,3 +1,9 @@
+pagavcs-17 (1.7.24-1karmic) karmic; urgency=low
+
+  *  fix: SVNException: svn: E175002: handshake alert:  unrecognized_name
+
+ -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 15 Oct 2013 21:31:01 +0200
+
 pagavcs-17 (1.7.23-1karmic) karmic; urgency=low
 
   *  [commit] don't display property changes as they were content changes too

@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -45,6 +46,7 @@ import org.tmatesoft.svn.core.internal.io.dav.http.DefaultHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
+import org.tmatesoft.svn.core.internal.util.SVNSocketFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNMerger;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.internal.wc.SVNFileUtil;
@@ -79,6 +81,10 @@ import org.tmatesoft.svn.util.SVNDebugLog;
  */
 public class Manager {
 
+	static enum SslLoginType {
+		DEFAULT, SSLv2Hello_SSLv3
+	}
+
 	public static final long REVALIDATE_DELAY = 500;
 	public static final long TABLE_RESIZE_DELAY = 50;
 
@@ -102,6 +108,7 @@ public class Manager {
 	private static boolean inited = false;
 	private static ExceptionHandler exceptionHandler;
 	private static boolean forceShowingLoginDialogNextTime;
+	private static HashMap<String, SslLoginType> mapSslLoginType = new HashMap<String, SslLoginType>();
 
 	private static boolean shutdown;
 
@@ -270,52 +277,65 @@ public class Manager {
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 		SVNClientManager result = null;
 		boolean reTryLogin = false;
+		boolean reTestOnly = false;
 		while (forceShowingLoginDialogNextTime || result == null) {
 
-			String username = getSettings().getUsername(repoid);
-			String password = getSettings().getPassword(repoid);
-			if (forceShowingLoginDialogNextTime || password == null
-					|| username == null || reTryLogin) {
-				forceShowingLoginDialogNextTime = false;
-				final LoginGui loginGui = new LoginGui(username, password);
-				SwingUtilities.invokeLater(new Runnable() {
+			if (!reTestOnly) {
+				String username = getSettings().getUsername(repoid);
+				String password = getSettings().getPassword(repoid);
+				if (forceShowingLoginDialogNextTime || password == null
+						|| username == null || reTryLogin) {
+					forceShowingLoginDialogNextTime = false;
+					final LoginGui loginGui = new LoginGui(username, password);
+					SwingUtilities.invokeLater(new Runnable() {
 
-					public void run() {
-						loginGui.display();
+						public void run() {
+							loginGui.display();
+						}
+
+					});
+
+					boolean doLogin = loginGui.waitForLoginButton();
+					if (!doLogin) {
+						throw new PagaException(PagaExceptionType.LOGIN_FAILED);
 					}
+					username = loginGui.getPredefinedUsername();
+					password = loginGui.getPredefinedPassword();
 
-				});
-
-				boolean doLogin = loginGui.waitForLoginButton();
-				if (!doLogin) {
-					throw new PagaException(PagaExceptionType.LOGIN_FAILED);
+					if (loginGui.isRememberChecked()) {
+						getSettings().setUsername(repoid, username);
+						getSettings().setPassword(repoid, password);
+					} else {
+						getSettings().setUsername(repoid, null);
+						getSettings().setPassword(repoid, null);
+					}
 				}
-				username = loginGui.getPredefinedUsername();
-				password = loginGui.getPredefinedPassword();
 
-				if (loginGui.isRememberChecked()) {
-					getSettings().setUsername(repoid, username);
-					getSettings().setPassword(repoid, password);
+				int readTimeout = 3600 * 1000;
+				int connectionTimeout = 5 * 1000;
+				ISVNAuthenticationManager defAuthManager;
+				if (username == null || username.isEmpty()) {
+					defAuthManager = SVNWCUtil
+							.createDefaultAuthenticationManager();
 				} else {
-					getSettings().setUsername(repoid, null);
-					getSettings().setPassword(repoid, null);
+					defAuthManager = SVNWCUtil
+							.createDefaultAuthenticationManager(username,
+									password);
 				}
+				ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(
+						defAuthManager, readTimeout, connectionTimeout);
+				result = SVNClientManager.newInstance(null, authManager);
+				reTryLogin = false;
 			}
-
-			int readTimeout = 3600 * 1000;
-			int connectionTimeout = 5 * 1000;
-			ISVNAuthenticationManager defAuthManager;
-			if (username == null || username.isEmpty()) {
-				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager();
-			} else {
-				defAuthManager = SVNWCUtil.createDefaultAuthenticationManager(
-						username, password);
-			}
-			ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(
-					defAuthManager, readTimeout, connectionTimeout);
-			result = SVNClientManager.newInstance(null, authManager);
-			reTryLogin = false;
+			reTestOnly = false;
 			try {
+				SslLoginType sslType = mapSslLoginType.get(repositoryUrl
+						.getHost());
+				if (sslType == SslLoginType.SSLv2Hello_SSLv3) {
+					SVNSocketFactory.setSSLProtocols("SSLv2Hello,SSLv3");
+				} else {
+					SVNSocketFactory.setSSLProtocols(null);
+				}
 				SVNRepository svnRepo = result.getRepositoryPool()
 						.createRepository(repositoryUrl, true);
 				svnRepo.testConnection();
@@ -323,10 +343,22 @@ public class Manager {
 				ex.printStackTrace();
 
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
-				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode)
-						|| SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
+				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode)) {
 					throw new PagaException(PagaExceptionType.CONNECTION_ERROR,
 							ex.getErrorMessage().getMessage());
+				} else if (SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
+
+					if ("svn: E175002: handshake alert:  unrecognized_name"
+							.equals(ex.getErrorMessage().getMessage())) {
+						mapSslLoginType.put(repositoryUrl.getHost(),
+								SslLoginType.SSLv2Hello_SSLv3);
+						reTestOnly = true;
+						continue;
+					} else {
+						throw new PagaException(
+								PagaExceptionType.CONNECTION_ERROR, ex
+										.getErrorMessage().getMessage());
+					}
 				}
 				result = null;
 				reTryLogin = true;
