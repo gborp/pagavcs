@@ -384,6 +384,10 @@ public class Commit {
 		public void handleStatus(SVNStatus status) throws SVNException {
 			SVNStatusType svnContentStatus = status.getContentsStatus();
 			SVNStatusType svnPropertiesStatus = status.getPropertiesStatus();
+
+			if (SVNStatusType.STATUS_UNVERSIONED.equals(status.getNodeStatus())) {
+				svnContentStatus = SVNStatusType.STATUS_UNVERSIONED;
+			}
 			ContentStatus contentStatus = null;
 
 			if (SVNStatusType.STATUS_ADDED.equals(svnContentStatus)) {
