@@ -161,7 +161,7 @@ public class PagaVcsContextMenuExtension implements ContextMenuExtension {
 				UnixSocket socket = PagaVcsIntegration.getSocket();
 				BufferedWriter outToClient = new BufferedWriter(
 						new OutputStreamWriter(socket.getOutputStream()));
-				outToClient.write(command);
+				outToClient.write("-a " + command);
 				outToClient.flush();
 				socket.close();
 			} catch (Exception ex) {

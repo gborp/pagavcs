@@ -58,6 +58,8 @@ public class PagaVcsIntegration {
 		ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 		ImageIcon imageIcon = (ImageIcon) input.readObject();
 
+		socket.close();
+
 		mapPagaVcsIcon.put(name, imageIcon);
 	}
 
