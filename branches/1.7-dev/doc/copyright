@@ -1,0 +1,38 @@
+Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=48
+Name: PagaVCS
+Maintainer: Gábor Pápai <gabor.papai@gmail.com>
+Source: http://pagavcs.svn.sourceforge.net/viewvc/pagavcs/
+
+Files: *
+Copyright: 2010, Gábor Pápai <gabor.papai@gmail.com>
+License: GPL-2+
+    On Debian systems the full text of the GNU General Public
+    License can be found in the `/usr/share/common-licenses/GPL-2'
+    file.
+
+Files: debian/*
+Copyright: 2010, Gábor Pápai <gabor.papai@gmail.com>
+License: GPL-3+
+    On Debian systems the full text of the GNU General Public
+    License can be found in the `/usr/share/common-licenses/GPL-3'
+    file.
+
+Files: pagavcs/data/icons/hicolor/scalable/emblems/*.svg
+Copyright: TortoiseSVN <http://tortoisesvn.tigris.org/>
+License: GPL-2+
+    On Debian systems the full text of the GNU General Public
+    License can be found in the `/usr/share/common-licenses/GPL-2'
+    file.
+    
+Files: jcalendar.jar
+Copyright: Kai Toedter <http://www.toedter.com/en/jcalendar>
+License: GPL-2+
+    On Debian systems the full text of the GNU General Public
+    License can be found in the `/usr/share/common-licenses/GPL-2'
+    file.
+
+Files: forms-1.2.1.jar
+Copyright: JGoodies Karsten Lentzsch <http://www.jgoodies.com>
+License: BSD
+    
+
