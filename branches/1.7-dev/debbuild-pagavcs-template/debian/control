@@ -1,0 +1,17 @@
+Source: pagavcs-17-dev
+Section: devel
+Priority: optional
+Maintainer: Gábor Pápai <pagavcs@gmail.com>
+Build-Depends: debhelper (>= 5), automake, build-essential, sun-java6-jdk | default-jdk | openjdk-6-jdk | openjdk-7-jdk
+Standards-Version: 3.9.2
+Homepage: http://pagavcs.googlecode.com
+
+Package: pagavcs-17-dev
+Architecture: i386 amd64
+Replaces: pagavcs, pagavcs-17-core, pagavcs-17-core-libs, pagavcs-17-cli, pagavcs-17-bigmem, pagavcs-17
+Breaks: pagavcs
+Provides: pagavcs-17
+Depends: openjdk-6-jdk | openjdk-7-jdk | oracle-java7-installer | oracle-java6-installer | sun-java6-jre | default-jre
+Description: Desktop integrated Subversion client
+ Gnome and XFCE integrated Subversion GUI client, similar to TortoiseSVN. 
+
