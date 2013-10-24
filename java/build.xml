@@ -1,0 +1,95 @@
+<project name="PagaVCS" default="dist" basedir=".">
+
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+	<property name="lib" location="lib" />
+	<path id="compile.classpath">
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="/usr/share/java">
+			<include name="unix.jar" />
+		</fileset>
+	</path>
+
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+		<delete includeEmptyDirs="true">
+			<fileset dir="${dist}" />
+		</delete>
+		<delete includeEmptyDirs="true">
+			<fileset dir="${build}" />
+		</delete>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+
+		<mkdir dir="${build}" />
+		<copy todir="${build}">
+			<fileset dir="${src}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" debug="true" optimize="true">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}" />
+
+		<jar destfile="${dist}/pagavcs.jar" level="9">
+			<zipfileset dir="${build}" prefix="" />
+			<manifest>
+				<attribute name="Main-Class" value="hu.pagavcs.Main" />
+				<attribute name="Class-Path"
+					value="pagavcs-libs.jar /usr/share/java/unix.jar" />
+			</manifest>
+		</jar>
+		<jar destfile="${dist}/pagavcs-libs.jar" level="9">
+			<zipfileset src="${lib}/svnkit-1.7.11.jar" />
+			<zipfileset src="${lib}/jcalendar-1.3.3.jar" />
+			<zipfileset src="${lib}/forms-1.2.1.jar" excludes="com/jgoodies/forms/builder/**" />
+			<zipfileset src="${lib}/trilead-ssh2-1.0.0-build217.jar" />
+			<zipfileset src="${lib}/jna-3.4.0.jar" />
+			<zipfileset src="${lib}/antlr-runtime-3.4.jar" />
+			<zipfileset src="${lib}/sequence-library-1.0.2.jar" />
+			<zipfileset src="${lib}/sqljet-1.1.8.jar" />
+			<zipfileset src="${lib}/svnkit-javahl16-1.7.11.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.connector-factory-0.0.6.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.core-0.0.6.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.pageant-0.0.6.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.sshagent-0.0.6.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.svnkit-trilead-ssh2-0.0.6.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.usocket-jna-0.0.6.jar" />
+			<zipfileset src="${lib}/jsch.agentproxy.usocket-nc-0.0.6.jar" />
+			<zipfileset src="${lib}/platform-3.4.0.jar" />
+
+			<!-- excludes="com/sun/jna/darwin/**,com/sun/jna/freebsd-amd64/**,com/sun/jna/freebsd-i386/**,com/sun/jna/ia64/**,com/sun/jna/sunos-amd64/**,com/sun/jna/sunos-sparc/**,com/sun/jna/sunos-sparcv9/**,com/sun/jna/sunos-x86/**,com/sun/jna/win32/**,com/sun/jna/win32-amd64/**,com/sun/jna/win32-x86/**" -->
+			<zipfileset src="${lib}/log4j-1.2.16.jar" excludes="org/apache/log4j/chainsaw/**" />
+		</jar>
+		<copy todir="${dist}">
+			<fileset dir="${src}/hu/pagavcs/client/resources/">
+				<include name="icon.png" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+</project>
