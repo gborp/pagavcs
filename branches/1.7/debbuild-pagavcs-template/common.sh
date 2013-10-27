@@ -8,7 +8,7 @@ fi
 OWNDIR=`pwd`
 DIST=$1
 
-APPNAME=pagavcs-17-dev
+APPNAME=pagavcs-17
 COMMONBUILDDIR=temp-build
 VERSION=`../version.sh`
 WDIRNAME=${APPNAME}_${VERSION}${DIST}
