@@ -8,9 +8,9 @@ fi
 OWNDIR=`pwd`
 DIST=$1
 
-APPNAME=pagavcs-17-nautilus
+APPNAME=pagavcs-17-nautilus-dev
 COMMONBUILDDIR=temp-build
-VERSION=`cat debian/changelog | head -1 | grep -o "[0-9]*\.[0-9]*\.[0-9]*\-[0-9]*"`
+VERSION=`../version.sh`
 WDIRNAME=${APPNAME}_${VERSION}${DIST}
 WDIR=../$COMMONBUILDDIR/$WDIRNAME
 export WDIR
@@ -27,7 +27,12 @@ cd $OWNDIR
 
 cp -r debian $WDIR/debian
 
-sed -i "s/karmic/$DIST/g" $WDIR/debian/changelog
+echo "${APPNAME} (${VERSION}${DIST}) ${DIST}; urgency=low" > $WDIR/debian/changelog
+echo "" >> $WDIR/debian/changelog
+echo "  * release" >> $WDIR/debian/changelog
+echo "" >> $WDIR/debian/changelog
+# date -R
+echo " -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 01 Jan 2013 00:00:00 +0100">> $WDIR/debian/changelog
 
 mkdir $WDIR/debian/input
 mkdir $WDIR/debian/input/gnome3
