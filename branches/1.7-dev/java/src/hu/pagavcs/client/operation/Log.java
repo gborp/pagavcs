@@ -1,11 +1,11 @@
 package hu.pagavcs.client.operation;
 
-import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.MiniImmutableMap;
 import hu.pagavcs.client.bl.SettingsStore;
 import hu.pagavcs.client.bl.SvnFileList;
 import hu.pagavcs.client.bl.SvnHelper;
+import hu.pagavcs.client.bl.UpdateCancelable;
 import hu.pagavcs.client.gui.log.LogGui;
 
 import java.io.File;
@@ -42,7 +42,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Log implements Cancelable {
+public class Log implements UpdateCancelable {
 
 	public enum ShowLogStatus {
 		INIT, STARTED, CANCEL, COMPLETED, CANCELLED
@@ -53,6 +53,8 @@ public class Log implements Cancelable {
 	public static final long NO_LIMIT = 0;
 
 	private String path;
+	private SVNRevision revision;
+	private SVNRevision pegRevision;
 	private boolean cancel;
 
 	private LogGui gui;
@@ -70,6 +72,8 @@ public class Log implements Cancelable {
 		} else {
 			this.rootUrl = SVNURL.parseURIDecoded(pathOrUrl);
 		}
+		revision = SVNRevision.HEAD;
+		pegRevision = SVNRevision.UNDEFINED;
 		setCancel(false);
 	}
 
@@ -87,7 +91,7 @@ public class Log implements Cancelable {
 		gui.setSvnRepoRootUrl(getRootUrl());
 		// Manager.getSvnRootUrlByFile(new File(path)));
 
-		gui.doShowLog(SVNRevision.HEAD, LIMIT);
+		gui.doShowLog(revision, pegRevision, LIMIT);
 	}
 
 	private void doLog(SVNLogClient logClient, File filePath,
@@ -114,14 +118,19 @@ public class Log implements Cancelable {
 				wrapCacheItems);
 	}
 
+	public void doShowLog(SVNRevision startRevision, long limit)
+			throws Exception {
+		doShowLog(startRevision, SVNRevision.UNDEFINED, limit);
+	}
+
 	/**
 	 * @param startRevision
 	 * @param limit
 	 *            zero means no limit
 	 * @throws Exception
 	 */
-	public void doShowLog(SVNRevision startRevision, long limit)
-			throws Exception {
+	public void doShowLog(SVNRevision startRevision, SVNRevision pegRevision,
+			long limit) throws Exception {
 		gui.workStarted();
 		cancel = false;
 		SVNClientManager mgrSvn = null;
@@ -137,7 +146,6 @@ public class Log implements Cancelable {
 			gui.setStatus(ShowLogStatus.STARTED);
 
 			SVNRevision endRevision = SVNRevision.create(0);
-			SVNRevision pegRevision = SVNRevision.UNDEFINED;
 			boolean stopOnCopy = false;
 			boolean discoverChangedPaths = true;
 			boolean includeMergedRevisions = false;
@@ -492,6 +500,22 @@ public class Log implements Cancelable {
 		return result;
 	}
 
+	public SVNRevision getRevision() {
+		return revision;
+	}
+
+	public void setRevision(SVNRevision revision) {
+		this.revision = revision;
+	}
+
+	public SVNRevision getPegRevision() {
+		return pegRevision;
+	}
+
+	public void setPegRevision(SVNRevision pegRevision) {
+		this.pegRevision = pegRevision;
+	}
+
 	private class LogEntryHandler implements ISVNLogEntryHandler {
 
 		@SuppressWarnings("unchecked")
@@ -521,6 +545,12 @@ public class Log implements Cancelable {
 				throw new SVNCancelException();
 			}
 		}
+	}
+
+	@Override
+	public SVNRevision getPreviousWorkingCopyRevision() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -4,6 +4,8 @@ import hu.pagavcs.client.gui.platform.ListItem;
 import hu.pagavcs.client.operation.ContentStatus;
 import hu.pagavcs.client.operation.Update.UpdateContentStatus;
 
+import org.tmatesoft.svn.core.wc.SVNEvent;
+
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -19,12 +21,12 @@ import hu.pagavcs.client.operation.Update.UpdateContentStatus;
  */
 public class UpdateListItem implements ListItem {
 
-	private ContentStatus       status;
-	private String              path;
+	private ContentStatus status;
+	private String path;
 	private UpdateContentStatus contentStatus;
 	// hidden columns
-	private long                previousRevision;
-	private ContentStatus       svnContentStatus;
+	private ContentStatus svnContentStatus;
+	private SVNEvent svnEvent;
 
 	public String[] getColumnNames() {
 		return new String[] { "Status", "Path" };
@@ -49,7 +51,8 @@ public class UpdateListItem implements ListItem {
 		return false;
 	}
 
-	public void setValue(int index, Object value) {}
+	public void setValue(int index, Object value) {
+	}
 
 	public void setStatus(ContentStatus status) {
 		this.status = status;
@@ -75,19 +78,19 @@ public class UpdateListItem implements ListItem {
 		return contentStatus;
 	}
 
-	public void setPreviousRevision(long previousRevision) {
-		this.previousRevision = previousRevision;
-	}
-
-	public long getPreviousRevision() {
-		return previousRevision;
-	}
-
 	public void setSvnContentStatus(ContentStatus svnContentStatus) {
 		this.svnContentStatus = svnContentStatus;
 	}
 
 	public ContentStatus getSvnContentStatus() {
 		return svnContentStatus;
+	}
+
+	public SVNEvent getSvnEvent() {
+		return svnEvent;
+	}
+
+	public void setSvnEvent(SVNEvent svnEvent) {
+		this.svnEvent = svnEvent;
 	}
 }
