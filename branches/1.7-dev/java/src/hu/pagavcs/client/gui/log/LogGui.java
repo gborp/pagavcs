@@ -785,6 +785,11 @@ public class LogGui implements Working {
 		log.doShowLog(startRevision, limit);
 	}
 
+	public void doShowLog(SVNRevision startRevision, SVNRevision pegRevision,
+			long limit) throws Exception {
+		log.doShowLog(startRevision, pegRevision, limit);
+	}
+
 	public void showFile(String showChangesPath, long revision)
 			throws Exception {
 		log.showFile(showChangesPath, revision);

@@ -88,7 +88,7 @@ public class SvnHelper {
 		return rangesToMerge;
 	}
 
-	public static int doMerge(Cancelable cancelable, String urlTo,
+	public static int doMerge(UpdateCancelable cancelable, String urlTo,
 			String pathTo, String urlFrom, String pathFrom,
 			String revisionRange, boolean reverseMerge, boolean ignoreEolStyle)
 			throws Exception {

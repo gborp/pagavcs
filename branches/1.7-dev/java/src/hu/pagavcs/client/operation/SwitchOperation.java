@@ -1,9 +1,9 @@
 package hu.pagavcs.client.operation;
 
-import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.bl.SvnHelper;
+import hu.pagavcs.client.bl.UpdateCancelable;
 import hu.pagavcs.client.gui.SwitchGui;
 import hu.pagavcs.client.gui.UpdateGui;
 
@@ -36,22 +36,25 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class SwitchOperation implements Cancelable {
+public class SwitchOperation implements UpdateCancelable {
 
 	public enum SwitchStatus {
 		INIT, START, WORKING, COMPLETED, FAILED, CANCEL
 	}
 
-	private String    path;
+	private String path;
 	private SwitchGui gui;
-	private boolean   autoClose;
-	private boolean   cancel;
+	private boolean autoClose;
+	private boolean cancel;
+	private SVNRevision previousWorkingCopyRevision;
 
-	public SwitchOperation(String path) throws BackingStoreException, SVNException {
+	public SwitchOperation(String path) throws BackingStoreException,
+			SVNException {
 		this.path = path;
 	}
 
-	public void execute() throws SVNException, BackingStoreException, PagaException {
+	public void execute() throws SVNException, BackingStoreException,
+			PagaException {
 		gui = new SwitchGui(this);
 		gui.display();
 		gui.setStatus(SwitchStatus.INIT);
@@ -61,6 +64,7 @@ public class SwitchOperation implements Cancelable {
 		gui.setStatus(SwitchStatus.START);
 		try {
 			SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
+			previousWorkingCopyRevision = svnInfo.getRevision();
 
 			gui.setURL(svnInfo.getURL().toDecodedString());
 
@@ -101,7 +105,8 @@ public class SwitchOperation implements Cancelable {
 		return cancel;
 	}
 
-	public void doSwitch(String wc, String toUrl, String toRevision) throws Exception {
+	public void doSwitch(String wc, String toUrl, String toRevision)
+			throws Exception {
 		setCancel(false);
 		UpdateGui updateGui = new UpdateGui(this, "Switching...");
 		updateGui.setPaths(Arrays.asList(new File(wc)));
@@ -122,18 +127,25 @@ public class SwitchOperation implements Cancelable {
 				revision = SVNRevision.create(Long.valueOf(toRevision));
 			}
 
-			updateClient.setEventHandler(new UpdateEventHandler(this, updateGui));
+			updateClient
+					.setEventHandler(new UpdateEventHandler(this, updateGui));
 			updateGui.setStatus(ContentStatus.STARTED);
 
 			boolean successOrExit = false;
 			while (!successOrExit) {
 				try {
-					updateClient.doSwitch(new File(wc), SVNURL.parseURIDecoded(toUrl), SVNRevision.UNDEFINED, revision, SVNDepth.INFINITY, true, true);
+					updateClient.doSwitch(new File(wc),
+							SVNURL.parseURIDecoded(toUrl),
+							SVNRevision.UNDEFINED, revision, SVNDepth.INFINITY,
+							true, true);
 					successOrExit = true;
 				} catch (SVNException ex) {
-					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage().getErrorCode())) {
-						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy is locked, do cleanup?", "Error",
-						        JOptionPane.YES_NO_OPTION);
+					if (SVNErrorCode.WC_LOCKED.equals(ex.getErrorMessage()
+							.getErrorCode())) {
+						int choosed = JOptionPane.showConfirmDialog(
+								Manager.getRootFrame(),
+								"Working copy is locked, do cleanup?", "Error",
+								JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
 							Cleanup cleanup = new Cleanup(path);
 							cleanup.setAutoClose(true);
@@ -156,11 +168,16 @@ public class SwitchOperation implements Cancelable {
 		}
 	}
 
-	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {
+	public void doShowLog(String pathToShowLog) throws SVNException,
+			BackingStoreException, Exception {
 		new Log(pathToShowLog).execute();
 	}
 
 	public void storeUrlForHistory(String url) {
 		SvnHelper.storeUrlForHistory(url);
+	}
+
+	public SVNRevision getPreviousWorkingCopyRevision() {
+		return previousWorkingCopyRevision;
 	}
 }
