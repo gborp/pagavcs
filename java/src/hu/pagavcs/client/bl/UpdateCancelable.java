@@ -1,5 +1,6 @@
 package hu.pagavcs.client.bl;
 
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -14,10 +15,8 @@ package hu.pagavcs.client.bl;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public interface Cancelable {
+public interface UpdateCancelable extends Cancelable {
 
-	boolean isCancel();
-
-	void setCancel(boolean cancel) throws Exception;
+	SVNRevision getPreviousWorkingCopyRevision();
 
 }

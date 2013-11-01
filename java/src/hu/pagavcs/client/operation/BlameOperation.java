@@ -39,15 +39,17 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class BlameOperation implements Cancelable {
 
-	private String   path;
+	private String path;
 	private BlameGui gui;
-	private boolean  cancel;
+	private boolean cancel;
 
-	public BlameOperation(String path) throws BackingStoreException, SVNException {
+	public BlameOperation(String path) throws BackingStoreException,
+			SVNException {
 		this.path = path;
 	}
 
-	public void execute() throws SVNException, BackingStoreException, PagaException {
+	public void execute() throws SVNException, BackingStoreException,
+			PagaException {
 		gui = new BlameGui(this);
 		gui.display();
 		gui.setFile(path);
@@ -74,7 +76,8 @@ public class BlameOperation implements Cancelable {
 		return path;
 	}
 
-	public List<BlameListItem> doBlame(String path, String revision) throws SVNException, PagaException {
+	public List<BlameListItem> doBlame(String path, String revision)
+			throws SVNException, PagaException {
 		revision = revision.trim();
 		SVNRevision blameRevision;
 		if (revision.isEmpty()) {
@@ -83,7 +86,8 @@ public class BlameOperation implements Cancelable {
 			blameRevision = SVNRevision.create(Long.valueOf(revision));
 		}
 
-		SVNClientManager clientMgr = Manager.getSVNClientManager(new File(path));
+		SVNClientManager clientMgr = Manager
+				.getSVNClientManager(new File(path));
 		try {
 			SVNLogClient logClient = clientMgr.getLogClient();
 			logClient.setEventHandler(new ISVNEventHandler() {
@@ -94,35 +98,46 @@ public class BlameOperation implements Cancelable {
 					}
 				}
 
-				public void handleEvent(SVNEvent event, double progress) throws SVNException {}
+				public void handleEvent(SVNEvent event, double progress)
+						throws SVNException {
+				}
 			});
 			final ArrayList<BlameListItem> lstBlame = new ArrayList<BlameListItem>();
-			logClient.doAnnotate(new File(path), SVNRevision.HEAD, SVNRevision.create(1), blameRevision, new ISVNAnnotateHandler() {
+			logClient.doAnnotate(new File(path), SVNRevision.HEAD,
+					SVNRevision.create(1), blameRevision,
+					new ISVNAnnotateHandler() {
 
-				public void handleEOF() {}
+						public void handleEOF() {
+						}
 
-				public void handleLine(Date date, long revision, String author, String line, Date mergedDate, long mergedRevision, String mergedAuthor,
-				        String mergedPath, int lineNumber) throws SVNException {
-					BlameListItem li = new BlameListItem();
-					li.setDate(date);
-					li.setRevision(revision);
-					li.setAuthor(author);
-					// convert tabulators to 4 spaces
-					line = line.replace("\t", "    ");
-					li.setLine(line);
-					li.setLineNumber(lstBlame.size() + 1);
-					lstBlame.add(li);
-				}
+						public void handleLine(Date date, long revision,
+								String author, String line, Date mergedDate,
+								long mergedRevision, String mergedAuthor,
+								String mergedPath, int lineNumber)
+								throws SVNException {
+							BlameListItem li = new BlameListItem();
+							li.setDate(date);
+							li.setRevision(revision);
+							li.setAuthor(author);
+							// convert tabulators to 4 spaces
+							line = line.replace("\t", "    ");
+							li.setLine(line);
+							li.setLineNumber(lstBlame.size() + 1);
+							lstBlame.add(li);
+						}
 
-				public void handleLine(Date date, long revision, String author, String line) throws SVNException {
-					throw new RuntimeException("Not implemented");
-				}
+						public void handleLine(Date date, long revision,
+								String author, String line) throws SVNException {
+							throw new RuntimeException("Not implemented");
+						}
 
-				public boolean handleRevision(Date date, long revision, String author, File contents) throws SVNException {
-					return false;
-				}
+						public boolean handleRevision(Date date, long revision,
+								String author, File contents)
+								throws SVNException {
+							return false;
+						}
 
-			});
+					});
 
 			return lstBlame;
 		} finally {
@@ -141,4 +156,5 @@ public class BlameOperation implements Cancelable {
 	public boolean isCancel() {
 		return cancel;
 	}
+
 }

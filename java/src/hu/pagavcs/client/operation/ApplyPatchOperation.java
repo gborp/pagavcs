@@ -30,16 +30,18 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  */
 public class ApplyPatchOperation implements Cancelable {
 
-	private String        path;
+	private String path;
 	private ApplyPatchGui gui;
-	private boolean       autoClose;
-	private boolean       cancel;
+	private boolean autoClose;
+	private boolean cancel;
 
-	public ApplyPatchOperation(String path) throws BackingStoreException, SVNException {
+	public ApplyPatchOperation(String path) throws BackingStoreException,
+			SVNException {
 		this.path = path;
 	}
 
-	public void execute() throws SVNException, BackingStoreException, PagaException {
+	public void execute() throws SVNException, BackingStoreException,
+			PagaException {
 		gui = new ApplyPatchGui(this);
 		gui.display();
 		gui.setStatus(GeneralStatus.INIT);
@@ -89,11 +91,13 @@ public class ApplyPatchOperation implements Cancelable {
 		return cancel;
 	}
 
-	public void doShowLog(String pathToShowLog) throws SVNException, BackingStoreException, Exception {
+	public void doShowLog(String pathToShowLog) throws SVNException,
+			BackingStoreException, Exception {
 		new Log(pathToShowLog).execute();
 	}
 
 	public void storeUrlForHistory(String url) {
 		SvnHelper.storeUrlForHistory(url);
 	}
+
 }
