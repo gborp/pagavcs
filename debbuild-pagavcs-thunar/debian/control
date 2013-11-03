@@ -10,7 +10,7 @@ Package: pagavcs-17-thunar
 Architecture: i386 amd64
 Replaces: pagavcs-thunar
 Breaks: pagavcs-thunar
-Depends: pagavcs-17-core (>=1.5.5), libthunarx-2-0, ${misc:Depends}
+Depends: pagavcs-17, libthunarx-2-0, ${misc:Depends}
 Description: Desktop integrated Subversion client
  Thunar plugin for PagaVCS.
  Changelog: http://code.google.com/p/pagavcs
