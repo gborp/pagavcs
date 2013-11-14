@@ -278,7 +278,7 @@ public class Manager {
 		SVNClientManager result = null;
 		boolean reTryLogin = false;
 		boolean reTestOnly = false;
-		while (forceShowingLoginDialogNextTime || result == null) {
+		while (forceShowingLoginDialogNextTime || result == null || reTestOnly) {
 
 			if (!reTestOnly) {
 				String username = getSettings().getUsername(repoid);
@@ -479,6 +479,40 @@ public class Manager {
 		}
 	}
 
+	public static void resolveTreeConflictUsingTheirs(String path)
+			throws SVNException {
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
+					true, true, true, SVNConflictChoice.THEIRS_FULL);
+		} finally {
+			mgrSvn.dispose();
+		}
+
+	}
+
+	public static void resolveTreeConflictUsingMine(String path)
+			throws SVNException {
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
+					true, true, true, SVNConflictChoice.MINE_FULL);
+		} finally {
+			mgrSvn.dispose();
+		}
+	}
+
+	public static void resolveTreeConflictUsingMerged(String path)
+			throws SVNException {
+		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
+		try {
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
+					true, true, true, SVNConflictChoice.MERGED);
+		} finally {
+			mgrSvn.dispose();
+		}
+	}
+
 	public static SVNInfo getInfo(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
@@ -529,6 +563,8 @@ public class Manager {
 			return Color.RED;
 		case REPLACED:
 			return Color.RED;
+		case RESTORED:
+			return Color.ORANGE;
 		case UNVERSIONED:
 			return Color.BLACK;
 		case RESOLVED:

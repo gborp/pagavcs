@@ -1,7 +1,7 @@
 package hu.pagavcs.client.operation;
 
-import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
+import hu.pagavcs.client.bl.UpdateCancelable;
 import hu.pagavcs.client.gui.UpdateGui;
 import hu.pagavcs.server.FileStatusCache;
 import hu.pagavcs.server.FileStatusCache.STATUS;
@@ -35,7 +35,7 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Update implements Cancelable {
+public class Update implements UpdateCancelable {
 
 	public enum UpdateContentStatus {
 		NONE, CONFLICTED, MERGED, RESOLVED
@@ -48,6 +48,7 @@ public class Update implements Cancelable {
 	private File baseDir;
 	private boolean baseDirIsNotSvned;
 	private boolean autoClose;
+	private SVNRevision previousWorkingCopyRevision;
 
 	public Update(List<String> lstArg) throws Exception {
 		lstFile = new ArrayList<File>();
@@ -95,11 +96,15 @@ public class Update implements Cancelable {
 		SVNClientManager mgrSvn = null;
 		try {
 			gui.setStatus(ContentStatus.INIT);
+			File fileForSvnManager;
 			if (!baseDirIsNotSvned) {
-				mgrSvn = Manager.getSVNClientManager(baseDir);
+				fileForSvnManager = baseDir;
 			} else {
-				mgrSvn = Manager.getSVNClientManager(lstFile.get(0));
+				fileForSvnManager = lstFile.get(0);
 			}
+			mgrSvn = Manager.getSVNClientManager(fileForSvnManager);
+			previousWorkingCopyRevision = mgrSvn.getStatusClient()
+					.doStatus(fileForSvnManager, false).getRevision();
 
 			gui.setWorkingCopy(baseDir.getPath());
 			if (!baseDirIsNotSvned) {
@@ -163,12 +168,16 @@ public class Update implements Cancelable {
 
 	public void setCancel(boolean cancel) throws Exception {
 		if (cancel) {
-			gui.addItem("", null, ContentStatus.CANCEL, -1);
+			gui.addItem("", null, ContentStatus.CANCEL, null);
 		}
 		this.cancel = cancel;
 	}
 
 	public boolean isCancel() {
 		return cancel;
+	}
+
+	public SVNRevision getPreviousWorkingCopyRevision() {
+		return previousWorkingCopyRevision;
 	}
 }

@@ -127,6 +127,10 @@ public class GuiHelper {
 				mapContentStatusIcon.put(ContentStatus.MISSING,
 						loadEmblem("missing"));
 				break;
+			case REPLACED:
+				mapContentStatusIcon.put(ContentStatus.REPLACED,
+						loadEmblem("conflict"));
+				break;
 			}
 		}
 		return mapContentStatusIcon.get(contentStatus);

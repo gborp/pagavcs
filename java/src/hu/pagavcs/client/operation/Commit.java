@@ -382,12 +382,16 @@ public class Commit {
 	private class StatusEventHandler implements ISVNStatusHandler {
 
 		public void handleStatus(SVNStatus status) throws SVNException {
-			SVNStatusType svnContentStatus = status.getContentsStatus();
+			// SVNStatusType svnContentStatus = status.getContentsStatus();
 			SVNStatusType svnPropertiesStatus = status.getPropertiesStatus();
 
-			if (SVNStatusType.STATUS_UNVERSIONED.equals(status.getNodeStatus())) {
-				svnContentStatus = SVNStatusType.STATUS_UNVERSIONED;
-			}
+			// if (!SVNStatusType.UNKNOWN.equals(status.getNodeStatus())) {
+			// svnContentStatus = status.getNodeStatus();
+			// }
+
+			SVNStatusType svnContentStatus = status
+					.getCombinedNodeAndContentsStatus();
+
 			ContentStatus contentStatus = null;
 
 			if (SVNStatusType.STATUS_ADDED.equals(svnContentStatus)) {
@@ -466,6 +470,7 @@ public class Commit {
 			}
 			String conlictResult = null;
 			SVNTreeConflictDescription treeConflict = status.getTreeConflict();
+
 			if (treeConflict != null) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("TREE CONFLICT\n");

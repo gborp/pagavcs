@@ -59,35 +59,41 @@ public class UpdateEventHandler implements ISVNEventHandler {
 			if (SVNEventAction.UPDATE_NONE.equals(action)) {
 				// gui.addItem(fileName, updateContentStatus,
 				// ContentStatus.NONE,
-				// event.getPreviousRevision());
+				// event);
 			} else if (SVNEventAction.UPDATE_ADD.equals(action)) {
 				gui.addItem(fileName, updateContentStatus, ContentStatus.ADDED,
-						event.getPreviousRevision());
+						event);
+			} else if (SVNEventAction.RESTORE.equals(action)) {
+				gui.addItem(fileName, updateContentStatus,
+						ContentStatus.RESTORED, event);
 			} else if (SVNEventAction.UPDATE_DELETE.equals(action)) {
 				gui.addItem(fileName, updateContentStatus,
-						ContentStatus.DELETED, event.getPreviousRevision());
+						ContentStatus.DELETED, event);
 			} else if (SVNEventAction.UPDATE_EXISTS.equals(action)) {
 				gui.addItem(fileName, updateContentStatus,
-						ContentStatus.EXISTS, event.getPreviousRevision());
+						ContentStatus.EXISTS, event);
 			} else if (SVNEventAction.UPDATE_EXTERNAL.equals(action)) {
 				gui.addItem(fileName, updateContentStatus,
-						ContentStatus.EXTERNAL, event.getPreviousRevision());
+						ContentStatus.EXTERNAL, event);
 			} else if (SVNEventAction.UPDATE_REPLACE.equals(action)) {
 				gui.addItem(fileName, updateContentStatus,
-						ContentStatus.REPLACED, event.getPreviousRevision());
+						ContentStatus.REPLACED, event);
 			} else if (SVNEventAction.UPDATE_UPDATE.equals(action)) {
 				gui.addItem(fileName, updateContentStatus,
-						ContentStatus.UPDATE, event.getPreviousRevision());
+						ContentStatus.UPDATE, event);
 			} else if (SVNEventAction.UPDATE_COMPLETED.equals(action)) {
 				gui.addItem(
 						event.getFile() + " - Revision number: "
 								+ event.getRevision(), updateContentStatus,
-						ContentStatus.COMPLETED, -1);
+						ContentStatus.COMPLETED, event);
 			} else if (SVNEventAction.TREE_CONFLICT.equals(action)) {
 				gui.addItem("Tree conflict: " + event.getFile(),
-						updateContentStatus, ContentStatus.MISSING, -1);
+						updateContentStatus, ContentStatus.MISSING, event);
 			} else if (SVNEventAction.MERGE_COMPLETE.equals(action)) {
 				count--;
+			} else if (SVNEventAction.SKIP_CONFLICTED.equals(action)) {
+				gui.addItem("Skip conflicted: " + event.getFile(),
+						updateContentStatus, ContentStatus.CONFLICTED, event);
 			}
 		} catch (SVNException e) {
 			throw e;

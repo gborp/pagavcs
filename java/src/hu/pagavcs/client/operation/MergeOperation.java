@@ -1,9 +1,9 @@
 package hu.pagavcs.client.operation;
 
-import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.bl.SvnHelper;
+import hu.pagavcs.client.bl.UpdateCancelable;
 import hu.pagavcs.client.gui.MergeGui;
 
 import java.io.File;
@@ -28,7 +28,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class MergeOperation implements Cancelable {
+public class MergeOperation implements UpdateCancelable {
 
 	private String path;
 	private MergeGui gui;
@@ -36,6 +36,7 @@ public class MergeOperation implements Cancelable {
 	private String prefillMergeFromRevision;
 	private String prefillMergeFromUrl;
 	private Boolean prefillCommitToo;
+	private SVNRevision previousWorkingCopyRevision;
 
 	public MergeOperation(String path) throws BackingStoreException,
 			SVNException {
@@ -64,6 +65,7 @@ public class MergeOperation implements Cancelable {
 		SVNWCClient wcClient = mgrSvn.getWCClient();
 		try {
 			SVNInfo svnInfo = wcClient.doInfo(wcFile, SVNRevision.WORKING);
+			previousWorkingCopyRevision = svnInfo.getRevision();
 			String urlTo = svnInfo.getURL().toDecodedString();
 			gui.setURL(urlTo);
 			gui.setUrlHistory(SvnHelper.getUrlHistoryForMerge(urlTo));
@@ -118,4 +120,8 @@ public class MergeOperation implements Cancelable {
 		new Log(url, false).execute();
 	}
 
+	@Override
+	public SVNRevision getPreviousWorkingCopyRevision() {
+		return previousWorkingCopyRevision;
+	}
 }
