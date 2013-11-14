@@ -1,4 +1,4 @@
-g#!/bin/sh
+#!/bin/sh
 
 if [ "$1" = "" ]; then
 	echo Usage: ./cmd [distribution-code-name]
