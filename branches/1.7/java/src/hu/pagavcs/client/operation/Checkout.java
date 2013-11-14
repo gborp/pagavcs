@@ -1,8 +1,8 @@
 package hu.pagavcs.client.operation;
 
-import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.SvnHelper;
+import hu.pagavcs.client.bl.UpdateCancelable;
 import hu.pagavcs.client.gui.CheckoutGui;
 import hu.pagavcs.client.gui.UpdateGui;
 
@@ -31,7 +31,7 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
  * You should have received a copy of the GNU General Public License along with
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
-public class Checkout implements Cancelable {
+public class Checkout implements UpdateCancelable {
 
 	public static final long HEAD_REVISION = -1;
 
@@ -39,10 +39,10 @@ public class Checkout implements Cancelable {
 		INIT, START, COMPLETED, FAILED
 	}
 
-	private String      path;
-	private String      url;
+	private String path;
+	private String url;
 	private CheckoutGui gui;
-	private boolean     cancel;
+	private boolean cancel;
 
 	public Checkout(String path) throws BackingStoreException {
 		this.path = path;
@@ -61,7 +61,8 @@ public class Checkout implements Cancelable {
 		if (url != null) {
 			String[] urlHistoryWithPreloadedUrl = new String[urlHistory.length + 1];
 			urlHistoryWithPreloadedUrl[0] = url;
-			System.arraycopy(urlHistory, 0, urlHistoryWithPreloadedUrl, 1, urlHistory.length);
+			System.arraycopy(urlHistory, 0, urlHistoryWithPreloadedUrl, 1,
+					urlHistory.length);
 			urlHistory = urlHistoryWithPreloadedUrl;
 		}
 
@@ -78,7 +79,8 @@ public class Checkout implements Cancelable {
 		return path;
 	}
 
-	public void doCheckout(String url, String dir, long revision) throws Exception {
+	public void doCheckout(String url, String dir, long revision)
+			throws Exception {
 		UpdateGui updateGui = new UpdateGui(this, "Checkout");
 		updateGui.setPaths(Arrays.asList(new File(dir)));
 		updateGui.display();
@@ -96,9 +98,12 @@ public class Checkout implements Cancelable {
 			SVNClientManager mgrSvn = Manager.getSVNClientManager(svnUrl);
 			try {
 				SVNUpdateClient updateClient = mgrSvn.getUpdateClient();
-				updateClient.setEventHandler(new UpdateEventHandler(this, updateGui));
+				updateClient.setEventHandler(new UpdateEventHandler(this,
+						updateGui));
 				updateGui.setStatus(ContentStatus.STARTED);
-				updateClient.doCheckout(svnUrl, new File(dir), SVNRevision.UNDEFINED, svnRevision, SVNDepth.INFINITY, true);
+				updateClient.doCheckout(svnUrl, new File(dir),
+						SVNRevision.UNDEFINED, svnRevision, SVNDepth.INFINITY,
+						true);
 			} finally {
 				mgrSvn.dispose();
 			}
@@ -120,5 +125,11 @@ public class Checkout implements Cancelable {
 
 	public void storeUrlForHistory(String url) {
 		SvnHelper.storeUrlForHistory(url);
+	}
+
+	@Override
+	public SVNRevision getPreviousWorkingCopyRevision() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
