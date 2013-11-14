@@ -1,10 +1,10 @@
 package hu.pagavcs.client.gui;
 
-import hu.pagavcs.client.bl.Cancelable;
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.OnSwing;
 import hu.pagavcs.client.bl.SvnHelper;
 import hu.pagavcs.client.bl.ThreadAction;
+import hu.pagavcs.client.bl.UpdateCancelable;
 import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
@@ -39,6 +39,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -65,7 +66,7 @@ public class UpdateGui implements Working {
 
 	private Table<UpdateListItem> tblUpdate;
 	private TableModel<UpdateListItem> tmdlUpdate;
-	private final Cancelable update;
+	private final UpdateCancelable update;
 	private JButton btnStopFinish;
 	private final String title;
 	// TODO use Progress, btnStop make it stop too
@@ -84,11 +85,11 @@ public class UpdateGui implements Working {
 	private List<File> lstPath;
 	private long totalReceived;
 
-	public UpdateGui(Cancelable update) {
+	public UpdateGui(UpdateCancelable update) {
 		this(update, "Update");
 	}
 
-	public UpdateGui(Cancelable update, String title) {
+	public UpdateGui(UpdateCancelable update, String title) {
 		this.update = update;
 		this.title = title;
 	}
@@ -183,13 +184,12 @@ public class UpdateGui implements Working {
 	}
 
 	public void setStatus(ContentStatus status) throws Exception {
-		addItem("", null, status, -1);
+		addItem("", null, status, null);
 	}
 
 	public void addItem(final String path,
 			final UpdateContentStatus updateContentStatus,
-			final ContentStatus status, final long previousRevision)
-			throws Exception {
+			final ContentStatus status, final SVNEvent event) throws Exception {
 
 		new OnSwing() {
 
@@ -232,7 +232,7 @@ public class UpdateGui implements Working {
 				li.setStatus(effectiveStatus);
 				li.setPath(path);
 				li.setContentStatus(updateContentStatus);
-				li.setPreviousRevision(previousRevision);
+				li.setSvnEvent(event);
 				li.setSvnContentStatus(status);
 				quNewItems.add(li);
 				doRevalidateTable();
@@ -283,7 +283,7 @@ public class UpdateGui implements Working {
 												if (contentStatus != null) {
 													if (ContentStatus.ADDED
 															.equals(contentStatus)
-															|| ContentStatus.ADDED
+															|| ContentStatus.RESTORED
 																	.equals(contentStatus)
 															|| ContentStatus.CONFLICTED
 																	.equals(contentStatus)
@@ -445,7 +445,13 @@ public class UpdateGui implements Working {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			UpdateListItem li = getSelectedUpdateListItem();
-			new Log(li.getPath()).execute();
+			Log log = new Log(li.getSvnEvent().getPreviousURL().toString(),
+					false);
+			if (update.getPreviousWorkingCopyRevision() != null) {
+				log.setRevision(update.getPreviousWorkingCopyRevision());
+				log.setPegRevision(update.getPreviousWorkingCopyRevision());
+			}
+			log.execute();
 		}
 	}
 
@@ -459,7 +465,7 @@ public class UpdateGui implements Working {
 			UpdateListItem li = getSelectedUpdateListItem();
 
 			SvnHelper.showChangesBetweenRevisions(UpdateGui.this, li.getPath(),
-					SVNRevision.create(li.getPreviousRevision()),
+					SVNRevision.create(li.getSvnEvent().getPreviousRevision()),
 					SVNRevision.WORKING, li.getSvnContentStatus());
 		}
 	}

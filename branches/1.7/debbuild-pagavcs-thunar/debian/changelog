@@ -1,14 +1,7 @@
-pagavcs-17-thunar (1.7.0-5karmic) karmic; urgency=low
+pagavcs-17-thunar (1.7.30-2karmic) karmic; urgency=low
 
-  *  Raring support
+  * release
 
- -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 23 Jun 2013 18:32:32 +0200
+ -- Gábor Pápai <gabor.papai@gmail.com>  Mon, 21 Oct 2013 20:12:42 +0200
 
-
-
-pagavcs-17-thunar (1.7.0-3karmic) karmic; urgency=low
-
-  *  1.7.x series
-
- -- Gábor Pápai <gabor.papai@gmail.com>  Sun, 02 Dec 2012 19:22:45 +0100
 

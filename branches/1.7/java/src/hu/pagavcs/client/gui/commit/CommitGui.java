@@ -968,6 +968,20 @@ public class CommitGui implements Working, Refreshable {
 		}
 	}
 
+	private class ResolveTreeConflictUsingMergedAction extends ThreadAction {
+
+		public ResolveTreeConflictUsingMergedAction() {
+			super("Resolve tree conflict");
+		}
+
+		public void actionProcess(ActionEvent e) throws Exception {
+			for (CommitListItem li : getSelectedItems()) {
+				Manager.resolveTreeConflictUsingMerged(li.getPath().getPath());
+			}
+			refresh();
+		}
+	}
+
 	private class ResolveConflictUsingTheirsAction extends ThreadAction {
 
 		public ResolveConflictUsingTheirsAction() {
@@ -1112,6 +1126,9 @@ public class CommitGui implements Working, Refreshable {
 				ppMixed.add(new ResolveConflictUsingTheirsAction());
 				ppMixed.add(new ResolveConflictUsingMineAction());
 				ppMixed.add(new ResolveConflictAction());
+			}
+			if (onlyOneKind && setUsedStatus.contains(ContentStatus.REPLACED)) {
+				ppMixed.add(new ResolveTreeConflictUsingMergedAction());
 			}
 
 			ppVisible = ppMixed;
