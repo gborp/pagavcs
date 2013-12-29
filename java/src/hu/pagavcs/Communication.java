@@ -761,7 +761,7 @@ public class Communication {
 							"/usr/share/pagavcs/doc/version.txt"));
 					String version = br.readLine();
 					br.close();
-					outComm(socket, "PagaVCS version " + version);
+					outComm(socket, version);
 					needFeedbackOnFinishing = false;
 				} else {
 					outComm(socket, "Error! Unimplemented command: " + command);
