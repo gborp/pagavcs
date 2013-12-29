@@ -756,8 +756,12 @@ public class Communication {
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
 				} else if (COMMAND_VERSION.equals(command)) {
-					// TODO read version
-					outComm(socket, "PagaVCS version ");
+
+					BufferedReader br = new BufferedReader(new FileReader(
+							"/usr/share/pagavcs/doc/version.txt"));
+					String version = br.readLine();
+					br.close();
+					outComm(socket, "PagaVCS version " + version);
 					needFeedbackOnFinishing = false;
 				} else {
 					outComm(socket, "Error! Unimplemented command: " + command);
