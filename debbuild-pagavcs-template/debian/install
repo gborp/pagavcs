@@ -1,5 +1,5 @@
 src/pagavcs /usr/bin
 debian/input/pagavcs.jar /usr/share/pagavcs/bin
 debian/input/pagavcs-libs.jar /usr/share/pagavcs/bin
-debian/input/version.txt /usr/share/pagavcs/doc/version.txt
+debian/input/version.txt /usr/share/pagavcs/doc
 
