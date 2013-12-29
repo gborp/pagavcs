@@ -2,8 +2,9 @@
 
 rm -f -r ../temp-build
 
-for dist in precise quantal raring
+cat ../ubuntu-distros.txt | while read dist
 do
-	./build-deb.sh $dist
+   ./build-deb.sh $dist
 done
+
 
