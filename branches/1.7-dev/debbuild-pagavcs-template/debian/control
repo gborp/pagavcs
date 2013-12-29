@@ -11,7 +11,7 @@ Architecture: i386 amd64
 Replaces: pagavcs, pagavcs-17-core, pagavcs-17-core-libs, pagavcs-17-cli, pagavcs-17-bigmem, pagavcs-17
 Breaks: pagavcs
 Provides: pagavcs-17
-Depends: default-jre | openjdk-6-jdk | openjdk-7-jdk | oracle-java7-installer | oracle-java6-installer | sun-java6-jre, libunixsocket-java, dconf-tools, patchutils, wiggle
+Depends: default-jre | openjdk-6-jdk | openjdk-7-jdk | oracle-java7-installer | oracle-java6-installer | sun-java6-jre, libunixsocket-java, dconf-tools, patchutils, wiggle, meld
 Description: Desktop integrated Subversion client
  Gnome and XFCE integrated Subversion GUI client, similar to TortoiseSVN. 
 
