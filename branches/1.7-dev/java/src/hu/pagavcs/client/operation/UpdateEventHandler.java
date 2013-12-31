@@ -42,11 +42,19 @@ public class UpdateEventHandler implements ISVNEventHandler {
 	public void handleEvent(SVNEvent event, double progress)
 			throws SVNException {
 		try {
-			count++;
 
-			Manager.invalidate(event.getFile());
 			SVNEventAction action = event.getAction();
 			SVNStatusType contentStatus = event.getContentsStatus();
+			SVNStatusType propertyStatus = event.getPropertiesStatus();
+
+			if (contentStatus == SVNStatusType.INAPPLICABLE
+					&& propertyStatus == SVNStatusType.UNKNOWN) {
+				return;
+			}
+
+			count++;
+			Manager.invalidate(event.getFile());
+
 			UpdateContentStatus updateContentStatus = null;
 			if (SVNStatusType.CONFLICTED.equals(contentStatus)) {
 				updateContentStatus = UpdateContentStatus.CONFLICTED;
