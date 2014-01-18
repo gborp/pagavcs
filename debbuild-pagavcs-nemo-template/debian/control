@@ -1,0 +1,14 @@
+Source: pagavcs-17-nemo
+Section: devel
+Priority: optional
+Maintainer: PagaVCS <pagavcs@gmail.com>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.9.2
+Homepage: http://pagavcs.googlecode.com
+
+Package: pagavcs-17-nemo
+Architecture: all
+Depends: pagavcs-17, python-nemo, ${misc:Depends}
+Description: Desktop integrated Subversion client
+ Nautilus integrated Subversion GUI client, similar to TortoiseSVN. 
+ Changelog: http://pagavcs.googlecode.com
