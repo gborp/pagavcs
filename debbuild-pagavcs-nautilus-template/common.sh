@@ -18,6 +18,7 @@ export APPNAME
 export VERSION
 export WDIRNAME
 
+rm -r -f ../$COMMONBUILDDIR
 mkdir -p ../$COMMONBUILDDIR
 rm -r -f $WDIR
 mkdir $WDIR
@@ -32,7 +33,7 @@ echo "" >> $WDIR/debian/changelog
 echo "  * release" >> $WDIR/debian/changelog
 echo "" >> $WDIR/debian/changelog
 # date -R
-echo " -- Gábor Pápai <gabor.papai@gmail.com>  Tue, 01 Jan 2013 00:00:00 +0100">> $WDIR/debian/changelog
+echo " -- PagaVCS <pagavcs@gmail.com>  Tue, 01 Jan 2013 00:00:00 +0100">> $WDIR/debian/changelog
 
 mkdir $WDIR/debian/input
 mkdir $WDIR/debian/input/gnome3

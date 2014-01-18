@@ -108,6 +108,7 @@ public class Communication {
 	private static final String COMMAND_UPDATE_TO_REVISION = "updatetorevision";
 	private static final String COMMAND_EXPORT = "export";
 	private static final String COMMAND_PROPERTIES = "properties";
+	private static final String COMMAND_VERSION = "--version";
 
 	private static final String CFG_DEBUG_MODE_KEY = "debug";
 
@@ -754,6 +755,14 @@ public class Communication {
 					System.exit(0);
 				} else if (COMMAND_PING.equals(command)) {
 					// do nothing
+				} else if (COMMAND_VERSION.equals(command)) {
+
+					BufferedReader br = new BufferedReader(new FileReader(
+							"/usr/share/pagavcs/doc/version.txt"));
+					String version = br.readLine();
+					br.close();
+					outComm(socket, version);
+					needFeedbackOnFinishing = false;
 				} else {
 					outComm(socket, "Error! Unimplemented command: " + command);
 					needFeedbackOnFinishing = false;

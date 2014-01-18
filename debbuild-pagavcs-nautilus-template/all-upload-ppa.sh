@@ -2,7 +2,8 @@
 
 rm -f -r ../temp-build
 
-for dist in precise quantal raring saucy
+cat ../ubuntu-distros.txt | while read dist
 do
 	./upload-ppa.sh $dist
 done
+
