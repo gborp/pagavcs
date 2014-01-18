@@ -39,6 +39,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.wc.SVNEvent;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -445,9 +446,16 @@ public class UpdateGui implements Working {
 
 		public void actionProcess(ActionEvent e) throws Exception {
 			UpdateListItem li = getSelectedUpdateListItem();
-			Log log = new Log(li.getSvnEvent().getPreviousURL().toString(),
-					false);
-			if (update.getPreviousWorkingCopyRevision() != null) {
+			boolean isDeletedFile = false;
+			SVNURL url = li.getSvnEvent().getPreviousURL();
+			if (url == null) {
+				url = li.getSvnEvent().getURL();
+			} else {
+				isDeletedFile = true;
+			}
+			Log log = new Log(url.toDecodedString(), false);
+			if (isDeletedFile
+					&& update.getPreviousWorkingCopyRevision() != null) {
 				log.setRevision(update.getPreviousWorkingCopyRevision());
 				log.setPegRevision(update.getPreviousWorkingCopyRevision());
 			}
