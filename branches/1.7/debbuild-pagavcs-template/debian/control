@@ -10,7 +10,6 @@ Package: pagavcs-17
 Architecture: i386 amd64
 Replaces: pagavcs, pagavcs-17-core, pagavcs-17-core-libs, pagavcs-17-cli, pagavcs-17-bigmem
 Breaks: pagavcs
-Depends: default-jre | openjdk-7-jdk | oracle-java7-installer | openjdk-6-jdk | oracle-java6-installer | sun-java6-jre, pagavcs-17-nautilus, pagavcs-17-thunar
+Depends: default-jre | openjdk-6-jdk | openjdk-7-jdk | oracle-java7-installer | oracle-java6-installer | sun-java6-jre, libunixsocket-java, dconf-tools, patchutils, wiggle, meld, gedit, hicolor-icon-theme
 Description: Desktop integrated Subversion client
  Gnome and XFCE integrated Subversion GUI client, similar to TortoiseSVN. 
-
