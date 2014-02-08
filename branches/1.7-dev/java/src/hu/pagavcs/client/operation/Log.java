@@ -2,6 +2,7 @@ package hu.pagavcs.client.operation;
 
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.MiniImmutableMap;
+import hu.pagavcs.client.bl.PagaException;
 import hu.pagavcs.client.bl.SettingsStore;
 import hu.pagavcs.client.bl.SvnFileList;
 import hu.pagavcs.client.bl.SvnHelper;
@@ -85,10 +86,10 @@ public class Log implements UpdateCancelable {
 			gui.setLogRootsFiles(Arrays.asList(new File(path)));
 			gui.setUrlLabel(getUrl().toDecodedString());
 		} else {
-			gui.setLogRoots(Arrays.asList(getRootUrl()));
-			gui.setUrlLabel(getRootUrl().toDecodedString());
+			gui.setLogRoots(Arrays.asList(getLogRootUrl()));
+			gui.setUrlLabel(getLogRootUrl().toDecodedString());
 		}
-		gui.setSvnRepoRootUrl(getRootUrl());
+		gui.setSvnRepoRootUrl(getLogRootUrl());
 		// Manager.getSvnRootUrlByFile(new File(path)));
 
 		gui.doShowLog(revision, pegRevision, LIMIT);
@@ -138,7 +139,7 @@ public class Log implements UpdateCancelable {
 			if (path != null) {
 				mgrSvn = Manager.getSVNClientManager(new File(path));
 			} else {
-				mgrSvn = Manager.getSVNClientManager(getRootUrl());
+				mgrSvn = Manager.getSVNClientManager(getLogRootUrl());
 			}
 
 			SVNLogClient logClient = mgrSvn.getLogClient();
@@ -168,7 +169,7 @@ public class Log implements UpdateCancelable {
 						}
 					};
 
-					logClient.doLog(getRootUrl(), new String[] { "" },
+					logClient.doLog(getLogRootUrl(), new String[] { "" },
 							pegRevision, startRevision, endRevision,
 							stopOnCopy, discoverChangedPaths,
 							includeMergedRevisions, limit, revisionProperties,
@@ -203,11 +204,29 @@ public class Log implements UpdateCancelable {
 		return path;
 	}
 
-	public SVNURL getRootUrl() throws SVNException {
+	public boolean isFileMode() {
+		return path != null;
+	}
+
+	public SVNURL getLogRootUrl() throws SVNException {
 		if (rootUrl == null) {
 			rootUrl = Manager.getInfo(path).getRepositoryRootURL();
 		}
 		return rootUrl;
+	}
+
+	public SVNURL getSvnRootUrl() throws SVNException, PagaException {
+		if (isFileMode()) {
+			return Manager.getSVNClientManager(getLogRootUrl()).getWCClient()
+					.doInfo(new File(path), SVNRevision.WORKING)
+					.getRepositoryRootURL();
+		} else {
+			return Manager
+					.getSVNClientManager(getLogRootUrl())
+					.getWCClient()
+					.doInfo(getLogRootUrl(), SVNRevision.HEAD, SVNRevision.HEAD)
+					.getRepositoryRootURL();
+		}
 	}
 
 	public SVNURL getUrl() throws SVNException {
@@ -295,12 +314,13 @@ public class Log implements UpdateCancelable {
 		SVNClientManager mgrSvn = null;
 		try {
 			gui.workStarted();
-			SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
+			SVNURL repoRoot = getSvnRootUrl();
 			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(),
 					repoRoot.getUserInfo(), repoRoot.getHost(),
 					repoRoot.getPort(), repoRoot.getPath() + showChangesPath,
 					true);
 			mgrSvn = Manager.getSVNClientManager(repoRoot);
+
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			long previousRevision = -1;
 			if (!contentStatus.equals(ContentStatus.ADDED)) {
@@ -439,7 +459,7 @@ public class Log implements UpdateCancelable {
 			String pathToUrl = mgrSvn.getWCClient()
 					.doInfo(new File(path), SVNRevision.WORKING).getURL()
 					.toDecodedString();
-			String rootUrlDecoded = getRootUrl().toDecodedString();
+			String rootUrlDecoded = getSvnRootUrl().toDecodedString();
 
 			SVNURL repoRoot = Manager.getSvnRootUrlByFile(new File(path));
 			SVNURL svnUrl = SVNURL.create(repoRoot.getProtocol(),
