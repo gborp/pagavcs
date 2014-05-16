@@ -1,5 +1,3 @@
 trusty
 saucy
-raring
-quantal
-precise
+
