@@ -117,6 +117,9 @@ public class Manager {
 	public static void init() throws BackingStoreException,
 			GeneralSecurityException, IOException {
 		if (!inited) {
+			
+			 System.setProperty("svnkit.library.gnome-keyring.enabled", "false");
+			 
 			bandwidthMeter = new BandwidthMeter();
 			SVNDebugLog.setDefaultLog(bandwidthMeter);
 			SVNRepositoryFactoryImpl.setup();
