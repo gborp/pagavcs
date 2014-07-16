@@ -38,6 +38,7 @@ import javax.swing.SwingUtilities;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
@@ -49,6 +50,8 @@ import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.internal.util.SVNSocketFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNMerger;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
+import org.tmatesoft.svn.core.internal.wc.SVNConflictVersion;
+import org.tmatesoft.svn.core.internal.wc.SVNDiffConflictChoiceStyle;
 import org.tmatesoft.svn.core.internal.wc.SVNFileUtil;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNAdminArea;
 import org.tmatesoft.svn.core.internal.wc.admin.SVNLog;
@@ -64,6 +67,8 @@ import org.tmatesoft.svn.core.wc.SVNMergeResult;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.core.wc2.ISvnMerger;
+import org.tmatesoft.svn.core.wc2.SvnMergeResult;
 import org.tmatesoft.svn.util.SVNDebugLog;
 
 /**
@@ -117,9 +122,9 @@ public class Manager {
 	public static void init() throws BackingStoreException,
 			GeneralSecurityException, IOException {
 		if (!inited) {
-			
-			 System.setProperty("svnkit.library.gnome-keyring.enabled", "false");
-			 
+
+			System.setProperty("svnkit.library.gnome-keyring.enabled", "false");
+
 			bandwidthMeter = new BandwidthMeter();
 			SVNDebugLog.setDefaultLog(bandwidthMeter);
 			SVNRepositoryFactoryImpl.setup();
@@ -730,11 +735,13 @@ public class Manager {
 		public ISVNMerger createMerger(byte[] conflictStart,
 				byte[] conflictSeparator, byte[] conflictEnd) {
 			return new SVNMergerIgnoreEol(new DefaultSVNMerger(conflictStart,
-					conflictSeparator, conflictEnd, myConflictResolver));
+					conflictSeparator, conflictEnd, myConflictResolver,
+					SVNDiffConflictChoiceStyle.CHOOSE_MODIFIED_LATEST));
+
 		}
 	}
 
-	private static class SVNMergerIgnoreEol implements ISVNMerger {
+	private static class SVNMergerIgnoreEol implements ISVNMerger, ISvnMerger {
 
 		private final ISVNMerger delegate;
 
@@ -760,6 +767,40 @@ public class Manager {
 				options = new SVNDiffOptions(false, false, true);
 			}
 			return this.delegate.mergeText(files, dryRun, options);
+		}
+
+		@Override
+		public SvnMergeResult mergeText(ISvnMerger baseMerger, File resultFile,
+				File targetAbspath, File detranslatedTargetAbspath,
+				File leftAbspath, File rightAbspath, String targetLabel,
+				String leftLabel, String rightLabel, SVNDiffOptions options,
+				SVNDiffConflictChoiceStyle style) throws SVNException {
+
+			if (options == null
+					&& Boolean.TRUE.equals(SettingsStore.getInstance()
+							.getGlobalIgnoreEol())) {
+				options = new SVNDiffOptions(false, false, true);
+			}
+			return baseMerger.mergeText(baseMerger, resultFile, targetAbspath,
+					detranslatedTargetAbspath, leftAbspath, rightAbspath,
+					targetLabel, leftLabel, rightLabel, options, style);
+		}
+
+		@Override
+		public SvnMergeResult mergeProperties(ISvnMerger baseMerger,
+				File localAbsPath, SVNNodeKind kind,
+				SVNConflictVersion leftVersion,
+				SVNConflictVersion rightVersion,
+				SVNProperties serverBaseProperties,
+				SVNProperties pristineProperties,
+				SVNProperties actualProperties, SVNProperties propChanges,
+				boolean baseMerge, boolean dryRun,
+				ISVNConflictHandler conflictResolver) throws SVNException {
+
+			return baseMerger.mergeProperties(baseMerger, localAbsPath, kind,
+					leftVersion, rightVersion, serverBaseProperties,
+					pristineProperties, actualProperties, propChanges,
+					baseMerge, dryRun, conflictResolver);
 		}
 	}
 

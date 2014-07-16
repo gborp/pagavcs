@@ -1,2 +1,2 @@
 Needed packages to build:
-openjdk or sun-java6-jdk, debhelper, javahelper, pbuilder, fakeroot
+openjdk or sun-java7-jdk, debhelper, javahelper, pbuilder, fakeroot, autotools-dev, automake
