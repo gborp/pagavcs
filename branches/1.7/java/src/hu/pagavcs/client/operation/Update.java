@@ -130,21 +130,32 @@ public class Update implements UpdateCancelable {
 					SVNErrorCode errorCode = ex.getErrorMessage()
 							.getErrorCode();
 					if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-						File file = (File) ex.getErrorMessage()
-								.getRelatedObjects()[0];
-						int choosed = JOptionPane.showConfirmDialog(
-								Manager.getRootFrame(),
-								"Working copy " + file.getPath()
-										+ " is locked, do cleanup?",
-								"Working copy locked, cleanup?",
-								JOptionPane.YES_NO_OPTION);
-						if (choosed == JOptionPane.YES_OPTION) {
-							Cleanup cleanup = new Cleanup(file.getPath());
-							cleanup.setAutoClose(true);
-							cleanup.execute();
-						} else {
+						if (ex.getErrorMessage().getRelatedObjects() == null
+								|| ex.getErrorMessage().getRelatedObjects().length < 1) {
+							JOptionPane.showMessageDialog(
+									Manager.getRootFrame(),
+									"Working copy is locked, needs cleanup.",
+									"Working copy locked",
+									JOptionPane.ERROR_MESSAGE);
 							gui.setStatus(ContentStatus.CANCEL);
 							successOrExit = true;
+						} else {
+							File file = (File) ex.getErrorMessage()
+									.getRelatedObjects()[0];
+							int choosed = JOptionPane.showConfirmDialog(
+									Manager.getRootFrame(), "Working copy "
+											+ file.getPath()
+											+ " is locked, do cleanup?",
+									"Working copy locked",
+									JOptionPane.YES_NO_OPTION);
+							if (choosed == JOptionPane.YES_OPTION) {
+								Cleanup cleanup = new Cleanup(file.getPath());
+								cleanup.setAutoClose(true);
+								cleanup.execute();
+							} else {
+								gui.setStatus(ContentStatus.CANCEL);
+								successOrExit = true;
+							}
 						}
 					} else {
 						throw ex;
