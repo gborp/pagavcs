@@ -167,6 +167,14 @@ public class Manager {
 		return tempDir;
 	}
 
+	public static void deleteToTrash(File file) throws IOException {
+		String result = getOsCommandResult(file.getParentFile(), "trash",
+				file.getAbsolutePath());
+		if (result == null || result.isEmpty()) {
+			throw new IOException("File deleting resulted error: " + result);
+		}
+	}
+
 	private static void deleteAll(File directory) {
 		File[] lstFilesW = directory.listFiles();
 		if (lstFilesW != null) {
