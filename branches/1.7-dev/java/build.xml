@@ -41,7 +41,8 @@
 		</copy>
 
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" destdir="${build}" debug="true" optimize="true" source="1.6" target="1.6">
+		<javac srcdir="${src}" destdir="${build}" debug="true" optimize="true"
+			source="1.6" target="1.6">
 			<classpath refid="compile.classpath" />
 		</javac>
 	</target>
@@ -76,7 +77,6 @@
 			<zipfileset src="${lib}/jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar" />
 			<zipfileset src="${lib}/jsch.agentproxy.usocket-jna-0.0.7.jar" />
 			<zipfileset src="${lib}/jsch.agentproxy.usocket-nc-0.0.7.jar" />
-			<zipfileset src="${lib}/platform-3.5.2.jar" />
 
 			<!-- excludes="com/sun/jna/darwin/**,com/sun/jna/freebsd-amd64/**,com/sun/jna/freebsd-i386/**,com/sun/jna/ia64/**,com/sun/jna/sunos-amd64/**,com/sun/jna/sunos-sparc/**,com/sun/jna/sunos-sparcv9/**,com/sun/jna/sunos-x86/**,com/sun/jna/win32/**,com/sun/jna/win32-amd64/**,com/sun/jna/win32-x86/**" -->
 			<zipfileset src="${lib}/log4j-1.2.16.jar" excludes="org/apache/log4j/chainsaw/**" />
