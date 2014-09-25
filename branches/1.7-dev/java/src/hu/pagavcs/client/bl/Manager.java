@@ -347,6 +347,13 @@ public class Manager {
 			try {
 				SslLoginType sslType = mapSslLoginType.get(repositoryUrl
 						.getHost());
+
+				if (sslType == null) {
+					mapSslLoginType.put(repositoryUrl.getHost(),
+							SslLoginType.SSLv2Hello_SSLv3);
+					sslType = SslLoginType.SSLv2Hello_SSLv3;
+				}
+
 				if (sslType == SslLoginType.SSLv2Hello_SSLv3) {
 					SVNSocketFactory.setSSLProtocols("SSLv2Hello,SSLv3");
 				} else {
