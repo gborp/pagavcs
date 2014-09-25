@@ -755,11 +755,22 @@ public class UpdateGui implements Working {
 		// TODO workStarted
 	}
 
-	public void setBandwidth(int bandwidth) {
+	public void setBandwidth(final int bandwidth) throws Exception {
 		totalReceived += bandwidth;
-		prgWorking.setStringPainted(true);
-		prgWorking.setString("" + (bandwidth / 1024) + " kB/sec (total: "
-				+ ((int) (totalReceived / 1024)) + " kB)");
+		new OnSwing() {
+
+			@Override
+			protected void process() throws Exception {
+				if (!prgWorking.isStringPainted()) {
+					prgWorking.setStringPainted(true);
+				}
+				prgWorking.setString("" + (bandwidth / 1024)
+						+ " kB/sec (total: " + ((int) (totalReceived / 1024))
+						+ " kB)");
+			}
+
+		}.run();
+
 	}
 
 	public void close() {
