@@ -50,6 +50,6 @@ cp ../java/dist/pagavcs-libs.jar $WDIR/debian/input/
 cp ../java/dist/icon.png $WDIR/debian/input/
 cp ../doc/* $WDIR/debian/input/doc
 cp ../icons/hicolor/scalable/actions/* $WDIR/debian/input/icons/hicolor/scalable/actions
-cp ../icons/hicolor/scalable/emblems/* $WDIR/debian/input/icons/hicolor/scalable/emblem
+cp ../icons/hicolor/scalable/emblems/* $WDIR/debian/input/icons/hicolor/scalable/emblems
 echo ${APPNAME} ${VERSION}${DIST} > $WDIR/debian/input/version.txt
 
