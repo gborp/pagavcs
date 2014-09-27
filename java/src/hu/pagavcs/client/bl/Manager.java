@@ -5,6 +5,7 @@ import hu.pagavcs.client.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.client.gui.LoginGui;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.operation.ContentStatus;
+import hu.pagavcs.client.operation.Delete;
 import hu.pagavcs.common.ResourceBundleAccessor;
 import hu.pagavcs.server.FileStatusCache;
 
@@ -170,7 +171,7 @@ public class Manager {
 	public static void deleteToTrash(File file) throws IOException {
 		String result = getOsCommandResult(file.getParentFile(), "trash",
 				file.getAbsolutePath());
-		if (result == null || result.isEmpty()) {
+		if (result != null && !result.isEmpty()) {
 			throw new IOException("File deleting resulted error: " + result);
 		}
 	}
@@ -622,6 +623,15 @@ public class Manager {
 		} finally {
 			svnMgr.dispose();
 		}
+	}
+
+	public static void deleteFile(File file) throws BackingStoreException,
+			SVNException {
+		Delete delete = new Delete(file.getPath());
+		delete.setAutoClose(true);
+		delete.setIgnoreIfFileError(true);
+		delete.execute();
+		Manager.invalidate(file);
 	}
 
 	public static void invalidate(File file) {

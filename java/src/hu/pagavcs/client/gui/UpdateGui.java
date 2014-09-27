@@ -557,6 +557,26 @@ public class UpdateGui implements Working {
 		}
 	}
 
+	private class DeleteRestoredAction extends AbstractAction {
+
+		public DeleteRestoredAction() {
+			super("Delete restored");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				UpdateListItem li = getSelectedUpdateListItem();
+				File file = new File(li.getPath());
+				Manager.deleteFile(file);
+				li.setContentStatus(null);
+				li.setStatus(ContentStatus.NONE);
+				tmdlUpdate.fireTableDataChanged();
+			} catch (Exception ex) {
+				Manager.handle(ex);
+			}
+		}
+	}
+
 	private class PopupupMouseListener extends MouseAdapter {
 
 		private JPopupMenu ppVisible;
@@ -564,12 +584,18 @@ public class UpdateGui implements Working {
 		private JPopupMenu ppConflicted;
 		private JPopupMenu ppUpdated;
 		private JPopupMenu ppDeleted;
+		private JPopupMenu ppRestored;
 		private JPopupMenu ppDirectory;
 
 		public PopupupMouseListener() {
 			ppCompleted = new JPopupMenu();
 			ppCompleted.add(new CopyLineToClipboard());
 			ppCompleted.add(new CopyAllToClipboard());
+
+			ppRestored = new JPopupMenu();
+			ppRestored.add(new CopyLineToClipboard());
+			ppRestored.add(new CopyAllToClipboard());
+			ppRestored.add(new DeleteRestoredAction());
 
 			ppUpdated = new JPopupMenu();
 			ppUpdated.add(new CopyLineToClipboard());
@@ -648,6 +674,8 @@ public class UpdateGui implements Working {
 					ppVisible = ppUpdated;
 				} else if (ContentStatus.DELETED.equals(status)) {
 					ppVisible = ppDeleted;
+				} else if (ContentStatus.RESTORED.equals(status)) {
+					ppVisible = ppRestored;
 				} else {
 					ppVisible = ppCompleted;
 				}

@@ -535,11 +535,7 @@ public class Commit {
 	}
 
 	public void delete(File file) throws SVNException, BackingStoreException {
-		Delete delete = new Delete(file.getPath());
-		delete.setAutoClose(true);
-		delete.setIgnoreIfFileError(true);
-		delete.execute();
-		Manager.invalidate(file);
+		Manager.deleteFile(file);
 	}
 
 	private static class RefreshISVNEventHandler implements ISVNEventHandler {
