@@ -169,10 +169,12 @@ public class Manager {
 	}
 
 	public static void deleteToTrash(File file) throws IOException {
-		String result = getOsCommandResult(file.getParentFile(), "trash",
-				file.getAbsolutePath());
-		if (result != null && !result.isEmpty()) {
-			throw new IOException("File deleting resulted error: " + result);
+		if (file.exists()) {
+			String result = getOsCommandResult(file.getParentFile(), "trash",
+					file.getAbsolutePath());
+			if (result != null && !result.isEmpty()) {
+				throw new IOException("File deleting resulted error: " + result);
+			}
 		}
 	}
 
