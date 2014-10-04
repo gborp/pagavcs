@@ -888,8 +888,14 @@ public class Manager {
 			label2 = label2.substring(label2.lastIndexOf('/'));
 		}
 
-		ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD, "-L "
-				+ label1, filename1, "-L " + label2, filename2);
-		processBuilder.start();
+		// ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD,
+		// "-L \"" + label1 + "\"", filename1, "-L \"" + label2 + "\"",
+		// filename2);
+		// processBuilder.start();
+
+		String result = getOsCommandResult(null, Manager.MELD, "-L", label1,
+				filename1, "-L", label2, filename2);
+
+		System.nanoTime();
 	}
 }
