@@ -105,6 +105,8 @@ public class FileStatusCache {
 			result = STATUS.OBSTRUCTED;
 		} else if (contentStatus.equals(SVNStatusType.STATUS_UNVERSIONED)) {
 			result = STATUS.UNVERSIONED;
+		} else if (contentStatus.equals(SVNStatusType.STATUS_NONE)) {
+			result = STATUS.UNVERSIONED;
 		} else {
 			result = STATUS.SVNED;
 		}
