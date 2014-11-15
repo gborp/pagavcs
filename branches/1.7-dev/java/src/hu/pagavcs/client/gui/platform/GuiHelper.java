@@ -78,11 +78,11 @@ public class GuiHelper {
 
 	private static ImageIcon loadEmblem(String name) {
 
-		Integer width = 12;
-		Integer height = 12;
+		int width = 12;
+		int height = 12;
 
-		ImageIcon ii = ResourceBundleAccessor.getImage("emblems/" + name
-				+ ".png");
+		ImageIcon ii = ResourceBundleAccessor
+				.getImage("emblems/emblem-pagavcs-" + name + ".png");
 		ImageIcon imageIcon = new ImageIcon(ii.getImage().getScaledInstance(
 				width, height, Image.SCALE_SMOOTH));
 
