@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="256"
-   height="256"
+   width="160"
+   height="160"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    version="1.0"
    sodipodi:docname="emblem-pagavcs-deleted.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
@@ -49,8 +49,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.97227182"
-     inkscape:cx="268.29262"
-     inkscape:cy="-0.36034752"
+     inkscape:cx="70.30272"
+     inkscape:cy="-0.36033879"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -63,7 +63,11 @@
      inkscape:window-height="848"
      inkscape:window-x="409"
      inkscape:window-y="24"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -79,7 +83,8 @@
   <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     transform="translate(2.3441467e-8,-96)">
     <path
        style="fill:#f23e3e;fill-opacity:1;fill-rule:evenodd;stroke:#740000;stroke-width:1.70920873px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.76394851"
        d="M 31.211027,96.854604 1.1670204,124.57875 C 22.405144,153.12641 31.995287,170.92366 52.090834,184.51998 37.700766,196.24288 24.158526,208.5845 0.85460434,215.91514 L 24.1296,255.1454 c 24.727064,-21.67806 44.621551,-34.30093 57.796962,-50.9007 14.571278,13.26153 33.463148,26.41005 48.007928,50.57198 l 29.10676,-27.34065 C 140.1882,199.14787 124.54846,183.67424 107.64881,169.4525 119.96023,153.35121 135.54133,139.86251 159.1454,122.6063 L 137.38041,96.909387 C 109.56293,112.10353 96.405444,132.91528 77.708948,150.44006 60.253314,138.65777 52.198848,121.94223 31.211027,96.854604 z"
