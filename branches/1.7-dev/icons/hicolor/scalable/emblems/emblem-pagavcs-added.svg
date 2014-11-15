@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="256"
-   height="256"
+   width="160.28815"
+   height="160.28815"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    version="1.0"
    sodipodi:docname="emblem-pagavcs-added.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
@@ -49,8 +49,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.97227182"
-     inkscape:cx="-38.242286"
-     inkscape:cy="30.04695"
+     inkscape:cx="-38.09821"
+     inkscape:cy="30.19103"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -63,7 +63,11 @@
      inkscape:window-height="848"
      inkscape:window-x="409"
      inkscape:window-y="24"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -79,10 +83,12 @@
   <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     transform="translate(0.1440757,-95.855932)">
     <path
-       style="fill:#7558d7;fill-opacity:1;fill-rule:evenodd;stroke:#00005d;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.79828330000000003;stroke-miterlimit:4;stroke-dasharray:none"
-       d="M 50.841654,96.855932 L 50.841654,149.61865 L 0.8559243,149.61865 L 0.8559243,211.17514 L 50.841654,211.17514 L 50.841654,255.14408 L 109.15834,255.14408 L 109.15834,211.17514 L 159.14407,211.17514 L 159.14407,149.61865 L 109.15834,149.61865 L 109.15834,96.855932 L 50.841654,96.855932 z "
-       id="rect2196" />
+       style="fill:#7558d7;fill-opacity:1;fill-rule:evenodd;stroke:#00005d;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.7982833;stroke-dasharray:none"
+       d="m 50.841654,96.855932 0,52.762718 -49.9857297,0 0,61.55649 49.9857297,0 0,43.96894 58.316686,0 0,-43.96894 49.98573,0 0,-61.55649 -49.98573,0 0,-52.762718 -58.316686,0 z"
+       id="rect2196"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

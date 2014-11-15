@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="256"
-   height="256"
+   width="165.15088"
+   height="165.08269"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    version="1.0"
    sodipodi:docname="emblem-pagavcs-conflict.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
@@ -49,8 +49,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.375"
-     inkscape:cx="-38.901493"
-     inkscape:cy="-96.956746"
+     inkscape:cx="-37.063353"
+     inkscape:cy="-94.904538"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -63,7 +63,11 @@
      inkscape:window-height="848"
      inkscape:window-x="306"
      inkscape:window-y="24"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -79,10 +83,11 @@
   <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     transform="translate(1.8381401,-92.969525)">
     <path
        sodipodi:type="star"
-       style="fill:#f6f13a;fill-opacity:1;stroke:#d65a5a;stroke-opacity:1;stroke-width:5.32895821999999963;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#f6f13a;fill-opacity:1;stroke:#d65a5a;stroke-width:5.32895803;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2824"
        sodipodi:sides="3"
        sodipodi:cx="33.818184"
@@ -94,7 +99,7 @@
        inkscape:flatsided="true"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="M 125.45455,137.09091 -56.088562,140.08669 32.088568,-18.632146 125.45455,137.09091 z"
+       d="m 125.45455,137.09091 -181.543112,2.99578 88.17713,-158.718836 z"
        transform="matrix(-0.45673428,0.87195145,-0.75429058,-0.52387927,161.39113,217.78804)" />
     <rect
        style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
