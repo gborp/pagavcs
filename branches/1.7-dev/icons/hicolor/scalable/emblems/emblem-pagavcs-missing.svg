@@ -10,11 +10,11 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="256"
-   height="256"
+   width="160.51283"
+   height="161.12862"
    id="svg2183"
    sodipodi:version="0.32"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    version="1.0"
    sodipodi:docname="emblem-pagavcs-missing.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
@@ -128,8 +128,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.375"
-     inkscape:cx="-29.566251"
-     inkscape:cy="-36.221398"
+     inkscape:cx="-30.304987"
+     inkscape:cy="-40.562138"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -142,7 +142,11 @@
      inkscape:window-height="848"
      inkscape:window-x="409"
      inkscape:window-y="24"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata2188">
     <rdf:RDF>
@@ -158,7 +162,8 @@
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Réteg#1">
+     inkscape:label="Réteg#1"
+     transform="translate(-0.73873614,-90.530649)">
     <path
        sodipodi:type="arc"
        style="fill:#6c70c4;fill-opacity:1;stroke:none"
@@ -167,25 +172,28 @@
        sodipodi:cy="208.49529"
        sodipodi:rx="46.990459"
        sodipodi:ry="46.990459"
-       d="m 94.109486,208.49529 a 46.990459,46.990459 0 1 1 -93.98091926,0 46.990459,46.990459 0 1 1 93.98091926,0 z"
+       d="m 94.109486,208.49529 c 0,25.95211 -21.038346,46.99045 -46.99046,46.99045 -25.952114,0 -46.99045926,-21.03834 -46.99045926,-46.99045 0,-25.95212 21.03834526,-46.99046 46.99045926,-46.99046 25.952114,0 46.99046,21.03834 46.99046,46.99046 z"
        transform="matrix(1.7024427,0,0,1.7046498,1.0355551,-184.77852)" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="Réteg">
+     inkscape:label="Réteg"
+     transform="translate(-0.73873614,-90.530649)">
     <path
-       style="fill:#2f0505;fill-opacity:1;fill-rule:evenodd;stroke:#740000;stroke-width:1.70920873000000006px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.76394850999999986"
+       style="fill:#2f0505;fill-opacity:1;fill-rule:evenodd;stroke:#740000;stroke-width:1.70920873px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.76394851"
        d="M 31.949763,91.487531 1.9057565,119.21167 C 14.416607,149.94115 32.734023,165.55658 52.82957,179.1529 40.62132,191.96671 24.897262,203.21742 1.5933405,210.54806 L 24.868336,249.77832 C 52.86813,232.4639 69.48989,215.47739 82.6653,198.87762 c 16.75309,11.80698 33.46315,26.41005 48.00793,50.57198 l 29.10676,-27.34065 c -14.48941,-30.14634 -32.67461,-45.61997 -51.39244,-58.02353 12.31142,-16.10129 26.80161,-31.77181 51.49659,-46.8462 L 138.11915,91.542311 C 107.39258,101.64554 93.14418,122.82093 78.44768,145.07298 60.99205,133.29069 44.57395,118.75697 31.949763,91.487531 z"
-       id="path2162" />
+       id="path2162"
+       inkscape:connector-curvature="0" />
   </g>
   <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     transform="translate(-0.73873614,-90.530649)">
     <text
        xml:space="preserve"
-       style="font-size:205.77357483000000116px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#e8f142;fill-opacity:1;stroke:#000000;stroke-width:3.61809753999999995;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold"
+       style="font-size:205.77357483px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#e8f142;fill-opacity:1;stroke:#000000;stroke-width:3.61809754;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold"
        x="12.915709"
        y="255.60376"
        id="text2819"
@@ -194,6 +202,6 @@
          id="tspan2821"
          x="12.915709"
          y="255.60376"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#e8f142;fill-opacity:1;stroke-width:3.61809753999999995;stroke-miterlimit:4;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold">?</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#e8f142;fill-opacity:1;stroke-width:3.61809754;stroke-miterlimit:4;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold">?</tspan></text>
   </g>
 </svg>
