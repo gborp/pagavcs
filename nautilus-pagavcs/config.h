@@ -39,10 +39,10 @@
 #define NAUTILUS_VERSION_MAJOR 3
 
 /* nautilus version micro */
-#define NAUTILUS_VERSION_MICRO 2
+#define NAUTILUS_VERSION_MICRO 1
 
 /* nautilus version minor */
-#define NAUTILUS_VERSION_MINOR 8
+#define NAUTILUS_VERSION_MINOR 10
 
 /* Name of package */
 #define PACKAGE "nautilus-pagavcs"
