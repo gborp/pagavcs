@@ -10,9 +10,9 @@ function convertSvg2Png {
 		filename=$(basename "$i")
 		pngfile=$2/`echo $filename | sed -e "s/\.svg$/\.png/"`
 
-		//sedeasy "<path d=" "<path fill=\"#000000\" d=" $i
+		#sedeasy "<path d=" "<path fill=\"#000000\" d=" $i
 
-		inkscape -z $i --export-png=$pngfile -h $3 -w $4
+		inkscape -z "$i" --export-png="$pngfile" -h $3 -w $4
 	done
 }
 
