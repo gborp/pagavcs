@@ -19,5 +19,5 @@ function convertSvg2Png {
 
 convertSvg2Png ../icons/hicolor/scalable/emblems src/hu/pagavcs/client/resources/emblems 128 128
 
-../icons-inline/main/makeicons.sh
+#../icons-inline/main/makeicons.sh
 convertSvg2Png ../icons-inline/main src/hu/pagavcs/client/resources 128 128
