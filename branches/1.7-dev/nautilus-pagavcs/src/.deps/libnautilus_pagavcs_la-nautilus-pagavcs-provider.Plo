@@ -1,14 +1,13 @@
 libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
- nautilus-pagavcs-provider.c /usr/include/stdc-predef.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h ../config.h \
+ nautilus-pagavcs-provider.c /usr/include/stdc-predef.h ../config.h \
  nautilus-pagavcs-provider.h /usr/include/glib-2.0/glib-object.h \
  /usr/include/glib-2.0/gobject/gbinding.h /usr/include/glib-2.0/glib.h \
  /usr/include/glib-2.0/glib/galloca.h /usr/include/glib-2.0/glib/gtypes.h \
  /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h \
  /usr/include/glib-2.0/glib/gmacros.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -18,7 +17,7 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/float.h \
  /usr/include/glib-2.0/glib/gversionmacros.h /usr/include/time.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
@@ -27,7 +26,7 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/glib-2.0/glib/gasyncqueue.h \
  /usr/include/glib-2.0/glib/gthread.h \
  /usr/include/glib-2.0/glib/gatomic.h /usr/include/glib-2.0/glib/gerror.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/glib-2.0/glib/gquark.h \
  /usr/include/glib-2.0/glib/gbacktrace.h /usr/include/signal.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
@@ -49,6 +48,7 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/glib-2.0/glib/gdataset.h /usr/include/glib-2.0/glib/gdate.h \
  /usr/include/glib-2.0/glib/gdatetime.h \
  /usr/include/glib-2.0/glib/gtimezone.h /usr/include/glib-2.0/glib/gdir.h \
+ /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
  /usr/include/glib-2.0/glib/genviron.h \
  /usr/include/glib-2.0/glib/gfileutils.h \
  /usr/include/glib-2.0/glib/ggettext.h /usr/include/glib-2.0/glib/ghash.h \
@@ -91,11 +91,16 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/glib-2.0/glib/deprecated/gcompletion.h \
  /usr/include/glib-2.0/glib/deprecated/gmain.h \
  /usr/include/glib-2.0/glib/deprecated/grel.h \
- /usr/include/glib-2.0/glib/deprecated/gthread.h /usr/include/pthread.h \
- /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
+ /usr/include/glib-2.0/glib/deprecated/gthread.h \
+ /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap-16.h /usr/include/sched.h \
- /usr/include/x86_64-linux-gnu/bits/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
+ /usr/include/x86_64-linux-gnu/sys/select.h \
+ /usr/include/x86_64-linux-gnu/bits/select.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
+ /usr/include/x86_64-linux-gnu/sys/sysmacros.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/glib-2.0/gobject/gobject.h \
  /usr/include/glib-2.0/gobject/gtype.h \
@@ -147,11 +152,6 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h \
- /usr/include/x86_64-linux-gnu/sys/types.h \
- /usr/include/x86_64-linux-gnu/sys/select.h \
- /usr/include/x86_64-linux-gnu/bits/select.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h \
- /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
  /usr/include/glib-2.0/gio/gdatainputstream.h \
  /usr/include/glib-2.0/gio/gdataoutputstream.h \
  /usr/include/glib-2.0/gio/gdbusaddress.h \
@@ -228,6 +228,8 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/glib-2.0/gio/gsrvtarget.h \
  /usr/include/glib-2.0/gio/gsimpleproxyresolver.h \
  /usr/include/glib-2.0/gio/gtask.h \
+ /usr/include/glib-2.0/gio/gsubprocess.h \
+ /usr/include/glib-2.0/gio/gsubprocesslauncher.h \
  /usr/include/glib-2.0/gio/gtcpconnection.h \
  /usr/include/glib-2.0/gio/gtcpwrapperconnection.h \
  /usr/include/glib-2.0/gio/gtestdbus.h \
@@ -259,6 +261,7 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/glib-2.0/gio/gmenumodel.h /usr/include/glib-2.0/gio/gmenu.h \
  /usr/include/glib-2.0/gio/gmenuexporter.h \
  /usr/include/glib-2.0/gio/gdbusmenumodel.h \
+ /usr/include/glib-2.0/gio/gnotification.h \
  /usr/include/gtk-3.0/gdk/gdktypes.h /usr/include/pango-1.0/pango/pango.h \
  /usr/include/pango-1.0/pango/pango-attributes.h \
  /usr/include/pango-1.0/pango/pango-font.h \
@@ -337,6 +340,7 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/atk-1.0/atk/atkdocument.h \
  /usr/include/atk-1.0/atk/atkeditabletext.h \
  /usr/include/atk-1.0/atk/atktext.h \
+ /usr/include/atk-1.0/atk/atk-enum-types.h \
  /usr/include/atk-1.0/atk/atkgobjectaccessible.h \
  /usr/include/atk-1.0/atk/atkhyperlink.h \
  /usr/include/atk-1.0/atk/atkhyperlinkimpl.h \
@@ -345,7 +349,7 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/atk-1.0/atk/atknoopobject.h \
  /usr/include/atk-1.0/atk/atknoopobjectfactory.h \
  /usr/include/atk-1.0/atk/atkobjectfactory.h \
- /usr/include/atk-1.0/atk/atkplug.h \
+ /usr/include/atk-1.0/atk/atkplug.h /usr/include/atk-1.0/atk/atkrange.h \
  /usr/include/atk-1.0/atk/atkregistry.h \
  /usr/include/atk-1.0/atk/atkobjectfactory.h \
  /usr/include/atk-1.0/atk/atkrelation.h \
@@ -354,8 +358,9 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/atk-1.0/atk/atksocket.h \
  /usr/include/atk-1.0/atk/atkstateset.h \
  /usr/include/atk-1.0/atk/atkstreamablecontent.h \
- /usr/include/atk-1.0/atk/atktable.h /usr/include/atk-1.0/atk/atkmisc.h \
- /usr/include/atk-1.0/atk/atkvalue.h \
+ /usr/include/atk-1.0/atk/atktable.h \
+ /usr/include/atk-1.0/atk/atktablecell.h \
+ /usr/include/atk-1.0/atk/atkmisc.h /usr/include/atk-1.0/atk/atkvalue.h \
  /usr/include/atk-1.0/atk/atkversion.h \
  /usr/include/atk-1.0/atk/atkwindow.h /usr/include/gtk-3.0/gtk/gtkbin.h \
  /usr/include/gtk-3.0/gtk/gtkcontainer.h \
@@ -365,11 +370,8 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/gtkmenushell.h \
  /usr/include/gtk-3.0/gtk/gtkaccelmap.h \
  /usr/include/gtk-3.0/gtk/gtkaccessible.h \
- /usr/include/gtk-3.0/gtk/gtkaction.h \
  /usr/include/gtk-3.0/gtk/gtkactionable.h \
- /usr/include/gtk-3.0/gtk/gtkactiongroup.h \
- /usr/include/gtk-3.0/gtk/gtkstock.h \
- /usr/include/gtk-3.0/gtk/gtkactivatable.h \
+ /usr/include/gtk-3.0/gtk/gtkactionbar.h \
  /usr/include/gtk-3.0/gtk/gtkadjustment.h \
  /usr/include/gtk-3.0/gtk/gtkalignment.h \
  /usr/include/gtk-3.0/gtk/gtkappchooser.h \
@@ -444,19 +446,20 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/gtkfilechooserbutton.h \
  /usr/include/gtk-3.0/gtk/gtkfilechooserdialog.h \
  /usr/include/gtk-3.0/gtk/gtkfilechooserwidget.h \
+ /usr/include/gtk-3.0/gtk/gtkflowbox.h \
  /usr/include/gtk-3.0/gtk/gtkfontbutton.h \
  /usr/include/gtk-3.0/gtk/gtkfontchooser.h \
  /usr/include/gtk-3.0/gtk/gtkfontchooserdialog.h \
  /usr/include/gtk-3.0/gtk/gtkfontchooserwidget.h \
  /usr/include/gtk-3.0/gtk/gtkgrid.h \
- /usr/include/gtk-3.0/gtk/gtkiconfactory.h \
+ /usr/include/gtk-3.0/gtk/gtkheaderbar.h \
  /usr/include/gtk-3.0/gtk/gtkicontheme.h \
  /usr/include/gtk-3.0/gtk/gtkstylecontext.h \
  /usr/include/gtk-3.0/gtk/gtkstyleprovider.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkiconfactory.h \
  /usr/include/gtk-3.0/gtk/gtkstyleproperties.h \
  /usr/include/gtk-3.0/gtk/gtkiconview.h \
  /usr/include/gtk-3.0/gtk/gtktooltip.h \
- /usr/include/gtk-3.0/gtk/gtkimagemenuitem.h \
  /usr/include/gtk-3.0/gtk/gtkimcontextinfo.h \
  /usr/include/gtk-3.0/gtk/gtkimcontextsimple.h \
  /usr/include/gtk-3.0/gtk/gtkimmulticontext.h \
@@ -465,9 +468,11 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/gtklayout.h \
  /usr/include/gtk-3.0/gtk/gtklevelbar.h \
  /usr/include/gtk-3.0/gtk/gtklinkbutton.h \
+ /usr/include/gtk-3.0/gtk/gtklistbox.h \
  /usr/include/gtk-3.0/gtk/gtklockbutton.h \
  /usr/include/gtk-3.0/gtk/gtkmain.h /usr/include/gtk-3.0/gtk/gtkmenubar.h \
  /usr/include/gtk-3.0/gtk/gtkmenubutton.h \
+ /usr/include/gtk-3.0/gtk/gtkpopover.h \
  /usr/include/gtk-3.0/gtk/gtkmenutoolbutton.h \
  /usr/include/gtk-3.0/gtk/gtktoolbutton.h \
  /usr/include/gtk-3.0/gtk/gtktoolitem.h \
@@ -483,30 +488,30 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/gtkpagesetup.h \
  /usr/include/gtk-3.0/gtk/gtkpapersize.h \
  /usr/include/gtk-3.0/gtk/gtkpaned.h \
+ /usr/include/gtk-3.0/gtk/gtkplacessidebar.h \
  /usr/include/gtk-3.0/gtk/gtkprintcontext.h \
  /usr/include/gtk-3.0/gtk/gtkprintoperation.h \
  /usr/include/gtk-3.0/gtk/gtkprintsettings.h \
  /usr/include/gtk-3.0/gtk/gtkprintoperationpreview.h \
  /usr/include/gtk-3.0/gtk/gtkprogressbar.h \
- /usr/include/gtk-3.0/gtk/gtkradioaction.h \
- /usr/include/gtk-3.0/gtk/gtktoggleaction.h \
  /usr/include/gtk-3.0/gtk/gtkradiobutton.h \
  /usr/include/gtk-3.0/gtk/gtkradiomenuitem.h \
  /usr/include/gtk-3.0/gtk/gtkradiotoolbutton.h \
  /usr/include/gtk-3.0/gtk/gtktoggletoolbutton.h \
  /usr/include/gtk-3.0/gtk/gtkrange.h \
- /usr/include/gtk-3.0/gtk/gtkrecentaction.h \
- /usr/include/gtk-3.0/gtk/gtkrecentmanager.h \
  /usr/include/gtk-3.0/gtk/gtkrecentchooser.h \
+ /usr/include/gtk-3.0/gtk/gtkrecentmanager.h \
  /usr/include/gtk-3.0/gtk/gtkrecentfilter.h \
  /usr/include/gtk-3.0/gtk/gtkrecentchooserdialog.h \
  /usr/include/gtk-3.0/gtk/gtkrecentchoosermenu.h \
  /usr/include/gtk-3.0/gtk/gtkrecentchooserwidget.h \
+ /usr/include/gtk-3.0/gtk/gtkrevealer.h \
  /usr/include/gtk-3.0/gtk/gtkscale.h \
  /usr/include/gtk-3.0/gtk/gtkscalebutton.h \
  /usr/include/gtk-3.0/gtk/gtkscrollable.h \
  /usr/include/gtk-3.0/gtk/gtkscrollbar.h \
  /usr/include/gtk-3.0/gtk/gtkscrolledwindow.h \
+ /usr/include/gtk-3.0/gtk/gtksearchbar.h \
  /usr/include/gtk-3.0/gtk/gtksearchentry.h \
  /usr/include/gtk-3.0/gtk/gtkseparator.h \
  /usr/include/gtk-3.0/gtk/gtkseparatormenuitem.h \
@@ -516,6 +521,8 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/gtksizerequest.h \
  /usr/include/gtk-3.0/gtk/gtkspinbutton.h \
  /usr/include/gtk-3.0/gtk/gtkspinner.h \
+ /usr/include/gtk-3.0/gtk/gtkstack.h \
+ /usr/include/gtk-3.0/gtk/gtkstackswitcher.h \
  /usr/include/gtk-3.0/gtk/gtkstatusbar.h \
  /usr/include/gtk-3.0/gtk/gtkstatusicon.h \
  /usr/include/gtk-3.0/gtk/gtkswitch.h \
@@ -535,11 +542,14 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/gtktreeselection.h \
  /usr/include/gtk-3.0/gtk/gtktreestore.h \
  /usr/include/gtk-3.0/gtk/gtktypebuiltins.h \
- /usr/include/gtk-3.0/gtk/gtkuimanager.h \
  /usr/include/gtk-3.0/gtk/gtkversion.h \
  /usr/include/gtk-3.0/gtk/gtkviewport.h \
  /usr/include/gtk-3.0/gtk/gtkvolumebutton.h \
  /usr/include/gtk-3.0/gtk/gtkwidgetpath.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkactivatable.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkaction.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkactiongroup.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkstock.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkcolorsel.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkcolorseldialog.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkfontsel.h \
@@ -553,10 +563,15 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/gtk-3.0/gtk/deprecated/gtkhscale.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkhscrollbar.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkhseparator.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkimagemenuitem.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkradioaction.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtktoggleaction.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkrc.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkrecentaction.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkstyle.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtktable.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtktearoffmenuitem.h \
+ /usr/include/gtk-3.0/gtk/deprecated/gtkuimanager.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkvbbox.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkvbox.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkvpaned.h \
@@ -579,12 +594,12 @@ libnautilus_pagavcs_la-nautilus-pagavcs-provider.lo: \
  /usr/include/asm-generic/socket.h \
  /usr/include/x86_64-linux-gnu/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
- /usr/include/x86_64-linux-gnu/bits/socket2.h /usr/include/linux/un.h \
- /usr/include/linux/socket.h
+ /usr/include/x86_64-linux-gnu/bits/socket2.h \
+ /usr/include/x86_64-linux-gnu/sys/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/linux/un.h \
+ /usr/include/linux/socket.h /usr/include/pwd.h
 
 /usr/include/stdc-predef.h:
-
-/usr/include/x86_64-linux-gnu/bits/predefs.h:
 
 ../config.h:
 
@@ -604,11 +619,11 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/glib-2.0/glib/gmacros.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h:
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h:
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h:
 
 /usr/include/limits.h:
 
@@ -630,7 +645,7 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/float.h:
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include/float.h:
 
 /usr/include/glib-2.0/glib/gversionmacros.h:
 
@@ -654,7 +669,7 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/glib-2.0/glib/gerror.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h:
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h:
 
 /usr/include/glib-2.0/glib/gquark.h:
 
@@ -703,6 +718,10 @@ nautilus-pagavcs-provider.h:
 /usr/include/glib-2.0/glib/gtimezone.h:
 
 /usr/include/glib-2.0/glib/gdir.h:
+
+/usr/include/dirent.h:
+
+/usr/include/x86_64-linux-gnu/bits/dirent.h:
 
 /usr/include/glib-2.0/glib/genviron.h:
 
@@ -806,7 +825,7 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/glib-2.0/glib/deprecated/gthread.h:
 
-/usr/include/pthread.h:
+/usr/include/x86_64-linux-gnu/sys/types.h:
 
 /usr/include/endian.h:
 
@@ -815,6 +834,16 @@ nautilus-pagavcs-provider.h:
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
 /usr/include/x86_64-linux-gnu/bits/byteswap-16.h:
+
+/usr/include/x86_64-linux-gnu/sys/select.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
+
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
+/usr/include/x86_64-linux-gnu/sys/sysmacros.h:
+
+/usr/include/pthread.h:
 
 /usr/include/sched.h:
 
@@ -931,16 +960,6 @@ nautilus-pagavcs-provider.h:
 /usr/include/getopt.h:
 
 /usr/include/x86_64-linux-gnu/bits/unistd.h:
-
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
-/usr/include/x86_64-linux-gnu/sys/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/select2.h:
-
-/usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/glib-2.0/gio/gdatainputstream.h:
 
@@ -1100,6 +1119,10 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/glib-2.0/gio/gtask.h:
 
+/usr/include/glib-2.0/gio/gsubprocess.h:
+
+/usr/include/glib-2.0/gio/gsubprocesslauncher.h:
+
 /usr/include/glib-2.0/gio/gtcpconnection.h:
 
 /usr/include/glib-2.0/gio/gtcpwrapperconnection.h:
@@ -1165,6 +1188,8 @@ nautilus-pagavcs-provider.h:
 /usr/include/glib-2.0/gio/gmenuexporter.h:
 
 /usr/include/glib-2.0/gio/gdbusmenumodel.h:
+
+/usr/include/glib-2.0/gio/gnotification.h:
 
 /usr/include/gtk-3.0/gdk/gdktypes.h:
 
@@ -1350,6 +1375,8 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/atk-1.0/atk/atktext.h:
 
+/usr/include/atk-1.0/atk/atk-enum-types.h:
+
 /usr/include/atk-1.0/atk/atkgobjectaccessible.h:
 
 /usr/include/atk-1.0/atk/atkhyperlink.h:
@@ -1368,6 +1395,8 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/atk-1.0/atk/atkplug.h:
 
+/usr/include/atk-1.0/atk/atkrange.h:
+
 /usr/include/atk-1.0/atk/atkregistry.h:
 
 /usr/include/atk-1.0/atk/atkobjectfactory.h:
@@ -1385,6 +1414,8 @@ nautilus-pagavcs-provider.h:
 /usr/include/atk-1.0/atk/atkstreamablecontent.h:
 
 /usr/include/atk-1.0/atk/atktable.h:
+
+/usr/include/atk-1.0/atk/atktablecell.h:
 
 /usr/include/atk-1.0/atk/atkmisc.h:
 
@@ -1412,15 +1443,9 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtkaccessible.h:
 
-/usr/include/gtk-3.0/gtk/gtkaction.h:
-
 /usr/include/gtk-3.0/gtk/gtkactionable.h:
 
-/usr/include/gtk-3.0/gtk/gtkactiongroup.h:
-
-/usr/include/gtk-3.0/gtk/gtkstock.h:
-
-/usr/include/gtk-3.0/gtk/gtkactivatable.h:
+/usr/include/gtk-3.0/gtk/gtkactionbar.h:
 
 /usr/include/gtk-3.0/gtk/gtkadjustment.h:
 
@@ -1572,6 +1597,8 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtkfilechooserwidget.h:
 
+/usr/include/gtk-3.0/gtk/gtkflowbox.h:
+
 /usr/include/gtk-3.0/gtk/gtkfontbutton.h:
 
 /usr/include/gtk-3.0/gtk/gtkfontchooser.h:
@@ -1582,7 +1609,7 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtkgrid.h:
 
-/usr/include/gtk-3.0/gtk/gtkiconfactory.h:
+/usr/include/gtk-3.0/gtk/gtkheaderbar.h:
 
 /usr/include/gtk-3.0/gtk/gtkicontheme.h:
 
@@ -1590,13 +1617,13 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtkstyleprovider.h:
 
+/usr/include/gtk-3.0/gtk/deprecated/gtkiconfactory.h:
+
 /usr/include/gtk-3.0/gtk/gtkstyleproperties.h:
 
 /usr/include/gtk-3.0/gtk/gtkiconview.h:
 
 /usr/include/gtk-3.0/gtk/gtktooltip.h:
-
-/usr/include/gtk-3.0/gtk/gtkimagemenuitem.h:
 
 /usr/include/gtk-3.0/gtk/gtkimcontextinfo.h:
 
@@ -1614,6 +1641,8 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtklinkbutton.h:
 
+/usr/include/gtk-3.0/gtk/gtklistbox.h:
+
 /usr/include/gtk-3.0/gtk/gtklockbutton.h:
 
 /usr/include/gtk-3.0/gtk/gtkmain.h:
@@ -1621,6 +1650,8 @@ nautilus-pagavcs-provider.h:
 /usr/include/gtk-3.0/gtk/gtkmenubar.h:
 
 /usr/include/gtk-3.0/gtk/gtkmenubutton.h:
+
+/usr/include/gtk-3.0/gtk/gtkpopover.h:
 
 /usr/include/gtk-3.0/gtk/gtkmenutoolbutton.h:
 
@@ -1652,6 +1683,8 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtkpaned.h:
 
+/usr/include/gtk-3.0/gtk/gtkplacessidebar.h:
+
 /usr/include/gtk-3.0/gtk/gtkprintcontext.h:
 
 /usr/include/gtk-3.0/gtk/gtkprintoperation.h:
@@ -1661,10 +1694,6 @@ nautilus-pagavcs-provider.h:
 /usr/include/gtk-3.0/gtk/gtkprintoperationpreview.h:
 
 /usr/include/gtk-3.0/gtk/gtkprogressbar.h:
-
-/usr/include/gtk-3.0/gtk/gtkradioaction.h:
-
-/usr/include/gtk-3.0/gtk/gtktoggleaction.h:
 
 /usr/include/gtk-3.0/gtk/gtkradiobutton.h:
 
@@ -1676,11 +1705,9 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtkrange.h:
 
-/usr/include/gtk-3.0/gtk/gtkrecentaction.h:
+/usr/include/gtk-3.0/gtk/gtkrecentchooser.h:
 
 /usr/include/gtk-3.0/gtk/gtkrecentmanager.h:
-
-/usr/include/gtk-3.0/gtk/gtkrecentchooser.h:
 
 /usr/include/gtk-3.0/gtk/gtkrecentfilter.h:
 
@@ -1689,6 +1716,8 @@ nautilus-pagavcs-provider.h:
 /usr/include/gtk-3.0/gtk/gtkrecentchoosermenu.h:
 
 /usr/include/gtk-3.0/gtk/gtkrecentchooserwidget.h:
+
+/usr/include/gtk-3.0/gtk/gtkrevealer.h:
 
 /usr/include/gtk-3.0/gtk/gtkscale.h:
 
@@ -1699,6 +1728,8 @@ nautilus-pagavcs-provider.h:
 /usr/include/gtk-3.0/gtk/gtkscrollbar.h:
 
 /usr/include/gtk-3.0/gtk/gtkscrolledwindow.h:
+
+/usr/include/gtk-3.0/gtk/gtksearchbar.h:
 
 /usr/include/gtk-3.0/gtk/gtksearchentry.h:
 
@@ -1717,6 +1748,10 @@ nautilus-pagavcs-provider.h:
 /usr/include/gtk-3.0/gtk/gtkspinbutton.h:
 
 /usr/include/gtk-3.0/gtk/gtkspinner.h:
+
+/usr/include/gtk-3.0/gtk/gtkstack.h:
+
+/usr/include/gtk-3.0/gtk/gtkstackswitcher.h:
 
 /usr/include/gtk-3.0/gtk/gtkstatusbar.h:
 
@@ -1756,8 +1791,6 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/gtktypebuiltins.h:
 
-/usr/include/gtk-3.0/gtk/gtkuimanager.h:
-
 /usr/include/gtk-3.0/gtk/gtkversion.h:
 
 /usr/include/gtk-3.0/gtk/gtkviewport.h:
@@ -1765,6 +1798,14 @@ nautilus-pagavcs-provider.h:
 /usr/include/gtk-3.0/gtk/gtkvolumebutton.h:
 
 /usr/include/gtk-3.0/gtk/gtkwidgetpath.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkactivatable.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkaction.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkactiongroup.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkstock.h:
 
 /usr/include/gtk-3.0/gtk/deprecated/gtkcolorsel.h:
 
@@ -1792,13 +1833,23 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/gtk-3.0/gtk/deprecated/gtkhseparator.h:
 
+/usr/include/gtk-3.0/gtk/deprecated/gtkimagemenuitem.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkradioaction.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtktoggleaction.h:
+
 /usr/include/gtk-3.0/gtk/deprecated/gtkrc.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkrecentaction.h:
 
 /usr/include/gtk-3.0/gtk/deprecated/gtkstyle.h:
 
 /usr/include/gtk-3.0/gtk/deprecated/gtktable.h:
 
 /usr/include/gtk-3.0/gtk/deprecated/gtktearoffmenuitem.h:
+
+/usr/include/gtk-3.0/gtk/deprecated/gtkuimanager.h:
 
 /usr/include/gtk-3.0/gtk/deprecated/gtkvbbox.h:
 
@@ -1850,6 +1901,12 @@ nautilus-pagavcs-provider.h:
 
 /usr/include/x86_64-linux-gnu/bits/socket2.h:
 
+/usr/include/x86_64-linux-gnu/sys/stat.h:
+
+/usr/include/x86_64-linux-gnu/bits/stat.h:
+
 /usr/include/linux/un.h:
 
 /usr/include/linux/socket.h:
+
+/usr/include/pwd.h:
