@@ -2,7 +2,6 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -15,7 +14,9 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="icon.svg">
+   sodipodi:docname="other-app-icon.svg">
+  <defs
+     id="defs3014" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,10 +25,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="-10.493451"
+     inkscape:cx="-59.107042"
      inkscape:cy="-5.6118832"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer3"
      showgrid="false"
      inkscape:window-width="1551"
      inkscape:window-height="876"
@@ -58,7 +59,7 @@
     <path
        inkscape:connector-curvature="0"
        d="m 317.43967,298.13946 -47.99957,0 0,48 48,0 0,-48 -2.8e-4,0 z"
-       style="fill:#0057cd;fill-opacity:1;fill-rule:nonzero"
+       style="fill:#cdc600;fill-opacity:1;fill-rule:nonzero"
        id="path49" />
   </g>
   <g
@@ -95,7 +96,7 @@
        d="m 94.109486,208.49529 a 46.990459,46.990459 0 1 1 -93.98091926,0 46.990459,46.990459 0 1 1 93.98091926,0 z"
        transform="matrix(0.27979386,0,0,0.27979386,22.227745,-23.285394)" />
     <path
-       style="fill:#0057cd;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.26801932px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:#cdc600;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.26801932000000001px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 28.740876,35.544609 -3.623158,2.731439 c 1.439947,2.939271 3.39642,5.039185 6.618705,7.186655 5.770174,-4.71867 13.318379,-14.268382 12.731701,-15.676712 -2.61228,-4.156411 -5.869791,4.365492 -12.01703,9.744079 -1.190355,0.917349 -2.757825,-1.988144 -3.710218,-3.985461 z"
        id="path4164"
        sodipodi:nodetypes="cccccc"
