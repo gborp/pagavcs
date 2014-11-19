@@ -7,11 +7,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="159.99713"
-   height="160.20456"
+   width="163.99713"
+   height="164.20456"
    id="svg2183"
    sodipodi:version="0.32"
    inkscape:version="0.48.5 r10040"
@@ -41,16 +40,6 @@
          offset="1"
          id="stop4158" />
     </linearGradient>
-    <radialGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4154"
-       id="radialGradient4162"
-       cx="47.119026"
-       cy="208.49529"
-       fx="47.119026"
-       fy="208.49529"
-       r="47.490459"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -60,8 +49,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.375"
-     inkscape:cx="143.43189"
-     inkscape:cy="39.172178"
+     inkscape:cx="5.4318901"
+     inkscape:cy="41.172173"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -95,10 +84,10 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     transform="translate(-0.40273041,-95.218789)">
+     transform="translate(1.5972697,-93.218789)">
     <path
        sodipodi:type="arc"
-       style="fill:url(#radialGradient4162);fill-opacity:1;stroke:none"
+       style="fill:#a5a5a5;fill-opacity:1;stroke:#737373;stroke-width:2.34804368;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3183"
        sodipodi:cx="47.119026"
        sodipodi:cy="208.49529"
