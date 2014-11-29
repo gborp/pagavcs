@@ -86,8 +86,7 @@ public class Table<L extends ListItem> extends JTable {
 				if (!resizeIsTimed) {
 					resizeIsTimed = true;
 					if (tmrResize != null) {
-						tmrResize.schedule(new DoResizeTask(),
-								Manager.TABLE_RESIZE_DELAY);
+						tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
 					}
 				}
 			}
@@ -99,8 +98,7 @@ public class Table<L extends ListItem> extends JTable {
 				if (!resizeIsTimed) {
 					resizeIsTimed = true;
 					if (tmrResize != null) {
-						tmrResize.schedule(new DoResizeTask(),
-								Manager.TABLE_RESIZE_DELAY);
+						tmrResize.schedule(new DoResizeTask(), Manager.TABLE_RESIZE_DELAY);
 					}
 				}
 			}
@@ -184,9 +182,7 @@ public class Table<L extends ListItem> extends JTable {
 				}
 			}
 
-			int width = headerRenderer.getTableCellRendererComponent(this,
-					col.getHeaderValue(), false, false, -1, i)
-					.getPreferredSize().width
+			int width = headerRenderer.getTableCellRendererComponent(this, col.getHeaderValue(), false, false, -1, i).getPreferredSize().width
 					+ interCellSpacingHorizontal;
 			columnPreferredWidth[i] = width;
 
@@ -199,7 +195,7 @@ public class Table<L extends ListItem> extends JTable {
 					}
 				}
 
-				col.setMinWidth(width);
+				// col.setMinWidth(width);
 				col.setPreferredWidth(width);
 				col.setWidth(width);
 			}
@@ -216,8 +212,7 @@ public class Table<L extends ListItem> extends JTable {
 
 				TableCellRenderer renderer = getCellRenderer(0, i);
 				for (L li : lstRows) {
-					Component comp = renderer.getTableCellRendererComponent(
-							this, li.getValue(i), false, false, 0, i);
+					Component comp = renderer.getTableCellRendererComponent(this, li.getValue(i), false, false, 0, i);
 					width = Math.max(width, comp.getPreferredSize().width);
 				}
 
@@ -231,7 +226,7 @@ public class Table<L extends ListItem> extends JTable {
 						width = viewWidth - dataTotalWidth;
 					}
 				}
-				col.setMinWidth(width);
+				// col.setMinWidth(width);
 				col.setPreferredWidth(width);
 				col.setWidth(width);
 				dataTotalWidth += width;
@@ -257,8 +252,7 @@ public class Table<L extends ListItem> extends JTable {
 			return null;
 		}
 
-		return tableModel.getCellToolTip(convertColumnIndexToModel(colIndex),
-				convertRowIndexToModel(rowIndex));
+		return tableModel.getCellToolTip(convertColumnIndexToModel(colIndex), convertRowIndexToModel(rowIndex));
 	}
 
 	protected JTableHeader createDefaultTableHeader() {
@@ -280,10 +274,7 @@ public class Table<L extends ListItem> extends JTable {
 		Container parent;
 		int dx = getX(), dy = getY();
 
-		for (parent = getParent(); !(parent == null)
-				&& !(parent instanceof JComponent)
-				&& !(parent instanceof CellRendererPane); parent = parent
-				.getParent()) {
+		for (parent = getParent(); !(parent == null) && !(parent instanceof JComponent) && !(parent instanceof CellRendererPane); parent = parent.getParent()) {
 			Rectangle bounds = parent.getBounds();
 
 			dx += bounds.x;
@@ -297,8 +288,7 @@ public class Table<L extends ListItem> extends JTable {
 			JComponent jcompParent = ((JComponent) parent);
 
 			Rectangle visibleRect = jcompParent.getVisibleRect();
-			Rectangle newARect = new Rectangle(visibleRect.x, aRect.y,
-					visibleRect.width, aRect.height);
+			Rectangle newARect = new Rectangle(visibleRect.x, aRect.y, visibleRect.width, aRect.height);
 
 			if (!jcompParent.getVisibleRect().intersects(newARect)) {
 				aRect.x = newARect.x;
@@ -323,6 +313,6 @@ public class Table<L extends ListItem> extends JTable {
 
 	public L getSelectedItem() {
 		return tableModel.getRow(convertRowIndexToModel(getSelectedRow()));
-
 	}
+
 }

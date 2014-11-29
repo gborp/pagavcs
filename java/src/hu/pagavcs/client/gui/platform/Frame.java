@@ -4,6 +4,7 @@ import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.WindowPreferencesSaverOnClose;
 import hu.pagavcs.common.ResourceBundleAccessor;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
@@ -79,5 +81,30 @@ public class Frame extends JFrame {
 		addWindowListener(new WindowPreferencesSaverOnClose(null,
 				applicationName));
 		setVisible(true);
+	}
+
+	public void packLater() {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				Dimension pref = getPreferredSize();
+				Dimension current = getSize();
+				double newWidth = current.getWidth();
+				double newHeight = current.getHeight();
+				if (pref.getWidth() > current.getWidth()) {
+					newWidth = pref.getWidth();
+				}
+				if (pref.getHeight() > current.getHeight()) {
+					newHeight = pref.getHeight();
+				}
+				Dimension newSize = new Dimension((int) newWidth,
+						(int) newHeight);
+				if (!current.equals(newSize)) {
+					setSize(newSize);
+				}
+			}
+
+		});
 	}
 }
