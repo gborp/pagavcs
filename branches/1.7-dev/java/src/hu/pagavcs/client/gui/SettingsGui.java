@@ -45,7 +45,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class SettingsGui {
 
-	private static final String ABOUT_TEXT = "PagaVCS\nPaga Version Control System\n\npagavcs.googlecode.com\n\n©2010-2011 Gábor Pápai";
+	private static final String ABOUT_TEXT = "PagaVCS\nPaga Version Control System\n\npagavcs.googlecode.com\n\n©2010-2014 Gábor Pápai";
 
 	private Settings settings;
 	private TextArea taCommitCompleteTemplate;
@@ -65,75 +65,57 @@ public class SettingsGui {
 
 		JButton btnAbout = new JButton(new AboutAction());
 		JButton btnClearLogin = new JButton(new ClearLoginCacheAction());
-		JButton btnShowLoginDialogNextTime = new JButton(
-				new ShowLoginDialogNextTimeAction());
+		JButton btnShowLoginDialogNextTime = new JButton(new ShowLoginDialogNextTimeAction());
 		JButton btnExitPagavcs = new JButton(new ExitPagavcsAction());
-		JButton btnSetCommitCompletedMessageTemplates = new JButton(
-				new SetCommitCompletedMessageTemplatesAction());
+		JButton btnSetCommitCompletedMessageTemplates = new JButton(new SetCommitCompletedMessageTemplatesAction());
 		cbGlobalIgnoreEol = new JCheckBox("Global Ignore EOL");
-		if (Boolean.TRUE.equals(SettingsStore.getInstance()
-				.getGlobalIgnoreEol())) {
+		if (Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol())) {
 			cbGlobalIgnoreEol.setSelected(true);
 		}
 
-		cbShowIconsInContextMenu = new JCheckBox(
-				new ShowIconsInContextMenuAction());
+		cbShowIconsInContextMenu = new JCheckBox(new ShowIconsInContextMenuAction());
 		cbShowIconsInContextMenu.setSelected(isShowIconsInContextMenus());
 
 		taCommitCompleteTemplate = new TextArea();
-		taCommitCompleteTemplate
-				.setToolTipText("Example: /pagavcs/trunk>>>#{0} trunk.PagaVCS");
+		taCommitCompleteTemplate.setToolTipText("Example: /pagavcs/trunk>>>#{0} trunk.PagaVCS");
 		taCommitCompleteTemplate.setRows(3);
 
-		FormLayout lyTemplate = new FormLayout("p,1dlu:g", "p,2dlu,p:g");
-		JPanel pnlTemplate = new JPanel(lyTemplate);
+		JPanel pnlTemplate = new JPanel(new FormLayout("max(200dlu;p),1dlu:g", "p,2dlu,max(50dlu;p):g"));
 
-		FormLayout lyMain = new FormLayout("1dlu:g,2dlu,p",
-				"1dlu:g,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p");
+		FormLayout lyMain = new FormLayout("1dlu:g,2dlu,p", "p:g,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 
-		pnlTemplate.add(new Label("Commit-completed message templates"),
-				cc.xy(1, 1));
-		pnlTemplate
-				.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 3,
-						2, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlTemplate.add(new Label("Commit-completed message templates:"), cc.xy(1, 1));
+		pnlTemplate.add(new JScrollPane(taCommitCompleteTemplate), cc.xywh(1, 3, 2, 1, CellConstraints.FILL, CellConstraints.FILL));
 
-		pnlMain.add(pnlTemplate,
-				cc.xywh(1, 1, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(pnlTemplate, cc.xywh(1, 1, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
 		pnlMain.add(btnSetCommitCompletedMessageTemplates, cc.xy(3, 3));
-		pnlMain.add(new JSeparator(),
-				cc.xywh(1, 4, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 4, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
 
 		pnlMain.add(cbGlobalIgnoreEol, cc.xy(3, 5));
 		pnlMain.add(cbShowIconsInContextMenu, cc.xy(3, 7));
-		pnlMain.add(new JSeparator(),
-				cc.xywh(1, 8, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 8, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
 
 		pnlMain.add(btnClearLogin, cc.xy(3, 9));
 		pnlMain.add(btnShowLoginDialogNextTime, cc.xy(3, 11));
 		pnlMain.add(btnExitPagavcs, cc.xy(3, 13));
-		pnlMain.add(new JSeparator(), cc.xywh(1, 14, 3, 1,
-				CellConstraints.FILL, CellConstraints.FILL));
+		pnlMain.add(new JSeparator(), cc.xywh(1, 14, 3, 1, CellConstraints.FILL, CellConstraints.FILL));
 		pnlMain.add(btnAbout, cc.xy(3, 15));
 
-		taCommitCompleteTemplate.setText(Manager.getSettings()
-				.getCommitCompletedMessageTemplates());
+		taCommitCompleteTemplate.setText(Manager.getSettings().getCommitCompletedMessageTemplates());
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Settings",
-				"other-app-icon.png", false);
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Settings", "other-app-icon.png", false);
 
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosed(WindowEvent e) {
-				SettingsStore.getInstance().setGlobalIgnoreEol(
-						cbGlobalIgnoreEol.isSelected());
+				SettingsStore.getInstance().setGlobalIgnoreEol(cbGlobalIgnoreEol.isSelected());
 			}
 		});
 	}
 
 	private boolean isShowIconsInContextMenus() throws IOException {
-		String result = Manager.getOsCommandResult(null, "dconf", "read",
-				"/org/gnome/desktop/interface/menus-have-icons");
+		String result = Manager.getOsCommandResult(null, "dconf", "read", "/org/gnome/desktop/interface/menus-have-icons");
 		return Boolean.valueOf(result.trim());
 	}
 
@@ -147,13 +129,13 @@ public class SettingsGui {
 			FormLayout layout = new FormLayout("p:g", "p:g");
 			JPanel pnlMain = new JPanel(layout);
 			CellConstraints cc = new CellConstraints();
-			JLabel lblText = new JLabel(
-					StringHelper.convertMultilineTextToHtmlCenter(ABOUT_TEXT));
+			JLabel lblText = new JLabel(StringHelper.convertMultilineTextToHtmlCenter(ABOUT_TEXT));
 			lblText.setHorizontalAlignment(SwingConstants.CENTER);
 			pnlMain.add(lblText, cc.xy(1, 1));
 
 			JDialog dialog = GuiHelper.createDialog(frame, pnlMain, "About");
 			dialog.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
+			dialog.pack();
 			dialog.setVisible(true);
 			dialog.dispose();
 		}
@@ -167,13 +149,8 @@ public class SettingsGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			int choice = JOptionPane
-					.showConfirmDialog(
-							Manager.getRootFrame(),
-							"Are you sure you want to delete all saved login and password information?",
-							"Deleting login/password cache",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
+			int choice = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Are you sure you want to delete all saved login and password information?",
+					"Deleting login/password cache", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (choice == JOptionPane.YES_OPTION) {
 				Manager.getSettings().clearLogin();
 			}
@@ -188,10 +165,7 @@ public class SettingsGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			Runtime.getRuntime().exec(
-					"dconf read /org/gnome/desktop/interface/menus-have-icons "
-							+ Boolean.toString(cbShowIconsInContextMenu
-									.isSelected()));
+			Runtime.getRuntime().exec("dconf read /org/gnome/desktop/interface/menus-have-icons " + Boolean.toString(cbShowIconsInContextMenu.isSelected()));
 		}
 
 	}
@@ -228,8 +202,7 @@ public class SettingsGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			Manager.getSettings().setCommitCompletedMessageTemplates(
-					taCommitCompleteTemplate.getText());
+			Manager.getSettings().setCommitCompletedMessageTemplates(taCommitCompleteTemplate.getText());
 		}
 
 	}

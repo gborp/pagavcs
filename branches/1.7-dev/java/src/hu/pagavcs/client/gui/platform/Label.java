@@ -1,6 +1,5 @@
 package hu.pagavcs.client.gui.platform;
 
-
 import javax.swing.JLabel;
 
 /**
