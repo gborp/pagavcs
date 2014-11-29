@@ -27,7 +27,6 @@ import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -384,10 +383,10 @@ public class GuiHelper {
 		return frame;
 	}
 
-	public static JDialog createDialog(Window parent, JComponent main,
+	public static Dialog createDialog(Window parent, JComponent main,
 			String title) {
 		initGui();
-		final JDialog dialog = new JDialog(parent);
+		final Dialog dialog = new Dialog(parent);
 		dialog.getContentPane().add(addBorder(main, true));
 		dialog.setTitle(title);
 		dialog.setIconImage(ResourceBundleAccessor.getImage("icon.png")
