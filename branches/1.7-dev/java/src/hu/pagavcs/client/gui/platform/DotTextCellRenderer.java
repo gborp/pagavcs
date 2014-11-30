@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class DotTextCellRenderer extends DefaultTableCellRenderer {
 
 	private String origText;
+	private String truncatePrefix;
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -20,6 +21,10 @@ public class DotTextCellRenderer extends DefaultTableCellRenderer {
 		availableWidth -= (borderInsets.left + borderInsets.right);
 		String cellText = origText;
 		FontMetrics fm = getFontMetrics(getFont());
+
+		if (truncatePrefix != null && cellText.startsWith(truncatePrefix)) {
+			cellText = "..." + cellText.substring(truncatePrefix.length());
+		}
 
 		if (fm.stringWidth(cellText) > availableWidth) {
 			String dots = "...";
@@ -35,6 +40,8 @@ public class DotTextCellRenderer extends DefaultTableCellRenderer {
 			}
 
 			super.setText(dots + cellText.substring(i + 1));
+		} else {
+			super.setText(cellText);
 		}
 
 		return this;
@@ -44,5 +51,9 @@ public class DotTextCellRenderer extends DefaultTableCellRenderer {
 	public void setText(String text) {
 		super.setText(text);
 		origText = text;
+	}
+
+	public void setTruncatePrefix(String truncatePrefix) {
+		this.truncatePrefix = truncatePrefix;
 	}
 }
