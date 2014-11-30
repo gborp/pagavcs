@@ -120,6 +120,8 @@ public class CommitGui implements Working, Refreshable {
 	private String url;
 	private Semaphore refreshFinished;
 
+	private DotTextCellRenderer pathCellRenderer;
+
 	public CommitGui(Commit commit) {
 		this.commit = commit;
 		refreshFinished = new Semaphore(1, true);
@@ -135,10 +137,11 @@ public class CommitGui implements Working, Refreshable {
 		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		tblCommit.addKeyListener(new SelectDeselectSelectedKeyListener());
 		tblCommit.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		tblCommit.getColumnModel().getColumn(3).setCellRenderer(new DotTextCellRenderer());
+		pathCellRenderer = new DotTextCellRenderer();
+		tblCommit.getColumnModel().getColumn(3).setCellRenderer(pathCellRenderer);
 
 		SelectDeselectListener selectDeselectListener = new SelectDeselectListener();
-		tblCommit.getModel().addTableModelListener(selectDeselectListener);
+		tmdlCommit.addTableModelListener(selectDeselectListener);
 
 		tblCommit.getSelectionModel().addListSelectionListener(selectDeselectListener);
 
@@ -155,7 +158,7 @@ public class CommitGui implements Working, Refreshable {
 		splMain.setPreferredSize(new Dimension(300, 300));
 		lblUrl = new Label();
 		lblWorkingCopy = new Label();
-		cboMessage = new JComboBox<>();
+		cboMessage = new JComboBox();
 		cboMessage.setPreferredSize(new Dimension(100, (int) cboMessage.getPreferredSize().getHeight()));
 		cboMessage.addItemListener(new ItemListener() {
 
@@ -253,6 +256,9 @@ public class CommitGui implements Working, Refreshable {
 
 	public void setPath(String path) {
 		this.path = path;
+
+		pathCellRenderer.setTruncatePrefix(path);
+
 		lblWorkingCopy.setText(path);
 		frame.setTitlePrefix(path);
 		// it's executed last, so it's enough to call the pack only here.
@@ -497,6 +503,7 @@ public class CommitGui implements Working, Refreshable {
 				} else {
 					li.setSelected(false);
 				}
+
 				li.setPath(file);
 				li.setStatus(contentStatus);
 				li.setPropertyStatus(propertyStatus);
