@@ -87,6 +87,7 @@ public class UpdateGui implements Working {
 	private Label lblInfo;
 	private List<File> lstPath;
 	private long totalReceived;
+	private DotTextCellRenderer pathCellRenderer;
 
 	public UpdateGui(UpdateCancelable update) {
 		this(update, "Update");
@@ -119,7 +120,8 @@ public class UpdateGui implements Working {
 		tblUpdate.addMouseListener(new PopupupMouseListener());
 		new StatusCellRendererForUpdateListItem(tblUpdate);
 		tblUpdate.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		tblUpdate.getColumnModel().getColumn(1).setCellRenderer(new DotTextCellRenderer());
+		pathCellRenderer = new DotTextCellRenderer();
+		tblUpdate.getColumnModel().getColumn(1).setCellRenderer(pathCellRenderer);
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
 
 		lblInfo = new Label();
@@ -174,6 +176,8 @@ public class UpdateGui implements Working {
 		lblWorkingCopy.setText(workingCopy);
 		lblWorkingCopy.setToolTipText(workingCopy);
 		frame.setTitlePrefix(workingCopy);
+
+		pathCellRenderer.setTruncatePrefix(workingCopy);
 	}
 
 	public void setRepo(String repo) {
