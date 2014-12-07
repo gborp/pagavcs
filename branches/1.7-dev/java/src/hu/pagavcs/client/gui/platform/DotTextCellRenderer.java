@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class DotTextCellRenderer extends DefaultTableCellRenderer {
 
+	private static final String TRUNCATE_PREFIX = "";
 	private String origText;
 	private String truncatePrefix;
 
@@ -23,7 +24,7 @@ public class DotTextCellRenderer extends DefaultTableCellRenderer {
 		FontMetrics fm = getFontMetrics(getFont());
 
 		if (truncatePrefix != null && cellText.startsWith(truncatePrefix)) {
-			cellText = "..." + cellText.substring(truncatePrefix.length());
+			cellText = TRUNCATE_PREFIX + cellText.substring(truncatePrefix.length());
 		}
 
 		if (fm.stringWidth(cellText) > availableWidth) {
