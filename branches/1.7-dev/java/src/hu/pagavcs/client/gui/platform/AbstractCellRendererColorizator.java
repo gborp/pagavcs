@@ -22,12 +22,16 @@ import javax.swing.table.TableCellRenderer;
 public abstract class AbstractCellRendererColorizator<L extends ListItem> implements TableCellRenderer {
 
 	private final TableCellRenderer delegate;
-	private Table<L>                decorTable;
-	private static final Color      alternateColor = new Color(240, 240, 240);
+	private Table<L> decorTable;
+	private static final Color alternateColor = new Color(240, 240, 240);
 
 	public AbstractCellRendererColorizator(Table<L> table) {
-		delegate = table.getDefaultRenderer(Object.class);
+		this(table, table.getDefaultRenderer(Object.class));
 		table.setDefaultRenderer(Object.class, this);
+	}
+
+	public AbstractCellRendererColorizator(Table<L> table, TableCellRenderer delegate) {
+		this.delegate = delegate;
 		decorTable = table;
 	}
 

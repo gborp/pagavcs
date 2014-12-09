@@ -138,7 +138,7 @@ public class CommitGui implements Working, Refreshable {
 		tblCommit.addKeyListener(new SelectDeselectSelectedKeyListener());
 		tblCommit.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		pathCellRenderer = new DotTextCellRenderer();
-		tblCommit.getColumnModel().getColumn(3).setCellRenderer(pathCellRenderer);
+		tblCommit.getColumnModel().getColumn(3).setCellRenderer(new StatusCellRendererForCommitListItem(tblCommit, pathCellRenderer));
 
 		SelectDeselectListener selectDeselectListener = new SelectDeselectListener();
 		tmdlCommit.addTableModelListener(selectDeselectListener);
