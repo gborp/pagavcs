@@ -121,7 +121,7 @@ public class UpdateGui implements Working {
 		new StatusCellRendererForUpdateListItem(tblUpdate);
 		tblUpdate.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		pathCellRenderer = new DotTextCellRenderer();
-		tblUpdate.getColumnModel().getColumn(1).setCellRenderer(pathCellRenderer);
+		tblUpdate.getColumnModel().getColumn(1).setCellRenderer(new StatusCellRendererForUpdateListItem(tblUpdate, pathCellRenderer));
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
 
 		lblInfo = new Label();
