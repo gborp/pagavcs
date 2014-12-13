@@ -5,6 +5,7 @@ import hu.pagavcs.client.bl.PagaException.PagaExceptionType;
 import hu.pagavcs.client.gui.LoginGui;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.operation.ContentStatus;
+import hu.pagavcs.client.operation.Delete;
 import hu.pagavcs.common.ResourceBundleAccessor;
 import hu.pagavcs.server.FileStatusCache;
 
@@ -119,8 +120,7 @@ public class Manager {
 
 	private static BandwidthMeter bandwidthMeter;
 
-	public static void init() throws BackingStoreException,
-			GeneralSecurityException, IOException {
+	public static void init() throws BackingStoreException, GeneralSecurityException, IOException {
 		if (!inited) {
 
 			System.setProperty("svnkit.library.gnome-keyring.enabled", "false");
@@ -132,16 +132,14 @@ public class Manager {
 			// Enable full HTTP request spooling to prevent "svn: REPORT request
 			// failed on '/svn/VSMRepo/!svn/vcc/default'"
 			// http://old.nabble.com/REPORT-request-failed-accessing-Sourceforge-Subversion-td14733189.html
-			IHTTPConnectionFactory factory = new DefaultHTTPConnectionFactory(
-					null, true, null);
+			IHTTPConnectionFactory factory = new DefaultHTTPConnectionFactory(null, true, null);
 			DAVRepositoryFactory.setup(factory);
 			FSRepositoryFactory.setup();
 			tempFileDirectory = new File(Manager.getTempDir() + "f/");
 			tempFileDirectory.mkdirs();
 			inited = true;
 			getSettings().load();
-			Runtime.getRuntime().addShutdownHook(
-					new Thread(new ShutDownRunnable()));
+			Runtime.getRuntime().addShutdownHook(new Thread(new ShutDownRunnable()));
 			exceptionHandler = new ExceptionHandler();
 			Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 			GuiHelper.initGui();
@@ -158,13 +156,21 @@ public class Manager {
 
 	public static String getTempDir() {
 		if (tempDir == null) {
-			tempDir = System.getProperty("java.io.tmpdir") + "/"
-					+ System.getProperty("user.name") + "/pagavcs/";
+			tempDir = System.getProperty("java.io.tmpdir") + "/" + System.getProperty("user.name") + "/pagavcs/";
 			new File(tempDir).mkdirs();
 			deleteAll(new File(tempDir));
 			new File(tempDir).mkdirs();
 		}
 		return tempDir;
+	}
+
+	public static void deleteToTrash(File file) throws IOException {
+		if (file.exists()) {
+			String result = getOsCommandResult(file.getParentFile(), "trash", file.getAbsolutePath());
+			if (result != null && !result.isEmpty()) {
+				throw new IOException("File deleting resulted error: " + result);
+			}
+		}
 	}
 
 	private static void deleteAll(File directory) {
@@ -182,13 +188,10 @@ public class Manager {
 		directory.delete();
 	}
 
-	public static File getAbsoluteFile(String path, String relativeUrl)
-			throws SVNException, PagaException {
+	public static File getAbsoluteFile(String path, String relativeUrl) throws SVNException, PagaException {
 
-		ArrayList<String> lstPath = new ArrayList<String>(Arrays.asList(path
-				.split("/")));
-		ArrayList<String> lstRelative = new ArrayList<String>(
-				Arrays.asList(relativeUrl.split("/")));
+		ArrayList<String> lstPath = new ArrayList<String>(Arrays.asList(path.split("/")));
+		ArrayList<String> lstRelative = new ArrayList<String>(Arrays.asList(relativeUrl.split("/")));
 		if (lstRelative.get(0).isEmpty()) {
 			lstRelative.remove(0);
 		}
@@ -199,8 +202,7 @@ public class Manager {
 
 		while (!success && offset1 < lstPath.size()) {
 			success = true;
-			for (int i = 0; i < lstRelative.size()
-					&& (offset1 + i) < lstPath.size(); i++) {
+			for (int i = 0; i < lstRelative.size() && (offset1 + i) < lstPath.size(); i++) {
 				if (!lstPath.get(i + offset1).equals(lstRelative.get(i))) {
 					success = false;
 					break;
@@ -222,28 +224,22 @@ public class Manager {
 		return new File(sbResult.toString());
 	}
 
-	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl,
-			SVNRevision pegRevision, SVNRevision revision) throws SVNException,
-			PagaException {
+	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl, SVNRevision pegRevision, SVNRevision revision) throws SVNException, PagaException {
 
 		SVNClientManager mgr = Manager.getSVNClientManager(path);
 		try {
-			SVNURL rootUrl = mgr.getWCClient()
-					.doInfo(path, pegRevision, revision).getRepositoryRootURL();
+			SVNURL rootUrl = mgr.getWCClient().doInfo(path, pegRevision, revision).getRepositoryRootURL();
 			return rootUrl.appendPath(relativeUrl, true);
 		} finally {
 			mgr.dispose();
 		}
 	}
 
-	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl)
-			throws SVNException, PagaException {
+	public static SVNURL getAbsoluteUrl(SVNURL path, String relativeUrl) throws SVNException, PagaException {
 
 		SVNClientManager mgr = Manager.getSVNClientManager(path);
 		try {
-			SVNURL rootUrl = mgr.getWCClient()
-					.doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED)
-					.getRepositoryRootURL();
+			SVNURL rootUrl = mgr.getWCClient().doInfo(path, SVNRevision.UNDEFINED, SVNRevision.UNDEFINED).getRepositoryRootURL();
 			return rootUrl.appendPath(relativeUrl, true);
 		} finally {
 			mgr.dispose();
@@ -257,8 +253,7 @@ public class Manager {
 	public static SVNURL getSvnUrlByFile(File path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING)
-					.getURL();
+			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING).getURL();
 		} finally {
 			mgrSvn.dispose();
 		}
@@ -267,20 +262,17 @@ public class Manager {
 	public static SVNURL getSvnRootUrlByFile(File path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING)
-					.getRepositoryRootURL();
+			return mgrSvn.getWCClient().doInfo(path, SVNRevision.WORKING).getRepositoryRootURL();
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public static SVNClientManager getSVNClientManager(File path)
-			throws SVNException, PagaException {
+	public static SVNClientManager getSVNClientManager(File path) throws SVNException, PagaException {
 		return getSVNClientManager(getSvnRootUrlByFile(path));
 	}
 
-	public static synchronized SVNClientManager getSVNClientManager(
-			SVNURL repositoryUrl) throws SVNException, PagaException {
+	public static synchronized SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
 
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 		SVNClientManager result = null;
@@ -291,8 +283,7 @@ public class Manager {
 			if (!reTestOnly) {
 				String username = getSettings().getUsername(repoid);
 				String password = getSettings().getPassword(repoid);
-				if (forceShowingLoginDialogNextTime || password == null
-						|| username == null || reTryLogin) {
+				if (forceShowingLoginDialogNextTime || password == null || username == null || reTryLogin) {
 					forceShowingLoginDialogNextTime = false;
 					final LoginGui loginGui = new LoginGui(username, password);
 					SwingUtilities.invokeLater(new Runnable() {
@@ -323,49 +314,44 @@ public class Manager {
 				int connectionTimeout = 5 * 1000;
 				ISVNAuthenticationManager defAuthManager;
 				if (username == null || username.isEmpty()) {
-					defAuthManager = SVNWCUtil
-							.createDefaultAuthenticationManager();
+					defAuthManager = SVNWCUtil.createDefaultAuthenticationManager();
 				} else {
-					defAuthManager = SVNWCUtil
-							.createDefaultAuthenticationManager(username,
-									password);
+					defAuthManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
 				}
-				ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(
-						defAuthManager, readTimeout, connectionTimeout);
+				ISVNAuthenticationManager authManager = new ShortTimeoutAuthenticationManager(defAuthManager, readTimeout, connectionTimeout);
 				result = SVNClientManager.newInstance(null, authManager);
 				reTryLogin = false;
 			}
 			reTestOnly = false;
 			try {
-				SslLoginType sslType = mapSslLoginType.get(repositoryUrl
-						.getHost());
+				SslLoginType sslType = mapSslLoginType.get(repositoryUrl.getHost());
+
+				if (sslType == null) {
+					mapSslLoginType.put(repositoryUrl.getHost(), SslLoginType.SSLv2Hello_SSLv3);
+					sslType = SslLoginType.SSLv2Hello_SSLv3;
+				}
+
 				if (sslType == SslLoginType.SSLv2Hello_SSLv3) {
 					SVNSocketFactory.setSSLProtocols("SSLv2Hello,SSLv3");
 				} else {
 					SVNSocketFactory.setSSLProtocols(null);
 				}
-				SVNRepository svnRepo = result.getRepositoryPool()
-						.createRepository(repositoryUrl, true);
+				SVNRepository svnRepo = result.getRepositoryPool().createRepository(repositoryUrl, true);
 				svnRepo.testConnection();
 			} catch (SVNException ex) {
 				ex.printStackTrace();
 
 				SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 				if (SVNErrorCode.RA_SVN_IO_ERROR.equals(errorCode)) {
-					throw new PagaException(PagaExceptionType.CONNECTION_ERROR,
-							ex.getErrorMessage().getMessage());
+					throw new PagaException(PagaExceptionType.CONNECTION_ERROR, ex.getErrorMessage().getMessage());
 				} else if (SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
 
-					if ("svn: E175002: handshake alert:  unrecognized_name"
-							.equals(ex.getErrorMessage().getMessage())) {
-						mapSslLoginType.put(repositoryUrl.getHost(),
-								SslLoginType.SSLv2Hello_SSLv3);
+					if ("svn: E175002: handshake alert:  unrecognized_name".equals(ex.getErrorMessage().getMessage())) {
+						mapSslLoginType.put(repositoryUrl.getHost(), SslLoginType.SSLv2Hello_SSLv3);
 						reTestOnly = true;
 						continue;
 					} else {
-						throw new PagaException(
-								PagaExceptionType.CONNECTION_ERROR, ex
-										.getErrorMessage().getMessage());
+						throw new PagaException(PagaExceptionType.CONNECTION_ERROR, ex.getErrorMessage().getMessage());
 					}
 				}
 				result = null;
@@ -383,13 +369,11 @@ public class Manager {
 	 * it returns null.
 	 */
 	public static String getClipboard() {
-		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard()
-				.getContents(null);
+		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 
 		try {
 			if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-				String text = (String) t
-						.getTransferData(DataFlavor.stringFlavor);
+				String text = (String) t.getTransferData(DataFlavor.stringFlavor);
 				return text;
 			}
 		} catch (UnsupportedFlavorException e) {
@@ -406,16 +390,14 @@ public class Manager {
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
 	}
 
-	public static long getPreviousRevisionNumber(SVNURL svnUrl, long revision)
-			throws SVNException, PagaException {
+	public static long getPreviousRevisionNumber(SVNURL svnUrl, long revision) throws SVNException, PagaException {
 		PreviousRevisionFetcher fetcher = new PreviousRevisionFetcher();
 		fetcher.execute(svnUrl, revision);
 		return fetcher.getPreviousRevision();
 	}
 
 	public static SVNInfo getInfo(File path) throws SVNException {
-		SVNClientManager mgrSvn = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			return wcClient.doInfo(path, SVNRevision.WORKING);
@@ -464,58 +446,48 @@ public class Manager {
 
 	}
 
-	public static void resolveConflictUsingTheirs(String path)
-			throws SVNException {
+	public static void resolveConflictUsingTheirs(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
-					SVNConflictChoice.THEIRS_FULL);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.THEIRS_FULL);
 		} finally {
 			mgrSvn.dispose();
 		}
 
 	}
 
-	public static void resolveConflictUsingMine(String path)
-			throws SVNException {
+	public static void resolveConflictUsingMine(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
-					SVNConflictChoice.MINE_FULL);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, SVNConflictChoice.MINE_FULL);
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public static void resolveTreeConflictUsingTheirs(String path)
-			throws SVNException {
+	public static void resolveTreeConflictUsingTheirs(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
-					true, true, true, SVNConflictChoice.THEIRS_FULL);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, true, true, true, SVNConflictChoice.THEIRS_FULL);
 		} finally {
 			mgrSvn.dispose();
 		}
 
 	}
 
-	public static void resolveTreeConflictUsingMine(String path)
-			throws SVNException {
+	public static void resolveTreeConflictUsingMine(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
-					true, true, true, SVNConflictChoice.MINE_FULL);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, true, true, true, SVNConflictChoice.MINE_FULL);
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public static void resolveTreeConflictUsingMerged(String path)
-			throws SVNException {
+	public static void resolveTreeConflictUsingMerged(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY,
-					true, true, true, SVNConflictChoice.MERGED);
+			mgrSvn.getWCClient().doResolve(new File(path), SVNDepth.INFINITY, true, true, true, SVNConflictChoice.MERGED);
 		} finally {
 			mgrSvn.dispose();
 		}
@@ -524,16 +496,14 @@ public class Manager {
 	public static SVNInfo getInfo(String path) throws SVNException {
 		SVNClientManager mgrSvn = getSVNClientManagerForWorkingCopyOnly();
 		try {
-			SVNInfo info = mgrSvn.getWCClient().doInfo(new File(path),
-					SVNRevision.WORKING);
+			SVNInfo info = mgrSvn.getWCClient().doInfo(new File(path), SVNRevision.WORKING);
 			return info;
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public static SVNInfo getInfo(SVNURL url, SVNRevision revision)
-			throws SVNException, PagaException {
+	public static SVNInfo getInfo(SVNURL url, SVNRevision revision) throws SVNException, PagaException {
 		SVNClientManager mgrSvn = getSVNClientManager(url);
 		try {
 			SVNInfo info = mgrSvn.getWCClient().doInfo(url, revision, revision);
@@ -575,6 +545,8 @@ public class Manager {
 			return Color.ORANGE;
 		case UNVERSIONED:
 			return Color.BLACK;
+		case UPDATE:
+			return Color.BLACK;
 		case RESOLVED:
 			return Color.decode("923700");
 		default:
@@ -592,21 +564,26 @@ public class Manager {
 			counter++;
 		}
 
-		SVNClientManager svnMgr = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = svnMgr.getWCClient();
 
-			FileOutputStream outOldRevision = new FileOutputStream(
-					file.getPath());
-			wcClient.doGetFileContents(wcFile, SVNRevision.BASE,
-					SVNRevision.BASE, false, outOldRevision);
+			FileOutputStream outOldRevision = new FileOutputStream(file.getPath());
+			wcClient.doGetFileContents(wcFile, SVNRevision.BASE, SVNRevision.BASE, false, outOldRevision);
 			outOldRevision.close();
 
 			return file;
 		} finally {
 			svnMgr.dispose();
 		}
+	}
+
+	public static void deleteFile(File file) throws BackingStoreException, SVNException {
+		Delete delete = new Delete(file.getPath());
+		delete.setAutoClose(true);
+		delete.setIgnoreIfFileError(true);
+		delete.execute();
+		Manager.invalidate(file);
 	}
 
 	public static void invalidate(File file) {
@@ -617,16 +594,13 @@ public class Manager {
 		FileStatusCache.getInstance().invalidateAll();
 	}
 
-	public static String getOsCommandResult(File baseDir, String... args)
-			throws IOException {
+	public static String getOsCommandResult(File baseDir, String... args) throws IOException {
 
 		ProcessBuilder pb = new ProcessBuilder(args);
 		pb.directory(baseDir);
 		pb.redirectErrorStream(true);
 		Process process = pb.start();
-		BufferedReader commandResult = new BufferedReader(
-				new InputStreamReader(process.getInputStream(),
-						Charset.defaultCharset()));
+		BufferedReader commandResult = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
 		String line = "";
 		StringBuilder sb = new StringBuilder();
 		while ((line = commandResult.readLine()) != null) {
@@ -641,8 +615,7 @@ public class Manager {
 		Charset charSet = Charset.defaultCharset();
 
 		StringBuilder text = new StringBuilder();
-		InputStreamReader input = new InputStreamReader(new FileInputStream(
-				file), charSet);
+		InputStreamReader input = new InputStreamReader(new FileInputStream(file), charSet);
 		char[] buffer = new char[16384];
 		int length;
 		while ((length = input.read(buffer)) != -1) {
@@ -654,15 +627,13 @@ public class Manager {
 		return text.toString();
 	}
 
-	public static void saveStringToFile(File file, String data)
-			throws IOException {
+	public static void saveStringToFile(File file, String data) throws IOException {
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 		out.write(data);
 		out.close();
 	}
 
-	public static void setForceShowingLoginDialogNextTime(
-			boolean forceShowingLoginDialogNextTime) {
+	public static void setForceShowingLoginDialogNextTime(boolean forceShowingLoginDialogNextTime) {
 		Manager.forceShowingLoginDialogNextTime = forceShowingLoginDialogNextTime;
 	}
 
@@ -732,10 +703,8 @@ public class Manager {
 			myConflictResolver = resolver;
 		}
 
-		public ISVNMerger createMerger(byte[] conflictStart,
-				byte[] conflictSeparator, byte[] conflictEnd) {
-			return new SVNMergerIgnoreEol(new DefaultSVNMerger(conflictStart,
-					conflictSeparator, conflictEnd, myConflictResolver,
+		public ISVNMerger createMerger(byte[] conflictStart, byte[] conflictSeparator, byte[] conflictEnd) {
+			return new SVNMergerIgnoreEol(new DefaultSVNMerger(conflictStart, conflictSeparator, conflictEnd, myConflictResolver,
 					SVNDiffConflictChoiceStyle.CHOOSE_MODIFIED_LATEST));
 
 		}
@@ -749,58 +718,37 @@ public class Manager {
 			this.delegate = delegate;
 		}
 
-		public SVNMergeResult mergeProperties(String localPath,
-				SVNProperties workingProperties, SVNProperties baseProperties,
-				SVNProperties serverBaseProps, SVNProperties propDiff,
-				SVNAdminArea adminArea, SVNLog log, boolean baseMerge,
-				boolean dryRun) throws SVNException {
-			return this.delegate.mergeProperties(localPath, workingProperties,
-					baseProperties, serverBaseProps, propDiff, adminArea, log,
-					baseMerge, dryRun);
+		public SVNMergeResult mergeProperties(String localPath, SVNProperties workingProperties, SVNProperties baseProperties, SVNProperties serverBaseProps,
+				SVNProperties propDiff, SVNAdminArea adminArea, SVNLog log, boolean baseMerge, boolean dryRun) throws SVNException {
+			return this.delegate.mergeProperties(localPath, workingProperties, baseProperties, serverBaseProps, propDiff, adminArea, log, baseMerge, dryRun);
 		}
 
-		public SVNMergeResult mergeText(SVNMergeFileSet files, boolean dryRun,
-				SVNDiffOptions options) throws SVNException {
-			if (options == null
-					&& Boolean.TRUE.equals(SettingsStore.getInstance()
-							.getGlobalIgnoreEol())) {
+		public SVNMergeResult mergeText(SVNMergeFileSet files, boolean dryRun, SVNDiffOptions options) throws SVNException {
+			if (options == null && Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol())) {
 				options = new SVNDiffOptions(false, false, true);
 			}
 			return this.delegate.mergeText(files, dryRun, options);
 		}
 
 		@Override
-		public SvnMergeResult mergeText(ISvnMerger baseMerger, File resultFile,
-				File targetAbspath, File detranslatedTargetAbspath,
-				File leftAbspath, File rightAbspath, String targetLabel,
-				String leftLabel, String rightLabel, SVNDiffOptions options,
-				SVNDiffConflictChoiceStyle style) throws SVNException {
+		public SvnMergeResult mergeText(ISvnMerger baseMerger, File resultFile, File targetAbspath, File detranslatedTargetAbspath, File leftAbspath,
+				File rightAbspath, String targetLabel, String leftLabel, String rightLabel, SVNDiffOptions options, SVNDiffConflictChoiceStyle style)
+				throws SVNException {
 
-			if (options == null
-					&& Boolean.TRUE.equals(SettingsStore.getInstance()
-							.getGlobalIgnoreEol())) {
+			if (options == null && Boolean.TRUE.equals(SettingsStore.getInstance().getGlobalIgnoreEol())) {
 				options = new SVNDiffOptions(false, false, true);
 			}
-			return baseMerger.mergeText(baseMerger, resultFile, targetAbspath,
-					detranslatedTargetAbspath, leftAbspath, rightAbspath,
-					targetLabel, leftLabel, rightLabel, options, style);
+			return baseMerger.mergeText(baseMerger, resultFile, targetAbspath, detranslatedTargetAbspath, leftAbspath, rightAbspath, targetLabel, leftLabel,
+					rightLabel, options, style);
 		}
 
 		@Override
-		public SvnMergeResult mergeProperties(ISvnMerger baseMerger,
-				File localAbsPath, SVNNodeKind kind,
-				SVNConflictVersion leftVersion,
-				SVNConflictVersion rightVersion,
-				SVNProperties serverBaseProperties,
-				SVNProperties pristineProperties,
-				SVNProperties actualProperties, SVNProperties propChanges,
-				boolean baseMerge, boolean dryRun,
-				ISVNConflictHandler conflictResolver) throws SVNException {
+		public SvnMergeResult mergeProperties(ISvnMerger baseMerger, File localAbsPath, SVNNodeKind kind, SVNConflictVersion leftVersion,
+				SVNConflictVersion rightVersion, SVNProperties serverBaseProperties, SVNProperties pristineProperties, SVNProperties actualProperties,
+				SVNProperties propChanges, boolean baseMerge, boolean dryRun, ISVNConflictHandler conflictResolver) throws SVNException {
 
-			return baseMerger.mergeProperties(baseMerger, localAbsPath, kind,
-					leftVersion, rightVersion, serverBaseProperties,
-					pristineProperties, actualProperties, propChanges,
-					baseMerge, dryRun, conflictResolver);
+			return baseMerger.mergeProperties(baseMerger, localAbsPath, kind, leftVersion, rightVersion, serverBaseProperties, pristineProperties,
+					actualProperties, propChanges, baseMerge, dryRun, conflictResolver);
 		}
 	}
 
@@ -813,44 +761,38 @@ public class Manager {
 
 	public static Icon getIconInformation() {
 		if (ICON_INFORMATION == null) {
-			ICON_INFORMATION = ResourceBundleAccessor
-					.getImage("dialog-information.png");
+			ICON_INFORMATION = ResourceBundleAccessor.getImage("dialog-information.png");
 		}
 		return ICON_INFORMATION;
 	}
 
 	public static Icon getIconPassword() {
 		if (ICON_PASSWORD == null) {
-			ICON_PASSWORD = ResourceBundleAccessor
-					.getImage("dialog-password.png");
+			ICON_PASSWORD = ResourceBundleAccessor.getImage("dialog-password.png");
 		}
 		return ICON_PASSWORD;
 	}
 
 	public static Icon getIconQuestion() {
 		if (ICON_QUESTION == null) {
-			ICON_QUESTION = ResourceBundleAccessor
-					.getImage("dialog-question.png");
+			ICON_QUESTION = ResourceBundleAccessor.getImage("dialog-question.png");
 		}
 		return ICON_QUESTION;
 	}
 
 	public static Icon getIconWarning() {
 		if (ICON_WARNING == null) {
-			ICON_WARNING = ResourceBundleAccessor
-					.getImage("dialog-warning.png");
+			ICON_WARNING = ResourceBundleAccessor.getImage("dialog-warning.png");
 		}
 		return ICON_WARNING;
 	}
 
 	public static void viewFile(String filename) throws IOException {
-		ProcessBuilder processBuilder = new ProcessBuilder(Manager.GEDIT,
-				filename);
+		ProcessBuilder processBuilder = new ProcessBuilder(Manager.GEDIT, filename);
 		processBuilder.start();
 	}
 
-	public static void compareTextFiles(String filename1, String filename2)
-			throws IOException {
+	public static void compareTextFiles(String filename1, String filename2) throws IOException {
 
 		String label1 = filename1;
 		if (label1.lastIndexOf('/') != -1) {
@@ -861,8 +803,13 @@ public class Manager {
 			label2 = label2.substring(label2.lastIndexOf('/'));
 		}
 
-		ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD, "-L "
-				+ label1, filename1, "-L " + label2, filename2);
-		processBuilder.start();
+		// ProcessBuilder processBuilder = new ProcessBuilder(Manager.MELD,
+		// "-L \"" + label1 + "\"", filename1, "-L \"" + label2 + "\"",
+		// filename2);
+		// processBuilder.start();
+
+		String result = getOsCommandResult(null, Manager.MELD, "-L", label1, filename1, "-L", label2, filename2);
+
+		System.nanoTime();
 	}
 }

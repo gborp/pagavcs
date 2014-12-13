@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="160"
+   height="160"
+   id="svg2183"
+   sodipodi:version="0.32"
+   inkscape:version="0.48.5 r10040"
+   version="1.0"
+   sodipodi:docname="icon.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.375"
+     inkscape:cx="-208.87302"
+     inkscape:cy="3.9058681"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     width="256px"
+     height="256px"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1551"
+     inkscape:window-height="876"
+     inkscape:window-x="49"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(-0.50058133,-95.517237)">
+    <path
+       sodipodi:type="arc"
+       style="fill:#cd1d00;fill-opacity:1;stroke:none"
+       id="path3183"
+       sodipodi:cx="47.119026"
+       sodipodi:cy="208.49529"
+       sodipodi:rx="46.990459"
+       sodipodi:ry="46.990459"
+       d="m 94.109486,208.49529 c 0,25.95211 -21.038346,46.99045 -46.99046,46.99045 -25.952114,0 -46.99045926,-21.03834 -46.99045926,-46.99045 0,-25.95212 21.03834526,-46.99046 46.99045926,-46.99046 25.952114,0 46.99046,21.03834 46.99046,46.99046 z"
+       transform="matrix(1.7024732,0,0,1.7024732,0.2816999,-179.4404)" />
+    <text
+       xml:space="preserve"
+       style="font-size:76.30279541px;font-style:normal;font-weight:bold;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Andale Mono Bold"
+       x="9.0904274"
+       y="167.9458"
+       id="text3591"
+       transform="scale(0.80480669,1.2425344)"><tspan
+         sodipodi:role="line"
+         id="tspan3593"
+         x="9.0904274"
+         y="167.9458">SVN</tspan></text>
+  </g>
+</svg>

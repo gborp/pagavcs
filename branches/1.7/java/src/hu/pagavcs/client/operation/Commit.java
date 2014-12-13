@@ -2,6 +2,7 @@ package hu.pagavcs.client.operation;
 
 import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.bl.OnSwing;
+import hu.pagavcs.client.bl.OnSwingWait;
 import hu.pagavcs.client.bl.SvnHelper;
 import hu.pagavcs.client.gui.commit.CommitGui;
 import hu.pagavcs.client.gui.platform.MessagePane;
@@ -76,26 +77,19 @@ public class Commit {
 		gui = new CommitGui(this);
 		gui.display();
 		File wcFile = new File(path);
-		SVNClientManager mgrSvn = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
-			SVNPropertyData logTemplate = wcClient.doGetProperty(wcFile,
-					"tsvn:logtemplate", SVNRevision.WORKING,
-					SVNRevision.WORKING);
-			SVNPropertyData logMinSize = wcClient
-					.doGetProperty(wcFile, "tsvn:logminsize",
-							SVNRevision.WORKING, SVNRevision.WORKING);
+			SVNPropertyData logTemplate = wcClient.doGetProperty(wcFile, "tsvn:logtemplate", SVNRevision.WORKING, SVNRevision.WORKING);
+			SVNPropertyData logMinSize = wcClient.doGetProperty(wcFile, "tsvn:logminsize", SVNRevision.WORKING, SVNRevision.WORKING);
 
 			String strLogTemplate = null;
 			if (logTemplate != null) {
-				strLogTemplate = SVNPropertyValue
-						.getPropertyAsString(logTemplate.getValue());
+				strLogTemplate = SVNPropertyValue.getPropertyAsString(logTemplate.getValue());
 				gui.setLogTemplate(strLogTemplate);
 			}
 			if (logMinSize != null) {
-				String strlogMinSize = SVNPropertyValue
-						.getPropertyAsString(logMinSize.getValue());
+				String strlogMinSize = SVNPropertyValue.getPropertyAsString(logMinSize.getValue());
 				try {
 					int intLogMinSize = Integer.valueOf(strlogMinSize);
 					gui.setLogMinSize(intLogMinSize);
@@ -124,18 +118,18 @@ public class Commit {
 	public void refresh() throws Exception {
 		cancelRefresh();
 
-		new OnSwing() {
+		new OnSwingWait<Object, Object>() {
 
-			protected void process() throws Exception {
+			protected Object process() throws Exception {
 				gui.setStatus(CommitStatus.INIT, null);
 				gui.setRecentMessages(getRecentMessages());
 				gui.setUrlLabel(getRootUrl().toDecodedString());
 				gui.setPath(path);
+				return null;
 			}
 		}.run();
 
-		SVNClientManager mgrSvn = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			File wcFile = new File(path);
 			SVNStatusClient statusClient = mgrSvn.getStatusClient();
@@ -143,9 +137,7 @@ public class Commit {
 			refreshISVNEventHandler = new RefreshISVNEventHandler();
 			statusClient.setEventHandler(refreshISVNEventHandler);
 
-			statusClient.doStatus(wcFile, SVNRevision.WORKING,
-					SVNDepth.INFINITY, false, true, false, true,
-					new StatusEventHandler(), null);
+			statusClient.doStatus(wcFile, SVNRevision.WORKING, SVNDepth.INFINITY, false, true, false, true, new StatusEventHandler(), null);
 		} catch (SVNCancelException ex) {
 			// ignoring cancel
 		} finally {
@@ -153,16 +145,14 @@ public class Commit {
 			new OnSwing() {
 
 				protected void process() throws Exception {
-					gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED,
-							null);
+					gui.setStatus(CommitStatus.FILE_LIST_GATHERING_COMPLETED, null);
 				}
 			}.run();
 		}
 	}
 
 	private String[] getRecentMessages() {
-		List<String> result = new ArrayList<String>(Manager.getSettings()
-				.getLstCommitMessages());
+		List<String> result = new ArrayList<String>(Manager.getSettings().getLstCommitMessages());
 		result.add(null);
 		Collections.reverse(result);
 		return result.toArray(new String[0]);
@@ -181,10 +171,7 @@ public class Commit {
 
 	private boolean doTryUpdateing(SVNException ex) {
 		SVNErrorMessage errMsg = ex.getErrorMessage();
-		while (errMsg != null
-				&& !SVNErrorCode.FS_TXN_OUT_OF_DATE.equals(errMsg
-						.getErrorCode())
-				&& !SVNErrorCode.FS_CONFLICT.equals(errMsg.getErrorCode())) {
+		while (errMsg != null && !SVNErrorCode.FS_TXN_OUT_OF_DATE.equals(errMsg.getErrorCode()) && !SVNErrorCode.FS_CONFLICT.equals(errMsg.getErrorCode())) {
 			errMsg = errMsg.getChildErrorMessage();
 		}
 		if (errMsg != null) {
@@ -211,33 +198,23 @@ public class Commit {
 			boolean successOrExit = false;
 			while (!successOrExit) {
 				try {
-					commitClient.doCommit(lstCommit.toArray(new File[] {}),
-							true, message, null, null, true, true,
-							SVNDepth.EMPTY);
+					commitClient.doCommit(lstCommit.toArray(new File[] {}), true, message, null, null, true, true, SVNDepth.EMPTY);
 					successOrExit = true;
 				} catch (SVNCancelException ex) {
 					successOrExit = true;
 				} catch (SVNException ex) {
-					SVNErrorCode errorCode = ex.getErrorMessage()
-							.getErrorCode();
+					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
 					if (errorCode.isAuthentication()) {
-						MessagePane.showError(gui.getFrame(),
-								"Authentication failure",
-								"" + errorCode.getDescription());
+						MessagePane.showError(gui.getFrame(), "Authentication failure", "" + errorCode.getDescription());
 						Manager.setForceShowingLoginDialogNextTime(true);
 						mgrSvn.dispose();
 						mgrSvn = Manager.getSVNClientManager(new File(path));
 						commitClient = mgrSvn.getCommitClient();
 						commitClient.setEventHandler(new CommitEventHandler());
 					} else if (SVNErrorCode.WC_LOCKED.equals(errorCode)) {
-						File file = (File) ex.getErrorMessage()
-								.getRelatedObjects()[0];
-						int choosed = JOptionPane.showConfirmDialog(
-								Manager.getRootFrame(),
-								"Working copy " + file.getPath()
-										+ " is locked, do cleanup?",
-								"Working copy locked, cleanup?",
-								JOptionPane.YES_NO_OPTION);
+						File file = (File) ex.getErrorMessage().getRelatedObjects()[0];
+						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "Working copy " + file.getPath() + " is locked, do cleanup?",
+								"Working copy locked, cleanup?", JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
 							Cleanup cleanup = new Cleanup(file.getPath());
 							cleanup.setAutoClose(true);
@@ -247,20 +224,14 @@ public class Commit {
 							successOrExit = true;
 						}
 					} else if (doTryUpdateing(ex)) {
-						int choosed = JOptionPane.showConfirmDialog(
-								Manager.getRootFrame(),
-								"An update is need, do update now?",
-								"Update is needed", JOptionPane.YES_NO_OPTION);
+						int choosed = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "An update is need, do update now?", "Update is needed",
+								JOptionPane.YES_NO_OPTION);
 						if (choosed == JOptionPane.YES_OPTION) {
 							Update update = new Update(Arrays.asList(path));
 							update.execute();
 
-							int choosedContinue = JOptionPane
-									.showConfirmDialog(
-											Manager.getRootFrame(),
-											"It's updated, do you still want to commit?",
-											"Still commit?",
-											JOptionPane.YES_NO_OPTION);
+							int choosedContinue = JOptionPane.showConfirmDialog(Manager.getRootFrame(), "It's updated, do you still want to commit?",
+									"Still commit?", JOptionPane.YES_NO_OPTION);
 							if (choosedContinue == JOptionPane.NO_OPTION) {
 								gui.setStatus(CommitStatus.CANCEL, null);
 								successOrExit = true;
@@ -283,8 +254,7 @@ public class Commit {
 
 	private class CommitEventHandler implements ISVNEventHandler {
 
-		public void handleEvent(SVNEvent event, double progress)
-				throws SVNException {
+		public void handleEvent(SVNEvent event, double progress) throws SVNException {
 			try {
 				SVNEventAction action = event.getAction();
 				String fileName = null;
@@ -302,13 +272,10 @@ public class Commit {
 				} else if (SVNEventAction.COMMIT_REPLACED.equals(action)) {
 					gui.addCommittedItem(fileName, CommittedItemStatus.REPLACED);
 				} else if (SVNEventAction.COMMIT_DELTA_SENT.equals(action)) {
-					gui.addCommittedItem(fileName,
-							CommittedItemStatus.DELTA_SENT);
+					gui.addCommittedItem(fileName, CommittedItemStatus.DELTA_SENT);
 				} else if (SVNEventAction.COMMIT_COMPLETED.equals(action)) {
-					gui.addCommittedItem("Revision: " + event.getRevision(),
-							CommittedItemStatus.COMPLETED);
-					gui.setStatus(CommitStatus.COMMIT_COMPLETED,
-							Long.toString(event.getRevision()));
+					gui.addCommittedItem("Revision: " + event.getRevision(), CommittedItemStatus.COMPLETED);
+					gui.setStatus(CommitStatus.COMMIT_COMPLETED, Long.toString(event.getRevision()));
 				}
 			} catch (Exception ex) {
 				Manager.handle(ex);
@@ -335,43 +302,32 @@ public class Commit {
 	}
 
 	public void add(File wcFile, boolean addRecursively) throws SVNException {
-		SVNClientManager mgrSvn = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
-			SVNDepth svnDepth = addRecursively ? SVNDepth.INFINITY
-					: SVNDepth.EMPTY;
-			wcClient.doAdd(wcFile, true, false, true, svnDepth, false, false,
-					true);
+			SVNDepth svnDepth = addRecursively ? SVNDepth.INFINITY : SVNDepth.EMPTY;
+			wcClient.doAdd(wcFile, true, false, true, svnDepth, false, false, true);
 			Manager.invalidate(wcFile);
 		} finally {
 			mgrSvn.dispose();
 		}
 	}
 
-	public void createPatch(File[] wcFiles, OutputStream out)
-			throws SVNException {
+	public void createPatch(File[] wcFiles, OutputStream out) throws SVNException {
 		SvnHelper.createPatch(new File(path), wcFiles, out);
 	}
 
 	public void ignore(File wcFile) throws SVNException {
-		SVNClientManager mgrSvn = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient wcClient = mgrSvn.getWCClient();
 			File dir = wcFile.getParentFile().getAbsoluteFile();
-			SVNPropertyData property = wcClient.doGetProperty(dir,
-					SVNProperty.IGNORE, SVNRevision.WORKING,
-					SVNRevision.WORKING);
+			SVNPropertyData property = wcClient.doGetProperty(dir, SVNProperty.IGNORE, SVNRevision.WORKING, SVNRevision.WORKING);
 			String alreadyIgnoredItems = "";
 			if (property != null) {
 				alreadyIgnoredItems = property.getValue().getString();
 			}
-			wcClient.doSetProperty(
-					dir,
-					SVNProperty.IGNORE,
-					SVNPropertyValue.create(alreadyIgnoredItems
-							+ wcFile.getName() + "\n"), false, SVNDepth.EMPTY,
+			wcClient.doSetProperty(dir, SVNProperty.IGNORE, SVNPropertyValue.create(alreadyIgnoredItems + wcFile.getName() + "\n"), false, SVNDepth.EMPTY,
 					null, null);
 			Manager.invalidate(wcFile);
 		} finally {
@@ -389,8 +345,7 @@ public class Commit {
 			// svnContentStatus = status.getNodeStatus();
 			// }
 
-			SVNStatusType svnContentStatus = status
-					.getCombinedNodeAndContentsStatus();
+			SVNStatusType svnContentStatus = status.getCombinedNodeAndContentsStatus();
 
 			ContentStatus contentStatus = null;
 
@@ -420,53 +375,43 @@ public class Commit {
 				contentStatus = ContentStatus.OBSTRUCTED;
 			} else if (SVNStatusType.STATUS_REPLACED.equals(svnContentStatus)) {
 				contentStatus = ContentStatus.REPLACED;
-			} else if (SVNStatusType.STATUS_UNVERSIONED
-					.equals(svnContentStatus)) {
+			} else if (SVNStatusType.STATUS_UNVERSIONED.equals(svnContentStatus)) {
 				contentStatus = ContentStatus.UNVERSIONED;
 			} else {
-				throw new RuntimeException("not implemented: "
-						+ svnContentStatus);
+				throw new RuntimeException("not implemented: " + svnContentStatus);
 			}
 
 			ContentStatus propertyStatus = null;
 			if (SVNStatusType.STATUS_ADDED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.ADDED;
-			} else if (SVNStatusType.STATUS_CONFLICTED
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_CONFLICTED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.CONFLICTED;
 			} else if (SVNStatusType.STATUS_DELETED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.DELETED;
-			} else if (SVNStatusType.STATUS_EXTERNAL
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_EXTERNAL.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.EXTERNAL;
 			} else if (SVNStatusType.STATUS_IGNORED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.IGNORED;
-			} else if (SVNStatusType.STATUS_INCOMPLETE
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_INCOMPLETE.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.INCOMPLETE;
 			} else if (SVNStatusType.MERGED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.MERGED;
 			} else if (SVNStatusType.STATUS_MISSING.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.MISSING;
-			} else if (SVNStatusType.STATUS_MODIFIED
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_MODIFIED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.MODIFIED;
 			} else if (SVNStatusType.STATUS_NONE.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.NONE;
 			} else if (SVNStatusType.STATUS_NORMAL.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.NORMAL;
-			} else if (SVNStatusType.STATUS_OBSTRUCTED
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_OBSTRUCTED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.OBSTRUCTED;
-			} else if (SVNStatusType.STATUS_REPLACED
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_REPLACED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.REPLACED;
-			} else if (SVNStatusType.STATUS_UNVERSIONED
-					.equals(svnPropertiesStatus)) {
+			} else if (SVNStatusType.STATUS_UNVERSIONED.equals(svnPropertiesStatus)) {
 				propertyStatus = ContentStatus.UNVERSIONED;
 			} else {
-				throw new RuntimeException("not implemented: "
-						+ svnContentStatus);
+				throw new RuntimeException("not implemented: " + svnContentStatus);
 			}
 			String conlictResult = null;
 			SVNTreeConflictDescription treeConflict = status.getTreeConflict();
@@ -483,8 +428,7 @@ public class Commit {
 				sb.append("Operation: ");
 				sb.append(treeConflict.getOperation());
 				sb.append('\n');
-				sb.append("Local " + treeConflict.getNodeKind().toString()
-						+ ": ");
+				sb.append("Local " + treeConflict.getNodeKind().toString() + ": ");
 				sb.append(treeConflict.getMergeFiles().getLocalFile());
 				sb.append('\n');
 				sb.append("Left: ");
@@ -494,13 +438,11 @@ public class Commit {
 				sb.append(treeConflict.getSourceRightVersion());
 				sb.append('\n');
 
-				conlictResult = StringHelper.convertMultilineTextToHtml(sb
-						.toString());
+				conlictResult = StringHelper.convertMultilineTextToHtml(sb.toString());
 			}
 
 			try {
-				gui.addItem(status.getFile(), contentStatus, propertyStatus,
-						conlictResult, status.getKind());
+				gui.addItem(status.getFile(), contentStatus, propertyStatus, conlictResult, status.getKind());
 			} catch (SVNException e) {
 				throw e;
 			} catch (Exception e) {
@@ -511,8 +453,7 @@ public class Commit {
 	}
 
 	public void revertChanges(File file) throws SVNException {
-		SVNClientManager svnMgr = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient client = svnMgr.getWCClient();
 			client.doRevert(new File[] { file }, SVNDepth.INFINITY, null);
@@ -523,8 +464,7 @@ public class Commit {
 	}
 
 	public void revertPropertyChanges(File file) throws SVNException {
-		SVNClientManager svnMgr = Manager
-				.getSVNClientManagerForWorkingCopyOnly();
+		SVNClientManager svnMgr = Manager.getSVNClientManagerForWorkingCopyOnly();
 		try {
 			SVNWCClient client = svnMgr.getWCClient();
 			client.doRevert(new File[] { file }, SVNDepth.EMPTY, null);
@@ -535,19 +475,14 @@ public class Commit {
 	}
 
 	public void delete(File file) throws SVNException, BackingStoreException {
-		Delete delete = new Delete(file.getPath());
-		delete.setAutoClose(true);
-		delete.setIgnoreIfFileError(true);
-		delete.execute();
-		Manager.invalidate(file);
+		Manager.deleteFile(file);
 	}
 
 	private static class RefreshISVNEventHandler implements ISVNEventHandler {
 
 		private boolean cancel;
 
-		public void handleEvent(SVNEvent event, double progress)
-				throws SVNException {
+		public void handleEvent(SVNEvent event, double progress) throws SVNException {
 		}
 
 		public void checkCancelled() throws SVNCancelException {

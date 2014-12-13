@@ -7,6 +7,8 @@ import hu.pagavcs.client.gui.platform.Table;
 
 import java.awt.Color;
 
+import javax.swing.table.TableCellRenderer;
+
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -24,6 +26,10 @@ public class StatusCellRendererForLogDetailListItem extends AbstractCellRenderer
 
 	public StatusCellRendererForLogDetailListItem(Table<LogDetailListItem> table) {
 		super(table);
+	}
+
+	public StatusCellRendererForLogDetailListItem(Table<LogDetailListItem> table, TableCellRenderer delegate) {
+		super(table, delegate);
 	}
 
 	public Color getForegroundColor(LogDetailListItem li) {

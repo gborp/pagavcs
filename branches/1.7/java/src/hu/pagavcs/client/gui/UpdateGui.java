@@ -5,6 +5,7 @@ import hu.pagavcs.client.bl.OnSwing;
 import hu.pagavcs.client.bl.SvnHelper;
 import hu.pagavcs.client.bl.ThreadAction;
 import hu.pagavcs.client.bl.UpdateCancelable;
+import hu.pagavcs.client.gui.platform.DotTextCellRenderer;
 import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
@@ -37,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -85,6 +87,7 @@ public class UpdateGui implements Working {
 	private Label lblInfo;
 	private List<File> lstPath;
 	private long totalReceived;
+	private DotTextCellRenderer pathCellRenderer;
 
 	public UpdateGui(UpdateCancelable update) {
 		this(update, "Update");
@@ -97,14 +100,13 @@ public class UpdateGui implements Working {
 
 	public void display() {
 
-		FormLayout lyTop = new FormLayout("r:p,2dlu,1dlu:g", "p,2dlu,p");
+		FormLayout lyTop = new FormLayout("r:p,2dlu,p:g", "p,2dlu,p");
 		JPanel pnlTop = new JPanel(lyTop);
 
 		FormLayout lyBottom = new FormLayout("p,2dlu,1dlu:g,2dlu,p", "p");
 		JPanel pnlBottom = new JPanel(lyBottom);
 
-		FormLayout lyMain = new FormLayout("200dlu:g",
-				"p,2dlu,fill:60dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("max(200dlu;p):g", "p,2dlu,fill:60dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 
 		CellConstraints cc = new CellConstraints();
@@ -117,6 +119,9 @@ public class UpdateGui implements Working {
 		tblUpdate = new Table<UpdateListItem>(tmdlUpdate);
 		tblUpdate.addMouseListener(new PopupupMouseListener());
 		new StatusCellRendererForUpdateListItem(tblUpdate);
+		tblUpdate.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		pathCellRenderer = new DotTextCellRenderer();
+		tblUpdate.getColumnModel().getColumn(1).setCellRenderer(new StatusCellRendererForUpdateListItem(tblUpdate, pathCellRenderer));
 		JScrollPane scrollPane = new JScrollPane(tblUpdate);
 
 		lblInfo = new Label();
@@ -132,16 +137,14 @@ public class UpdateGui implements Working {
 		pnlTop.add(lblRepo, cc.xy(3, 3));
 
 		pnlBottom.add(lblInfo, cc.xy(1, 1));
-		pnlBottom.add(prgWorking, cc.xywh(3, 1, 1, 1, CellConstraints.FILL,
-				CellConstraints.DEFAULT));
+		pnlBottom.add(prgWorking, cc.xywh(3, 1, 1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlBottom.add(btnStopFinish, cc.xy(5, 1));
 
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(scrollPane, cc.xy(1, 3));
 		pnlMain.add(pnlBottom, cc.xy(1, 5));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, title,
-				"update-app-icon.png", false);
+		frame = GuiHelper.createAndShowFrame(pnlMain, title, "update-app-icon.png", false);
 
 		frame.addWindowListener(new WindowAdapter() {
 
@@ -173,11 +176,14 @@ public class UpdateGui implements Working {
 		lblWorkingCopy.setText(workingCopy);
 		lblWorkingCopy.setToolTipText(workingCopy);
 		frame.setTitlePrefix(workingCopy);
+
+		pathCellRenderer.setTruncatePrefix(workingCopy);
 	}
 
 	public void setRepo(String repo) {
 		lblRepo.setText(repo);
 		lblRepo.setToolTipText(repo);
+		frame.packLater();
 	}
 
 	public void setPaths(List<File> lstPath) {
@@ -188,9 +194,7 @@ public class UpdateGui implements Working {
 		addItem("", null, status, null);
 	}
 
-	public void addItem(final String path,
-			final UpdateContentStatus updateContentStatus,
-			final ContentStatus status, final SVNEvent event) throws Exception {
+	public void addItem(final String path, final UpdateContentStatus updateContentStatus, final ContentStatus status, final SVNEvent event) throws Exception {
 
 		new OnSwing() {
 
@@ -224,8 +228,7 @@ public class UpdateGui implements Working {
 
 				if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)) {
 					effectiveStatus = ContentStatus.CONFLICTED;
-				} else if (UpdateContentStatus.MERGED
-						.equals(updateContentStatus)) {
+				} else if (UpdateContentStatus.MERGED.equals(updateContentStatus)) {
 					effectiveStatus = ContentStatus.MERGED;
 				}
 
@@ -254,88 +257,48 @@ public class UpdateGui implements Working {
 									@Override
 									protected void process() throws Exception {
 										numberOfPathUpdated++;
-										if (numberOfPathUpdated == lstPath
-												.size()) {
+										if (numberOfPathUpdated == lstPath.size()) {
 
 											prgWorking.setStringPainted(false);
 											prgWorking.setIndeterminate(false);
 											if (!hasConflicted()) {
-												actStopFinish
-														.setType(StopExitActionType.FINISHED);
+												actStopFinish.setType(StopExitActionType.FINISHED);
 											} else {
-												actStopFinish
-														.setType(StopExitActionType.CONFLICT);
+												actStopFinish.setType(StopExitActionType.CONFLICT);
 											}
 
 											int total = 0;
 											int conflicted = 0;
-											for (UpdateListItem uli : tmdlUpdate
-													.getAllData()) {
-												UpdateContentStatus updateContentStatus = uli
-														.getContentStatus();
-												ContentStatus contentStatus = uli
-														.getStatus();
-												if (UpdateContentStatus.CONFLICTED
-														.equals(updateContentStatus)
-														|| ContentStatus.CONFLICTED
-																.equals(contentStatus)) {
+											for (UpdateListItem uli : tmdlUpdate.getAllData()) {
+												UpdateContentStatus updateContentStatus = uli.getContentStatus();
+												ContentStatus contentStatus = uli.getStatus();
+												if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)
+														|| ContentStatus.CONFLICTED.equals(contentStatus)) {
 													conflicted++;
 												}
 												if (contentStatus != null) {
-													if (ContentStatus.ADDED
-															.equals(contentStatus)
-															|| ContentStatus.RESTORED
-																	.equals(contentStatus)
-															|| ContentStatus.CONFLICTED
-																	.equals(contentStatus)
-															|| ContentStatus.DELETED
-																	.equals(contentStatus)
-															|| ContentStatus.EXTERNAL
-																	.equals(contentStatus)
-															|| ContentStatus.IGNORED
-																	.equals(contentStatus)
-															|| ContentStatus.INCOMPLETE
-																	.equals(contentStatus)
-															|| ContentStatus.MERGED
-																	.equals(contentStatus)
-															|| ContentStatus.MISSING
-																	.equals(contentStatus)
-															|| ContentStatus.MODIFIED
-																	.equals(contentStatus)
-															|| ContentStatus.NONE
-																	.equals(contentStatus)
-															|| ContentStatus.NORMAL
-																	.equals(contentStatus)
-															|| ContentStatus.OBSTRUCTED
-																	.equals(contentStatus)
-															|| ContentStatus.REPLACED
-																	.equals(contentStatus)
-															|| ContentStatus.UNVERSIONED
-																	.equals(contentStatus)
-															|| ContentStatus.EXISTS
-																	.equals(contentStatus)
-															|| ContentStatus.UPDATE
-																	.equals(contentStatus)) {
+													if (ContentStatus.ADDED.equals(contentStatus) || ContentStatus.RESTORED.equals(contentStatus)
+															|| ContentStatus.CONFLICTED.equals(contentStatus) || ContentStatus.DELETED.equals(contentStatus)
+															|| ContentStatus.EXTERNAL.equals(contentStatus) || ContentStatus.IGNORED.equals(contentStatus)
+															|| ContentStatus.INCOMPLETE.equals(contentStatus) || ContentStatus.MERGED.equals(contentStatus)
+															|| ContentStatus.MISSING.equals(contentStatus) || ContentStatus.MODIFIED.equals(contentStatus)
+															|| ContentStatus.NONE.equals(contentStatus) || ContentStatus.NORMAL.equals(contentStatus)
+															|| ContentStatus.OBSTRUCTED.equals(contentStatus) || ContentStatus.REPLACED.equals(contentStatus)
+															|| ContentStatus.UNVERSIONED.equals(contentStatus) || ContentStatus.EXISTS.equals(contentStatus)
+															|| ContentStatus.UPDATE.equals(contentStatus)) {
 														total++;
 													}
 												}
 											}
-											String strInfo = "Changed: "
-													+ total;
+											String strInfo = "Changed: " + total;
 											if (conflicted > 0) {
-												strInfo += " Conflicted: "
-														+ conflicted;
+												strInfo += " Conflicted: " + conflicted;
 											}
 											lblInfo.setText(strInfo);
 
 											if (conflicted > 0) {
-												JOptionPane.showMessageDialog(
-														Manager.getRootFrame(),
-														"There were "
-																+ conflicted
-																+ " conflicted items!",
-														"Conflict",
-														JOptionPane.WARNING_MESSAGE);
+												JOptionPane.showMessageDialog(Manager.getRootFrame(), "There were " + conflicted + " conflicted items!",
+														"Conflict", JOptionPane.WARNING_MESSAGE);
 											}
 										}
 									}
@@ -374,8 +337,7 @@ public class UpdateGui implements Working {
 		synchronized (quNewItems) {
 			if (!revalidateIsTimed && !shuttingDown) {
 				revalidateIsTimed = true;
-				tmrTableRevalidate.schedule(new DoRevalidateTask(),
-						Manager.REVALIDATE_DELAY);
+				tmrTableRevalidate.schedule(new DoRevalidateTask(), Manager.REVALIDATE_DELAY);
 			}
 		}
 	}
@@ -396,8 +358,7 @@ public class UpdateGui implements Working {
 							}
 						}
 						tmdlUpdate.addLines(lstLi);
-						tblUpdate.scrollRectToVisible(tblUpdate.getCellRect(
-								tblUpdate.getRowCount() - 1, 0, true));
+						tblUpdate.scrollRectToVisible(tblUpdate.getCellRect(tblUpdate.getRowCount() - 1, 0, true));
 					}
 				}.run();
 			} catch (Exception e) {
@@ -407,8 +368,7 @@ public class UpdateGui implements Working {
 	}
 
 	private UpdateListItem getSelectedUpdateListItem() {
-		return tmdlUpdate.getRow(tblUpdate.convertRowIndexToModel(tblUpdate
-				.getSelectedRow()));
+		return tmdlUpdate.getRow(tblUpdate.convertRowIndexToModel(tblUpdate.getSelectedRow()));
 	}
 
 	private class CopyAllToClipboard extends AbstractAction {
@@ -454,8 +414,7 @@ public class UpdateGui implements Working {
 				isDeletedFile = true;
 			}
 			Log log = new Log(url.toDecodedString(), false);
-			if (isDeletedFile
-					&& update.getPreviousWorkingCopyRevision() != null) {
+			if (isDeletedFile && update.getPreviousWorkingCopyRevision() != null) {
 				log.setRevision(update.getPreviousWorkingCopyRevision());
 				log.setPegRevision(update.getPreviousWorkingCopyRevision());
 			}
@@ -472,8 +431,7 @@ public class UpdateGui implements Working {
 		public void actionProcess(ActionEvent e) throws Exception {
 			UpdateListItem li = getSelectedUpdateListItem();
 
-			SvnHelper.showChangesBetweenRevisions(UpdateGui.this, li.getPath(),
-					SVNRevision.create(li.getSvnEvent().getPreviousRevision()),
+			SvnHelper.showChangesBetweenRevisions(UpdateGui.this, li.getPath(), SVNRevision.create(li.getSvnEvent().getPreviousRevision()),
 					SVNRevision.WORKING, li.getSvnContentStatus());
 		}
 	}
@@ -494,12 +452,9 @@ public class UpdateGui implements Working {
 
 				boolean hasConflicted = false;
 				for (UpdateListItem uli : tmdlUpdate.getAllData()) {
-					UpdateContentStatus updateContentStatus = uli
-							.getContentStatus();
+					UpdateContentStatus updateContentStatus = uli.getContentStatus();
 					ContentStatus contentStatus = uli.getStatus();
-					if (UpdateContentStatus.CONFLICTED
-							.equals(updateContentStatus)
-							|| ContentStatus.CONFLICTED.equals(contentStatus)) {
+					if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus) || ContentStatus.CONFLICTED.equals(contentStatus)) {
 						hasConflicted = true;
 					}
 				}
@@ -544,13 +499,31 @@ public class UpdateGui implements Working {
 				UpdateListItem li = getSelectedUpdateListItem();
 				File file = new File(li.getPath());
 				if (file.isDirectory()) {
-					MessagePane.showError(frame, "Cannot resolve conflict",
-							"Cannot resolve conflict on directory");
+					MessagePane.showError(frame, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 					return;
 				}
-				new ResolveConflict(new RefreshUpdateGuiIfResolved(li),
-						file.getPath(), false).execute();
+				new ResolveConflict(new RefreshUpdateGuiIfResolved(li), file.getPath(), false).execute();
 
+			} catch (Exception ex) {
+				Manager.handle(ex);
+			}
+		}
+	}
+
+	private class DeleteRestoredAction extends AbstractAction {
+
+		public DeleteRestoredAction() {
+			super("Delete restored");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				UpdateListItem li = getSelectedUpdateListItem();
+				File file = new File(li.getPath());
+				Manager.deleteFile(file);
+				li.setContentStatus(null);
+				li.setStatus(ContentStatus.NONE);
+				tmdlUpdate.fireTableDataChanged();
 			} catch (Exception ex) {
 				Manager.handle(ex);
 			}
@@ -564,12 +537,18 @@ public class UpdateGui implements Working {
 		private JPopupMenu ppConflicted;
 		private JPopupMenu ppUpdated;
 		private JPopupMenu ppDeleted;
+		private JPopupMenu ppRestored;
 		private JPopupMenu ppDirectory;
 
 		public PopupupMouseListener() {
 			ppCompleted = new JPopupMenu();
 			ppCompleted.add(new CopyLineToClipboard());
 			ppCompleted.add(new CopyAllToClipboard());
+
+			ppRestored = new JPopupMenu();
+			ppRestored.add(new CopyLineToClipboard());
+			ppRestored.add(new CopyAllToClipboard());
+			ppRestored.add(new DeleteRestoredAction());
 
 			ppUpdated = new JPopupMenu();
 			ppUpdated.add(new CopyLineToClipboard());
@@ -611,8 +590,7 @@ public class UpdateGui implements Working {
 
 				File selectedFile = new File(selected.getPath());
 				if (!selectedFile.isDirectory()) {
-					if (UpdateContentStatus.CONFLICTED.equals(selected
-							.getContentStatus())) {
+					if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
 						new ResolveConflictAction().actionPerformed(null);
 					} else {
 						new ShowChanges().actionPerformed(null);
@@ -635,19 +613,16 @@ public class UpdateGui implements Working {
 			if (selectedFile.exists() && selectedFile.isDirectory()) {
 				ppVisible = ppDirectory;
 			} else {
-				if (UpdateContentStatus.CONFLICTED.equals(selected
-						.getContentStatus())) {
+				if (UpdateContentStatus.CONFLICTED.equals(selected.getContentStatus())) {
 					ppVisible = ppConflicted;
-				} else if (ContentStatus.ADDED.equals(status)
-						|| ContentStatus.EXISTS.equals(status)
-						|| ContentStatus.EXTERNAL.equals(status)
-						|| ContentStatus.NONE.equals(status)
-						|| ContentStatus.REPLACED.equals(status)
-						|| ContentStatus.UPDATE.equals(status)
+				} else if (ContentStatus.ADDED.equals(status) || ContentStatus.EXISTS.equals(status) || ContentStatus.EXTERNAL.equals(status)
+						|| ContentStatus.NONE.equals(status) || ContentStatus.REPLACED.equals(status) || ContentStatus.UPDATE.equals(status)
 						|| ContentStatus.MERGED.equals(status)) {
 					ppVisible = ppUpdated;
 				} else if (ContentStatus.DELETED.equals(status)) {
 					ppVisible = ppDeleted;
+				} else if (ContentStatus.RESTORED.equals(status)) {
+					ppVisible = ppRestored;
 				} else {
 					ppVisible = ppCompleted;
 				}
@@ -686,13 +661,10 @@ public class UpdateGui implements Working {
 
 			UpdateContentStatus updateContentStatus = uli.getContentStatus();
 			ContentStatus contentStatus = uli.getStatus();
-			if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)
-					|| ContentStatus.CONFLICTED.equals(contentStatus)) {
+			if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus) || ContentStatus.CONFLICTED.equals(contentStatus)) {
 				int rowIndex = tblUpdate.convertRowIndexToView(i);
-				tblUpdate.getSelectionModel().setSelectionInterval(rowIndex,
-						rowIndex);
-				tblUpdate.scrollRectToVisible(new Rectangle(tblUpdate
-						.getCellRect(rowIndex, 0, true)));
+				tblUpdate.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+				tblUpdate.scrollRectToVisible(new Rectangle(tblUpdate.getCellRect(rowIndex, 0, true)));
 			}
 		}
 	}
@@ -755,11 +727,20 @@ public class UpdateGui implements Working {
 		// TODO workStarted
 	}
 
-	public void setBandwidth(int bandwidth) {
+	public void setBandwidth(final int bandwidth) throws Exception {
 		totalReceived += bandwidth;
-		prgWorking.setStringPainted(true);
-		prgWorking.setString("" + (bandwidth / 1024) + " kB/sec (total: "
-				+ ((int) (totalReceived / 1024)) + " kB)");
+		new OnSwing() {
+
+			@Override
+			protected void process() throws Exception {
+				if (!prgWorking.isStringPainted()) {
+					prgWorking.setStringPainted(true);
+				}
+				prgWorking.setString("" + (bandwidth / 1024) + " kB/sec (total: " + ((int) (totalReceived / 1024)) + " kB)");
+			}
+
+		}.run();
+
 	}
 
 	public void close() {
@@ -770,8 +751,7 @@ public class UpdateGui implements Working {
 		for (UpdateListItem uli : tmdlUpdate.getAllData()) {
 			UpdateContentStatus updateContentStatus = uli.getContentStatus();
 			ContentStatus contentStatus = uli.getStatus();
-			if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus)
-					|| ContentStatus.CONFLICTED.equals(contentStatus)) {
+			if (UpdateContentStatus.CONFLICTED.equals(updateContentStatus) || ContentStatus.CONFLICTED.equals(contentStatus)) {
 				return true;
 			}
 		}
