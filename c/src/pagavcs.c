@@ -38,9 +38,9 @@ void connectServer(int socket_fd, struct sockaddr_un address,
 			char command[2048];
 
 			strcpy(command, "nohup java -Xms16m");
-			strcat(command, " -Xmx256m -XX:MaxPermSize=128M");
+			strcat(command, " -Xmx400m -XX:MaxPermSize=160M");
 			strcat(command, " -XX:PermSize=32M");
-			strcat(command, " -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20");
+			// strcat(command, " -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20");
 			strcat(command, " -Djava.library.path=/usr/lib/jni -jar");
 			strcat(command, " /usr/share/pagavcs/bin/pagavcs.jar >> ");
 			strcat(command, fullLogFilename);
@@ -93,6 +93,7 @@ if(	argc == 1 || strcmp(argv[1], "help") == 0
 		"  -c, -autoclose   Automatically close window after finished sucessfully\n");
 		printf("  help, h\n");
 		printf("  -h, --help       Display this help.\n");
+		printf("  --version        Version information.\n");
 		printf("\n");
 		printf("Example:\n");
 		printf(

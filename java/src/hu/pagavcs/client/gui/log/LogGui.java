@@ -21,6 +21,7 @@ import hu.pagavcs.client.operation.ContentStatus;
 import hu.pagavcs.client.operation.Log;
 import hu.pagavcs.client.operation.Log.ShowLogStatus;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -81,6 +82,14 @@ import com.toedter.calendar.JDateChooser;
  * PagaVCS; If not, see http://www.gnu.org/licenses/.
  */
 public class LogGui implements Working {
+
+	// FIXME debug
+	public static class DebugLabel extends Label {
+		@Override
+		public Dimension getPreferredSize() {
+			return super.getPreferredSize();
+		}
+	}
 
 	private Table<LogListItem> tblLog;
 	private TableModel<LogListItem> tmdlLog;
@@ -195,7 +204,7 @@ public class LogGui implements Working {
 		sfFilter.setToolTipText("Type your filter text here");
 		sfFilter.getDocument()
 				.addDocumentListener(new FilterDocumentListener());
-		lblUrl = new Label();
+		lblUrl = new DebugLabel();
 
 		FormLayout lyTop = new FormLayout("p,2dlu,p,2dlu,p:g(0.5),2dlu,p", "p");
 		JPanel pnlTop = new JPanel(lyTop);
@@ -228,7 +237,7 @@ public class LogGui implements Working {
 		pnlBottom.add(btnShowAll, cc.xy(5, 1));
 		pnlBottom.add(btnStop, cc.xy(7, 1));
 
-		FormLayout lyMain = new FormLayout("f:200dlu:g",
+		FormLayout lyMain = new FormLayout("f:[200dlu,p,800dlu]:g",
 				"p,2dlu,f:100dlu:g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 		pnlMain.add(pnlTop, cc.xy(1, 1));
@@ -254,6 +263,7 @@ public class LogGui implements Working {
 
 	public void setUrlLabel(String urlLabel) {
 		lblUrl.setText(urlLabel);
+		frame.packLater();
 	}
 
 	public synchronized void workStarted() throws Exception {

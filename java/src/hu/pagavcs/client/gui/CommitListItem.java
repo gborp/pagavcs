@@ -23,15 +23,15 @@ import org.tmatesoft.svn.core.SVNNodeKind;
  */
 public class CommitListItem implements ListItem {
 
-	private boolean       selected;
-	private File          path;
+	private boolean selected;
+	private File path;
 	private ContentStatus status;
 	private ContentStatus propertyStatus;
-	private String        statusRemark;
-	private SVNNodeKind   nodeKind;
+	private String statusRemark;
+	private SVNNodeKind nodeKind;
 
 	public String[] getColumnNames() {
-		return new String[] { "Selected", "Status", "PropertyStatus", "Path" };
+		return new String[] { "Selected", "Status", "Props", "Path" };
 	}
 
 	public Object getValue(int index) {
