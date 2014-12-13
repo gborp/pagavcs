@@ -4,6 +4,7 @@ import hu.pagavcs.client.bl.Manager;
 import hu.pagavcs.client.gui.DeleteGui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -29,15 +30,16 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 public class Delete {
 
 	private List<String> lstPath;
-	private DeleteGui    gui;
-	private boolean      autoClose;
-	private boolean      ignoreIfFileError;
+	private DeleteGui gui;
+	private boolean autoClose;
+	private boolean ignoreIfFileError;
 
 	public Delete(String path) throws BackingStoreException, SVNException {
 		this(Collections.singletonList(path));
 	}
 
-	public Delete(List<String> lstPath) throws BackingStoreException, SVNException {
+	public Delete(List<String> lstPath) throws BackingStoreException,
+			SVNException {
 		this.lstPath = lstPath;
 	}
 
@@ -50,14 +52,24 @@ public class Delete {
 
 			for (String path : lstPath) {
 				File wcFile = new File(path);
-				SVNClientManager mgrSvn = Manager.getSVNClientManagerForWorkingCopyOnly();
+				SVNClientManager mgrSvn = Manager
+						.getSVNClientManagerForWorkingCopyOnly();
 				SVNWCClient wcClient = mgrSvn.getWCClient();
 
 				try {
+					// delete to trash
+					try {
+						Manager.deleteToTrash(wcFile);
+					} catch (IOException ex) {
+						Manager.handle(ex);
+					}
 					wcClient.doDelete(wcFile, true, true, false);
 				} catch (SVNException ex) {
-					SVNErrorCode errorCode = ex.getErrorMessage().getErrorCode();
-					if (ignoreIfFileError && (SVNErrorCode.BAD_FILENAME.equals(errorCode) || SVNErrorCode.WC_NOT_DIRECTORY.equals(errorCode))) {
+					SVNErrorCode errorCode = ex.getErrorMessage()
+							.getErrorCode();
+					if (ignoreIfFileError
+							&& (SVNErrorCode.BAD_FILENAME.equals(errorCode) || SVNErrorCode.WC_NOT_DIRECTORY
+									.equals(errorCode))) {
 						// ignore exception
 					} else {
 						throw ex;

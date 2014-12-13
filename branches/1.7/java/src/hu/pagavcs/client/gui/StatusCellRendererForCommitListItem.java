@@ -6,6 +6,8 @@ import hu.pagavcs.client.gui.platform.Table;
 
 import java.awt.Color;
 
+import javax.swing.table.TableCellRenderer;
+
 /**
  * PagaVCS is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -23,6 +25,10 @@ public class StatusCellRendererForCommitListItem extends AbstractCellRendererCol
 
 	public StatusCellRendererForCommitListItem(Table<CommitListItem> table) {
 		super(table);
+	}
+
+	public StatusCellRendererForCommitListItem(Table<CommitListItem> table, TableCellRenderer delegate) {
+		super(table, delegate);
 	}
 
 	public Color getForegroundColor(CommitListItem li) {

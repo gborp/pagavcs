@@ -10,6 +10,7 @@ import hu.pagavcs.client.gui.CommitListItem;
 import hu.pagavcs.client.gui.Refreshable;
 import hu.pagavcs.client.gui.StatusCellRendererForCommitListItem;
 import hu.pagavcs.client.gui.Working;
+import hu.pagavcs.client.gui.platform.DotTextCellRenderer;
 import hu.pagavcs.client.gui.platform.Frame;
 import hu.pagavcs.client.gui.platform.GuiHelper;
 import hu.pagavcs.client.gui.platform.Label;
@@ -63,6 +64,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -118,6 +120,8 @@ public class CommitGui implements Working, Refreshable {
 	private String url;
 	private Semaphore refreshFinished;
 
+	private DotTextCellRenderer pathCellRenderer;
+
 	public CommitGui(Commit commit) {
 		this.commit = commit;
 		refreshFinished = new Semaphore(1, true);
@@ -129,34 +133,33 @@ public class CommitGui implements Working, Refreshable {
 		tmdlCommit = new TableModel<CommitListItem>(new CommitListItem());
 		tblCommit = new Table<CommitListItem>(tmdlCommit);
 		tblCommit.addMouseListener(new PopupupMouseListener());
-		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(
-				tmdlCommit));
-		tblCommit
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		tblCommit.setRowSorter(new TableRowSorter<TableModel<CommitListItem>>(tmdlCommit));
+		tblCommit.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		tblCommit.addKeyListener(new SelectDeselectSelectedKeyListener());
+		tblCommit.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		pathCellRenderer = new DotTextCellRenderer();
+		tblCommit.getColumnModel().getColumn(3).setCellRenderer(new StatusCellRendererForCommitListItem(tblCommit, pathCellRenderer));
 
 		SelectDeselectListener selectDeselectListener = new SelectDeselectListener();
-		tblCommit.getModel().addTableModelListener(selectDeselectListener);
+		tmdlCommit.addTableModelListener(selectDeselectListener);
 
-		tblCommit.getSelectionModel().addListSelectionListener(
-				selectDeselectListener);
+		tblCommit.getSelectionModel().addListSelectionListener(selectDeselectListener);
 
 		new StatusCellRendererForCommitListItem(tblCommit);
-		JScrollPane spCommitList = new JScrollPane(tblCommit);
+		final JScrollPane spCommitList = new JScrollPane(tblCommit);
+		spCommitList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		taMessage = new TextArea();
 		taMessage.setLineWrap(true);
 		taMessage.setWrapStyleWord(true);
 		JScrollPane spMessage = new JScrollPane(taMessage);
 
-		JSplitPane splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				spMessage, spCommitList);
-		splMain.setPreferredSize(new Dimension(40, 40));
+		JSplitPane splMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spMessage, spCommitList);
+		splMain.setPreferredSize(new Dimension(300, 300));
 		lblUrl = new Label();
 		lblWorkingCopy = new Label();
 		cboMessage = new JComboBox();
-		cboMessage.setPreferredSize(new Dimension(10, (int) cboMessage
-				.getPreferredSize().getHeight()));
+		cboMessage.setPreferredSize(new Dimension(100, (int) cboMessage.getPreferredSize().getHeight()));
 		cboMessage.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
@@ -168,8 +171,7 @@ public class CommitGui implements Working, Refreshable {
 			}
 		});
 
-		JPanel pnlTop = new JPanel(new FormLayout("r:p,2dlu,p:g",
-				"p,2dlu,p,2dlu,p,2dlu"));
+		JPanel pnlTop = new JPanel(new FormLayout("r:p,2dlu,p:g", "p,2dlu,p,2dlu,p,2dlu"));
 		pnlTop.add(new Label("Commit to:"), cc.xy(1, 1));
 		pnlTop.add(lblUrl, cc.xy(3, 1));
 		pnlTop.add(new Label("Working copy:"), cc.xy(1, 3));
@@ -197,25 +199,22 @@ public class CommitGui implements Working, Refreshable {
 		pnlCheck.add(lblSelectedInfo, cc.xy(3, 1));
 		pnlCheck.add(cbHelpMerge, cc.xy(5, 1));
 
-		JPanel pnlBottom = new JPanel(new FormLayout(
-				"p,2dlu, 50dlu:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
+		JPanel pnlBottom = new JPanel(new FormLayout("p,2dlu, 50dlu:g, 2dlu,p, 2dlu,p, 2dlu,p", "p,2dlu,p"));
 
-		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 9, 1, CellConstraints.FILL,
-				CellConstraints.DEFAULT));
+		pnlBottom.add(pnlCheck, cc.xywh(1, 1, 9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlBottom.add(btnRefresh, cc.xy(1, 3));
 		pnlBottom.add(prgWorkinProgress, cc.xy(3, 3));
 		pnlBottom.add(btnCreatePatch, cc.xy(5, 3));
 		pnlBottom.add(btnStop, cc.xy(7, 3));
 		pnlBottom.add(btnCommit, cc.xy(9, 3));
 
-		FormLayout lyMain = new FormLayout("p:g", "p,2dlu,f:50dlu:g,2dlu,p");
+		FormLayout lyMain = new FormLayout("p:g", "p,2dlu,f:max(80dlu;p):g,2dlu,p");
 		JPanel pnlMain = new JPanel(lyMain);
 		pnlMain.add(pnlTop, cc.xy(1, 1));
 		pnlMain.add(splMain, cc.xy(1, 3));
 		pnlMain.add(pnlBottom, cc.xy(1, 5));
 
-		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit",
-				"commit-app-icon.png", false);
+		frame = GuiHelper.createAndShowFrame(pnlMain, "Commit", "commit-app-icon.png", false);
 		frame.addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
@@ -257,8 +256,13 @@ public class CommitGui implements Working, Refreshable {
 
 	public void setPath(String path) {
 		this.path = path;
+
+		pathCellRenderer.setTruncatePrefix(path);
+
 		lblWorkingCopy.setText(path);
 		frame.setTitlePrefix(path);
+		// it's executed last, so it's enough to call the pack only here.
+		frame.packLater();
 	}
 
 	public void setRecentMessages(String[] recentMessages) {
@@ -267,11 +271,9 @@ public class CommitGui implements Working, Refreshable {
 			RecentMessageSlot li = new RecentMessageSlot(str);
 			lstRecentMessageSlot.add(li);
 		}
-		ComboBoxModel modelUrl = new DefaultComboBoxModel(
-				lstRecentMessageSlot.toArray());
+		ComboBoxModel modelUrl = new DefaultComboBoxModel(lstRecentMessageSlot.toArray());
 		cboMessage.setModel(modelUrl);
-		cboMessage.setPreferredSize(new Dimension(10, (int) cboMessage
-				.getPreferredSize().getHeight()));
+		cboMessage.setPreferredSize(new Dimension(10, (int) cboMessage.getPreferredSize().getHeight()));
 	}
 
 	public void refreshSelectedInfo() {
@@ -282,12 +284,10 @@ public class CommitGui implements Working, Refreshable {
 				selectedCount++;
 			}
 		}
-		lblSelectedInfo.setText(selectedCount + "/" + lstAllData.size()
-				+ " selected");
+		lblSelectedInfo.setText(selectedCount + "/" + lstAllData.size() + " selected");
 	}
 
-	public void setStatus(final CommitStatus status, final String message)
-			throws Exception {
+	public void setStatus(final CommitStatus status, final String message) throws Exception {
 		new OnSwing() {
 
 			protected void process() throws Exception {
@@ -307,12 +307,8 @@ public class CommitGui implements Working, Refreshable {
 					}
 
 					if (!setRemoveUnversioned.isEmpty()) {
-						for (CommitListItem li : new ArrayList<CommitListItem>(
-								lstData)) {
-							if (li.getStatus()
-									.equals(ContentStatus.UNVERSIONED)
-									&& setRemoveUnversioned.contains(li
-											.getPath())) {
+						for (CommitListItem li : new ArrayList<CommitListItem>(lstData)) {
+							if (li.getStatus().equals(ContentStatus.UNVERSIONED) && setRemoveUnversioned.contains(li.getPath())) {
 								tmdlCommit.removeLine(li);
 							}
 						}
@@ -331,14 +327,12 @@ public class CommitGui implements Working, Refreshable {
 					btnCreatePatch.setEnabled(true);
 					btnRefresh.setEnabled(true);
 					if (tmdlCommit.getAllData().isEmpty()) {
-						tblCommit.showMessage("There is nothing to commit",
-								Manager.getIconWarning());
+						tblCommit.showMessage("There is nothing to commit", Manager.getIconWarning());
 					}
 				}
 				if (CommitStatus.INIT.equals(status)) {
 					workStarted();
-					tblCommit.showMessage("Working...",
-							Manager.getIconInformation());
+					tblCommit.showMessage("Working...", Manager.getIconInformation());
 
 					btnSelectAllNone.setEnabled(false);
 
@@ -358,8 +352,7 @@ public class CommitGui implements Working, Refreshable {
 					prgWorkinProgress.setString("");
 					preRealCommitProcess = false;
 				} else if (CommitStatus.CANCEL.equals(status)) {
-					MessagePane.showInfo(frame, "Cancelled",
-							"Commit cancelled!");
+					MessagePane.showInfo(frame, "Cancelled", "Commit cancelled!");
 
 					tblCommit.setEnabled(true);
 					btnCommit.setEnabled(true);
@@ -374,14 +367,11 @@ public class CommitGui implements Working, Refreshable {
 		}.run();
 	}
 
-	private void commitCompleted(String message) throws BackingStoreException,
-			SVNException, PagaException {
-		CommitCompletedMessagePane.showInfo(frame, "Completed",
-				getCommitNotifyMessage(message));
+	private void commitCompleted(String message) throws BackingStoreException, SVNException, PagaException {
+		CommitCompletedMessagePane.showInfo(frame, "Completed", getCommitNotifyMessage(message));
 
 		if (cbHelpMerge.isSelected()) {
-			String mergeToDir = SettingsStore.getInstance()
-					.getLastHelpMergeToDir();
+			String mergeToDir = SettingsStore.getInstance().getLastHelpMergeToDir();
 			JFileChooser jc = new JFileChooser();
 			if (mergeToDir != null && new File(mergeToDir).isDirectory()) {
 				jc.setCurrentDirectory(new File(mergeToDir));
@@ -412,8 +402,7 @@ public class CommitGui implements Working, Refreshable {
 	}
 
 	private String getCommitNotifyMessage(String revision) {
-		String messageTemplates = Manager.getSettings()
-				.getCommitCompletedMessageTemplates();
+		String messageTemplates = Manager.getSettings().getCommitCompletedMessageTemplates();
 		if (messageTemplates != null) {
 			String sep = Manager.COMMIT_COMPLETED_TEMPLATE_SEPARATOR;
 			String path = commit.getPath();
@@ -459,10 +448,8 @@ public class CommitGui implements Working, Refreshable {
 							new OnSwingWait<Object, Object>() {
 
 								protected Object process() throws Exception {
-									for (CommitListItem li : tmdlCommit
-											.getAllData()) {
-										Boolean oldSelectionState = mapOldSelectionState
-												.get(li.getPath());
+									for (CommitListItem li : tmdlCommit.getAllData()) {
+										Boolean oldSelectionState = mapOldSelectionState.get(li.getPath());
 										if (oldSelectionState != null) {
 											li.setSelected(oldSelectionState);
 										}
@@ -497,14 +484,10 @@ public class CommitGui implements Working, Refreshable {
 		return false;
 	}
 
-	public void addItem(final File file, final ContentStatus contentStatus,
-			final ContentStatus propertyStatus,
-			final String contentStatusRemark, final SVNNodeKind nodeKind)
-			throws Exception {
-		if ((contentStatus.equals(ContentStatus.NORMAL) || contentStatus
-				.equals(ContentStatus.NONE))
-				&& (propertyStatus.equals(ContentStatus.NORMAL) || propertyStatus
-						.equals(ContentStatus.NONE))) {
+	public void addItem(final File file, final ContentStatus contentStatus, final ContentStatus propertyStatus, final String contentStatusRemark,
+			final SVNNodeKind nodeKind) throws Exception {
+		if ((contentStatus.equals(ContentStatus.NORMAL) || contentStatus.equals(ContentStatus.NONE))
+				&& (propertyStatus.equals(ContentStatus.NORMAL) || propertyStatus.equals(ContentStatus.NONE))) {
 			return;
 		}
 		new OnSwing() {
@@ -514,25 +497,21 @@ public class CommitGui implements Working, Refreshable {
 
 				CommitListItem li = new CommitListItem();
 
-				if (contentStatus.equals(ContentStatus.MODIFIED)
-						|| contentStatus.equals(ContentStatus.ADDED)
-						|| contentStatus.equals(ContentStatus.DELETED)
-						|| propertyStatus.equals(ContentStatus.MODIFIED)
-						|| propertyStatus.equals(ContentStatus.ADDED)) {
+				if (contentStatus.equals(ContentStatus.MODIFIED) || contentStatus.equals(ContentStatus.ADDED) || contentStatus.equals(ContentStatus.DELETED)
+						|| propertyStatus.equals(ContentStatus.MODIFIED) || propertyStatus.equals(ContentStatus.ADDED)) {
 					li.setSelected(true);
 				} else {
 					li.setSelected(false);
 				}
+
 				li.setPath(file);
 				li.setStatus(contentStatus);
 				li.setPropertyStatus(propertyStatus);
 				li.setStatusRemark(contentStatusRemark);
 				li.setNodeKind(nodeKind);
 				if (!isParentDeleted(li)) {
-					if (contentStatus.equals(ContentStatus.DELETED)
-							&& file.isDirectory()) {
-						mapDeletedHiddenFiles.put(file,
-								new ArrayList<CommitListItem>());
+					if (contentStatus.equals(ContentStatus.DELETED) && file.isDirectory()) {
+						mapDeletedHiddenFiles.put(file, new ArrayList<CommitListItem>());
 					}
 					tmdlCommit.addLine(li);
 					tblCommit.followScrollToNewItems();
@@ -550,9 +529,7 @@ public class CommitGui implements Working, Refreshable {
 			preRealCommitProcess = false;
 		}
 
-		if (itemStatus.equals(CommittedItemStatus.ADDED)
-				|| itemStatus.equals(CommittedItemStatus.DELETED)
-				|| itemStatus.equals(CommittedItemStatus.MODIFIED)
+		if (itemStatus.equals(CommittedItemStatus.ADDED) || itemStatus.equals(CommittedItemStatus.DELETED) || itemStatus.equals(CommittedItemStatus.MODIFIED)
 				|| itemStatus.equals(CommittedItemStatus.REPLACED)) {
 			prgWorkinProgress.setStringPainted(true);
 			prgWorkinProgress.setString(fileName);
@@ -573,8 +550,7 @@ public class CommitGui implements Working, Refreshable {
 
 		File file = li.getPath();
 		if (file.isDirectory()) {
-			MessagePane.showError(frame, "Cannot resolve conflict",
-					"Cannot resolve conflict on directory");
+			MessagePane.showError(frame, "Cannot resolve conflict", "Cannot resolve conflict on directory");
 			return;
 		}
 		new ResolveConflict(this, file.getPath(), false).execute();
@@ -585,31 +561,26 @@ public class CommitGui implements Working, Refreshable {
 	 */
 	private List<CommitListItem> getSelectedItems() {
 		int[] selectedRows = tblCommit.getSelectedRows();
-		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>(
-				selectedRows.length);
+		ArrayList<CommitListItem> lstResult = new ArrayList<CommitListItem>(selectedRows.length);
 		for (int row : selectedRows) {
-			lstResult.add(tmdlCommit.getRow(tblCommit
-					.convertRowIndexToModel(row)));
+			lstResult.add(tmdlCommit.getRow(tblCommit.convertRowIndexToModel(row)));
 		}
 		return lstResult;
 	}
 
 	private List<Integer> getSelectedItemIndeces() {
 		int[] selectedRows = tblCommit.getSelectedRows();
-		ArrayList<Integer> lstResult = new ArrayList<Integer>(
-				selectedRows.length);
+		ArrayList<Integer> lstResult = new ArrayList<Integer>(selectedRows.length);
 		for (int row : selectedRows) {
 			lstResult.add(tblCommit.convertRowIndexToModel(row));
 		}
 		return lstResult;
 	}
 
-	private boolean addRecoursively(List<CommitListItem> lstItems)
-			throws SVNException {
+	private boolean addRecoursively(List<CommitListItem> lstItems) throws SVNException {
 		boolean hasDirectory = false;
 		for (CommitListItem li : lstItems) {
-			if (li != null && li.getPath() != null
-					&& li.getPath().isDirectory()) {
+			if (li != null && li.getPath() != null && li.getPath().isDirectory()) {
 				if (li.getPath().listFiles().length != 0) {
 					hasDirectory = true;
 					break;
@@ -619,8 +590,7 @@ public class CommitGui implements Working, Refreshable {
 
 		boolean addRecursively = false;
 		if (hasDirectory) {
-			OPTIONS answer = MessagePane.executeConfirmDialog(frame,
-					"Do you want to add recursively?");
+			OPTIONS answer = MessagePane.executeConfirmDialog(frame, "Do you want to add recursively?");
 			if (answer == OPTIONS.CANCEL) {
 				return false;
 			} else {
@@ -656,19 +626,14 @@ public class CommitGui implements Working, Refreshable {
 						commit.add(li.getPath(), false);
 					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
 						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
-						tblCommit.scrollRectToVisible(tblCommit.getCellRect(
-								tblCommit.convertRowIndexToView(modelRowIndex),
-								0, true));
-						MessagePane
-								.showError(frame, "Cannot create patch",
-										"Cannot create patch from conflicted file! Please resolve the conflict first.");
+						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
+						MessagePane.showError(frame, "Cannot create patch", "Cannot create patch from conflicted file! Please resolve the conflict first.");
 						return;
 					}
 				}
 			}
 			if (noCommit == 0) {
-				MessagePane.showError(frame, "Cannot create patch",
-						"Nothing is selected for creating patch");
+				MessagePane.showError(frame, "Cannot create patch", "Nothing is selected for creating patch");
 				return;
 			}
 
@@ -704,13 +669,11 @@ public class CommitGui implements Working, Refreshable {
 			for (CommitListItem li : tmdlCommit.getAllData()) {
 				if (li.isSelected()) {
 
-					if (firstPass
-							&& li.getStatus().equals(ContentStatus.UNVERSIONED)) {
+					if (firstPass && li.getStatus().equals(ContentStatus.UNVERSIONED)) {
 						// auto-add unversioned items
 						boolean success = addRecoursively(Arrays.asList(li));
 						if (!success) {
-							MessagePane.showError(frame, "Cancelled",
-									"Cancelled.");
+							MessagePane.showError(frame, "Cancelled", "Cancelled.");
 							return null;
 						} else {
 							needRefreshAndRecount = true;
@@ -718,20 +681,15 @@ public class CommitGui implements Working, Refreshable {
 
 					} else if (li.getStatus().equals(ContentStatus.CONFLICTED)) {
 						int modelRowIndex = tmdlCommit.getAllData().indexOf(li);
-						tblCommit.scrollRectToVisible(tblCommit.getCellRect(
-								tblCommit.convertRowIndexToView(modelRowIndex),
-								0, true));
-						MessagePane
-								.showError(frame, "Cannot commit",
-										"Cannot commit conflicted file! Please resolve the conflict first.");
+						tblCommit.scrollRectToVisible(tblCommit.getCellRect(tblCommit.convertRowIndexToView(modelRowIndex), 0, true));
+						MessagePane.showError(frame, "Cannot commit", "Cannot commit conflicted file! Please resolve the conflict first.");
 						return null;
 					}
 
 					lstCommit.add(li.getPath());
 					noCommit++;
 					if (ContentStatus.DELETED.equals(li.getStatus())) {
-						List<CommitListItem> lstHiddenDeletedFiles = mapDeletedHiddenFiles
-								.get(li);
+						List<CommitListItem> lstHiddenDeletedFiles = mapDeletedHiddenFiles.get(li);
 						if (lstHiddenDeletedFiles != null) {
 							for (CommitListItem liHidden : lstHiddenDeletedFiles) {
 								lstCommit.add(liHidden.getPath());
@@ -749,14 +707,11 @@ public class CommitGui implements Working, Refreshable {
 			List<File> lstCommit;
 			try {
 				if (taMessage.getText().trim().length() < logMinSize) {
-					MessagePane.showError(frame, "Cannot commit",
-							"Message length must be at least " + logMinSize
-									+ "!");
+					MessagePane.showError(frame, "Cannot commit", "Message length must be at least " + logMinSize + "!");
 					return;
 				}
 
-				Manager.getSettings().addCommitMessageForHistory(
-						taMessage.getText().trim());
+				Manager.getSettings().addCommitMessageForHistory(taMessage.getText().trim());
 
 				noCommit = 0;
 				needRefreshAndRecount = false;
@@ -775,8 +730,7 @@ public class CommitGui implements Working, Refreshable {
 				}
 
 				if (noCommit == 0) {
-					MessagePane.showError(frame, "Cannot commit",
-							"Nothing is selected to commit");
+					MessagePane.showError(frame, "Cannot commit", "Nothing is selected to commit");
 					return;
 				}
 
@@ -906,8 +860,7 @@ public class CommitGui implements Working, Refreshable {
 			Collections.sort(lstFiles, new Comparator<CommitListItem>() {
 
 				public int compare(CommitListItem o1, CommitListItem o2) {
-					return o2.getPath().getAbsolutePath()
-							.compareTo(o1.getPath().getAbsolutePath());
+					return o2.getPath().getAbsolutePath().compareTo(o1.getPath().getAbsolutePath());
 				}
 			});
 
@@ -1074,8 +1027,7 @@ public class CommitGui implements Working, Refreshable {
 			// boolean hasFiles = false;
 			// boolean hasDirs = false;
 			for (int rowLi : selectedRows) {
-				CommitListItem li = tmdlCommit.getRow(tblCommit
-						.convertRowIndexToModel(rowLi));
+				CommitListItem li = tmdlCommit.getRow(tblCommit.convertRowIndexToModel(rowLi));
 				setUsedStatus.add(li.getStatus());
 				setUsedPropertyStatus.add(li.getPropertyStatus());
 				// if (SVNNodeKind.DIR.equals(li.getNodeKind())) {
@@ -1092,8 +1044,7 @@ public class CommitGui implements Working, Refreshable {
 				ppMixed.add(new ShowChangesAction(this));
 			}
 
-			if (setUsedStatus.contains(ContentStatus.MODIFIED)
-					&& !setUsedStatus.contains(ContentStatus.UNVERSIONED)
+			if (setUsedStatus.contains(ContentStatus.MODIFIED) && !setUsedStatus.contains(ContentStatus.UNVERSIONED)
 					&& !setUsedStatus.contains(ContentStatus.ADDED)) {
 				ppMixed.add(new ShowLog());
 			}
@@ -1102,17 +1053,13 @@ public class CommitGui implements Working, Refreshable {
 				ppMixed.add(new CreateMissingDirAction());
 			}
 
-			if ((setUsedStatus.contains(ContentStatus.MODIFIED)
-					|| setUsedStatus.contains(ContentStatus.ADDED)
-					|| setUsedStatus.contains(ContentStatus.MISSING) || setUsedStatus
-						.contains(ContentStatus.DELETED))
-					&& !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
+			if ((setUsedStatus.contains(ContentStatus.MODIFIED) || setUsedStatus.contains(ContentStatus.ADDED) || setUsedStatus.contains(ContentStatus.MISSING) || setUsedStatus
+					.contains(ContentStatus.DELETED)) && !setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
 				ppMixed.add(new RevertChangesAction());
 			}
 
 			ppMixed.add(new IgnoreAction());
-			if (onlyOneKind
-					&& setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
+			if (onlyOneKind && setUsedStatus.contains(ContentStatus.UNVERSIONED)) {
 				ppMixed.add(new AddAction());
 			}
 			ppMixed.add(new DeleteAction());
@@ -1162,8 +1109,7 @@ public class CommitGui implements Working, Refreshable {
 				// ContentStatus propertyStatus = selected.getPropertyStatus();
 				if (status.equals(ContentStatus.MODIFIED)) {
 					new ShowChangesAction(this).actionPerformed(null);
-				} else if (selected.getPropertyStatus().equals(
-						ContentStatus.MODIFIED)) {
+				} else if (selected.getPropertyStatus().equals(ContentStatus.MODIFIED)) {
 					new ShowPropertyChangesAction().actionPerformed(null);
 				}
 			}
@@ -1234,10 +1180,8 @@ public class CommitGui implements Working, Refreshable {
 		public RecentMessageSlot(String message) {
 			this.message = message;
 			shortMessage = message;
-			if (shortMessage != null
-					&& shortMessage.length() > SHORT_MESSAGE_LENGTH) {
-				shortMessage = shortMessage.substring(0, SHORT_MESSAGE_LENGTH)
-						+ "...";
+			if (shortMessage != null && shortMessage.length() > SHORT_MESSAGE_LENGTH) {
+				shortMessage = shortMessage.substring(0, SHORT_MESSAGE_LENGTH) + "...";
 			}
 			if (shortMessage == null) {
 				shortMessage = "";
@@ -1249,8 +1193,7 @@ public class CommitGui implements Working, Refreshable {
 		}
 	}
 
-	private class SelectDeselectListener implements TableModelListener,
-			ListSelectionListener {
+	private class SelectDeselectListener implements TableModelListener, ListSelectionListener {
 
 		private List<Integer> lstLastSelectedItems;
 		private boolean suppressListSelectionListener;
@@ -1274,8 +1217,7 @@ public class CommitGui implements Working, Refreshable {
 						li.setSelected(false);
 						changed = true;
 						break;
-					} else if (ContentStatus.ADDED.equals(li2.getStatus())
-							&& !li2.isSelected()) {
+					} else if (ContentStatus.ADDED.equals(li2.getStatus()) && !li2.isSelected()) {
 						li2.setSelected(true);
 						checkStatusSelected(li2);
 						changed = true;
@@ -1328,17 +1270,14 @@ public class CommitGui implements Working, Refreshable {
 
 				if (lstLastSelectedItems != null) {
 
-					int selectedRowIndex = tblCommit
-							.convertRowIndexToModel(tblCommit.getSelectedRow());
+					int selectedRowIndex = tblCommit.convertRowIndexToModel(tblCommit.getSelectedRow());
 					if (lstLastSelectedItems.contains(selectedRowIndex)) {
-						boolean newSelectionState = tmdlCommit.getRow(
-								selectedRowIndex).isSelected();
+						boolean newSelectionState = tmdlCommit.getRow(selectedRowIndex).isSelected();
 
 						for (Integer index : lstLastSelectedItems) {
 							CommitListItem li = tmdlCommit.getRow(index);
 							li.setSelected(newSelectionState);
-							tblCommit.getSelectionModel().addSelectionInterval(
-									index, index);
+							tblCommit.getSelectionModel().addSelectionInterval(index, index);
 						}
 						tblCommit.repaint();
 					}

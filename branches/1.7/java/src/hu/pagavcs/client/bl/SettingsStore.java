@@ -73,8 +73,7 @@ public class SettingsStore {
 		return singleton;
 	}
 
-	public void save() throws SVNException, BackingStoreException,
-			GeneralSecurityException {
+	public void save() throws SVNException, BackingStoreException, GeneralSecurityException {
 		storeMap(KEY_USERNAME, mapUsername, false);
 		storeMap(KEY_PASSWORD, mapPassword, true);
 		storeList(KEY_COMMIT_MESSAGES, lstCommitMessages);
@@ -84,10 +83,8 @@ public class SettingsStore {
 		storeInteger(KEY_GUI_LOG_SEPARATOR_MAIN, guiLogSeparatorMain);
 		storeBoolean(KEY_LOGIN_REMEMBER_USERNAME, rememberUsername);
 		storeBoolean(KEY_LOGIN_REMEMBER_PASSWORD, rememberPassword);
-		storeString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES,
-				commitCompletedMessageTemplates);
-		storeBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD,
-				autoCopyCommitRevisionToClipboard);
+		storeString(KEY_COMMIT_COMPLETED_MESSAGE_TEMPLATES, commitCompletedMessageTemplates);
+		storeBoolean(KEY_AUTO_COPY_COMMIT_REVISION_TO_CLIPBOARD, autoCopyCommitRevisionToClipboard);
 		storeString(KEY_LAST_HELP_MERGE_TO_DIR, lastHelpMergeToDir);
 		storeBoolean(KEY_MERGE_IGNORE_EOL, mergeIgnoreEol);
 		storeBoolean(KEY_GLOBAL_UPDATE_IGNORE_EOL, globalIgnoreEol);
@@ -95,8 +92,7 @@ public class SettingsStore {
 		prefs.flush();
 	}
 
-	public void load() throws BackingStoreException, GeneralSecurityException,
-			IOException {
+	public void load() throws BackingStoreException, GeneralSecurityException, IOException {
 		mapUsername = loadMap(KEY_USERNAME, false);
 		mapPassword = loadMap(KEY_PASSWORD, true);
 		lstCommitMessages = loadList(KEY_COMMIT_MESSAGES);
@@ -129,8 +125,7 @@ public class SettingsStore {
 		return resultList;
 	}
 
-	private void storeList(String mapName, List<String> data)
-			throws BackingStoreException {
+	private void storeList(String mapName, List<String> data) throws BackingStoreException {
 		Preferences node = prefs.node(mapName);
 		node.clear();
 		int index = 0;
@@ -140,8 +135,7 @@ public class SettingsStore {
 		}
 	}
 
-	private Map<String, String> loadMap(String mapName, boolean encoded)
-			throws BackingStoreException, GeneralSecurityException, IOException {
+	private Map<String, String> loadMap(String mapName, boolean encoded) throws BackingStoreException, GeneralSecurityException, IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		Preferences node = prefs.node(mapName);
 		for (String key : node.keys()) {
@@ -154,9 +148,7 @@ public class SettingsStore {
 		return result;
 	}
 
-	private void storeMap(String mapName, Map<String, String> data,
-			boolean encoded) throws BackingStoreException,
-			GeneralSecurityException {
+	private void storeMap(String mapName, Map<String, String> data, boolean encoded) throws BackingStoreException, GeneralSecurityException {
 		Preferences node = prefs.node(mapName);
 		node.clear();
 		for (Entry<String, String> entry : data.entrySet()) {
@@ -287,14 +279,12 @@ public class SettingsStore {
 
 	private Rectangle stringToRectangle(String s) {
 		String[] v = s.split(" ");
-		return new Rectangle(Integer.valueOf(v[0]), Integer.valueOf(v[1]),
-				Integer.valueOf(v[2]), Integer.valueOf(v[3]));
+		return new Rectangle(Integer.valueOf(v[0]), Integer.valueOf(v[1]), Integer.valueOf(v[2]), Integer.valueOf(v[3]));
 	}
 
 	public Rectangle getWindowBounds(Window parent, String windowName) {
 		if (parent != null) {
-			Rectangle result = getWindowBounds(parent.getName() + "->"
-					+ windowName);
+			Rectangle result = getWindowBounds(parent.getName() + "->" + windowName);
 			if (result != null) {
 				Point parentLocation = parent.getLocationOnScreen();
 				result.x += parentLocation.getX();
@@ -314,8 +304,7 @@ public class SettingsStore {
 		}
 	}
 
-	public void setWindowBounds(Window parent, String windowName,
-			Rectangle bounds) {
+	public void setWindowBounds(Window parent, String windowName, Rectangle bounds) {
 		if (parent != null) {
 			Point parentLocation = parent.getLocationOnScreen();
 			bounds.x -= parentLocation.getX();
@@ -362,8 +351,7 @@ public class SettingsStore {
 		this.rememberPassword = rememberPassword;
 	}
 
-	public void setCommitCompletedMessageTemplates(
-			String commitCompletedMessageTemplates) {
+	public void setCommitCompletedMessageTemplates(String commitCompletedMessageTemplates) {
 		this.commitCompletedMessageTemplates = commitCompletedMessageTemplates;
 	}
 
@@ -375,8 +363,7 @@ public class SettingsStore {
 		return this.autoCopyCommitRevisionToClipboard;
 	}
 
-	public void setAutoCopyCommitRevisionToClipboard(
-			Boolean autoCopyCommitRevisionToClipboard) {
+	public void setAutoCopyCommitRevisionToClipboard(Boolean autoCopyCommitRevisionToClipboard) {
 		this.autoCopyCommitRevisionToClipboard = autoCopyCommitRevisionToClipboard;
 	}
 

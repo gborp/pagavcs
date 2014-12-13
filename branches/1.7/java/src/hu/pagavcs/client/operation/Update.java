@@ -89,7 +89,11 @@ public class Update implements UpdateCancelable {
 		executor.scheduleAtFixedRate(new Runnable() {
 
 			public void run() {
-				gui.setBandwidth(Manager.getBandwidthMeter().getBandwidth());
+				try {
+					gui.setBandwidth(Manager.getBandwidthMeter().getBandwidth());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 
 		}, 0, 1, TimeUnit.SECONDS);
