@@ -47,6 +47,8 @@ public class SettingsGui {
 
 	private static final String ABOUT_TEXT = "PagaVCS\nPaga Version Control System\n\npagavcs.googlecode.com\n\n©2010-2014 Gábor Pápai";
 
+	private static final String KEY_CONTEXT_MENU_ICON = "/org/gnome/desktop/interface/menus-have-icons";
+
 	private Settings settings;
 	private TextArea taCommitCompleteTemplate;
 	private Frame frame;
@@ -115,7 +117,7 @@ public class SettingsGui {
 	}
 
 	private boolean isShowIconsInContextMenus() throws IOException {
-		String result = Manager.getOsCommandResult(null, "dconf", "read", "/org/gnome/desktop/interface/menus-have-icons");
+		String result = Manager.getOsCommandResult(null, "dconf", "read", KEY_CONTEXT_MENU_ICON);
 		return Boolean.valueOf(result.trim());
 	}
 
@@ -165,7 +167,7 @@ public class SettingsGui {
 		}
 
 		public void actionProcess(ActionEvent e) throws Exception {
-			Runtime.getRuntime().exec("dconf read /org/gnome/desktop/interface/menus-have-icons " + Boolean.toString(cbShowIconsInContextMenu.isSelected()));
+			Runtime.getRuntime().exec("dconf write " + KEY_CONTEXT_MENU_ICON + " " + Boolean.toString(cbShowIconsInContextMenu.isSelected()));
 		}
 
 	}
