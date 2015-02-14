@@ -1277,7 +1277,8 @@ public class CommitGui implements Working, Refreshable {
 						for (Integer index : lstLastSelectedItems) {
 							CommitListItem li = tmdlCommit.getRow(index);
 							li.setSelected(newSelectionState);
-							tblCommit.getSelectionModel().addSelectionInterval(index, index);
+							int indexView = tblCommit.convertRowIndexToView(index);
+							tblCommit.getSelectionModel().addSelectionInterval(indexView, indexView);
 						}
 						tblCommit.repaint();
 					}
