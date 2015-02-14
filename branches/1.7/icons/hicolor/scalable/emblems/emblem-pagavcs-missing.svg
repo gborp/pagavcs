@@ -128,9 +128,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.97227182"
-     inkscape:cx="-5.1810596"
+     inkscape:cx="2.5328326"
      inkscape:cy="28.168508"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer2"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -140,7 +140,7 @@
      inkscape:guide-bbox="true"
      inkscape:window-width="1191"
      inkscape:window-height="848"
-     inkscape:window-x="409"
+     inkscape:window-x="440"
      inkscape:window-y="24"
      inkscape:window-maximized="0"
      fit-margin-top="0"
@@ -166,7 +166,7 @@
      transform="translate(0.74556747,-88.530649)">
     <path
        sodipodi:type="arc"
-       style="fill:#ed43d1;fill-opacity:1;stroke:#ba129e;stroke-width:2.34804368;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#f53bd6;fill-opacity:1;stroke:#c20a24;stroke-width:2.34804367999999997;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3183"
        sodipodi:cx="47.119026"
        sodipodi:cy="208.49529"
@@ -182,13 +182,13 @@
      transform="translate(0.74556747,-88.530649)">
     <g
        id="g4959"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-opacity:1">
+       style="fill:#ffffff;fill-opacity:1;stroke:#850719;stroke-opacity:1">
       <path
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="ccccc"
          id="path3158"
          d="m 94.049002,110.5223 0.721231,88.26965 19.019157,-0.31925 -1.43929,-87.79962 z"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#850719;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       <path
          transform="matrix(1.7021375,0,0,1.7046113,23.54678,-192.52288)"
          d="m 55.566712,243.63637 c 0,4.544 -3.713343,8.22765 -8.293984,8.22765 -4.580641,0 -8.293984,-3.68365 -8.293984,-8.22765 0,-4.54401 3.713343,-8.22765 8.293984,-8.22765 4.580641,0 8.293984,3.68364 8.293984,8.22765 z"
@@ -197,7 +197,7 @@
          sodipodi:cy="243.63637"
          sodipodi:cx="47.272728"
          id="path3160"
-         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.34828066999999985;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:#ffffff;fill-opacity:1;stroke:#850719;stroke-width:2.34828066999999985;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          sodipodi:type="arc" />
     </g>
   </g>
@@ -208,7 +208,7 @@
      transform="translate(0.74556747,-88.530649)">
     <text
        xml:space="preserve"
-       style="font-size:134.11601257000000942px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3.91918230000000012;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold"
+       style="font-size:134.11601257000000942px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:#8b071a;stroke-width:3.91918230000000012;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold"
        x="32.134769"
        y="183.43938"
        id="text2819"
@@ -217,6 +217,6 @@
          id="tspan2821"
          x="32.134769"
          y="183.43938"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3.91918230000000012;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold">?</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:#8b071a;stroke-width:3.91918230000000012;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Nimbus Sans L;-inkscape-font-specification:Nimbus Sans L Bold">?</tspan></text>
   </g>
 </svg>
