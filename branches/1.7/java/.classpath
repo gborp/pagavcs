@@ -23,8 +23,8 @@
 	<classpathentry kind="lib" path="lib/jsch.agentproxy.usocket-jna-0.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/jsch.agentproxy.usocket-nc-0.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/sqljet-1.1.10.jar"/>
-	<classpathentry kind="lib" path="lib/svnkit-1.8.6.jar" sourcepath="lib-src/org.tmatesoft.svn_1.8.6.src.zip"/>
-	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.8.6.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit-1.8.7.jar" sourcepath="lib-src/org.tmatesoft.svn_1.8.7.src.zip"/>
+	<classpathentry kind="lib" path="lib/svnkit-javahl16-1.8.7.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jna-platform-4.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
