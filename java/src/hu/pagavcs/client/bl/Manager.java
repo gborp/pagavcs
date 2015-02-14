@@ -48,7 +48,6 @@ import org.tmatesoft.svn.core.internal.io.dav.http.DefaultHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
-import org.tmatesoft.svn.core.internal.util.SVNSocketFactory;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNMerger;
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.internal.wc.SVNConflictVersion;
@@ -124,6 +123,7 @@ public class Manager {
 		if (!inited) {
 
 			System.setProperty("svnkit.library.gnome-keyring.enabled", "false");
+			System.setProperty("jsse.enableSNIExtension", "false");
 
 			bandwidthMeter = new BandwidthMeter();
 			SVNDebugLog.setDefaultLog(bandwidthMeter);
@@ -331,11 +331,12 @@ public class Manager {
 					sslType = SslLoginType.SSLv2Hello_SSLv3;
 				}
 
-				if (sslType == SslLoginType.SSLv2Hello_SSLv3) {
-					SVNSocketFactory.setSSLProtocols("SSLv2Hello,SSLv3");
-				} else {
-					SVNSocketFactory.setSSLProtocols(null);
-				}
+				// if (sslType == SslLoginType.SSLv2Hello_SSLv3) {
+				// SVNSocketFactory.setSSLProtocols("SSLv2Hello,SSLv3");
+				// } else {
+				// SVNSocketFactory.setSSLProtocols(null);
+				// }
+				// SVNSocketFactory.setSSLProtocols(null);
 				SVNRepository svnRepo = result.getRepositoryPool().createRepository(repositoryUrl, true);
 				svnRepo.testConnection();
 			} catch (SVNException ex) {
