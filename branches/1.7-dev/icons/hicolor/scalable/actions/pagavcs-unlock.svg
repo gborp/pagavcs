@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- This file was created using the SVG export filter from Karbon14, a free vector drawing app. -->
-
-<!-- It is part of koffice, the free, integrated office suite for KDE (http://www.koffice.org/). -->
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -11,92 +9,40 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="165.89366"
-   height="158.94603"
-   id="svg1"
-   sodipodi:version="0.32"
-   inkscape:version="0.48.5 r10040"
-   sodipodi:docname="pagavcs-unlock.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   version="1.0"
-   inkscape:export-filename="/home/gg/locked.png"
-   inkscape:export-xdpi="72"
-   inkscape:export-ydpi="72">
-  <metadata
-     id="metadata54">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <sodipodi:namedview
-     id="base"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="512px"
+   height="512px"
+   viewBox="0 0 512 512"
+   enable-background="new 0 0 512 512"
+   xml:space="preserve"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="pagavcs-unlock.svg"><metadata
+     id="metadata9"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs7" /><sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="3.5175512"
-     inkscape:cy="127.36878"
-     inkscape:window-width="1241"
-     inkscape:window-height="848"
-     inkscape:window-x="115"
-     inkscape:window-y="24"
-     inkscape:current-layer="svg1"
+     inkscape:window-width="1216"
+     inkscape:window-height="638"
+     id="namedview5"
      showgrid="false"
-     width="256px"
-     height="256px"
+     inkscape:zoom="0.32593203"
+     inkscape:cx="-15.414253"
+     inkscape:cy="363.38468"
+     inkscape:window-x="181"
+     inkscape:window-y="70"
      inkscape:window-maximized="0"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0">
-    <inkscape:grid
-       id="GridFromPre046Settings"
-       type="xygrid"
-       originx="-0.081116558mm"
-       originy="0.065384939mm"
-       spacingx="1.0000000mm"
-       spacingy="1.0000000mm"
-       color="#0000ff"
-       empcolor="#0000ff"
-       opacity="0.2"
-       empopacity="0.4"
-       empspacing="5"
-       units="mm"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true" />
-  </sodipodi:namedview>
-  <defs
-     id="defs2">
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath2994">
-      <rect
-         style="fill:#e1b04f;fill-opacity:1;stroke:#343434;stroke-width:5.08093977;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         id="rect2996"
-         width="109.71779"
-         height="77"
-         x="-2"
-         y="-1.5539703" />
-    </clipPath>
-  </defs>
-  <path
-     id="path1784"
-     d="M 81.771677,2 C 48.469944,2 21.406147,23.168951 21.187939,48.925064 l 0,74.368326 17.17226,0.18324 0.04185,-74.551566 c 0.231873,-18.56463 19.344521,-33.488372 43.36963,-33.488372 24.025111,0 43.270981,14.923742 43.502861,33.488372 l -0.17337,64.549376 5.22675,6.76018 6.40618,0 5.49919,-6.76018 0.52224,-64.549376 C 142.53562,23.16862 115.07341,2 81.771677,2 z"
-     style="fill:#d3d3d3;fill-opacity:1;stroke:#656565;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-     inkscape:connector-curvature="0"
-     clip-path="url(#clipPath2994)" />
-  <path
-     inkscape:connector-curvature="0"
-     style="fill:#c2be29;fill-opacity:1;stroke:#706e18;stroke-width:4.17149544;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-     d="m 20.154325,73.384575 125.585015,0 c 10.01011,0 18.06858,5.942504 18.06858,13.323418 l 0,56.828847 c 0,7.38093 -8.05847,13.32344 -18.06858,13.32344 l -125.585015,0 c -10.009649,0 -18.0685773,-5.94251 -18.0685773,-13.32344 l 0,-56.828847 c 0,-7.380914 8.0589283,-13.323418 18.0685773,-13.323418 z"
-     id="path1902" />
-</svg>
+     inkscape:current-layer="Layer_1" /><path
+     style="fill:#a7a545;fill-opacity:1;stroke:#605f28;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 258.16992 6.5078125 C 187.59192 6.5078125 130.16992 63.94582 130.16992 134.50781 L 130.16992 216.94922 L 128 216.94922 L 128 224 C 92.656 224 65.301481 236.38519 65.083984 271.72852 L 64 448 C 63.782503 483.34333 83.451449 512.19326 118.79492 512 L 399.33984 510.4668 C 434.68331 510.27353 448 483.344 448 448 L 448 271.18555 C 448 235.84155 419.344 224 384 224 L 384 216.94922 L 320 216.94922 L 320 224 L 192 224 L 192 223.45703 L 194.16992 223.45703 L 194.16992 134.50781 C 194.16992 99.194819 222.87292 70.507812 258.16992 70.507812 C 292.71965 70.507812 320.90403 98.037954 322.06055 132.33984 L 386.06055 132.33984 C 384.88685 62.7838 328.03176 6.5078125 258.16992 6.5078125 z M 256 320 C 273.672 320 288 334.313 288 352 C 288 363.719 281.391 373.53075 272 379.09375 L 272 432 C 272 440.844 264.844 448 256 448 C 247.156 448 240 440.844 240 432 L 240 379.09375 C 230.609 373.53075 224 363.719 224 352 C 224 334.312 238.328 320 256 320 z "
+     id="path4145" /></svg>
