@@ -1,0 +1,31 @@
+This seems to be quite a common issue with svn. The way i managed to solve this issue is:
+(first set your folder preferences to show all hidden files and folders,to be able to edit some of the files mentioned below you will have to remove the read-only attributes and allow them to be edited)
+  * Browse through your project to the file with which there seems to be a problem (in this example fileUnabletoUpdate)
+  * Open the .svn folder that is located in the same folder with the file you browsed to
+  * In the .svn folder open the tmp folder and delete all the occurrences of that file from all the sub folders of tmp
+  * Go back to the .svn foler and open the text-base folder. You will find here a file with the name of the file you're having problems with followed by .svn-base (eq fileUnabletoUpdate.svn-base). Delete this file
+  * Go back to the .svn folder and open and edit the entries file found there. In the entries file you will find a portion of text where the file you're dealing with is mentioned.
+(eg.:
+```
+16052
+FF
+fileUnabletoUpdate <-- this is the file you're having a hard time with
+file
+
+
+
+
+2010-10-21T07:05:11.068000Z
+f8f475b715da16c94f2da5f1f4e845b8
+2010-10-20T20:50:54.892517Z
+2237
+michael
+```
+). Delete all that portion of text and make sure the spacing between two consecutive such portions of text remains the same, other wise svn will throw an unknown depth error. (see the attach file, if you want to delete the portion of text from 197 to 209, you have to delete the spaces underneath it so that after the delete 7695 will now be on line 197)
+
+  * Save the file and then go refresh, resynchronize and update your file.
+
+_thx goes to fatidaniela!_
+
+![http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFile.png](http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFile.png)
+![http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFileafterDelete.png](http://code.google.com/p/pagavcs/wiki/checksummismatch/editEntriesFileafterDelete.png)
