@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -113,7 +112,6 @@ public class Manager {
 	private static boolean inited = false;
 	private static ExceptionHandler exceptionHandler;
 	private static boolean forceShowingLoginDialogNextTime;
-	private static HashMap<String, SslLoginType> mapSslLoginType = new HashMap<String, SslLoginType>();
 
 	private static boolean shutdown;
 
@@ -272,7 +270,7 @@ public class Manager {
 		return getSVNClientManager(getSvnRootUrlByFile(path));
 	}
 
-	public static synchronized SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
+	public static SVNClientManager getSVNClientManager(SVNURL repositoryUrl) throws SVNException, PagaException {
 
 		String repoid = repositoryUrl.getHost() + ":" + repositoryUrl.getPort();
 		SVNClientManager result = null;
@@ -324,19 +322,6 @@ public class Manager {
 			}
 			reTestOnly = false;
 			try {
-				SslLoginType sslType = mapSslLoginType.get(repositoryUrl.getHost());
-
-				if (sslType == null) {
-					mapSslLoginType.put(repositoryUrl.getHost(), SslLoginType.SSLv2Hello_SSLv3);
-					sslType = SslLoginType.SSLv2Hello_SSLv3;
-				}
-
-				// if (sslType == SslLoginType.SSLv2Hello_SSLv3) {
-				// SVNSocketFactory.setSSLProtocols("SSLv2Hello,SSLv3");
-				// } else {
-				// SVNSocketFactory.setSSLProtocols(null);
-				// }
-				// SVNSocketFactory.setSSLProtocols(null);
 				SVNRepository svnRepo = result.getRepositoryPool().createRepository(repositoryUrl, true);
 				svnRepo.testConnection();
 			} catch (SVNException ex) {
@@ -348,7 +333,6 @@ public class Manager {
 				} else if (SVNErrorCode.RA_DAV_REQUEST_FAILED.equals(errorCode)) {
 
 					if ("svn: E175002: handshake alert:  unrecognized_name".equals(ex.getErrorMessage().getMessage())) {
-						mapSslLoginType.put(repositoryUrl.getHost(), SslLoginType.SSLv2Hello_SSLv3);
 						reTestOnly = true;
 						continue;
 					} else {
